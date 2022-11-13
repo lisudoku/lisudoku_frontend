@@ -1,53 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
-import { Region, SudokuConstraints } from 'src/types/constraints'
+import { SudokuConstraints } from 'src/types/constraints'
 import { CellPosition } from 'src/types/common'
 import { CELL_SIZE } from 'src/utils/constants'
 import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
 
-const computeRegionSizes = (gridSize: number) => {
-  if (gridSize === 4) {
-    return [ 2, 2 ]
-  } else if (gridSize === 6) {
-    return [ 2, 3 ]
-  } else {
-    return [ 3, 3 ]
-  }
-}
-
-const ensureDefaultRegions = (regions: Region[] | undefined, gridSize: number): Region[] => {
-  if (regions) {
-    return regions
-  }
-
-  const [ regionHeight, regionWidth ] = computeRegionSizes(gridSize)
-  const defaultRegions: Region[] = _.flatten(
-    _.times(gridSize / regionHeight, regionRowIndex => (
-      _.times(gridSize / regionWidth, regionColIndex => (
-        _.flattenDeep(
-          _.times(regionHeight, rowIndex => (
-            _.times(regionWidth, colIndex => (
-              {
-                row: regionRowIndex * regionHeight + rowIndex,
-                col: regionColIndex * regionWidth + colIndex,
-              } as CellPosition
-            ))
-          ))
-        )
-      ))
-    ))
-  )
-
-  return defaultRegions
-}
-
-const Sudoku = ({ gridSize, constraints }: { gridSize: number, constraints: SudokuConstraints }) => {
-  const [ grid, setGrid ] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)))
-  const [ selectedCell, setSelectedCell ] = useState(null as CellPosition | null)
+const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number, constraints: SudokuConstraints, onGridChange: Function }) => {
   const { fixedNumbers } = constraints
-  let { regions: initialRegions } = constraints
-  const regions = ensureDefaultRegions(initialRegions, gridSize)
+
+  const fixedNumbersGrid = useMemo(() => {
+    const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+    for (const fixedNumber of fixedNumbers) {
+      grid[fixedNumber.position.row][fixedNumber.position.col] = fixedNumber.value
+    }
+    return grid
+  }, [gridSize, fixedNumbers])
+
+  const initialGrid = useMemo(() => (
+    Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
+  ), [gridSize, fixedNumbersGrid])
+  const [ grid, setGrid ] = useState(initialGrid)
+  const [ selectedCell, setSelectedCell ] = useState(null as CellPosition | null)
+
+  useEffect(() => {
+    onGridChange(initialGrid)
+  }, [onGridChange, initialGrid])
 
   useEffect(() => {
     const updateSelectedCell = (value: number | null) => {
@@ -56,10 +34,11 @@ const Sudoku = ({ gridSize, constraints }: { gridSize: number, constraints: Sudo
       newGrid[row] = [ ...newGrid[row] ]
       newGrid[row][col] = value
       setGrid(newGrid)
+      onGridChange(newGrid)
     }
 
     const handleKey = (e: KeyboardEvent) => {
-      if (selectedCell === null || fixedNumbers && !_.isNil(fixedNumbers[selectedCell.row][selectedCell.col])) {
+      if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
         return
       }
 
@@ -82,7 +61,7 @@ const Sudoku = ({ gridSize, constraints }: { gridSize: number, constraints: Sudo
     window.addEventListener('keydown', handleKey)
 
     return () => window.removeEventListener('keydown', handleKey)
-  }, [ gridSize, grid, selectedCell ])
+  }, [ gridSize, grid, selectedCell, fixedNumbersGrid, onGridChange ])
 
   const isSelected = (rowIndex: number, cellIndex: number) => (
     selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
@@ -106,9 +85,9 @@ const Sudoku = ({ gridSize, constraints }: { gridSize: number, constraints: Sudo
                     }}
                     onClick={() => setSelectedCell({ row: rowIndex, col: cellIndex })}
                 >
-                  {fixedNumbers && !_.isNil(fixedNumbers[rowIndex][cellIndex]) ? (
+                  {!_.isNil(fixedNumbersGrid[rowIndex][cellIndex]) ? (
                     <div className="text-black text-3xl">
-                      {fixedNumbers[rowIndex][cellIndex]}
+                      {fixedNumbersGrid[rowIndex][cellIndex]}
                     </div>
                   ) : (
                     <div className="text-gray-600 text-3xl">
@@ -120,10 +99,10 @@ const Sudoku = ({ gridSize, constraints }: { gridSize: number, constraints: Sudo
             </div>
           ))}
         </div>
-        <SudokuConstraintsGraphics gridSize={gridSize} regions={regions} />
+        <SudokuConstraintsGraphics constraints={constraints} />
       </div>
     </div>
   )
 }
 
-export default Sudoku
+export default SudokuGrid

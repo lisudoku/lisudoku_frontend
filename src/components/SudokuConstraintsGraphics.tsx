@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { CellPosition } from 'src/types/common'
-import { Region } from 'src/types/constraints'
+import { SudokuConstraints } from 'src/types/constraints'
 import { CELL_SIZE } from 'src/utils/constants'
 
 type Border = {
@@ -10,7 +10,8 @@ type Border = {
   y2: number
 }
 
-const SudokuConstraintsGraphics = ({ gridSize, regions }: { gridSize: number, regions: Region[] }) => {
+const SudokuConstraintsGraphics = ({ constraints }: { constraints: SudokuConstraints }) => {
+  const { gridSize, regions } = constraints
   const regionGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   regions.forEach((regionCells, regionIndex) => {
     regionCells.forEach(cell => {

@@ -1,8 +1,14 @@
 import { CellPosition } from './common'
 
 export type SudokuConstraints = {
-  fixedNumbers?: number[][]
-  regions?: Region[]
+  gridSize: number
+  fixedNumbers: FixedNumber[]
+  regions: Region[]
+}
+
+export type FixedNumber = {
+  position: CellPosition
+  value: number
 }
 
 export type Region = CellPosition[]
