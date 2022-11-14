@@ -3,6 +3,7 @@ import _ from 'lodash'
 import SudokuGrid from './components/SudokuGrid'
 import { Region, SudokuConstraints } from './types/constraints'
 import CheckButton from './components/CheckButton'
+import SolveButton from './components/SolveButton'
 import { CellPosition } from './types/common'
 
 const computeRegionSizes = (gridSize: number) => {
@@ -86,6 +87,7 @@ const App = () => {
       {gridIsFull(grid) && (
         <CheckButton grid={grid!} constraints={constraints} />
       )}
+      <SolveButton constraints={constraints} />
     </div>
   );
 }
