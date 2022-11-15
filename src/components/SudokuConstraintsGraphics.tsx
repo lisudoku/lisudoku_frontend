@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { CellPosition } from 'src/types/common'
-import { SudokuConstraints } from 'src/types/constraints'
+import { Region, SudokuConstraints, Thermo } from 'src/types/constraints'
 import { CELL_SIZE } from 'src/utils/constants'
 
 type Border = {
@@ -10,8 +10,7 @@ type Border = {
   y2: number
 }
 
-const SudokuConstraintsGraphics = ({ constraints }: { constraints: SudokuConstraints }) => {
-  const { gridSize, regions } = constraints
+const BordersGraphics = ({ gridSize, regions }: { gridSize: number, regions: Region[] }) => {
   const regionGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   regions.forEach((regionCells, regionIndex) => {
     regionCells.forEach(cell => {
@@ -53,11 +52,7 @@ const SudokuConstraintsGraphics = ({ constraints }: { constraints: SudokuConstra
   })
 
   return (
-    <svg className="absolute pointer-events-none"
-          height={gridSize * CELL_SIZE + 2}
-          width={gridSize * CELL_SIZE + 2}
-          style={{ top: 0, left: 0, stroke: 'black', strokeWidth: 2 }}
-    >
+    <>
       <line x1="0" y1="1" x2={gridSize * CELL_SIZE + 2} y2="1" />
       <line x1="1" y1="0" x2="1" y2={gridSize * CELL_SIZE + 2} />
       <line x1="0" y1={gridSize * CELL_SIZE + 1} x2={gridSize * CELL_SIZE + 2} y2={gridSize * CELL_SIZE + 1} />
@@ -65,6 +60,56 @@ const SudokuConstraintsGraphics = ({ constraints }: { constraints: SudokuConstra
       {borders.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
+    </>
+  )
+}
+
+const ThermoGraphics = ({ thermo }: { thermo: Thermo }) => {
+  const half = CELL_SIZE / 2
+  const strokeWidth = CELL_SIZE / 3
+  const bulb = thermo[0]
+
+  return (
+    <g style={{ stroke: 'grey', fill: 'grey', opacity: 0.4, mixBlendMode: 'difference' }}>
+      <circle cx={bulb.col * CELL_SIZE + 1 + half}
+              cy={bulb.row * CELL_SIZE + 1 + half}
+              r={half - 7} />
+      {thermo.slice(0, thermo.length - 1).map((cell, index) => {
+        const nextCell = thermo[index + 1]
+        const dirX = Math.sign(nextCell.col - cell.col)
+        const dirY = Math.sign(nextCell.row - cell.row)
+        return (
+          <line x1={cell.col * CELL_SIZE + half + 1 - dirX * strokeWidth / 2}
+                y1={cell.row * CELL_SIZE + half + 1 - dirY * strokeWidth / 2}
+                x2={nextCell.col * CELL_SIZE + half + 1 + dirX * strokeWidth / 2}
+                y2={nextCell.row * CELL_SIZE + half + 1 + dirY * strokeWidth / 2}
+                strokeWidth={strokeWidth}
+                key={index} />
+        )
+      })}
+    </g>
+  )
+}
+
+const ThermosGraphics = ({ thermos }: { thermos: Thermo[] }) => (
+  <>
+    {thermos.map((thermo, index) => (
+      <ThermoGraphics key={index} thermo={thermo} />
+    ))}
+  </>
+)
+
+const SudokuConstraintsGraphics = ({ constraints }: { constraints: SudokuConstraints }) => {
+  const { gridSize, regions, thermos } = constraints
+
+  return (
+    <svg className="absolute pointer-events-none"
+         height={gridSize * CELL_SIZE + 2}
+         width={gridSize * CELL_SIZE + 2}
+         style={{ top: 0, left: 0, stroke: 'black', strokeWidth: 2 }}
+    >
+      <BordersGraphics gridSize={gridSize} regions={regions} />
+      <ThermosGraphics thermos={thermos || []} />
     </svg>
   )
 }

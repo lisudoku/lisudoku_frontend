@@ -4,6 +4,7 @@ export type SudokuConstraints = {
   gridSize: number
   fixedNumbers: FixedNumber[]
   regions: Region[]
+  thermos?: Thermo[]
 }
 
 export type FixedNumber = {
@@ -12,3 +13,5 @@ export type FixedNumber = {
 }
 
 export type Region = CellPosition[]
+
+export type Thermo = CellPosition[]

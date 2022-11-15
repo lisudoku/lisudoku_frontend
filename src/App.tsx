@@ -38,42 +38,98 @@ const ensureDefaultRegions = (gridSize: number): Region[] => {
   return defaultRegions
 }
 
-const gridSize = 4
+// const gridSize = 4
+// const fixedNumbers = [
+//   {
+//     position: {
+//       row: 1,
+//       col: 1,
+//     },
+//     value: 4,
+//   },
+//   {
+//     position: {
+//       row: 1,
+//       col: 3,
+//     },
+//     value: 2,
+//   },
+//   {
+//     position: {
+//       row: 2,
+//       col: 0,
+//     },
+//     value: 1,
+//   },
+//   {
+//     position: {
+//       row: 2,
+//       col: 2,
+//     },
+//     value: 3,
+//   },
+// ]
+const gridSize = 6
 const fixedNumbers = [
   {
-    position: {
-      row: 1,
-      col: 1,
-    },
+    position: { row: 1, col: 0 },
     value: 4,
   },
   {
-    position: {
-      row: 1,
-      col: 3,
-    },
+    position: { row: 2, col: 0 },
+    value: 5,
+  },
+  {
+    position: { row: 4, col: 5 },
     value: 2,
   },
   {
-    position: {
-      row: 2,
-      col: 0,
-    },
-    value: 1,
+    position: { row: 5, col: 4 },
+    value: 4,
   },
   {
-    position: {
-      row: 2,
-      col: 2,
-    },
+    position: { row: 5, col: 5 },
     value: 3,
   },
+]
+const thermos = [
+  [
+    { row: 0, col: 0 },
+    { row: 0, col: 1 },
+    { row: 0, col: 2 },
+    { row: 0, col: 3 },
+    { row: 0, col: 4 },
+    { row: 0, col: 5 },
+  ],
+  [
+    { row: 1, col: 4 },
+    { row: 2, col: 4 },
+    { row: 3, col: 4 },
+  ],
+  [
+    { row: 2, col: 2 },
+    { row: 3, col: 2 },
+    { row: 4, col: 2 },
+    { row: 4, col: 3 },
+  ],
+  [
+    { row: 3, col: 0 },
+    { row: 4, col: 0 },
+    { row: 5, col: 0 },
+  ],
+  [
+    { row: 3, col: 3 },
+    { row: 2, col: 3 },
+    { row: 1, col: 3 },
+    { row: 1, col: 2 },
+  ],
 ]
 const regions = ensureDefaultRegions(gridSize)
 const constraints: SudokuConstraints = {
   gridSize,
   fixedNumbers,
   regions,
+  thermos,
 }
 
 const gridIsFull = (grid: number[][] | undefined) => grid && grid.every(row => row.every(x => !!x))

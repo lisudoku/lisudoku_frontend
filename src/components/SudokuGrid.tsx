@@ -77,7 +77,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
               {row.map((cell, cellIndex) => (
                 <div key={cellIndex}
                     className={classNames(`flex justify-center items-center border-solid border-grey-400 border`, {
-                      'bg-yellow-100': isSelected(rowIndex, cellIndex),
+                      'bg-yellow-200': isSelected(rowIndex, cellIndex),
                     })}
                     style={{
                        width: CELL_SIZE + 'px',
@@ -86,11 +86,11 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
                     onClick={() => setSelectedCell({ row: rowIndex, col: cellIndex })}
                 >
                   {!_.isNil(fixedNumbersGrid[rowIndex][cellIndex]) ? (
-                    <div className="text-black text-3xl">
+                    <div className="text-black text-4xl font-medium">
                       {fixedNumbersGrid[rowIndex][cellIndex]}
                     </div>
                   ) : (
-                    <div className="text-gray-600 text-3xl">
+                    <div className="text-gray-800 text-4xl font-medium">
                       {cell}
                     </div>
                   )}
