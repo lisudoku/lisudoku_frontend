@@ -68,7 +68,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
   )
 
   return (
-    <div className="p-20">
+    <div className="p-20 cursor-default">
       <div className="relative">
         <div className="w-fit relative border">
           {grid.map((row, rowIndex) => (
