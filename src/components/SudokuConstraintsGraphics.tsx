@@ -69,24 +69,32 @@ const ThermoGraphics = ({ thermo }: { thermo: Thermo }) => {
   const strokeWidth = CELL_SIZE / 3
   const bulb = thermo[0]
 
+  const points = thermo.map((cell, index) => {
+    let x = cell.col * CELL_SIZE + half + 1
+    let y = cell.row * CELL_SIZE + half + 1
+    if (index === thermo.length - 1) {
+      const prevCell = thermo[index - 1]
+      const dirX = Math.sign(cell.col - prevCell.col)
+      const dirY = Math.sign(cell.row - prevCell.row)
+      x += dirX * half / 5
+      y += dirY * half / 5
+    }
+    return `${x},${y}`
+  }).join(' ')
+
   return (
     <g style={{ stroke: 'grey', fill: 'grey', opacity: 0.4, mixBlendMode: 'difference' }}>
       <circle cx={bulb.col * CELL_SIZE + 1 + half}
               cy={bulb.row * CELL_SIZE + 1 + half}
               r={half - 7} />
-      {thermo.slice(0, thermo.length - 1).map((cell, index) => {
-        const nextCell = thermo[index + 1]
-        const dirX = Math.sign(nextCell.col - cell.col)
-        const dirY = Math.sign(nextCell.row - cell.row)
-        return (
-          <line x1={cell.col * CELL_SIZE + half + 1 - dirX * strokeWidth / 2}
-                y1={cell.row * CELL_SIZE + half + 1 - dirY * strokeWidth / 2}
-                x2={nextCell.col * CELL_SIZE + half + 1 + dirX * strokeWidth / 2}
-                y2={nextCell.row * CELL_SIZE + half + 1 + dirY * strokeWidth / 2}
-                strokeWidth={strokeWidth}
-                key={index} />
-        )
-      })}
+      <polyline
+        points={points}
+        style={{
+          fill: 'none',
+          strokeWidth,
+          strokeLinecap: 'square',
+        }}
+      />
     </g>
   )
 }
