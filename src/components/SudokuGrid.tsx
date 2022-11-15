@@ -6,6 +6,10 @@ import { CellPosition } from 'src/types/common'
 import { CELL_SIZE } from 'src/utils/constants'
 import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
 
+const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
+const dirRow = [ -1, 1, 0, 0 ]
+const dirCol = [ 0, 0, -1, 1 ]
+
 const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number, constraints: SudokuConstraints, onGridChange: Function }) => {
   const { fixedNumbers } = constraints
 
@@ -21,7 +25,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
     Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
   ), [gridSize, fixedNumbersGrid])
   const [ grid, setGrid ] = useState(initialGrid)
-  const [ selectedCell, setSelectedCell ] = useState(null as CellPosition | null)
+  const [ selectedCell, setSelectedCell ] = useState<CellPosition | null>(null)
 
   useEffect(() => {
     onGridChange(initialGrid)
@@ -38,6 +42,15 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
     }
 
     const handleKey = (e: KeyboardEvent) => {
+      if (ARROWS.includes(e.key) && selectedCell !== null) {
+        const dir = ARROWS.indexOf(e.key)
+        setSelectedCell(selectedCell => ({
+          row: (selectedCell!.row + dirRow[dir]) % gridSize,
+          col: (selectedCell!.col + dirCol[dir]) % gridSize,
+        }))
+        return
+      }
+
       if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
         return
       }
