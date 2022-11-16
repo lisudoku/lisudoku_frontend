@@ -362,14 +362,16 @@ const gridIsFull = (grid: number[][] | undefined) => grid && grid.every(row => r
 
 const App = () => {
   const [ grid, setGrid ] = useState<number[][]>()
+  const [ notesActive, setNotesActive ] = useState<boolean>(false)
 
   return (
     <div className="App">
-      <SudokuGrid gridSize={gridSize} constraints={constraints} onGridChange={setGrid} />
+      <SudokuGrid gridSize={gridSize} constraints={constraints} onGridChange={setGrid} onNotesActiveToggle={() => setNotesActive(active => !active)} />
       {gridIsFull(grid) && (
         <CheckButton grid={grid!} constraints={constraints} />
       )}
       <SolveButton constraints={constraints} />
+      <button className="border ml-5">Notes {notesActive ? 'active' : 'inactive'}</button>
     </div>
   );
 }

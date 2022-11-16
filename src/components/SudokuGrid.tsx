@@ -10,7 +10,7 @@ const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
 const dirCol = [ 0, 0, -1, 1 ]
 
-const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number, constraints: SudokuConstraints, onGridChange: Function }) => {
+const SudokuGrid = ({ gridSize, constraints, onGridChange, onNotesActiveToggle }: { gridSize: number, constraints: SudokuConstraints, onGridChange: Function, onNotesActiveToggle: Function }) => {
   const { fixedNumbers } = constraints
 
   const fixedNumbersGrid = useMemo(() => {
@@ -27,18 +27,49 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
   const [ grid, setGrid ] = useState(initialGrid)
   const [ selectedCell, setSelectedCell ] = useState<CellPosition | null>(null)
 
+  const initialNotes = useMemo(() => (
+    Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => new Set<number>()))
+  ), [gridSize])
+  const [ notesActive, setNotesActive ] = useState<boolean>(false)
+  const [ notes, setNotes ] = useState<Set<number>[][]>(initialNotes)
+
   useEffect(() => {
     onGridChange(initialGrid)
   }, [onGridChange, initialGrid])
 
   useEffect(() => {
-    const updateSelectedCell = (value: number | null) => {
+    const updateSelectedCellValue = (value: number | null) => {
       const { row, col } = selectedCell!
       const newGrid = [ ...grid ]
       newGrid[row] = [ ...newGrid[row] ]
-      newGrid[row][col] = value
+      if (newGrid[row][col] === value) {
+        newGrid[row][col] = null
+      } else {
+        newGrid[row][col] = value
+        updateSelectedCellNotes(null)
+      }
       setGrid(newGrid)
       onGridChange(newGrid)
+    }
+
+    const updateSelectedCellNotes = (value: number | null) => {
+      const { row, col } = selectedCell!
+      if (value === null && notes[row][col].size === 0) {
+        return
+      }
+      if (grid[row][col] !== null) {
+        return
+      }
+      const newNotes = [ ...notes ]
+      newNotes[row] = [ ...newNotes[row] ]
+      if (value === null) {
+        newNotes[row][col].clear()
+      } else if (newNotes[row][col].has(value)) {
+        newNotes[row][col].delete(value)
+      } else {
+        newNotes[row][col].add(value)
+      }
+      setNotes(newNotes)
     }
 
     const handleKey = (e: KeyboardEvent) => {
@@ -51,12 +82,21 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
         return
       }
 
+      if (e.key.toLowerCase() === 'n') {
+        onNotesActiveToggle()
+        setNotesActive(active => {
+          return !active
+        })
+        return
+      }
+
       if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
         return
       }
 
       if (e.key === 'Backspace') {
-        updateSelectedCell(null)
+        updateSelectedCellValue(null)
+        updateSelectedCellNotes(null)
         return
       }
 
@@ -69,12 +109,16 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
         return
       }
 
-      updateSelectedCell(value)
+      if (notesActive) {
+        updateSelectedCellNotes(value)
+      } else {
+        updateSelectedCellValue(value)
+      }
     }
     window.addEventListener('keydown', handleKey)
 
     return () => window.removeEventListener('keydown', handleKey)
-  }, [ gridSize, grid, selectedCell, fixedNumbersGrid, onGridChange ])
+  }, [ gridSize, grid, selectedCell, fixedNumbersGrid, onGridChange, notesActive, onNotesActiveToggle, notes ])
 
   const isSelected = (rowIndex: number, cellIndex: number) => (
     selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
@@ -112,7 +156,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
             </div>
           ))}
         </div>
-        <SudokuConstraintsGraphics constraints={constraints} />
+        <SudokuConstraintsGraphics constraints={constraints} notes={notes} />
       </div>
     </div>
   )
