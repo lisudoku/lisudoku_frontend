@@ -45,8 +45,8 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange }: { gridSize: number,
       if (ARROWS.includes(e.key) && selectedCell !== null) {
         const dir = ARROWS.indexOf(e.key)
         setSelectedCell(selectedCell => ({
-          row: (selectedCell!.row + dirRow[dir]) % gridSize,
-          col: (selectedCell!.col + dirCol[dir]) % gridSize,
+          row: (selectedCell!.row + dirRow[dir] + gridSize) % gridSize,
+          col: (selectedCell!.col + dirCol[dir] + gridSize) % gridSize,
         }))
         return
       }
