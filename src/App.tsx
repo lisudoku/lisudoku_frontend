@@ -7,6 +7,7 @@ import LogoutPage from './screens/LogoutPage'
 import RegisterPage from './screens/RegisterPage'
 import PageNotFound from './screens/PageNotFound'
 import PuzzlePage from './screens/PuzzlePage'
+import PlayPage from './screens/PlayPage'
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             <Route path="/" element={<EnsureLogin />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/play/:variant" element={<PlayPage />} />
             </Route>
             <Route path="login" element={<LoginPage />} />
             <Route path="logout" element={<LogoutPage />} />
