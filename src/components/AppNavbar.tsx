@@ -14,7 +14,13 @@ const AppNavbar = () => {
           Play
         </a>
         <a href="/#" className="flex items-center text-medium uppercase pt-1">
+          Live
+        </a>
+        <a href="/#" className="flex items-center text-medium uppercase pt-1">
           Learn
+        </a>
+        <a href="/#" className="flex items-center text-medium uppercase pt-1">
+          Stats
         </a>
       </div>
       <div className="flex gap-4 text-medium items-center uppercase">
