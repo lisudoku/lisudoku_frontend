@@ -6,13 +6,13 @@ export type CellPosition = {
 export type Grid = number[][]
 
 export enum SudokuVariant {
-  Classic = 'Classic',
-  Killer = 'Killer',
-  Thermo = 'Thermo',
-  Arrow = 'Arrow',
-  Irregular = 'Irregular',
-  Kropki = 'Kropki',
-  TopBot = 'Top-Bot',
-  Diagonal = 'Diagonal',
-  Mixed = 'Mixed',
+  Classic = 'classic',
+  Killer = 'killer',
+  Thermo = 'thermo',
+  Arrow = 'arrow',
+  Irregular = 'irregular',
+  Kropki = 'kropki',
+  TopBot = 'topbot',
+  Diagonal = 'diagonal',
+  Mixed = 'mixed',
 }
