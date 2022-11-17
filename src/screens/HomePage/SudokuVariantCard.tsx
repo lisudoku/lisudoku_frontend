@@ -3,7 +3,7 @@ import { SudokuVariant } from 'src/types/common'
 
 const SudokuVariantCard = ({ variant }: { variant: SudokuVariant }) => (
   <div className="w-full sm:w-1/2 md:w-1/3 p-2">
-    <div className="relative h-48 border cursor-pointer text-3xl">
+    <div className="relative h-48 border cursor-pointer text-3xl hover:bg-slate-800">
       <div className="w-full h-full flex flex-col items-center justify-center pb-2">
         <span className={classNames('z-10', { 'pr-10': variant === SudokuVariant.Irregular })}>{variant}</span>
         <span className={classNames('z-10', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
