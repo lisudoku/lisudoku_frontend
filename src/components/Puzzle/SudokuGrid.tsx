@@ -125,7 +125,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange, onNotesActiveToggle }
   )
 
   return (
-    <div className="p-20 cursor-default">
+    <div className="p-2 cursor-default">
       <div className="relative">
         <div className="w-fit relative border">
           {grid.map((row, rowIndex) => (
@@ -143,7 +143,7 @@ const SudokuGrid = ({ gridSize, constraints, onGridChange, onNotesActiveToggle }
                     onClick={() => setSelectedCell({ row: rowIndex, col: cellIndex })}
                 >
                   {!_.isNil(fixedNumbersGrid[rowIndex][cellIndex]) ? (
-                    <div className="text-black text-4xl font-medium">
+                    <div className="text-4xl font-medium">
                       {fixedNumbersGrid[rowIndex][cellIndex]}
                     </div>
                   ) : (

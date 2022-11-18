@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import _ from 'lodash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import SudokuGrid from './SudokuGrid'
 import CheckButton from './CheckButton'
 import SolveButton from './SolveButton'
@@ -365,16 +367,37 @@ const gridIsFull = (grid: number[][] | undefined) => grid && grid.every(row => r
 const Puzzle = ({  }) => {
   const [ grid, setGrid ] = useState<number[][]>()
   const [ notesActive, setNotesActive ] = useState<boolean>(false)
-  
+
   return (
-    <>
-      <SudokuGrid gridSize={gridSize} constraints={constraints} onGridChange={setGrid} onNotesActiveToggle={() => setNotesActive(active => !active)} />
-      {gridIsFull(grid) && (
-        <CheckButton grid={grid!} constraints={constraints} />
-      )}
-      <SolveButton constraints={constraints} />
-      <button className="border ml-5">Notes {notesActive ? 'active' : 'inactive'}</button>
-    </>
+    <div className="flex">
+      <div className="w-1/2">
+        <SudokuGrid gridSize={gridSize} constraints={constraints} onGridChange={setGrid} onNotesActiveToggle={() => setNotesActive(active => !active)} />
+      </div>
+      <div className="w-1/2">
+        <div>
+          1 2 3
+        </div>
+        <div>
+          Undo, clear
+        </div>
+        {gridIsFull(grid) && (
+          <CheckButton grid={grid!} constraints={constraints} />
+        )}
+        <SolveButton constraints={constraints} />
+        <button className="border">Notes {notesActive ? 'active' : 'inactive'}</button>
+        <div>
+          <label><b>Difficulty:</b></label>
+          Easy
+          <FontAwesomeIcon icon={faAngleDown} size="lg" />
+        </div>
+        <div>
+          Permalink
+        </div>
+        <div>
+          New puzzle
+        </div>
+      </div>
+    </div>
   )
 }
 
