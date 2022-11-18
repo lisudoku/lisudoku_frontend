@@ -4,9 +4,9 @@ import { SudokuVariant } from 'src/types/common'
 import { SudokuVariantDisplay } from 'src/utils/constants'
 
 const SudokuVariantCard = ({ variant }: { variant: SudokuVariant }) => (
-  <div className="w-full sm:w-1/2 md:w-1/3 p-2">
+  <div className="w-full sm:w-1/2 md:w-1/3 p-1.5">
     <Link to={`/play/${variant}`}>
-      <div className="relative h-48 border cursor-pointer text-3xl hover:bg-slate-800">
+      <div className="relative h-48 border border-neutral-700 cursor-pointer text-3xl bg-neutral-800 hover:bg-slate-800 drop-shadow-2xl hover:text-neutral-300">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
           <span className={classNames('z-10', { 'pr-10': variant === SudokuVariant.Irregular })}>{SudokuVariantDisplay[variant]}</span>
           <span className={classNames('z-10', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
