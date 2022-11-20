@@ -18,12 +18,15 @@ export const useKeyboardHandler = (
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (ARROWS.includes(e.key) && selectedCell !== null) {
-        const dir = ARROWS.indexOf(e.key)
-        onSelectedCellChange({
-          row: (selectedCell.row + dirRow[dir] + gridSize) % gridSize,
-          col: (selectedCell.col + dirCol[dir] + gridSize) % gridSize,
-        })
+      if (ARROWS.includes(e.key)) {
+        if (selectedCell !== null) {
+          const dir = ARROWS.indexOf(e.key)
+          onSelectedCellChange({
+            row: (selectedCell.row + dirRow[dir] + gridSize) % gridSize,
+            col: (selectedCell.col + dirCol[dir] + gridSize) % gridSize,
+          })
+        }
+        e.preventDefault()
         return
       }
 
