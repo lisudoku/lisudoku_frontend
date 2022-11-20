@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import { ReactElement } from 'react'
-import { CellPosition } from 'src/types/common'
-import { Region, SudokuConstraints, Thermo } from 'src/types/constraints'
-import { CELL_SIZE, NOTES_COLUMN_SIZE, NOTES_FONT_SIZE, NOTES_FONT_WIDTH, NOTES_PADDING, NOTES_SIZE } from 'src/utils/constants'
+import { CellPosition } from 'src/types/sudoku'
+import { Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { CELL_SIZE, NOTES_COLUMN_SIZE, NOTES_FONT_SIZE, NOTES_FONT_WIDTH, NOTES_PADDING } from 'src/utils/constants'
 
 type Border = {
   x1: number
@@ -53,7 +53,7 @@ const BordersGraphics = ({ gridSize, regions }: { gridSize: number, regions: Reg
   })
 
   return (
-    <>
+    <g className="stroke-white">
       <line x1="0" y1="1" x2={gridSize * CELL_SIZE + 2} y2="1" />
       <line x1="1" y1="0" x2="1" y2={gridSize * CELL_SIZE + 2} />
       <line x1="0" y1={gridSize * CELL_SIZE + 1} x2={gridSize * CELL_SIZE + 2} y2={gridSize * CELL_SIZE + 1} />
@@ -61,7 +61,7 @@ const BordersGraphics = ({ gridSize, regions }: { gridSize: number, regions: Reg
       {borders.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
-    </>
+    </g>
   )
 }
 
@@ -83,8 +83,9 @@ const ThermoGraphics = ({ thermo }: { thermo: Thermo }) => {
     return `${x},${y}`
   }).join(' ')
 
+  // Note: mix-blend-difference for light mode
   return (
-    <g style={{ stroke: 'grey', fill: 'grey', opacity: 0.4, mixBlendMode: 'difference' }}>
+    <g className="fill-neutral-200 stroke-gray-200 mix-blend-hard-light" style={{ opacity: 0.4 }}>
       <circle cx={bulb.col * CELL_SIZE + 1 + half}
               cy={bulb.row * CELL_SIZE + 1 + half}
               r={half - 7} />
@@ -108,7 +109,7 @@ const ThermosGraphics = ({ thermos }: { thermos: Thermo[] }) => (
   </>
 )
 
-const NotesGraphics = ({ notes }: { notes: Set<number>[][] }) => {
+const NotesGraphics = ({ notes }: { notes: number[][][] }) => {
   const noteElements: ReactElement[] = []
   notes.forEach((rowNotes, rowIndex) => {
     rowNotes.forEach((cellNotes, colIndex) => {
@@ -131,13 +132,13 @@ const NotesGraphics = ({ notes }: { notes: Set<number>[][] }) => {
   })
 
   return (
-    <g style={{ strokeWidth: 0.1, stroke: 'none', fill: 'deepskyblue', fontSize: NOTES_FONT_SIZE }}>
+    <g className="fill-sky-200" style={{ strokeWidth: 0.1, stroke: 'none', fontSize: NOTES_FONT_SIZE }}>
       {noteElements}
     </g>
   )
 }
 
-const SudokuConstraintsGraphics = ({ constraints, notes }: { constraints: SudokuConstraints, notes: Set<number>[][] }) => {
+const SudokuConstraintsGraphics = ({ constraints, notes }: { constraints: SudokuConstraints, notes: number[][][] }) => {
   const { gridSize, regions, thermos } = constraints
 
   return (

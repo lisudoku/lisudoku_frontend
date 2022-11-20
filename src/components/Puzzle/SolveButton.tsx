@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { SudokuConstraints } from 'src/types/constraints'
+import { SudokuConstraints } from 'src/types/sudoku'
 import { wasm_intuitive_solve } from 'lisudoku-solver'
 import { useState } from 'react'
 import { SolutionStep } from 'src/types/wasm'

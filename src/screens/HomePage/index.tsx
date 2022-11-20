@@ -1,4 +1,4 @@
-import { SudokuVariant } from 'src/types/common'
+import { SudokuVariant } from 'src/types/sudoku'
 import SudokuVariantCard from './SudokuVariantCard'
 
 const HomePage = () => (

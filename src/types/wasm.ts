@@ -1,4 +1,4 @@
-import { CellPosition, Grid } from './common'
+import { CellPosition, Grid } from './sudoku'
 
 export type SudokuSolveResult = {
   solution_count: number

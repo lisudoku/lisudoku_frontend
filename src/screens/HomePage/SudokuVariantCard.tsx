@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import classNames from 'classnames'
-import { SudokuVariant } from 'src/types/common'
+import { SudokuVariant } from 'src/types/sudoku'
 import { SudokuVariantDisplay } from 'src/utils/constants'
 
 const SudokuVariantCard = ({ variant }: { variant: SudokuVariant }) => (
