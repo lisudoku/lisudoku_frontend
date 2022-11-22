@@ -19,13 +19,20 @@ export const useKeyboardHandler = (
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (ARROWS.includes(e.key)) {
+        let nextCell
         if (selectedCell !== null) {
           const dir = ARROWS.indexOf(e.key)
-          onSelectedCellChange({
+          nextCell = {
             row: (selectedCell.row + dirRow[dir] + gridSize) % gridSize,
             col: (selectedCell.col + dirCol[dir] + gridSize) % gridSize,
-          })
+          }
+        } else {
+          nextCell = {
+            row: 0,
+            col: 0,
+          }
         }
+        onSelectedCellChange(nextCell)
         e.preventDefault()
         return
       }
