@@ -5,7 +5,7 @@ import { SudokuConstraints } from 'src/types/sudoku'
 const computeRules = (constraints: SudokuConstraints) => {
   const rules = []
   rules.push(
-    `Place a digit from 1 to ${constraints.gridSize} in each of the empty cells so ` + 
+    `Place a digit from 1 to ${constraints.gridSize} in each of the empty cells so ` +
     `that each digit appears exactly once in each row, column and outlined region.`
   )
   if (_.size(constraints.thermos) > 0) {

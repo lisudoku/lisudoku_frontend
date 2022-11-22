@@ -12,7 +12,10 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[
 )
 
 export const useKeyboardHandler = (
-  gridSize: number, fixedNumbers: FixedNumber[], selectedCell: CellPosition | null, notesActive: boolean, onSelectedCellChange: Function, onNotesActiveToggle: Function, onSelectedCellValueChange: Function, onSelectedCellNotesChange: Function
+  enabled: boolean, gridSize: number, fixedNumbers: FixedNumber[],
+  selectedCell: CellPosition | null, notesActive: boolean,
+  onSelectedCellChange: Function, onNotesActiveToggle: Function,
+  onSelectedCellValueChange: Function, onSelectedCellNotesChange: Function
 ) => {
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
@@ -42,7 +45,7 @@ export const useKeyboardHandler = (
         return
       }
 
-      if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
+      if (!enabled || selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
         return
       }
 
@@ -70,5 +73,8 @@ export const useKeyboardHandler = (
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [ gridSize, fixedNumbersGrid, selectedCell, notesActive, onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange, onSelectedCellNotesChange ])
+  }, [
+    enabled, gridSize, fixedNumbersGrid, selectedCell, notesActive,onSelectedCellChange,
+    onNotesActiveToggle, onSelectedCellValueChange, onSelectedCellNotesChange,
+  ])
 }

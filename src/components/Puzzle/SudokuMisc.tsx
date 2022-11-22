@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import SudokuRules from './SudokuRules'
 import ShortcutsButton from './ShortcutsButton'
 import PermalinkButton from './PermalinkButton'

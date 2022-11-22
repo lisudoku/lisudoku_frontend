@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
 
@@ -51,6 +51,16 @@ export const fetchRandomPuzzle = async (variant: SudokuVariant, difficulty: Sudo
 
 export const fetchPuzzleById = async (id: string) => {
   return axios.get(`/puzzles/${id}`, {
+    // headers: {
+    //   'Authorization': `Bearer ${userToken()}`,
+    // },
+  }).then(response => response.data)
+}
+
+export const requestPuzzleCheck = async (id: string, grid: Grid) => {
+  return axios.post(`/puzzles/${id}/check`, {
+    grid,
+  }, {
     // headers: {
     //   'Authorization': `Bearer ${userToken()}`,
     // },

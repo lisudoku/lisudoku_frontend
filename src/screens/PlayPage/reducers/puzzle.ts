@@ -19,6 +19,9 @@ type PuzzleState = {
   data: Puzzle | null,
   grid: Grid | null,
   notes: number[][][] | null,
+  solveTimer: number,
+  isSolvedLoading: boolean,
+  solved: boolean,
   controls: ControlsState,
 }
 
@@ -29,6 +32,9 @@ export const puzzleSlice = createSlice({
     data: null,
     grid: null,
     notes: null,
+    solveTimer: 0,
+    isSolvedLoading: false,
+    solved: false,
     controls: {
       selectedCell: null,
       notesActive: false,
@@ -43,6 +49,8 @@ export const puzzleSlice = createSlice({
       const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)
       state.data = puzzleData
       state.isLoading = false
+      state.solved = false
+      state.solveTimer = 0
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -98,11 +106,22 @@ export const puzzleSlice = createSlice({
     toggleNotesActive(state) {
       state.controls.notesActive = !state.controls.notesActive
     },
+    updateTimer(state) {
+      state.solveTimer += 1
+    },
+    requestSolved(state) {
+      state.isSolvedLoading = true
+    },
+    responseSolved(state, action) {
+      state.isSolvedLoading = false
+      state.solved = action.payload
+    },
   }
 })
 
 export const {
-  requestedPuzzle, receivedPuzzle, changeSelectedCell, changeSelectedCellValue, changeSelectedCellNotes, toggleNotesActive,
+  requestedPuzzle, receivedPuzzle, changeSelectedCell, changeSelectedCellValue,
+  changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer

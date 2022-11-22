@@ -1,22 +1,23 @@
-import classNames from 'classnames'
 import _ from 'lodash'
+import classNames from 'classnames'
+import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
+import ClipLoader from 'react-spinners/ClipLoader'
+import { useFixedNumbersGrid } from './hooks'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { CELL_SIZE } from 'src/utils/constants'
-import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
-import { useFixedNumbersGrid } from './hooks'
 
 const isSelected = (rowIndex: number, cellIndex: number, selectedCell: CellPosition | null) => (
   selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
 )
 
-const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChange }: SudokuGridProps) => {
+const SudokuGrid = ({ constraints, grid, notes, selectedCell, loading, onSelectedCellChange }: SudokuGridProps) => {
   const { fixedNumbers, gridSize } = constraints
 
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
   return (
-    <div className="cursor-default">
+    <div className="cursor-default select-none">
       <div className="relative">
         <div className="w-fit relative border">
           {grid.map((row, rowIndex) => (
@@ -48,6 +49,18 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChan
           ))}
         </div>
         <SudokuConstraintsGraphics constraints={constraints} notes={notes} />
+        <div className={classNames(
+          'absolute inset-0 flex items-center justify-center', {
+            'backdrop-blur-sm': loading,
+            'pointer-events-none': !loading,
+          }
+        )}>
+          <ClipLoader
+            color="#607D8B"
+            loading={loading}
+            size={50}
+          />
+        </div>
       </div>
     </div>
   )
@@ -58,6 +71,7 @@ type SudokuGridProps = {
   grid: Grid,
   notes: number[][][],
   selectedCell: CellPosition | null,
+  loading: boolean,
   onSelectedCellChange: Function,
 }
 
