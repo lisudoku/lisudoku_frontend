@@ -1,5 +1,6 @@
 import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
+import SudokuMisc from './SudokuMisc'
 import { CellPosition } from 'src/types/sudoku'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
@@ -31,7 +32,7 @@ const PuzzleComponent = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row mx-auto">
       <div className="w-full md:w-fit">
         <SudokuGrid constraints={constraints}
                     grid={grid!}
@@ -50,6 +51,9 @@ const PuzzleComponent = () => {
                         onSelectedCellChange={handleSelectedCellChange}
                         onNotesActiveToggle={handleNotesActiveToggle}
         />
+      </div>
+      <div className="w-full md:w-fit md:pl-5">
+        <SudokuMisc constraints={constraints} />
       </div>
     </div>
   )

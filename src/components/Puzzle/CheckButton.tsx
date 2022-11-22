@@ -1,6 +1,8 @@
 import _ from 'lodash'
+import Button from '../Button'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { wasm_check_solved } from 'lisudoku-solver'
+import { gridIsFull } from 'src/utils/sudoku'
 
 const checkSudoku = (grid: Grid, constraints: SudokuConstraints) => {
   const wasm_constraints = _.mapKeys(constraints, (_value, key) => _.snakeCase(key))
@@ -15,8 +17,14 @@ const CheckButton = ({ grid, constraints }: { grid: Grid, constraints: SudokuCon
     checkSudoku(grid, constraints)
   }
 
+  const disabled = !gridIsFull(grid)
   return (
-    <button className="border ml-5" onClick={handleClick}>Check</button>
+    <Button color={disabled ? 'gray' : 'green'}
+            disabled={disabled}
+            onClick={handleClick}
+    >
+      Check
+    </Button>
   )
 }
 

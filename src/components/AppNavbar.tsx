@@ -1,41 +1,78 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
 import { userToken, userName } from 'src/utils/auth'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
 
 const AppNavbar = () => {
-  useLocation()
+  const [openNav, setOpenNav] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => window.innerWidth >= 960 && setOpenNav(false)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const navList = (
+    <ul className="flex flex-col gap-2 mb-2 mt-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-end lg:gap-6">
+      <Typography
+        as="li"
+        variant="small"
+        color="white"
+        className="font-normal"
+      >
+        <Link to="/learn">Learn</Link>
+      </Typography>
+      <Typography
+        as="li"
+        variant="small"
+        color="white"
+        className="font-normal"
+      >
+        <Link to="/tv">Live</Link>
+      </Typography>
+    </ul>
+  )
+
+  const rightButtons = (
+    <ul className="flex flex-col gap-2 pb-2 lg:pb-0 hidden">
+      <Typography
+        as="li"
+        variant="small"
+        color="white"
+        className="font-normal"
+      >
+        <Link to="#">Sign In</Link>
+      </Typography>
+    </ul>
+  )
 
   return (
-    <nav className="h-14 px-6 flex items-center justify-between bg-gradient-to-b from-neutral-700 to-neutral-900">
-      <div className="flex gap-10">
-        <a href="/" className="flex items-center text-3xl">
-          lisudoku
-        </a>
-        <a href="/#" className="flex items-center text-medium uppercase pt-1 hover:text-neutral-300">
-          Play
-        </a>
-        <a href="/#" className="flex items-center text-medium uppercase pt-1 hover:text-neutral-300">
-          Live
-        </a>
-        <a href="/#" className="flex items-center text-medium uppercase pt-1 hover:text-neutral-300">
-          Learn
-        </a>
-        <a href="/#" className="flex items-center text-medium uppercase pt-1 hover:text-neutral-300">
-          Stats
-        </a>
+    <Navbar className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 bg-gradient-to-b from-gray-700 to-gray-900 border-none uppercase">
+      <div className="h-full flex items-center justify-between text-white">
+        <Typography
+          variant="h3"
+          className="mr-6 cursor-pointer font-normal lowercase relative"
+        >
+          <Link to="/">lisudoku</Link>
+        </Typography>
+        <div className="hidden lg:block grow">{navList}</div>
+        <div className="hidden lg:inline-block">{rightButtons}</div>
+        <IconButton
+          variant="text"
+          className="ml-auto text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+          ripple={false}
+          onClick={() => setOpenNav(!openNav)}
+        >
+          <FontAwesomeIcon icon={openNav ? faXmark : faBars} size="2x" />
+        </IconButton>
       </div>
-      <div className="flex gap-4 text-medium items-center uppercase">
-        {userToken() ? (
-          <>
-            <div className="text-base">{userName()}</div>
-            <Link to="./logout">Logout</Link>
-          </>
-        ) : (
-          <>
-            <Link to="./login">Sign In</Link>
-          </>
-        )}
-      </div>
-    </nav>
+      <MobileNav open={openNav}>
+        {navList}
+        {rightButtons}
+      </MobileNav>
+    </Navbar>
   )
 }
 

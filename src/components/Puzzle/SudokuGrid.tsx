@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
@@ -17,7 +16,7 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChan
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
   return (
-    <div className="p-2 cursor-default">
+    <div className="cursor-default">
       <div className="relative">
         <div className="w-fit relative border">
           {grid.map((row, rowIndex) => (
@@ -25,8 +24,8 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChan
                 className="flex w-fit">
               {row.map((cell, cellIndex) => (
                 <div key={cellIndex}
-                     className={classNames(`flex justify-center items-center border-solid border-neutral-500 border`, {
-                       'bg-neutral-600': isSelected(rowIndex, cellIndex, selectedCell),
+                     className={classNames(`flex justify-center items-center border-solid border-gray-600 border`, {
+                       'bg-gray-700': isSelected(rowIndex, cellIndex, selectedCell),
                      })}
                      style={{
                        width: CELL_SIZE + 'px',
@@ -39,7 +38,7 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChan
                       {fixedNumbersGrid[rowIndex][cellIndex]}
                     </div>
                   ) : (
-                    <div className="text-neutral-300 text-4xl font-medium">
+                    <div className="text-gray-300 text-4xl font-medium">
                       {cell}
                     </div>
                   )}

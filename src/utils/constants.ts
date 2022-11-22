@@ -1,4 +1,4 @@
-import { SudokuVariant } from 'src/types/sudoku'
+import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 export const CELL_SIZE = 56
 
@@ -18,4 +18,12 @@ export const SudokuVariantDisplay = {
   [SudokuVariant.TopBot]: 'Top-Bot',
   [SudokuVariant.Diagonal]: 'Diagonal',
   [SudokuVariant.Mixed]: 'Mixed',
+}
+
+export const SudokuDifficultyDisplay = {
+  [SudokuDifficulty.Easy4x4]: 'Easy 4x4',
+  [SudokuDifficulty.Easy6x6]: 'Easy 6x6',
+  [SudokuDifficulty.Easy9x9]: 'Easy 9x9',
+  [SudokuDifficulty.Medium9x9]: 'Medium 9x9',
+  [SudokuDifficulty.Hard9x9]: 'Hard 9x9',
 }

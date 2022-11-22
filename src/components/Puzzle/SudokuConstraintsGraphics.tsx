@@ -85,7 +85,7 @@ const ThermoGraphics = ({ thermo }: { thermo: Thermo }) => {
 
   // Note: mix-blend-difference for light mode
   return (
-    <g className="fill-neutral-200 stroke-gray-200 mix-blend-hard-light" style={{ opacity: 0.4 }}>
+    <g className="fill-gray-200 stroke-gray-200 mix-blend-luminosity" style={{ opacity: 0.4 }}>
       <circle cx={bulb.col * CELL_SIZE + 1 + half}
               cy={bulb.row * CELL_SIZE + 1 + half}
               r={half - 7} />
@@ -132,7 +132,7 @@ const NotesGraphics = ({ notes }: { notes: number[][][] }) => {
   })
 
   return (
-    <g className="fill-sky-200" style={{ strokeWidth: 0.1, stroke: 'none', fontSize: NOTES_FONT_SIZE }}>
+    <g className="fill-blue-200" style={{ strokeWidth: 0.1, stroke: 'none', fontSize: NOTES_FONT_SIZE }}>
       {noteElements}
     </g>
   )

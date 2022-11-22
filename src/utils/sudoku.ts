@@ -1,4 +1,4 @@
-import { FixedNumber } from 'src/types/sudoku'
+import { FixedNumber, Grid } from 'src/types/sudoku'
 
 export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => {
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
@@ -7,3 +7,7 @@ export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNum
   }
   return grid
 }
+
+export const gridIsFull = (grid: Grid | null) => (
+  grid !== null && grid.every(row => row.every(cellValue => !!cellValue))
+)
