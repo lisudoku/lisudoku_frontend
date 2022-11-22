@@ -38,7 +38,7 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, onSelectedCellChan
                       {fixedNumbersGrid[rowIndex][cellIndex]}
                     </div>
                   ) : (
-                    <div className="text-gray-300 text-4xl font-medium">
+                    <div className="text-gray-400 text-4xl font-medium">
                       {cell}
                     </div>
                   )}
