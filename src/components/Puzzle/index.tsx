@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import useInterval from 'react-useinterval'
+import { useNavigate } from 'react-router-dom'
 import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
-import { CellPosition } from 'src/types/sudoku'
+import { CellPosition, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
@@ -12,12 +13,23 @@ import {
 import { gridIsFull } from 'src/utils/sudoku'
 import { checkSolved } from 'src/utils/wasm'
 import { requestPuzzleCheck } from 'src/utils/apiService'
+import { updateDifficulty } from 'src/reducers/userData'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const onVariantChange = useCallback((variant: SudokuVariant) => {
+    navigate(`/play/${variant}`)
+  }, [navigate])
+  const difficulty = useSelector(state => state.userData.difficulty)
+  const onDifficultyChange = useCallback((difficulty: SudokuDifficulty) => {
+    dispatch(updateDifficulty(difficulty))
+  }, [dispatch])
+
   const id = useSelector(state => state.puzzle.data!.publicId)
+  const variant = useSelector(state => state.puzzle.data!.variant)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
   const notes = useSelector(state => state.puzzle.notes)
@@ -27,21 +39,21 @@ const PuzzleComponent = () => {
   const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
   const notesActive = useSelector(state => state.puzzle.controls.notesActive)
 
-  const handleSelectedCellChange = (cell: CellPosition) => {
+  const handleSelectedCellChange = useCallback((cell: CellPosition) => {
     if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
       dispatch(changeSelectedCell(cell))
     }
-  }
-  const handleSelectedCellValueChange = (value: number | null) => {
+  }, [dispatch])
+  const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
     dispatch(changeSelectedCellNotes(null))
-  }
-  const handleSelectedCellNotesChange = (value: number | null) => {
+  }, [dispatch])
+  const handleSelectedCellNotesChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellNotes(value))
-  }
-  const handleNotesActiveToggle = () => {
+  }, [dispatch])
+  const handleNotesActiveToggle = useCallback(() => {
     dispatch(toggleNotesActive())
-  }
+  }, [dispatch])
 
   useEffect(() => {
     if (grid && gridIsFull(grid)) {
@@ -85,7 +97,12 @@ const PuzzleComponent = () => {
         />
       </div>
       <div className="w-full md:w-fit md:pl-5">
-        <SudokuMisc constraints={constraints} />
+        <SudokuMisc constraints={constraints}
+                    variant={variant}
+                    difficulty={difficulty}
+                    onVariantChange={onVariantChange}
+                    onDifficultyChange={onDifficultyChange}
+        />
       </div>
     </div>
   )

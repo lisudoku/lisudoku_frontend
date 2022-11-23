@@ -8,7 +8,7 @@ import { receivedPuzzle, requestedPuzzle } from './reducers/puzzle'
 
 const PlayPage = () => {
   const { variant } = useParams()
-  const difficulty = 'easy_4x4' as SudokuDifficulty
+  const difficulty = useSelector(state => state.userData.difficulty)
   const dispatch = useDispatch()
 
   const puzzle = useSelector(state => state.puzzle.data)
