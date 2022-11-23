@@ -56,7 +56,7 @@ const SudokuControls = ({
       </div>
       <div className="w-full flex flex-col gap-2">
         <div className={classNames(
-          'w-full rounded border border-gray-400 px-3 py-1 flex justify-center', {
+          'w-full rounded border border-gray-400 px-3 py-1 flex justify-center select-none', {
             'border-yellow-600': isSolvedLoading,
             'border-green-600': solved && !isSolvedLoading,
           }
