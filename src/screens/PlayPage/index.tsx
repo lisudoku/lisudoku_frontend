@@ -7,11 +7,12 @@ import { fetchRandomPuzzle } from 'src/utils/apiService'
 import Puzzle from 'src/components/Puzzle'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
+import { AxiosError } from 'axios'
 
 const PlayPage = () => {
   const { variant, difficulty } = useParams()
   const dispatch = useDispatch()
-  const [ error, setError ] = useState(false)
+  const [ errorCode, setErrorCode ] = useState<number>()
   const [ loading, setLoading ] = useState(false)
 
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
@@ -32,8 +33,8 @@ const PlayPage = () => {
       fetchRandomPuzzle(variant! as SudokuVariant, difficulty! as SudokuDifficulty).then((data) => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
-      }).catch(() => {
-        setError(true)
+      }).catch((e: AxiosError) => {
+        setErrorCode(e.response!.status)
       }).finally(() => {
         setLoading(false)
       })
@@ -42,7 +43,9 @@ const PlayPage = () => {
 
   return (
     <>
-      {error ? (
+      {errorCode === 404 ? (
+        'Empty category'
+      ) : errorCode ? (
         'Error'
       ) : (loading || !puzzleData) ? (
         'Loading...'
