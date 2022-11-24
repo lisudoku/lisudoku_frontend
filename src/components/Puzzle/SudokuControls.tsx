@@ -64,6 +64,7 @@ const SudokuControls = ({
           <Typography variant="h6">
             {solved && 'Solved in '}
             {formatTimer(solveTimer)}
+            {solved && ' 🎉'}
           </Typography>
         </div>
         <Button color={solved ? 'green' : 'gray'}>

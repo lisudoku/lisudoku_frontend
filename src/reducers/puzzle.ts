@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
+import { createSlice } from '@reduxjs/toolkit'
+import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid } from 'src/utils/sudoku'
 const jcc = require('json-case-convertor')
@@ -15,26 +16,24 @@ type ControlsState = {
 }
 
 type PuzzleState = {
-  isLoading: boolean,
   data: Puzzle | null,
   grid: Grid | null,
   notes: number[][][] | null,
   solveTimer: number,
-  isSolvedLoading: boolean,
   solved: boolean,
+  lastUpdate: string | null,
   controls: ControlsState,
 }
 
 export const puzzleSlice = createSlice({
   name: 'puzzle',
   initialState: {
-    isLoading: false,
     data: null,
     grid: null,
     notes: null,
     solveTimer: 0,
-    isSolvedLoading: false,
     solved: false,
+    lastUpdate: null,
     controls: {
       selectedCell: null,
       notesActive: false,
@@ -43,14 +42,17 @@ export const puzzleSlice = createSlice({
   } as PuzzleState,
   reducers: {
     requestedPuzzle(state) {
-      state.isLoading = true
+      state.grid = null
+      state.notes = null
+      state.data = null
+      state.solved = false
     },
     receivedPuzzle(state, action) {
       const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)
       state.data = puzzleData
-      state.isLoading = false
       state.solved = false
       state.solveTimer = 0
+      state.lastUpdate = formatISO(new Date())
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -76,6 +78,8 @@ export const puzzleSlice = createSlice({
         newGrid[row][col] = value
       }
       state.grid = newGrid
+
+      state.lastUpdate = formatISO(new Date())
     },
     changeSelectedCellNotes(state, action) {
       if (state.controls.selectedCell === null) {
@@ -102,6 +106,8 @@ export const puzzleSlice = createSlice({
       if (!_.isEqual(state.notes, newNotes)) {
         state.notes = newNotes
       }
+
+      state.lastUpdate = formatISO(new Date())
     },
     toggleNotesActive(state) {
       state.controls.notesActive = !state.controls.notesActive
@@ -109,12 +115,10 @@ export const puzzleSlice = createSlice({
     updateTimer(state) {
       state.solveTimer += 1
     },
-    requestSolved(state) {
-      state.isSolvedLoading = true
-    },
+    requestSolved() {},
     responseSolved(state, action) {
-      state.isSolvedLoading = false
       state.solved = action.payload
+      state.lastUpdate = formatISO(new Date())
     },
   }
 })

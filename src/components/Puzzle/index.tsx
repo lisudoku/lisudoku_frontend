@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useInterval from 'react-useinterval'
 import { useNavigate } from 'react-router-dom'
 import SudokuGrid from './SudokuGrid'
@@ -9,33 +9,33 @@ import { useDispatch, useSelector } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
   requestSolved, responseSolved, toggleNotesActive, updateTimer,
-} from 'src/screens/PlayPage/reducers/puzzle'
+} from 'src/reducers/puzzle'
 import { gridIsFull } from 'src/utils/sudoku'
 import { checkSolved } from 'src/utils/wasm'
 import { requestPuzzleCheck } from 'src/utils/apiService'
-import { updateDifficulty } from 'src/reducers/userData'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const onVariantChange = useCallback((variant: SudokuVariant) => {
-    navigate(`/play/${variant}`)
-  }, [navigate])
+  const [ isSolvedLoading, setIsSolvedLoading ] = useState(false)
+
+  const variant = useSelector(state => state.puzzle.data!.variant)
   const difficulty = useSelector(state => state.userData.difficulty)
+  const onVariantChange = useCallback((variant: SudokuVariant) => {
+    navigate(`/play/${variant}/${difficulty}`)
+  }, [navigate, difficulty])
   const onDifficultyChange = useCallback((difficulty: SudokuDifficulty) => {
-    dispatch(updateDifficulty(difficulty))
-  }, [dispatch])
+    navigate(`/play/${variant}/${difficulty}`)
+  }, [navigate, variant])
 
   const id = useSelector(state => state.puzzle.data!.publicId)
-  const variant = useSelector(state => state.puzzle.data!.variant)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
   const notes = useSelector(state => state.puzzle.notes)
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
-  const isSolvedLoading = useSelector(state => state.puzzle.isSolvedLoading)
   const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
   const notesActive = useSelector(state => state.puzzle.controls.notesActive)
 
@@ -56,15 +56,17 @@ const PuzzleComponent = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (grid && gridIsFull(grid)) {
+    if (!solved && grid && gridIsFull(grid)) {
       if (checkSolved(constraints, grid)) {
         dispatch(requestSolved())
+        setIsSolvedLoading(true)
         requestPuzzleCheck(id, grid).then(result => {
           dispatch(responseSolved(result.correct))
+          setIsSolvedLoading(false)
         })
       }
     }
-  }, [dispatch, id, constraints, grid])
+  }, [dispatch, id, constraints, grid, solved])
 
   useInterval(() => {
     if (!solved && !isSolvedLoading) {

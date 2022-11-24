@@ -18,11 +18,11 @@ export enum SudokuVariant {
 }
 
 export enum SudokuDifficulty {
-  Easy4x4 = 'easy_4x4',
-  Easy6x6 = 'easy_6x6',
-  Easy9x9 = 'easy_9x9',
-  Medium9x9 = 'medium_9x9',
-  Hard9x9 = 'hard_9x9',
+  Easy4x4 = 'easy4x4',
+  Easy6x6 = 'easy6x6',
+  Easy9x9 = 'easy9x9',
+  Medium9x9 = 'medium9x9',
+  Hard9x9 = 'hard9x9',
 }
 
 export type SudokuConstraints = {

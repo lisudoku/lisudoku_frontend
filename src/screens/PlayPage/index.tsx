@@ -1,29 +1,50 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'src/hooks'
+import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
+import { updateDifficulty } from 'src/reducers/userData'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import Puzzle from 'src/components/Puzzle'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import { receivedPuzzle, requestedPuzzle } from './reducers/puzzle'
+import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 
 const PlayPage = () => {
-  const { variant } = useParams()
-  const difficulty = useSelector(state => state.userData.difficulty)
+  const { variant, difficulty } = useParams()
   const dispatch = useDispatch()
+  const [ error, setError ] = useState(false)
+  const [ loading, setLoading ] = useState(false)
 
-  const puzzle = useSelector(state => state.puzzle.data)
-  const isLoading = useSelector(state => state.puzzle.isLoading)
+  const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
+  const solved = useSelector(state => state.puzzle.solved)
+  const puzzleData = useSelector(state => state.puzzle.data)
+  const previousVariant = puzzleData?.variant
+  const previousDifficulty = puzzleData?.difficulty
 
   useEffect(() => {
-    dispatch(requestedPuzzle())
-    fetchRandomPuzzle(variant! as SudokuVariant, difficulty).then(data => {
-      dispatch(receivedPuzzle(data))
-    })
-  }, [dispatch, variant, difficulty])
+    if (variant !== previousVariant ||
+        difficulty !== previousDifficulty ||
+        lastUpdate === null ||
+        differenceInMinutes(new Date(), parseISO(lastUpdate)) >= 10 ||
+        (solved && differenceInSeconds(new Date(), parseISO(lastUpdate)) >= 1)
+    ) {
+      dispatch(requestedPuzzle())
+      setLoading(true)
+      fetchRandomPuzzle(variant! as SudokuVariant, difficulty! as SudokuDifficulty).then((data) => {
+        dispatch(receivedPuzzle(data))
+        dispatch(updateDifficulty(data.difficulty))
+      }).catch(() => {
+        setError(true)
+      }).finally(() => {
+        setLoading(false)
+      })
+    }
+  }, [dispatch, variant, previousVariant, difficulty, previousDifficulty, lastUpdate, solved])
 
   return (
     <>
-      {isLoading || !puzzle ? (
+      {error ? (
+        'Error'
+      ) : (loading || !puzzleData) ? (
         'Loading...'
       ) : (
         <Puzzle />

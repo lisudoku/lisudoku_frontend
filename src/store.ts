@@ -6,20 +6,20 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
-import puzzleReducer from './screens/PlayPage/reducers/puzzle'
+import puzzleReducer from './reducers/puzzle'
 import userData from './reducers/userData'
 import { combineReducers } from 'redux'
 
 const reducers = combineReducers({
   puzzle: puzzleReducer,
-  userData: userData,
+  userData,
 })
 
 const persistConfig = {
   key: 'root',
   storage,
   version: 1,
-  whitelist: ['userData'],
+  whitelist: [ 'userData', 'puzzle' ],
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)

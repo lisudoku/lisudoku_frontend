@@ -26,7 +26,7 @@ const App = () => {
                 <Route path="/" element={<Layout />}>
                   <Route path="/" element={<EnsureLogin />}>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/play/:variant" element={<PlayPage />} />
+                    <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
                   </Route>
                   <Route path="login" element={<LoginPage />} />
                   <Route path="logout" element={<LogoutPage />} />
