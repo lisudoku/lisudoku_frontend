@@ -8,7 +8,7 @@ import { CellPosition, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
-  requestSolved, responseSolved, toggleNotesActive, updateTimer,
+  requestSolved, resetPuzzle, responseSolved, toggleNotesActive, updateTimer,
 } from 'src/reducers/puzzle'
 import { gridIsFull } from 'src/utils/sudoku'
 import { checkSolved } from 'src/utils/wasm'
@@ -54,6 +54,14 @@ const PuzzleComponent = () => {
   const handleNotesActiveToggle = useCallback(() => {
     dispatch(toggleNotesActive())
   }, [dispatch])
+  const handleNewPuzzleClick = useCallback(() => {
+    if (solved ||
+        solveTimer < 15 ||
+        window.confirm('Are you sure you want to abort the current puzzle?')
+    ) {
+      dispatch(resetPuzzle())
+    }
+  }, [dispatch, solved, solveTimer])
 
   useEffect(() => {
     if (!solved && grid && gridIsFull(grid)) {
@@ -96,6 +104,7 @@ const PuzzleComponent = () => {
                         onSelectedCellNotesChange={handleSelectedCellNotesChange}
                         onSelectedCellChange={handleSelectedCellChange}
                         onNotesActiveToggle={handleNotesActiveToggle}
+                        onNewPuzzleClick={handleNewPuzzleClick}
         />
       </div>
       <div className="w-full md:w-fit md:pl-5">

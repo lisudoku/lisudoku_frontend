@@ -120,12 +120,17 @@ export const puzzleSlice = createSlice({
       state.solved = action.payload
       state.lastUpdate = formatISO(new Date())
     },
+    resetPuzzle(state) {
+      // This will trigger refetching the puzzle
+      state.lastUpdate = null
+    }
   }
 })
 
 export const {
   requestedPuzzle, receivedPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
+  resetPuzzle,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer

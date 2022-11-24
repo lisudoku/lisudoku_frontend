@@ -10,7 +10,8 @@ import { formatTimer } from 'src/utils/sudoku'
 
 const SudokuControls = ({
   constraints, selectedCell, notesActive, solveTimer, solved, isSolvedLoading,
-  onSelectedCellValueChange, onSelectedCellNotesChange, onSelectedCellChange, onNotesActiveToggle,
+  onSelectedCellValueChange, onSelectedCellNotesChange, onSelectedCellChange,
+  onNotesActiveToggle, onNewPuzzleClick,
 }: SudokuControlsProps) => {
   const { gridSize, fixedNumbers } = constraints
 
@@ -67,7 +68,7 @@ const SudokuControls = ({
             {solved && ' 🎉'}
           </Typography>
         </div>
-        <Button color={solved ? 'green' : 'gray'}>
+        <Button color={solved ? 'green' : 'gray'} onClick={onNewPuzzleClick}>
           New puzzle
         </Button>
       </div>
@@ -86,6 +87,7 @@ type SudokuControlsProps = {
   onSelectedCellNotesChange: Function,
   onSelectedCellChange: Function,
   onNotesActiveToggle: Function,
+  onNewPuzzleClick: Function,
 }
 
 export default SudokuControls
