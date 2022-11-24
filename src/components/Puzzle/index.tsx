@@ -43,7 +43,7 @@ const PuzzleComponent = () => {
     if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
       dispatch(changeSelectedCell(cell))
     }
-  }, [dispatch])
+  }, [dispatch, selectedCell])
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
     dispatch(changeSelectedCellNotes(null))
@@ -64,7 +64,7 @@ const PuzzleComponent = () => {
         })
       }
     }
-  }, [dispatch, constraints, grid])
+  }, [dispatch, id, constraints, grid])
 
   useInterval(() => {
     if (!solved && !isSolvedLoading) {

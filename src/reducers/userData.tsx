@@ -1,6 +1,5 @@
-import _ from 'lodash'
 import { createSlice } from '@reduxjs/toolkit'
-import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { SudokuDifficulty } from 'src/types/sudoku'
 
 type UserDataState = {
   username: string | null,
