@@ -8,7 +8,7 @@ import { CellPosition, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
-  requestSolved, resetPuzzle, responseSolved, toggleNotesActive, updateTimer,
+  requestSolved, fetchNewPuzzle, responseSolved, toggleNotesActive, updateTimer, resetPuzzle, undoAction, redoAction,
 } from 'src/reducers/puzzle'
 import { gridIsFull } from 'src/utils/sudoku'
 import { checkSolved } from 'src/utils/wasm'
@@ -38,6 +38,8 @@ const PuzzleComponent = () => {
   const solved = useSelector(state => state.puzzle.solved)
   const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
   const notesActive = useSelector(state => state.puzzle.controls.notesActive)
+  const undoActive = useSelector(state => state.puzzle.controls.actionIndex >= 0)
+  const redoActive = useSelector(state => state.puzzle.controls.actionIndex + 1 < state.puzzle.controls.actions.length)
 
   const handleSelectedCellChange = useCallback((cell: CellPosition) => {
     if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
@@ -46,22 +48,34 @@ const PuzzleComponent = () => {
   }, [dispatch, selectedCell])
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
-    dispatch(changeSelectedCellNotes(null))
   }, [dispatch])
-  const handleSelectedCellNotesChange = useCallback((value: number | null) => {
+  const handleSelectedCellNotesChange = useCallback((value: number) => {
     dispatch(changeSelectedCellNotes(value))
   }, [dispatch])
   const handleNotesActiveToggle = useCallback(() => {
     dispatch(toggleNotesActive())
   }, [dispatch])
-  const handleNewPuzzleClick = useCallback(() => {
+
+  const handleNewPuzzle = useCallback(() => {
     if (solved ||
         solveTimer < 15 ||
         window.confirm('Are you sure you want to abort the current puzzle?')
     ) {
-      dispatch(resetPuzzle())
+      dispatch(fetchNewPuzzle())
     }
   }, [dispatch, solved, solveTimer])
+
+  const handleReset = useCallback(() => {
+    dispatch(resetPuzzle())
+  }, [dispatch])
+
+  const handleUndo = useCallback(() => {
+    dispatch(undoAction())
+  }, [dispatch])
+
+  const handleRedo = useCallback(() => {
+    dispatch(redoAction())
+  }, [dispatch])
 
   useEffect(() => {
     if (!solved && grid && gridIsFull(grid)) {
@@ -100,11 +114,16 @@ const PuzzleComponent = () => {
                         solveTimer={solveTimer}
                         solved={solved}
                         isSolvedLoading={isSolvedLoading}
+                        undoActive={undoActive}
+                        redoActive={redoActive}
                         onSelectedCellValueChange={handleSelectedCellValueChange}
                         onSelectedCellNotesChange={handleSelectedCellNotesChange}
                         onSelectedCellChange={handleSelectedCellChange}
                         onNotesActiveToggle={handleNotesActiveToggle}
-                        onNewPuzzleClick={handleNewPuzzleClick}
+                        onNewPuzzle={handleNewPuzzle}
+                        onReset={handleReset}
+                        onUndo={handleUndo}
+                        onRedo={handleRedo}
         />
       </div>
       <div className="w-full md:w-fit md:pl-5">

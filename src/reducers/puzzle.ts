@@ -5,14 +5,25 @@ import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid } from 'src/utils/sudoku'
 const jcc = require('json-case-convertor')
 
-type Action = {
-  // TBD
+enum ActionType {
+  Digit = 'digit',
+  Note = 'note',
+  Delete = 'delete',
+}
+
+type UserAction = {
+  type: ActionType,
+  cell: CellPosition,
+  value: number,
+  previousDigit: number | null,
+  previousNotes: number[],
 }
 
 type ControlsState = {
   selectedCell: CellPosition | null,
   notesActive: boolean,
-  actions: Action[],
+  actions: UserAction[],
+  actionIndex: number,
 }
 
 type PuzzleState = {
@@ -23,6 +34,22 @@ type PuzzleState = {
   solved: boolean,
   lastUpdate: string | null,
   controls: ControlsState,
+}
+
+const performAction = (state: PuzzleState, action: UserAction) => {
+  const cell = state.controls.selectedCell!
+  const { row, col } = cell
+
+  switch(action.type) {
+    case ActionType.Digit: state.grid![row][col] = action.value
+                           state.notes![row][col] = []
+                           break
+    case ActionType.Note: state.notes![row][col] = _.xor(state.notes![row][col], [action.value])
+                          break
+    case ActionType.Delete: state.grid![row][col] = null
+                            state.notes![row][col] = []
+                            break
+  }
 }
 
 export const puzzleSlice = createSlice({
@@ -38,6 +65,7 @@ export const puzzleSlice = createSlice({
       selectedCell: null,
       notesActive: false,
       actions: [],
+      actionIndex: -1,
     },
   } as PuzzleState,
   reducers: {
@@ -53,6 +81,8 @@ export const puzzleSlice = createSlice({
       state.solved = false
       state.solveTimer = 0
       state.lastUpdate = formatISO(new Date())
+      state.controls.actions = []
+      state.controls.actionIndex = -1
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -69,15 +99,31 @@ export const puzzleSlice = createSlice({
       }
 
       const value = action.payload
-      const { row, col } = state.controls.selectedCell
-      const newGrid: Grid = [ ...state.grid! ]
-      newGrid[row] = [ ...newGrid[row] ]
-      if (newGrid[row][col] === value) {
-        newGrid[row][col] = null
+      const cell = state.controls.selectedCell
+      const { row, col } = cell
+
+      const previousDigit = state.grid![row][col]
+      let newValue
+      if (state.grid![row][col] === value) {
+        newValue = null
       } else {
-        newGrid[row][col] = value
+        newValue = value
       }
-      state.grid = newGrid
+
+      const previousNotes = state.notes![row][col]
+      const actionType = value === null ? ActionType.Delete : ActionType.Digit
+      state.controls.actions.splice(state.controls.actionIndex + 1)
+      const userAction: UserAction = {
+        type: actionType,
+        cell,
+        value: newValue,
+        previousDigit,
+        previousNotes,
+      }
+      state.controls.actions.push(userAction)
+      state.controls.actionIndex = state.controls.actions.length - 1
+
+      performAction(state, userAction)
 
       state.lastUpdate = formatISO(new Date())
     },
@@ -86,26 +132,28 @@ export const puzzleSlice = createSlice({
         return
       }
 
-      const value = action.payload
-      const { row, col } = state.controls.selectedCell
+      const value = action.payload!
+      const cell = state.controls.selectedCell
+      const { row, col } = cell
 
-      if (value !== null && state.grid![row][col] !== null) {
+      if (state.grid![row][col] !== null) {
         return
       }
 
-      const newNotes = [ ...state.notes! ]
-      newNotes[row] = [ ...newNotes[row] ]
-      if (value === null) {
-        newNotes[row][col] = []
-      } else if (newNotes[row][col].includes(value)) {
-        newNotes[row][col] = _.without(newNotes[row][col], value)
-      } else {
-        newNotes[row][col] = [ ...newNotes[row][col], value ]
+      const previousDigit = state.grid![row][col]
+      const previousNotes = [ ...state.notes![row][col] ]
+      state.controls.actions.splice(state.controls.actionIndex + 1)
+      const userAction: UserAction = {
+        type: ActionType.Note,
+        cell,
+        value,
+        previousDigit,
+        previousNotes,
       }
+      state.controls.actions.push(userAction)
+      state.controls.actionIndex = state.controls.actions.length - 1
 
-      if (!_.isEqual(state.notes, newNotes)) {
-        state.notes = newNotes
-      }
+      performAction(state, userAction)
 
       state.lastUpdate = formatISO(new Date())
     },
@@ -120,17 +168,40 @@ export const puzzleSlice = createSlice({
       state.solved = action.payload
       state.lastUpdate = formatISO(new Date())
     },
-    resetPuzzle(state) {
+    fetchNewPuzzle(state) {
       // This will trigger refetching the puzzle
       state.lastUpdate = null
-    }
+    },
+    resetPuzzle(state) {
+      const { gridSize, fixedNumbers } = state.data!.constraints
+      const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
+      state.grid = Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
+      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.controls.actions = []
+      state.controls.actionIndex = -1
+    },
+    undoAction(state) {
+      const actionIndex = state.controls.actionIndex
+      const userAction: UserAction = state.controls.actions[actionIndex]
+      state.controls.selectedCell = userAction.cell
+      state.grid![userAction.cell.row][userAction.cell.col] = userAction.previousDigit
+      state.notes![userAction.cell.row][userAction.cell.col] = userAction.previousNotes
+      state.controls.actionIndex--
+    },
+    redoAction(state) {
+      state.controls.actionIndex++
+      const actionIndex = state.controls.actionIndex
+      const userAction: UserAction = state.controls.actions[actionIndex]
+      state.controls.selectedCell = userAction.cell
+      performAction(state, userAction)
+    },
   }
 })
 
 export const {
   requestedPuzzle, receivedPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
-  resetPuzzle,
+  fetchNewPuzzle, resetPuzzle, undoAction, redoAction,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer

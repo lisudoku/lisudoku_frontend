@@ -51,7 +51,6 @@ export const useKeyboardHandler = (
 
       if (e.key === 'Backspace') {
         onSelectedCellValueChange(null)
-        onSelectedCellNotesChange(null)
         return
       }
 
