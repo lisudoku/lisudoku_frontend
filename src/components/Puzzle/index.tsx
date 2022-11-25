@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import useInterval from 'react-useinterval'
-import { useNavigate } from 'react-router-dom'
 import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
-import { CellPosition, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { CellPosition } from 'src/types/sudoku'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
@@ -16,19 +15,9 @@ import { requestPuzzleCheck } from 'src/utils/apiService'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
-  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const [ isSolvedLoading, setIsSolvedLoading ] = useState(false)
-
-  const variant = useSelector(state => state.puzzle.data!.variant)
-  const difficulty = useSelector(state => state.userData.difficulty)
-  const onVariantChange = useCallback((variant: SudokuVariant) => {
-    navigate(`/play/${variant}/${difficulty}`)
-  }, [navigate, difficulty])
-  const onDifficultyChange = useCallback((difficulty: SudokuDifficulty) => {
-    navigate(`/play/${variant}/${difficulty}`)
-  }, [navigate, variant])
 
   const id = useSelector(state => state.puzzle.data!.publicId)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
@@ -127,12 +116,7 @@ const PuzzleComponent = () => {
         />
       </div>
       <div className="w-full md:w-fit md:pl-5">
-        <SudokuMisc constraints={constraints}
-                    variant={variant}
-                    difficulty={difficulty}
-                    onVariantChange={onVariantChange}
-                    onDifficultyChange={onDifficultyChange}
-        />
+        <SudokuMisc />
       </div>
     </div>
   )
