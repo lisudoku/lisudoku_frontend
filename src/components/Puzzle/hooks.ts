@@ -1,7 +1,12 @@
 import _ from 'lodash'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { CellPosition, FixedNumber } from 'src/types/sudoku'
 import { computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { useSelector, useDispatch } from 'src/hooks'
+import {
+  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
+  fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
+} from 'src/reducers/puzzle'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -11,15 +16,80 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[
   useMemo(() => computeFixedNumbersGrid(gridSize, fixedNumbers), [gridSize, fixedNumbers])
 )
 
-export const useKeyboardHandler = (
-  enabled: boolean, gridSize: number, fixedNumbers: FixedNumber[],
-  selectedCell: CellPosition | null, notesActive: boolean,
-  undoActive: boolean, redoActive: boolean,
-  onSelectedCellChange: Function, onNotesActiveToggle: Function,
-  onSelectedCellValueChange: Function, onSelectedCellNotesChange: Function,
-  onUndo: Function, onRedo: Function,
-) => {
+export const useControlCallbacks = (isSolvedLoading: boolean) => {
+  const dispatch = useDispatch()
+
+  const solveTimer = useSelector(state => state.puzzle.solveTimer)
+  const solved = useSelector(state => state.puzzle.solved)
+  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
+  const notesActive = useSelector(state => state.puzzle.controls.notesActive)
+  const undoActive = useSelector(state => state.puzzle.controls.actionIndex >= 0)
+  const redoActive = useSelector(state => (
+    state.puzzle.controls.actionIndex + 1 < state.puzzle.controls.actions.length
+  ))
+
+  const enabled = !solved && !isSolvedLoading
+
+  const handleSelectedCellChange = useCallback((cell: CellPosition) => {
+    if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
+      dispatch(changeSelectedCell(cell))
+    }
+  }, [dispatch, selectedCell])
+  const handleSelectedCellValueChange = useCallback((value: number | null) => {
+    dispatch(changeSelectedCellValue(value))
+  }, [dispatch])
+  const handleSelectedCellNotesChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellNotes(value))
+  }, [dispatch])
+  const handleNotesActiveToggle = useCallback(() => {
+    dispatch(toggleNotesActive())
+  }, [dispatch])
+  const handleReset = useCallback(() => {
+    dispatch(resetPuzzle())
+  }, [dispatch])
+  const handleUndo = useCallback(() => {
+    dispatch(undoAction())
+  }, [dispatch])
+  const handleRedo = useCallback(() => {
+    dispatch(redoAction())
+  }, [dispatch])
+  const handleNewPuzzle = useCallback(() => {
+    if (solved ||
+        solveTimer < 15 ||
+        window.confirm('Are you sure you want to abort the current puzzle?')
+    ) {
+      dispatch(fetchNewPuzzle())
+    }
+  }, [dispatch, solved, solveTimer])
+
+  return {
+    enabled,
+    notesActive,
+    undoActive,
+    redoActive,
+    onSelectedCellValueChange: handleSelectedCellValueChange,
+    onSelectedCellNotesChange: handleSelectedCellNotesChange,
+    onSelectedCellChange: handleSelectedCellChange,
+    onNotesActiveToggle: handleNotesActiveToggle,
+    onNewPuzzle: handleNewPuzzle,
+    onReset: handleReset,
+    onUndo: handleUndo,
+    onRedo: handleRedo,
+  }
+}
+
+export const useKeyboardHandler = (isSolvedLoading: boolean) => {
+  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
+
+  const { gridSize, fixedNumbers } = constraints
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
+
+  const {
+    enabled, notesActive, undoActive, redoActive,
+    onSelectedCellChange, onNotesActiveToggle, onUndo, onRedo,
+    onSelectedCellValueChange, onSelectedCellNotesChange,
+  } = useControlCallbacks(isSolvedLoading)
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -55,6 +125,7 @@ export const useKeyboardHandler = (
         if (undoActive) {
           onUndo()
         }
+        e.preventDefault()
         return
       }
 
@@ -62,6 +133,7 @@ export const useKeyboardHandler = (
         if (redoActive) {
           onRedo()
         }
+        e.preventDefault()
         return
       }
 
@@ -89,7 +161,8 @@ export const useKeyboardHandler = (
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    enabled, gridSize, fixedNumbersGrid, selectedCell, notesActive,onSelectedCellChange,
-    onNotesActiveToggle, onSelectedCellValueChange, onSelectedCellNotesChange,
+    enabled, gridSize, fixedNumbersGrid, selectedCell, notesActive, redoActive, undoActive,
+    onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange,
+    onSelectedCellNotesChange, onUndo, onRedo
   ])
 }

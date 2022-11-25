@@ -2,38 +2,25 @@ import _ from 'lodash'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRotateLeft, faArrowRotateRight, faEraser, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { Typography } from '@material-tailwind/react'
 import Button from '../Button'
 import IconButton from '../IconButton'
-import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
-import { useKeyboardHandler } from './hooks'
-import { formatTimer } from 'src/utils/sudoku'
+import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
+import { useSelector } from 'src/hooks'
+import SolveTimer from './SolveTimer'
 
-const SudokuControls = ({
-  constraints, selectedCell, notesActive, solveTimer, solved, isSolvedLoading,
-  undoActive, redoActive,
-  onSelectedCellValueChange, onSelectedCellNotesChange, onSelectedCellChange,
-  onNotesActiveToggle, onNewPuzzle, onReset, onUndo, onRedo,
-}: SudokuControlsProps) => {
-  const { gridSize, fixedNumbers } = constraints
+const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
+  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const solved = useSelector(state => state.puzzle.solved)
+  const gridSize = constraints.gridSize
 
-  const controlEnabled = !solved && !isSolvedLoading
-  useKeyboardHandler(
-    controlEnabled,
-    gridSize,
-    fixedNumbers,
-    selectedCell,
-    notesActive,
-    undoActive,
-    redoActive,
-    onSelectedCellChange,
-    onNotesActiveToggle,
-    onSelectedCellValueChange,
-    onSelectedCellNotesChange,
-    onUndo,
-    onRedo
-  )
+  const {
+    enabled: controlEnabled, notesActive, undoActive, redoActive,
+    onSelectedCellValueChange, onSelectedCellNotesChange,
+    onNotesActiveToggle, onNewPuzzle, onReset, onUndo, onRedo,
+  } = useControlCallbacks(isSolvedLoading)
+
+  useKeyboardHandler(isSolvedLoading)
 
   const handleDigitClick = useCallback((value: number) => {
     if (notesActive) {
@@ -94,18 +81,8 @@ const SudokuControls = ({
         </Button>
       </div>
       <div className="w-full flex flex-col gap-2">
-        <div className={classNames(
-          'w-full rounded border border-gray-400 px-3 py-1 flex justify-center select-none', {
-            'border-yellow-600': isSolvedLoading,
-            'border-green-600': solved && !isSolvedLoading,
-          }
-        )}>
-          <Typography variant="h6">
-            {solved && 'Solved in '}
-            {formatTimer(solveTimer)}
-            {solved && ' 🎉'}
-          </Typography>
-        </div>
+        <SolveTimer isSolvedLoading={isSolvedLoading}
+                    onIsSolvedLoadingChange={onIsSolvedLoadingChange} />
         <Button color={solved ? 'green' : 'gray'} onClick={onNewPuzzle}>
           New puzzle
         </Button>
@@ -115,22 +92,8 @@ const SudokuControls = ({
 }
 
 type SudokuControlsProps = {
-  constraints: SudokuConstraints,
-  selectedCell: CellPosition | null,
-  notesActive: boolean,
-  solveTimer: number,
-  solved: boolean,
   isSolvedLoading: boolean,
-  undoActive: boolean,
-  redoActive: boolean,
-  onSelectedCellValueChange: Function,
-  onSelectedCellNotesChange: Function,
-  onSelectedCellChange: Function,
-  onNotesActiveToggle: Function,
-  onNewPuzzle: Function,
-  onReset: Function,
-  onUndo: Function,
-  onRedo: Function,
+  onIsSolvedLoadingChange: Function,
 }
 
 export default SudokuControls
