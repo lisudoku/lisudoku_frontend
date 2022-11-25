@@ -15,6 +15,7 @@ const ShortcutsButton = () => (
       <div><b>Move selected cell</b> - Arrows</div>
       <div><b>Toggle Notes</b> - N</div>
       <div><b>Undo</b> - {CTRL_KEY_NAME} + Z</div>
+      <div><b>Redo</b> - {CTRL_KEY_NAME} + Y</div>
     </PopoverContent>
   </Popover>
 )

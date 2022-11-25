@@ -14,8 +14,10 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[
 export const useKeyboardHandler = (
   enabled: boolean, gridSize: number, fixedNumbers: FixedNumber[],
   selectedCell: CellPosition | null, notesActive: boolean,
+  undoActive: boolean, redoActive: boolean,
   onSelectedCellChange: Function, onNotesActiveToggle: Function,
-  onSelectedCellValueChange: Function, onSelectedCellNotesChange: Function
+  onSelectedCellValueChange: Function, onSelectedCellNotesChange: Function,
+  onUndo: Function, onRedo: Function,
 ) => {
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
@@ -46,6 +48,20 @@ export const useKeyboardHandler = (
       }
 
       if (!enabled || selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
+        return
+      }
+
+      if (e.key === 'z' && (e.metaKey || e.ctrlKey)) {
+        if (undoActive) {
+          onUndo()
+        }
+        return
+      }
+
+      if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
+        if (redoActive) {
+          onRedo()
+        }
         return
       }
 

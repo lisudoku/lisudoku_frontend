@@ -25,10 +25,14 @@ const SudokuControls = ({
     fixedNumbers,
     selectedCell,
     notesActive,
+    undoActive,
+    redoActive,
     onSelectedCellChange,
     onNotesActiveToggle,
     onSelectedCellValueChange,
-    onSelectedCellNotesChange
+    onSelectedCellNotesChange,
+    onUndo,
+    onRedo
   )
 
   const handleDigitClick = useCallback((value: number) => {
