@@ -1,16 +1,17 @@
+import { useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'src/hooks'
+import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import SudokuRules from './SudokuRules'
 import ShortcutsButton from './ShortcutsButton'
 import PermalinkButton from './PermalinkButton'
 import VariantSelect from './VariantSelect'
 import DifficultySelect from './DifficultySelect'
-import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import { useSelector } from 'src/hooks'
-import { useNavigate } from 'react-router-dom'
-import { useCallback } from 'react'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
 
+  const publicId = useSelector(state => state.puzzle.data!.publicId)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const variant = useSelector(state => state.puzzle.data!.variant)
   const difficulty = useSelector(state => state.userData.difficulty)
@@ -33,7 +34,7 @@ const SudokuMisc = () => {
       <div className="mt-2 ml-6 w-fit">
         <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
       </div>
-      <PermalinkButton />
+      <PermalinkButton publicId={publicId} />
       <ShortcutsButton />
     </div>
   )
