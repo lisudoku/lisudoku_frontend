@@ -5,7 +5,29 @@ import { userToken, userName } from 'src/utils/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
 
-const AppNavbar = () => {
+const ITEMS = [
+  {
+    text: 'Learn',
+    url: '/learn',
+  },
+  {
+    text: 'Live',
+    url: '/tv',
+  },
+]
+
+const ADMIN_ITEMS = [
+  {
+    text: 'Play',
+    url: '/',
+  },
+  {
+    text: 'Counts',
+    url: '/admin/group_counts',
+  },
+]
+
+const AppNavbar = ({ admin }: { admin: boolean }) => {
   const [openNav, setOpenNav] = useState(false)
 
   useEffect(() => {
@@ -14,24 +36,21 @@ const AppNavbar = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const items = admin ? ADMIN_ITEMS : ITEMS
+
   const navList = (
     <ul className="flex flex-col gap-2 mb-2 mt-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-end lg:gap-6">
-      <Typography
-        as="li"
-        variant="small"
-        color="white"
-        className="font-normal"
-      >
-        <Link to="/learn">Learn</Link>
-      </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="white"
-        className="font-normal"
-      >
-        <Link to="/tv">Live</Link>
-      </Typography>
+      {items.map(({ text, url }) => (
+        <Typography
+          as="li"
+          variant="small"
+          color="white"
+          className="font-normal"
+          key={url}
+        >
+          <Link to={url}>{text}</Link>
+        </Typography>
+      ))}
     </ul>
   )
 
@@ -55,7 +74,7 @@ const AppNavbar = () => {
           variant="h3"
           className="mr-6 cursor-pointer font-normal lowercase relative"
         >
-          <Link to="/">lisudoku</Link>
+          <Link to={admin ? '/admin' : '/'}>lisudoku</Link>
         </Typography>
         <div className="hidden lg:block grow">{navList}</div>
         <div className="hidden lg:inline-block">{rightButtons}</div>

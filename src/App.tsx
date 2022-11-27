@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import HomePage from './screens/HomePage'
@@ -13,6 +14,8 @@ import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 
+const AdminPage = lazy(() => import('./screens/AdminPage'))
+
 const theme = {}
 
 const App = () => {
@@ -22,19 +25,24 @@ const App = () => {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Layout />}>
-                  <Route path="/" element={<EnsureLogin />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                  <Route path="/" element={<Layout />}>
+                    <Route path="/" element={<EnsureLogin />}>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
+                    </Route>
+                    <Route path="login" element={<LoginPage />} />
+                    <Route path="logout" element={<LogoutPage />} />
+                    <Route path="register" element={<RegisterPage />} />
+                    <Route path="p/:id" element={<PuzzlePage />} />
+                    <Route path="*" element={<PageNotFound />} />
                   </Route>
-                  <Route path="login" element={<LoginPage />} />
-                  <Route path="logout" element={<LogoutPage />} />
-                  <Route path="register" element={<RegisterPage />} />
-                  <Route path="*" element={<PageNotFound />} />
-                  <Route path="p/:id" element={<PuzzlePage />} />
-                </Route>
-              </Routes>
+                  <Route path="/" element={<Layout admin={true} />}>
+                    <Route path="admin/*" element={<AdminPage />} />
+                  </Route>
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           </PersistGate>
         </Provider>

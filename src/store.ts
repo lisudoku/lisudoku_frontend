@@ -8,11 +8,13 @@ import storage from 'redux-persist/lib/storage'
 
 import puzzleReducer from './reducers/puzzle'
 import userData from './reducers/userData'
+import admin from './reducers/admin'
 import { combineReducers } from 'redux'
 
 const reducers = combineReducers({
   puzzle: puzzleReducer,
   userData,
+  admin,
 })
 
 const persistConfig = {

@@ -3,6 +3,8 @@ import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
 
+export * from './admin'
+
 // axios.interceptors.response.use(
 //   response => {
 //     return response
