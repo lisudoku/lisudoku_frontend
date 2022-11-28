@@ -25,6 +25,10 @@ const ADMIN_ITEMS = [
     text: 'Counts',
     url: '/admin/group_counts',
   },
+  {
+    text: 'Build',
+    url: '/admin/build',
+  },
 ]
 
 const AppNavbar = ({ admin }: { admin: boolean }) => {
