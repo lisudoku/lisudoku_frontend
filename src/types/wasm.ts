@@ -1,8 +1,14 @@
 import { CellPosition, Grid } from './sudoku'
 
-export type SudokuSolveResult = {
+export type SudokuBruteSolveResult = {
   solution_count: number
-  solution: Grid
+  solution?: Grid
+}
+
+export type SudokuIntuitiveSolveResult = {
+  full_solution: boolean
+  no_solution: boolean
+  solution?: Grid
   steps?: SolutionStep[]
 }
 

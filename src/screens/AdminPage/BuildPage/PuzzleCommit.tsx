@@ -6,10 +6,10 @@ import Textarea from 'src/components/Textarea'
 import { useDispatch, useSelector } from 'src/hooks'
 import { wasm_intuitive_solve, wasm_brute_solve } from 'lisudoku-solver'
 import {
-  changeDifficulty, errorAddPuzzle, requestAddPuzzle, requestSolution, responseAddPuzzle,
+  changeDifficulty, errorAddPuzzle, errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseBruteSolution, responseIntuitiveSolution,
 } from 'src/reducers/admin'
-import { SolutionStep, StepRule, SudokuSolveResult } from 'src/types/wasm'
+import { SolutionStep, StepRule, SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 import { Puzzle, SudokuConstraints, SudokuDifficulty } from 'src/types/sudoku'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import VariantSelect from 'src/components/Puzzle/VariantSelect'
@@ -27,7 +27,7 @@ const groupStepsByType = (steps: SolutionStep[]) => {
   return _.sortBy(_.toPairs(groups), [0, 1], ['desc', 'desc'])
 }
 
-const computeBruteSolutionDescription = (solution: SudokuSolveResult | null) => {
+const computeBruteSolutionDescription = (solution: SudokuBruteSolveResult | null) => {
   if (solution === null) {
     return ''
   }
@@ -75,12 +75,18 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
   return 'too hard!!!'
 }
 
-const computeIntuitiveSolutionDescription = (solution: SudokuSolveResult | null, constraints: SudokuConstraints) => {
+const computeIntuitiveSolutionDescription = (solution: SudokuIntuitiveSolveResult | null, constraints: SudokuConstraints) => {
   let text = ''
 
   if (solution !== null) {
-    text += `Solution count: ${solution.solution_count}\n`
-    if (solution.solution_count > 0) {
+    if (solution.no_solution) {
+      text += "No solutions 🙁\n"
+    } else if (solution.full_solution) {
+      text += "Found solution 🎉\n"
+    } else {
+      text += "There might be a solution... 😢\n"
+    }
+    if (solution.full_solution) {
       text += `Steps: ${solution.steps!.length}\n`
       text += groupStepsByType(solution.steps!).map(([ rule, count ]) => (
         `${rule} x ${count}`
@@ -88,7 +94,6 @@ const computeIntuitiveSolutionDescription = (solution: SudokuSolveResult | null,
 
       text += `Difficutly by rule rank - ${estimateDifficultyByRules(solution.steps!)}\n`
     }
-
   }
 
   const gridSize = constraints.gridSize
@@ -111,13 +116,19 @@ const PuzzleCommit = () => {
   const difficulty = useSelector(state => state.admin.difficulty)
   const puzzlePublicId = useSelector(state => state.admin.puzzlePublicId)
 
-  const addPuzzleEnabled = intuitiveSolution?.solution_count === 1 && bruteSolution?.solution_count === 1
+  const addPuzzleEnabled = intuitiveSolution?.full_solution && bruteSolution?.solution_count === 1
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
+    console.log('Request brute solve', constraints)
     const wasmConstraints = _.mapKeys(constraints, (_value, key) => _.snakeCase(key))
-    const solution = wasm_brute_solve(wasmConstraints)
-    dispatch(responseBruteSolution(solution))
+    try {
+      const solution = wasm_brute_solve(wasmConstraints)
+      dispatch(responseBruteSolution(solution))
+    } catch (e: any) {
+      dispatch(errorSolution())
+      throw e
+    }
   }, [dispatch, constraints])
 
   const handleIntuitiveSolveClick = useCallback(() => {
@@ -144,7 +155,7 @@ const PuzzleCommit = () => {
     }).catch(() => {
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, constraints, bruteSolution])
+  }, [dispatch, constraints, bruteSolution, variant, difficulty])
 
   return (
     <>

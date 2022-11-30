@@ -4,7 +4,7 @@ import {
   CellPosition, FixedNumber, SudokuConstraints,
   SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
-import { SudokuSolveResult } from 'src/types/wasm'
+import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 import { ensureDefaultRegions } from 'src/utils/sudoku'
 
 export enum ConstraintType {
@@ -17,8 +17,8 @@ type AdminState = {
   variant: SudokuVariant
   difficulty: SudokuDifficulty
   constraintType: ConstraintType
-  bruteSolution: SudokuSolveResult | null
-  intuitiveSolution: SudokuSolveResult | null
+  bruteSolution: SudokuBruteSolveResult | null
+  intuitiveSolution: SudokuIntuitiveSolveResult | null
   solverRunning: boolean
   puzzlePublicId: string | null
   puzzleAdding: boolean
@@ -63,11 +63,11 @@ const handleConstraintChange = (state: AdminState) => {
 }
 
 const detectVariant = (state: AdminState) => {
-  const usedConstraints = _.compact([ state.constraints?.thermos?.length ?? 0 > 0 ])
+  const usedConstraints = _.compact([ _.gt(state.constraints?.thermos?.length, 0) ])
   if (usedConstraints.length > 1) {
     return SudokuVariant.Mixed
   }
-  if (state.constraints?.thermos?.length ?? 0 > 0) {
+  if (_.gt(state.constraints?.thermos?.length, 0)) {
     return SudokuVariant.Thermo
   }
   return SudokuVariant.Classic
@@ -187,6 +187,9 @@ export const adminSlice = createSlice({
       state.intuitiveSolution = action.payload
       state.solverRunning = false
     },
+    errorSolution(state) {
+      state.solverRunning = false
+    },
     changeDifficulty(state, action) {
       state.difficulty = action.payload
     },
@@ -206,7 +209,7 @@ export const adminSlice = createSlice({
 export const {
   initPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue,
   addConstraint, deleteConstraint, requestSolution, responseBruteSolution,
-  responseIntuitiveSolution, changeDifficulty,
+  responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
 } = adminSlice.actions
 
