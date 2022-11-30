@@ -176,7 +176,7 @@ const PuzzleCommit = () => {
                 value={computeIntuitiveSolutionDescription(intuitiveSolution, constraints!)}
                 className="w-64 h-40" />
       <DifficultySelect value={difficulty} onChange={handleDifficultyChange} />
-      <VariantSelect value={variant} label="Variant (autodetected)" />
+      <VariantSelect value={variant} label="Variant (autodetected)" disabled />
       <Button onClick={handleAddPuzzleClick}
               disabled={!addPuzzleEnabled}
       >
