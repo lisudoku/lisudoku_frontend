@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { useCallback, useEffect, useMemo } from 'react'
-import { CellPosition, FixedNumber } from 'src/types/sudoku'
-import { computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { computeErrorGrid, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
@@ -14,6 +14,12 @@ const dirCol = [ 0, 0, -1, 1 ]
 
 export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => (
   useMemo(() => computeFixedNumbersGrid(gridSize, fixedNumbers), [gridSize, fixedNumbers])
+)
+
+export const useErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, fixedNumbersGrid: Grid, grid: Grid) => (
+  useMemo(() => (
+    computeErrorGrid(checkErrors, constraints, grid)
+  ), [checkErrors, constraints, grid])
 )
 
 export const useControlCallbacks = (isSolvedLoading: boolean) => {

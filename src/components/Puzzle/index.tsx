@@ -23,8 +23,9 @@ const PuzzleComponent = () => {
                     grid={grid!}
                     notes={notes!}
                     selectedCell={selectedCell}
+                    checkErrors
                     loading={isSolvedLoading}
-                    onSelectedCellChange={onSelectedCellChange}
+                    onCellClick={onSelectedCellChange}
         />
       </div>
       <div className="w-full md:w-fit md:pl-5">

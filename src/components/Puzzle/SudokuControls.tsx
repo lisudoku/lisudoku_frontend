@@ -35,8 +35,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
       <div className="flex flex-wrap w-64">
         {_.times(gridSize).map(value => (
           <div key={value} className={classNames('h-20 pb-1 px-0.5', { 'w-1/3': gridSize > 4, 'w-1/2': gridSize <= 4 })}>
-            <Button color="blue-gray"
-                    fullWidth
+            <Button fullWidth
                     className="h-full text-xl p-0"
                     disabled={!controlEnabled}
                     onClick={() => handleDigitClick(value + 1)}
@@ -48,7 +47,6 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
       </div>
       <div className="flex gap-1 justify-center">
         <Button color={notesActive ? 'green' : 'blue-gray'}
-                size="sm"
                 disabled={!controlEnabled}
                 onClick={onNotesActiveToggle}
         >
@@ -71,9 +69,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
         >
           <FontAwesomeIcon icon={faArrowRotateRight} />
         </IconButton>
-        <Button color="blue-gray"
-                size="sm"
-                disabled={!controlEnabled}
+        <Button disabled={!controlEnabled}
                 onClick={() => window.confirm('Are you sure you want to reset?') && onReset()}
         >
           <FontAwesomeIcon icon={faEraser} />

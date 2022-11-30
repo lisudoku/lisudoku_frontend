@@ -11,7 +11,7 @@ import DifficultySelect from './DifficultySelect'
 const SudokuMisc = () => {
   const navigate = useNavigate()
 
-  const publicId = useSelector(state => state.puzzle.data!.publicId)
+  const publicId = useSelector(state => state.puzzle.data!.publicId!)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const variant = useSelector(state => state.puzzle.data!.variant)
   const difficulty = useSelector(state => state.userData.difficulty)

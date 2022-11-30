@@ -11,7 +11,7 @@ import { Typography } from '@material-tailwind/react'
 const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProps) => {
   const dispatch = useDispatch()
 
-  const id = useSelector(state => state.puzzle.data!.publicId)
+  const id = useSelector(state => state.puzzle.data!.publicId!)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
   const solveTimer = useSelector(state => state.puzzle.solveTimer)

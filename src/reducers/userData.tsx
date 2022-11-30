@@ -2,9 +2,9 @@ import { createSlice } from '@reduxjs/toolkit'
 import { SudokuDifficulty } from 'src/types/sudoku'
 
 type UserDataState = {
-  username: string | null,
-  token: string | null,
-  difficulty: SudokuDifficulty,
+  username: string | null
+  token: string | null
+  difficulty: SudokuDifficulty
 }
 
 export const userDataSlice = createSlice({

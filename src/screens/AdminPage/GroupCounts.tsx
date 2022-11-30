@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react'
 import classNames from 'classnames'
-import { useDispatch, useSelector } from 'src/hooks'
-import { responseGroupCounts } from 'src/reducers/admin'
 import { fetchGroupCounts } from 'src/utils/apiService'
+import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+
+type GroupCount = {
+  variant: SudokuVariant
+  difficulty: SudokuDifficulty
+  count: number
+}
 
 const GroupCounts = () => {
   const [ loading, setLoading ] = useState(true)
-  const dispatch = useDispatch()
+  const [ groupCounts, setGroupCounts ] = useState<GroupCount[]>([])
 
   useEffect(() => {
+    setLoading(true)
     fetchGroupCounts().then(data => {
-      dispatch(responseGroupCounts(data.group_counts))
+      setGroupCounts(data.group_counts)
       setLoading(false)
     })
-  }, [dispatch])
-
-  const groupCounts = useSelector(state => state.admin.groupCounts)
+  }, [])
 
   return (
     <div>

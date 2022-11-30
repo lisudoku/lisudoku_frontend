@@ -3,13 +3,14 @@ import { Popover, PopoverHandler, PopoverContent } from '@material-tailwind/reac
 import Button from '../Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink } from '@fortawesome/free-solid-svg-icons'
+import { getPuzzleFullUrl } from 'src/utils/misc'
 
 const PermalinkButton = ({ publicId }: { publicId: string }) => {
   const [ open, setOpen ] = useState(false)
 
   const timerRef = useRef<NodeJS.Timeout>()
   const handleClick = useCallback(() => {
-    const puzzleUrl = `${window.location.origin}/p/${publicId}`
+    const puzzleUrl = getPuzzleFullUrl(publicId)
     navigator.clipboard.writeText(puzzleUrl)
     if (timerRef.current) {
       clearTimeout(timerRef.current)

@@ -2,7 +2,7 @@ import _ from 'lodash'
 import classNames from 'classnames'
 import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
 import ClipLoader from 'react-spinners/ClipLoader'
-import { useFixedNumbersGrid } from './hooks'
+import { useErrorGrid, useFixedNumbersGrid } from './hooks'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { CELL_SIZE } from 'src/utils/constants'
@@ -11,10 +11,13 @@ const isSelected = (rowIndex: number, cellIndex: number, selectedCell: CellPosit
   selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
 )
 
-const SudokuGrid = ({ constraints, grid, notes, selectedCell, loading, onSelectedCellChange }: SudokuGridProps) => {
+const SudokuGrid = ({
+  constraints, grid, notes, selectedCell, checkErrors, loading, onCellClick,
+}: SudokuGridProps) => {
   const { fixedNumbers, gridSize } = constraints
 
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
+  const errorGrid = useErrorGrid(checkErrors, constraints, fixedNumbersGrid, grid)
 
   return (
     <div className="cursor-default select-none">
@@ -32,17 +35,14 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, loading, onSelecte
                        width: CELL_SIZE + 'px',
                        height: CELL_SIZE + 'px',
                      }}
-                     onClick={() => onSelectedCellChange({ row: rowIndex, col: cellIndex })}
+                     onClick={() => onCellClick({ row: rowIndex, col: cellIndex })}
                 >
-                  {!_.isNil(fixedNumbersGrid[rowIndex][cellIndex]) ? (
-                    <div className="text-4xl font-medium">
-                      {fixedNumbersGrid[rowIndex][cellIndex]}
-                    </div>
-                  ) : (
-                    <div className="text-gray-400 text-4xl font-medium">
-                      {cell}
-                    </div>
-                  )}
+                  <div className={classNames('text-4xl font-medium', {
+                    'text-red-600': checkErrors && errorGrid[rowIndex][cellIndex],
+                    'text-gray-400': !_.isNil(fixedNumbersGrid[rowIndex][cellIndex]),
+                  })}>
+                    {fixedNumbersGrid[rowIndex][cellIndex] || cell}
+                  </div>
                 </div>
               ))}
             </div>
@@ -67,12 +67,13 @@ const SudokuGrid = ({ constraints, grid, notes, selectedCell, loading, onSelecte
 }
 
 type SudokuGridProps = {
-  constraints: SudokuConstraints,
-  grid: Grid,
-  notes: number[][][],
-  selectedCell: CellPosition | null,
-  loading: boolean,
-  onSelectedCellChange: Function,
+  constraints: SudokuConstraints
+  grid: Grid
+  notes: number[][][]
+  selectedCell: CellPosition | null
+  checkErrors: boolean
+  loading: boolean
+  onCellClick: Function
 }
 
 export default SudokuGrid

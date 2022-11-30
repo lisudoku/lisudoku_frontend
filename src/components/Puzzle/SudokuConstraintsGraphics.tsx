@@ -73,7 +73,7 @@ const ThermoGraphics = ({ thermo }: { thermo: Thermo }) => {
   const points = thermo.map((cell, index) => {
     let x: number = cell.col * CELL_SIZE + half + 1
     let y: number = cell.row * CELL_SIZE + half + 1
-    if (index === thermo.length - 1) {
+    if (index > 0 && index === thermo.length - 1) {
       const prevCell = thermo[index - 1]
       const dirX = Math.sign(cell.col - prevCell.col)
       const dirY = Math.sign(cell.row - prevCell.row)

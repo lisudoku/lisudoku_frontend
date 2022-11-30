@@ -1,83 +1,115 @@
 import { useCallback, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import _ from 'lodash'
+import classNames from 'classnames'
+import { useDispatch, useSelector } from 'src/hooks'
+import { useControlCallbacks, useKeyboardHandler } from './hooks'
+import {
+  addConstraint, changeConstraintType, ConstraintType, initPuzzle,
+} from 'src/reducers/admin'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
-import { useDispatch, useSelector } from 'src/hooks'
-import { changeSelectedCell, initPuzzle } from 'src/reducers/admin'
-import { CellPosition, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import Button from 'src/components/Button'
-import Textarea from 'src/components/Textarea'
 import Checkbox from 'src/components/Checkbox'
-import VariantSelect from 'src/components/Puzzle/VariantSelect'
-import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
-
+import { Typography } from '@material-tailwind/react'
+import PuzzleCommit from './PuzzleCommit'
 
 const PuzzleBuilder = () => {
-  const { gridSize } = useParams()
+  const { gridSize: paramGridSize } = useParams()
+  const gridSize = Number.parseInt(paramGridSize!)
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initPuzzle(gridSize))
   }, [dispatch, gridSize])
 
-  const constraints = useSelector(state => state.admin.puzzle?.constraints)
-  const grid = useSelector(state => state.admin.puzzle?.grid)
-  const notes = useSelector(state => state.admin.puzzle?.notes)
-  const selectedCell = useSelector(state => state.admin.puzzle?.selectedCell ?? null)
+  const constraints = useSelector(state => state.admin.constraints)
+  const selectedCell = useSelector(state => state.admin.selectedCell)
+  const constraintType = useSelector(state => state.admin.constraintType)
+  const currentThermo = useSelector(state => state.admin.currentThermo)
 
-  const handleSelectedCellChange = useCallback((cell: CellPosition) => {
-    if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
-      dispatch(changeSelectedCell(cell))
-    }
-  }, [dispatch, selectedCell])
+  // Not really used, but SudokuGrid needs them... there are better solutions
+  const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+  const notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+
+  const { onCellClick } = useControlCallbacks()
+  useKeyboardHandler()
+
+  const handleConstraintTypeChange = useCallback((id: string) => {
+    dispatch(changeConstraintType(id))
+  }, [dispatch])
+
+  const handleConstraintAdd = useCallback(() => {
+    dispatch(addConstraint())
+  }, [dispatch])
 
   if (!constraints) {
     return null
   }
 
+  let thermos = constraints?.thermos ?? []
+  if (currentThermo.length > 0) {
+    thermos = [ ...thermos, currentThermo ]
+  }
+  const constraintPreview = {
+    ...constraints,
+    thermos,
+  }
+
   return (
     <div className="flex gap-10">
-      <SudokuGrid constraints={constraints!}
-                  grid={grid!}
-                  notes={notes!}
+      <SudokuGrid constraints={constraintPreview}
+                  grid={grid}
+                  notes={notes}
                   selectedCell={selectedCell!}
+                  checkErrors
                   loading={false}
-                  onSelectedCellChange={handleSelectedCellChange}
+                  onCellClick={onCellClick}
       />
       <div className="flex flex-col gap-2">
         <div className="flex flex-col">
-          <Radio name="build-item" id="fixed-number" label="Given Digit" color="cyan" defaultChecked />
-          <Radio name="build-item" id="thermometer" label="Thermometer" color="cyan" />
-          <Radio name="build-item" id="regions" label="Regions" color="cyan" disabled labelProps={{ className: 'line-through' }} />
-          <Button color="blue-gray"
-                  size="sm"
-                  onClick={() => {}}
-          >
-            Add
-          </Button>
+          <Typography variant="h6">
+            Constraints
+          </Typography>
+          <Radio name="build-item"
+                 id={ConstraintType.FixedNumber}
+                 label="Given Digit"
+                 color="cyan"
+                 checked={constraintType === ConstraintType.FixedNumber}
+                 onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
+                 id={ConstraintType.Thermo}
+                 label="Thermometer"
+                 color="cyan"
+                 checked={constraintType === ConstraintType.Thermo}
+                 labelProps={{ className: classNames({
+                   'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize,
+                   'text-green-600': _.inRange(currentThermo.length, 2, gridSize + 1),
+                 })}}
+                 onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
+                 label="Regions"
+                 color="cyan"
+                 disabled
+                 labelProps={{ className: 'line-through' }} />
+          {constraintType === ConstraintType.Thermo && (
+            <Button onClick={handleConstraintAdd}>Add</Button>
+          )}
         </div>
+        <hr />
         <div className="flex flex-col">
-          <Checkbox id="primary-diagonal" label="Primary Diagonal" disabled labelProps={{ className: 'line-through' }} />
-          <Checkbox id="secondary-diagonal" label="Secondary Diagonal" disabled labelProps={{ className: 'line-through' }} />
+          <Checkbox id="primary-diagonal"
+                    label="Primary Diagonal"
+                    disabled
+                    labelProps={{ className: 'line-through' }} />
+          <Checkbox id="secondary-diagonal"
+                    label="Secondary Diagonal"
+                    disabled
+                    labelProps={{ className: 'line-through' }} />
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Button color="blue-gray"
-                size="sm"
-                onClick={() => {}}
-        >
-          Solve
-        </Button>
-        <Textarea disabled value="Solution count: " />
-        <DifficultySelect value={SudokuDifficulty.Easy9x9} onChange={() => {}} />
-        <VariantSelect value={SudokuVariant.Classic} onChange={() => {}} label="Variant (autodetected)" />
-        <Button color="blue-gray"
-                size="sm"
-                onClick={() => {}}
-                disabled
-        >
-          Add puzzle
-        </Button>
+        <PuzzleCommit />
       </div>
     </div>
   )

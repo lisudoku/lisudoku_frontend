@@ -12,28 +12,28 @@ enum ActionType {
 }
 
 type UserAction = {
-  type: ActionType,
-  cell: CellPosition,
-  value: number,
-  previousDigit: number | null,
-  previousNotes: number[],
+  type: ActionType
+  cell: CellPosition
+  value: number
+  previousDigit: number | null
+  previousNotes: number[]
 }
 
 type ControlsState = {
-  selectedCell: CellPosition | null,
-  notesActive: boolean,
-  actions: UserAction[],
-  actionIndex: number,
+  selectedCell: CellPosition | null
+  notesActive: boolean
+  actions: UserAction[]
+  actionIndex: number
 }
 
 type PuzzleState = {
-  data: Puzzle | null,
-  grid: Grid | null,
-  notes: number[][][] | null,
-  solveTimer: number,
-  solved: boolean,
-  lastUpdate: string | null,
-  controls: ControlsState,
+  data: Puzzle | null
+  grid: Grid | null
+  notes: number[][][] | null
+  solveTimer: number
+  solved: boolean
+  lastUpdate: string | null
+  controls: ControlsState
 }
 
 const performAction = (state: PuzzleState, action: UserAction) => {

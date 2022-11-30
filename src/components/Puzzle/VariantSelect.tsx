@@ -18,7 +18,7 @@ VariantSelect.defaultProps = {
 type VariantSelectProps = {
   value: SudokuVariant,
   label: string,
-  onChange: Function,
+  onChange?: Function,
 }
 
 export default VariantSelect

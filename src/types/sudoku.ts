@@ -42,8 +42,9 @@ export type Region = CellPosition[]
 export type Thermo = CellPosition[]
 
 export type Puzzle = {
-  publicId: string,
-  variant: SudokuVariant,
-  difficulty: SudokuDifficulty,
-  constraints: SudokuConstraints,
+  variant: SudokuVariant
+  difficulty: SudokuDifficulty
+  constraints: SudokuConstraints
+  publicId?: string
+  solution?: Grid
 }
