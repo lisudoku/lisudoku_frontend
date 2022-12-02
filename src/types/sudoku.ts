@@ -7,8 +7,8 @@ export type Grid = (number | null)[][]
 
 export enum SudokuVariant {
   Classic = 'classic',
-  Killer = 'killer',
   Thermo = 'thermo',
+  Killer = 'killer',
   Arrow = 'arrow',
   Irregular = 'irregular',
   Kropki = 'kropki',

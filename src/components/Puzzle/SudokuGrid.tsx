@@ -5,15 +5,16 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import { useErrorGrid, useFixedNumbersGrid } from './hooks'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
-import { CELL_SIZE } from 'src/utils/constants'
+import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
 
 const isSelected = (rowIndex: number, cellIndex: number, selectedCell: CellPosition | null) => (
   selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
 )
 
 const SudokuGrid = ({
-  constraints, grid, notes, selectedCell, checkErrors, loading, onCellClick,
+  constraints, grid, notes, selectedCell, checkErrors, loading, onCellClick, cellSize,
 }: SudokuGridProps) => {
+  const valuesFontSize = cellSize * 9 / 14
   const { fixedNumbers, gridSize } = constraints
 
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
@@ -32,12 +33,12 @@ const SudokuGrid = ({
                        'bg-gray-700': isSelected(rowIndex, cellIndex, selectedCell),
                      })}
                      style={{
-                       width: CELL_SIZE + 'px',
-                       height: CELL_SIZE + 'px',
+                       width: cellSize + 'px',
+                       height: cellSize + 'px',
                      }}
-                     onClick={() => onCellClick({ row: rowIndex, col: cellIndex })}
+                     onClick={() => onCellClick?.({ row: rowIndex, col: cellIndex })}
                 >
-                  <div className={classNames('text-4xl font-medium', {
+                  <div style={{ fontSize: valuesFontSize }} className={classNames('font-medium', {
                     'text-red-600': checkErrors && errorGrid[rowIndex][cellIndex],
                     'text-gray-400': !_.isNil(fixedNumbersGrid[rowIndex][cellIndex]),
                   })}>
@@ -48,7 +49,7 @@ const SudokuGrid = ({
             </div>
           ))}
         </div>
-        <SudokuConstraintsGraphics constraints={constraints} notes={notes} />
+        <SudokuConstraintsGraphics constraints={constraints} notes={notes} cellSize={cellSize} />
         <div className={classNames(
           'absolute inset-0 flex items-center justify-center', {
             'backdrop-blur-sm': loading,
@@ -66,6 +67,10 @@ const SudokuGrid = ({
   )
 }
 
+SudokuGrid.defaultProps = {
+  cellSize: DEFAULT_CELL_SIZE,
+}
+
 type SudokuGridProps = {
   constraints: SudokuConstraints
   grid: Grid
@@ -73,7 +78,8 @@ type SudokuGridProps = {
   selectedCell: CellPosition | null
   checkErrors: boolean
   loading: boolean
-  onCellClick: Function
+  onCellClick: Function | null
+  cellSize: number
 }
 
 export default SudokuGrid

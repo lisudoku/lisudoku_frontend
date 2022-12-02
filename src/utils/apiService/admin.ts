@@ -23,3 +23,11 @@ export const apiAddPuzzle = async (puzzle: Puzzle) => {
     // },
   }).then(response => response.data)
 }
+
+export const fetchAllPuzzles = async () => {
+  return axios.get('/puzzles', {
+    // headers: {
+    //   'Authorization': `Bearer ${userToken()}`,
+    // },
+  }).then(response => response.data)
+}

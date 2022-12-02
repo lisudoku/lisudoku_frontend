@@ -81,6 +81,7 @@ export const puzzleSlice = createSlice({
       state.solved = false
       state.solveTimer = 0
       state.lastUpdate = formatISO(new Date())
+      state.controls.selectedCell = null
       state.controls.actions = []
       state.controls.actionIndex = -1
 

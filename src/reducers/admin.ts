@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, SudokuConstraints,
+  CellPosition, FixedNumber, Puzzle, SudokuConstraints,
   SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 import { ensureDefaultRegions } from 'src/utils/sudoku'
+const jcc = require('json-case-convertor')
 
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
@@ -13,6 +14,7 @@ export enum ConstraintType {
 }
 
 type AdminState = {
+  puzzles: Puzzle[]
   constraints: SudokuConstraints | null
   variant: SudokuVariant
   difficulty: SudokuDifficulty
@@ -76,6 +78,7 @@ const detectVariant = (state: AdminState) => {
 export const adminSlice = createSlice({
   name: 'admin',
   initialState: {
+    puzzles: [],
     constraints: null,
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
@@ -203,6 +206,9 @@ export const adminSlice = createSlice({
     errorAddPuzzle(state) {
       state.puzzleAdding = false
     },
+    responsePuzzles(state, action) {
+      state.puzzles = action.payload.map((puzzle: Puzzle) => jcc.camelCaseKeys(puzzle))
+    }
   },
 })
 
@@ -210,7 +216,7 @@ export const {
   initPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue,
   addConstraint, deleteConstraint, requestSolution, responseBruteSolution,
   responseIntuitiveSolution, errorSolution, changeDifficulty,
-  requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
+  requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
 } = adminSlice.actions
 
 export default adminSlice.reducer

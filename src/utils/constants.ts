@@ -1,12 +1,7 @@
+import _ from 'lodash'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
-export const CELL_SIZE = 56
-
-export const NOTES_FONT_SIZE = 12
-export const NOTES_FONT_WIDTH = NOTES_FONT_SIZE * 2 / 3
-export const NOTES_PADDING = 4
-export const NOTES_SIZE = CELL_SIZE - NOTES_PADDING * 2
-export const NOTES_COLUMN_SIZE = NOTES_SIZE / 3
+export const DEFAULT_CELL_SIZE = 56
 
 export const SudokuVariantDisplay = {
   [SudokuVariant.Classic]: 'Classic',
@@ -20,6 +15,8 @@ export const SudokuVariantDisplay = {
   [SudokuVariant.Mixed]: 'Mixed',
 }
 
+export const SudokuVariantRank = _.chain(SudokuVariant).values().invert().mapValues(_.toInteger).value()
+
 export const SudokuDifficultyDisplay = {
   [SudokuDifficulty.Easy4x4]: 'Easy 4x4',
   [SudokuDifficulty.Easy6x6]: 'Easy 6x6',
@@ -27,3 +24,5 @@ export const SudokuDifficultyDisplay = {
   [SudokuDifficulty.Medium9x9]: 'Medium 9x9',
   [SudokuDifficulty.Hard9x9]: 'Hard 9x9',
 }
+
+export const SudokuDifficultyRank = _.chain(SudokuDifficulty).values().invert().mapValues(_.toInteger).value()

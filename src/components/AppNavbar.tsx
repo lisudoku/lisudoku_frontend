@@ -26,6 +26,10 @@ const ADMIN_ITEMS = [
     url: '/admin/group_counts',
   },
   {
+    text: 'Puzzles',
+    url: '/admin/puzzles',
+  },
+  {
     text: 'Build',
     url: '/admin/build',
   },
