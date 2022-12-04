@@ -52,9 +52,9 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
-  } else if (nonEmptyCells >= 25) {
+  } else if (nonEmptyCells >= 23) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Medium9x9]
-  } else if (nonEmptyCells >= 20) {
+  } else if (nonEmptyCells >= 18) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Hard9x9]
   } else {
     return 'too hard!!!'
