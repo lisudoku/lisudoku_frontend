@@ -63,7 +63,13 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
 
 const estimateDifficultyByRules = (steps: SolutionStep[]) => {
   const ruleRanks = _.keys(StepRule)
-  const maxRank = _.max(steps.map(step => ruleRanks.indexOf(step.rule)))
+  const maxRank = _.max(steps.map(step => {
+    const rank = ruleRanks.indexOf(step.rule)
+    if (rank === -1) {
+      console.error(`invalid rule ${step.rule}`)
+    }
+    return rank
+  }))
 
   if (maxRank! <= 2) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
