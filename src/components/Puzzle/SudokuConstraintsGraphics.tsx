@@ -119,7 +119,7 @@ const NotesGraphics = ({ notes, cellSize }: { notes: number[][][], cellSize: num
   const notesFontSize = cellSize * 3 / 14
   const notesPadding = cellSize / 14
   const notesFontWidth = notesFontSize * 2 / 3
-  const notesSize = cellSize - notesPadding / 3
+  const notesSize = cellSize - notesPadding * 2
   const notesColumnSize = notesSize / 3
 
   const noteElements: ReactElement[] = []
