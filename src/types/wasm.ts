@@ -21,11 +21,15 @@ export type SolutionStep = {
 }
 
 export enum StepRule {
+  // Easy
   NakedSingle = 'NakedSingle',
   HiddenSingle = 'HiddenSingle',
   Thermo = 'Thermo',
+  // Medium
   LockedCandidates = 'LockedCandidates',
   NakedPairs = 'NakedPairs',
+  // Hard
+  NakedTriples = 'NakedTriples',
   XWing = 'XWing',
   YWing = 'YWing',
   Swordfish = 'Swordfish',
