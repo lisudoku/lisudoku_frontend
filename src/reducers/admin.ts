@@ -203,6 +203,7 @@ export const adminSlice = createSlice({
     },
     requestAddPuzzle(state) {
       state.puzzleAdding = true
+      state.puzzlePublicId = null
     },
     responseAddPuzzle(state, action) {
       state.puzzleAdding = false

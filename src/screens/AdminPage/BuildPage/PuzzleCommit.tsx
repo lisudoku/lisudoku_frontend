@@ -115,6 +115,7 @@ const PuzzleCommit = () => {
   const variant = useSelector(state => state.admin.variant)
   const difficulty = useSelector(state => state.admin.difficulty)
   const puzzlePublicId = useSelector(state => state.admin.puzzlePublicId)
+  const puzzleAdding = useSelector(state => state.admin.puzzleAdding)
 
   const addPuzzleEnabled = intuitiveSolution?.full_solution && bruteSolution?.solution_count === 1
 
@@ -178,7 +179,7 @@ const PuzzleCommit = () => {
       <DifficultySelect value={difficulty} onChange={handleDifficultyChange} />
       <VariantSelect value={variant} label="Variant (autodetected)" disabled />
       <Button onClick={handleAddPuzzleClick}
-              disabled={!addPuzzleEnabled}
+              disabled={!addPuzzleEnabled || puzzleAdding}
       >
         Add puzzle
       </Button>
