@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition } from 'src/types/sudoku'
 import {
-  changeSelectedCell, changeSelectedCellValue, ConstraintType, deleteConstraint,
+  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
 } from 'src/reducers/admin'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
@@ -13,7 +13,6 @@ const dirCol = [ 0, 0, -1, 1 ]
 export const useControlCallbacks = () => {
   const dispatch = useDispatch()
 
-  const selectedCell = useSelector(state => state.admin.selectedCell)
   // const undoActive = useSelector(state => state.admin.actionIndex >= 0)
   // const redoActive = useSelector(state => (
   //   state.admin.actionIndex + 1 < state.admin.actions.length
@@ -21,13 +20,19 @@ export const useControlCallbacks = () => {
 
   const handleCellClick = useCallback((cell: CellPosition) => {
     dispatch(changeSelectedCell(cell))
-  }, [dispatch, selectedCell])
+  }, [dispatch])
 
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
   }, [dispatch])
   const handleDelete = useCallback(() => {
     dispatch(deleteConstraint())
+  }, [dispatch])
+  const handleNotesActiveToggle = useCallback(() => {
+    dispatch(toggleNotesActive())
+  }, [dispatch])
+  const handleSelectedCellNotesChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellNotes(value))
   }, [dispatch])
   // const handleUndo = useCallback(() => {
   //   dispatch(undoAction())
@@ -38,6 +43,8 @@ export const useControlCallbacks = () => {
 
   return {
     onSelectedCellValueChange: handleSelectedCellValueChange,
+    onNotesActiveToggle: handleNotesActiveToggle,
+    onSelectedCellNotesChange: handleSelectedCellNotesChange,
     onCellClick: handleCellClick,
     onDelete: handleDelete,
     // undoActive,
@@ -51,12 +58,13 @@ export const useKeyboardHandler = () => {
   const constraints = useSelector(state => state.admin.constraints)
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
+  const notesActive = useSelector(state => state.admin.notesActive)
 
   const gridSize = constraints?.gridSize ?? 9
 
   const {
     onCellClick, onDelete,
-    onSelectedCellValueChange,
+    onSelectedCellValueChange, onNotesActiveToggle, onSelectedCellNotesChange,
     // undoActive, redoActive, onUndo, onRedo,
   } = useControlCallbacks()
 
@@ -82,6 +90,11 @@ export const useKeyboardHandler = () => {
       }
 
       if (selectedCell === null) {
+        return
+      }
+
+      if (e.key === ' ') {
+        onNotesActiveToggle()
         return
       }
 
@@ -116,7 +129,9 @@ export const useKeyboardHandler = () => {
         return
       }
 
-      if (constraintType === ConstraintType.FixedNumber) {
+      if (notesActive) {
+        onSelectedCellNotesChange(value)
+      } else if (constraintType === ConstraintType.FixedNumber) {
         onSelectedCellValueChange(value)
       }
     }
@@ -124,8 +139,9 @@ export const useKeyboardHandler = () => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    gridSize, selectedCell, constraintType,
-    onCellClick, onSelectedCellValueChange,
+    gridSize, selectedCell, constraintType, notesActive,
+    onCellClick, onSelectedCellValueChange, onDelete,
+    onNotesActiveToggle, onSelectedCellNotesChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
 }

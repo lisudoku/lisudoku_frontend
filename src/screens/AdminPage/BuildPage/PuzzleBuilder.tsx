@@ -27,10 +27,10 @@ const PuzzleBuilder = () => {
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
   const currentThermo = useSelector(state => state.admin.currentThermo)
+  const notes = useSelector(state => state.admin.notes)
 
   // Not really used, but SudokuGrid needs them... there are better solutions
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
-  const notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler()
@@ -60,7 +60,7 @@ const PuzzleBuilder = () => {
     <div className="flex gap-10">
       <SudokuGrid constraints={constraintPreview}
                   grid={grid}
-                  notes={notes}
+                  notes={notes!}
                   selectedCell={selectedCell!}
                   checkErrors
                   loading={false}

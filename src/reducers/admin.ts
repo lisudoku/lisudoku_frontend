@@ -19,6 +19,8 @@ type AdminState = {
   variant: SudokuVariant
   difficulty: SudokuDifficulty
   constraintType: ConstraintType
+  notesActive: boolean
+  notes: number[][][] | null
   bruteSolution: SudokuBruteSolveResult | null
   intuitiveSolution: SudokuIntuitiveSolveResult | null
   solverRunning: boolean
@@ -83,6 +85,8 @@ export const adminSlice = createSlice({
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
     constraintType: ConstraintType.FixedNumber,
+    notesActive: false,
+    notes: null,
     bruteSolution: null,
     intuitiveSolution: null,
     solverRunning: false,
@@ -101,6 +105,7 @@ export const adminSlice = createSlice({
         thermos: [],
       }
       state.difficulty = defaultDifficulty(gridSize)
+      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
     },
     changeSelectedCell(state, action) {
       state.selectedCell = action.payload
@@ -208,7 +213,19 @@ export const adminSlice = createSlice({
     },
     responsePuzzles(state, action) {
       state.puzzles = action.payload.map((puzzle: Puzzle) => jcc.camelCaseKeys(puzzle))
-    }
+    },
+    toggleNotesActive(state) {
+      state.notesActive = !state.notesActive
+    },
+    changeSelectedCellNotes(state, action) {
+      if (state.selectedCell === null) {
+        return
+      }
+
+      const { row, col } = state.selectedCell
+
+      state.notes![row][col] = _.xor(state.notes![row][col], [action.payload])
+    },
   },
 })
 
@@ -217,6 +234,7 @@ export const {
   addConstraint, deleteConstraint, requestSolution, responseBruteSolution,
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
+  toggleNotesActive, changeSelectedCellNotes,
 } = adminSlice.actions
 
 export default adminSlice.reducer
