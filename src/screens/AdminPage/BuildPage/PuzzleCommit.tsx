@@ -75,10 +75,9 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
   } else if (maxRank! <= 4) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Medium9x9]
-  } else if (maxRank! <= 7) {
+  } else {
     return SudokuDifficultyDisplay[SudokuDifficulty.Hard9x9]
   }
-  return 'too hard!!!'
 }
 
 const computeIntuitiveSolutionDescription = (solution: SudokuIntuitiveSolveResult | null, constraints: SudokuConstraints) => {
