@@ -37,5 +37,6 @@ export enum StepRule {
   NakedTriples = 'NakedTriples',
   XWing = 'XWing',
   YWing = 'YWing',
+  XYWing = 'XYWing',
   Swordfish = 'Swordfish',
 }
