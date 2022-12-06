@@ -30,6 +30,8 @@ export enum StepRule {
   ThermoCandidates = 'ThermoCandidates',
   LockedCandidates = 'LockedCandidates',
   NakedPairs = 'NakedPairs',
+  HiddenPairs = 'HiddenPairs',
+  HiddenTriples = 'HiddenTriples',
   // Hard
   NakedTriples = 'NakedTriples',
   XWing = 'XWing',
