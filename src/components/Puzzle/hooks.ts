@@ -118,7 +118,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (e.key.toLowerCase() === 'n') {
+      if (e.key.toLowerCase() === ' ') {
         onNotesActiveToggle()
         return
       }
