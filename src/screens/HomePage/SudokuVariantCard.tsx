@@ -49,8 +49,8 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
           )}
           {variant === SudokuVariant.Thermo && (
             <g style={{ strokeWidth: 2 }}>
-              <ellipse cx="88" cy="30" rx="3" ry="4" style={{ fill: 'grey' }} />
-              <polyline points="88,26 88,16 81,9 73,9" />
+              <ellipse cx="90" cy="12" rx="3" ry="4" style={{ fill: 'grey' }} />
+              <polyline points="90,12 75,12" />
               <ellipse cx="10" cy="88" rx="3" ry="4" style={{ fill: 'grey' }} />
               <polyline points="10,88 10,65" />
             </g>
