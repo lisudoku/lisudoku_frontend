@@ -46,7 +46,11 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
       <Typography variant="h6">
         {solved && 'Solved in '}
         {formatTimer(solveTimer)}
-        {solved && ' 🎉'}
+        {solved && (
+          <span className="ml-1 absolute animate-expand">
+            🎉
+          </span>
+        )}
       </Typography>
     </div>
   )

@@ -6,7 +6,19 @@ module.exports = withMT({
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        expand: {
+          '0% 100%': { transform: 'scale(1)' },
+          '25%': { transform: 'scale(1.33)' },
+          '50%': { transform: 'scale(1.66)' },
+          '75%': { transform: 'scale(2.0)' },
+        },
+      },
+      animation: {
+        expand: 'expand 0.65s ease-in-out 0s 3',
+      },
+    },
   },
   plugins: [],
 })
