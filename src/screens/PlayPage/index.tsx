@@ -13,7 +13,8 @@ const PlayPage = () => {
   const { variant, difficulty } = useParams()
   const dispatch = useDispatch()
   const [ errorCode, setErrorCode ] = useState<number>()
-  const [ loading, setLoading ] = useState(false)
+  const [ pageLoading, setPageLoading ] = useState(true)
+  const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const solved = useSelector(state => state.puzzle.solved)
@@ -22,24 +23,28 @@ const PlayPage = () => {
   const previousDifficulty = puzzleData?.difficulty
 
   useEffect(() => {
-    if (variant !== previousVariant ||
-        difficulty !== previousDifficulty ||
+    if (puzzleLoading) {
+      return
+    }
+    if ((variant !== previousVariant && previousVariant !== undefined) ||
+        (difficulty !== previousDifficulty && previousVariant !== undefined) ||
         lastUpdate === null ||
         differenceInMinutes(new Date(), parseISO(lastUpdate)) >= 10 ||
         (solved && differenceInSeconds(new Date(), parseISO(lastUpdate)) >= 1)
     ) {
+      setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      setLoading(true)
       fetchRandomPuzzle(variant! as SudokuVariant, difficulty! as SudokuDifficulty).then((data) => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
         setErrorCode(e.response!.status)
       }).finally(() => {
-        setLoading(false)
+        setPuzzleLoading(false)
       })
     }
-  }, [dispatch, variant, previousVariant, difficulty, previousDifficulty, lastUpdate, solved])
+    setPageLoading(false)
+  }, [dispatch, variant, previousVariant, difficulty, previousDifficulty, lastUpdate, puzzleLoading, solved])
 
   return (
     <>
@@ -47,7 +52,7 @@ const PlayPage = () => {
         'Empty category'
       ) : errorCode ? (
         'Error'
-      ) : (loading || !puzzleData) ? (
+      ) : (pageLoading || puzzleLoading || !puzzleData) ? (
         'Loading...'
       ) : (
         <Puzzle />

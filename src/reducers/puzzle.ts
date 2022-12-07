@@ -69,11 +69,7 @@ export const puzzleSlice = createSlice({
     },
   } as PuzzleState,
   reducers: {
-    requestedPuzzle(state) {
-      state.grid = null
-      state.notes = null
-      state.data = null
-      state.solved = false
+    requestedPuzzle(_state) {
     },
     receivedPuzzle(state, action) {
       const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)

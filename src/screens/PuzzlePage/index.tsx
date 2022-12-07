@@ -11,14 +11,15 @@ const PuzzlePage = () => {
   const dispatch = useDispatch()
 
   const [ error, setError ] = useState(false)
-  const [ loading, setLoading ] = useState(false)
+  const [ pageLoading, setPageLoading ] = useState(true)
+  const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
   const puzzleData = useSelector(state => state.puzzle.data)
   const previousId = puzzleData?.publicId
 
   useEffect(() => {
-    if (id !== previousId) {
-      setLoading(true)
+    if (!puzzleLoading && id !== previousId) {
+      setPuzzleLoading(true)
       dispatch(requestedPuzzle())
       fetchPuzzleById(id!).then(data => {
         dispatch(receivedPuzzle(data))
@@ -26,16 +27,17 @@ const PuzzlePage = () => {
       }).catch(() => {
         setError(true)
       }).finally(() => {
-        setLoading(false)
+        setPuzzleLoading(false)
       })
     }
-  }, [dispatch, id, previousId])
+    setPageLoading(false)
+  }, [dispatch, id, previousId, puzzleLoading])
 
   return (
     <>
       {error ? (
         'Error'
-      ) : (loading || !puzzleData) ? (
+      ) : (pageLoading || puzzleLoading || !puzzleData) ? (
         'Loading...'
       ) : (
         <Puzzle />
