@@ -12,10 +12,11 @@ const CONTAINER_PROPS = {
 }
 
 const Radio = forwardRef((props: any, ref) => {
+  const onChange = props.onChange
   const handleChange = useCallback((e: React.ChangeEvent<Record<string, unknown>>) => {
     const elementId = e.target.id
-    props.onChange?.(elementId)
-  }, [props.onChange])
+    onChange?.(elementId)
+  }, [onChange])
 
   return (
     <MuiRadio {...props}
