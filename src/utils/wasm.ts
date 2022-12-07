@@ -4,6 +4,7 @@ import { Grid, SudokuConstraints } from 'src/types/sudoku'
 
 export const checkSolved = (constraints: SudokuConstraints, grid: Grid) => {
   const wasm_constraints = _.mapKeys(constraints, (_value, key) => _.snakeCase(key))
+  wasm_constraints.thermos ||= []
   const wasm_grid = {
     values: grid,
   }
