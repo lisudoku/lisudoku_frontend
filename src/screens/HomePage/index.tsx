@@ -1,9 +1,13 @@
+import { useLayoutEffect } from 'react'
 import { useSelector } from 'src/hooks'
 import { SudokuVariant } from 'src/types/sudoku'
 import SudokuVariantCard from './SudokuVariantCard'
 
 const HomePage = () => {
   const difficulty = useSelector(state => state.userData.difficulty)
+  useLayoutEffect(() => {
+    document.title = 'lisudoku - Free Online Sudoku'
+  }, [])
 
   return (
     <div className="flex flex-wrap mx-auto w-full lg:w-2/3 p-1 bg-gray-900 drop-shadow-2xl border rounded border-gray-800">

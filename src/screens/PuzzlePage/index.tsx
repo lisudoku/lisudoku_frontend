@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Puzzle from 'src/components/Puzzle'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -8,6 +8,10 @@ import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 
 const PuzzlePage = () => {
   const { id } = useParams()
+  useLayoutEffect(() => {
+    document.title = `lisudoku - Puzzle ${id}`
+  }, [])
+
   const dispatch = useDispatch()
 
   const [ error, setError ] = useState(false)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
@@ -8,9 +8,16 @@ import Puzzle from 'src/components/Puzzle'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 import { AxiosError } from 'axios'
+import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 
 const PlayPage = () => {
   const { variant, difficulty } = useParams()
+  useLayoutEffect(() => {
+    const variantDisplay = SudokuVariantDisplay[variant as SudokuVariant]
+    const difficultyDisplay = SudokuDifficultyDisplay[difficulty as SudokuDifficulty]
+    document.title = `lisudoku - ${variantDisplay} - ${difficultyDisplay}`
+  }, [])
+
   const dispatch = useDispatch()
   const [ errorCode, setErrorCode ] = useState<number>()
   const [ pageLoading, setPageLoading ] = useState(true)
