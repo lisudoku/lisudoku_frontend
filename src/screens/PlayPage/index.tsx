@@ -2,19 +2,22 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
+import { AxiosError } from 'axios'
 import { updateDifficulty } from 'src/reducers/userData'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import Puzzle from 'src/components/Puzzle'
+import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
-import { AxiosError } from 'axios'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 
 const PlayPage = () => {
-  const { variant, difficulty } = useParams()
+  const { variant: variantParam, difficulty: difficultyParam } = useParams()
+  const variant = variantParam as SudokuVariant
+  const difficulty = difficultyParam as SudokuDifficulty
   useLayoutEffect(() => {
-    const variantDisplay = SudokuVariantDisplay[variant as SudokuVariant]
-    const difficultyDisplay = SudokuDifficultyDisplay[difficulty as SudokuDifficulty]
+    const variantDisplay = SudokuVariantDisplay[variant]
+    const difficultyDisplay = SudokuDifficultyDisplay[difficulty]
     document.title = `lisudoku - ${variantDisplay} - ${difficultyDisplay}`
   }, [variant, difficulty])
 
@@ -42,11 +45,7 @@ const PlayPage = () => {
     ) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      fetchRandomPuzzle(
-        variant! as SudokuVariant,
-        difficulty! as SudokuDifficulty,
-        idBlacklist
-      ).then((data) => {
+      fetchRandomPuzzle(variant, difficulty, idBlacklist).then((data) => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
@@ -58,13 +57,13 @@ const PlayPage = () => {
     setPageLoading(false)
   }, [
     dispatch, puzzleLoading, errorCode,
-    variant, previousVariant, difficulty, previousDifficulty, lastUpdate, solved,
+    variant, previousVariant, difficulty, previousDifficulty, idBlacklist, lastUpdate, solved,
   ])
 
   return (
     <>
       {errorCode === 404 ? (
-        'There are no unsolved puzzles here'
+        <EmptyCategory variant={variant} difficulty={difficulty} />
       ) : errorCode ? (
         'Error'
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
