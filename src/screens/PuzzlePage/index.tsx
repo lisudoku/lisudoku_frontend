@@ -10,7 +10,7 @@ const PuzzlePage = () => {
   const { id } = useParams()
   useLayoutEffect(() => {
     document.title = `lisudoku - Puzzle ${id}`
-  }, [])
+  }, [id])
 
   const dispatch = useDispatch()
 

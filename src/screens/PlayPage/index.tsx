@@ -16,7 +16,7 @@ const PlayPage = () => {
     const variantDisplay = SudokuVariantDisplay[variant as SudokuVariant]
     const difficultyDisplay = SudokuDifficultyDisplay[difficulty as SudokuDifficulty]
     document.title = `lisudoku - ${variantDisplay} - ${difficultyDisplay}`
-  }, [])
+  }, [variant, difficulty])
 
   const dispatch = useDispatch()
   const [ errorCode, setErrorCode ] = useState<number>()
