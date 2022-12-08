@@ -227,6 +227,9 @@ export const adminSlice = createSlice({
 
       state.notes![row][col] = _.xor(state.notes![row][col], [action.payload])
     },
+    deletePuzzle(state, action) {
+      state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
+    },
   },
 })
 
@@ -235,7 +238,7 @@ export const {
   addConstraint, deleteConstraint, requestSolution, responseBruteSolution,
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
-  toggleNotesActive, changeSelectedCellNotes,
+  toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
 } = adminSlice.actions
 
 export default adminSlice.reducer

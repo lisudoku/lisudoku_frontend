@@ -24,6 +24,14 @@ export const apiAddPuzzle = async (puzzle: Puzzle) => {
   }).then(response => response.data)
 }
 
+export const apiDeletePuzzle = async (id: string) => {
+  return axios.delete(`/puzzles/${id}`, {
+    // headers: {
+    //   'Authorization': `Bearer ${userToken()}`,
+    // },
+  }).then(response => response.data)
+}
+
 export const fetchAllPuzzles = async () => {
   return axios.get('/puzzles', {
     // headers: {

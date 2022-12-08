@@ -1,14 +1,28 @@
+import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'src/hooks'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
+import { deletePuzzle } from 'src/reducers/admin'
 import { Puzzle } from 'src/types/sudoku'
+import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
+  const dispatch = useDispatch()
+
   const gridSize = puzzle.constraints.gridSize
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   const notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
   // 4 => ~40; 6 => ~35; 9 => ~30
   const cellSize = 90 / Math.sqrt(gridSize)
+
+  const id = puzzle.publicId!
+  const handleDelete = useCallback(() => {
+    if (window.confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
+      dispatch(deletePuzzle(id))
+      apiDeletePuzzle(id).catch(() => alert('Error'))
+    }
+  }, [dispatch, id])
 
   return (
     <div className="flex flex-col items-center">
@@ -20,9 +34,14 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
                   loading={false}
                   onCellClick={null}
                   cellSize={cellSize} />
-      <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank" className="w-fit text-sm">
-        Play
-      </Link>
+      <div className="flex gap-5 w-fit text-sm">
+        <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
+          Play
+        </Link>
+        <button className="text-red-700" onClick={handleDelete}>
+          Delete
+        </button>
+      </div>
     </div>
   )
 }
