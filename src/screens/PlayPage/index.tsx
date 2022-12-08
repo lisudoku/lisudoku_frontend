@@ -23,6 +23,7 @@ const PlayPage = () => {
   const [ pageLoading, setPageLoading ] = useState(true)
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
+  const idBlacklist = useSelector(state => state.userData.solvedPuzzleIds)
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const solved = useSelector(state => state.puzzle.solved)
   const puzzleData = useSelector(state => state.puzzle.data)
@@ -41,7 +42,11 @@ const PlayPage = () => {
     ) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      fetchRandomPuzzle(variant! as SudokuVariant, difficulty! as SudokuDifficulty).then((data) => {
+      fetchRandomPuzzle(
+        variant! as SudokuVariant,
+        difficulty! as SudokuDifficulty,
+        idBlacklist
+      ).then((data) => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
@@ -59,7 +64,7 @@ const PlayPage = () => {
   return (
     <>
       {errorCode === 404 ? (
-        'Empty category'
+        'There are no unsolved puzzles here'
       ) : errorCode ? (
         'Error'
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (

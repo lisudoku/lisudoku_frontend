@@ -39,16 +39,24 @@ export * from './admin'
 //   }
 // }
 
-export const fetchRandomPuzzle = async (variant: SudokuVariant, difficulty: SudokuDifficulty) => {
-  return axios.get('/puzzles/random', {
-    // headers: {
-    //   'Authorization': `Bearer ${userToken()}`,
-    // },
-    params: {
-      variant,
-      difficulty,
+export const fetchRandomPuzzle = async (
+  variant: SudokuVariant, difficulty: SudokuDifficulty, idBlacklist: string[],
+) => {
+  return axios.post(
+    '/puzzles/random',
+    {
+      id_blacklist: idBlacklist,
     },
-  }).then(response => response.data)
+    {
+      // headers: {
+      //   'Authorization': `Bearer ${userToken()}`,
+      // },
+      params: {
+        variant,
+        difficulty,
+      },
+    }
+  ).then(response => response.data)
 }
 
 export const fetchPuzzleById = async (id: string) => {

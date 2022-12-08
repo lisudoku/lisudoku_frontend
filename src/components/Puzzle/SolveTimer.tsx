@@ -23,7 +23,10 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         dispatch(requestSolved())
         onIsSolvedLoadingChange(true)
         requestPuzzleCheck(id, grid).then(result => {
-          dispatch(responseSolved(result.correct))
+          dispatch(responseSolved({
+            id,
+            solved: result.correct,
+          }))
           onIsSolvedLoadingChange(false)
         })
       }

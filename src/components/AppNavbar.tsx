@@ -4,6 +4,7 @@ import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/re
 import { userToken, userName } from 'src/utils/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
+import { useSelector } from 'src/hooks'
 
 const ITEMS = [
   {
@@ -46,6 +47,8 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
 
   const items = admin ? ADMIN_ITEMS : ITEMS
 
+  const solveCount = useSelector(state => state.userData.solvedPuzzleIds.length)
+
   const navList = (
     <ul className="flex flex-col gap-2 mb-2 mt-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-end lg:gap-6">
       {items.map(({ text, url }) => (
@@ -63,12 +66,20 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   const rightButtons = (
-    <ul className="flex flex-col gap-2 pb-2 lg:pb-0 hidden">
+    <ul className="flex flex-col gap-2 pb-2 lg:pb-0">
       <Typography
         as="li"
         variant="small"
         color="white"
         className="font-normal"
+      >
+        <div>Solved: {solveCount}</div>
+      </Typography>
+      <Typography
+        as="li"
+        variant="small"
+        color="white"
+        className="font-normal hidden"
       >
         <Link to="#">Sign In</Link>
       </Typography>

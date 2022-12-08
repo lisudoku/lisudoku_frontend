@@ -162,7 +162,7 @@ export const puzzleSlice = createSlice({
     },
     requestSolved() {},
     responseSolved(state, action) {
-      state.solved = action.payload
+      state.solved = action.payload.solved
       state.lastUpdate = formatISO(new Date())
     },
     fetchNewPuzzle(state) {
