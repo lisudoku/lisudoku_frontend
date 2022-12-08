@@ -22,7 +22,10 @@ const PuzzlePage = () => {
   const previousId = puzzleData?.publicId
 
   useEffect(() => {
-    if (!puzzleLoading && id !== previousId) {
+    if (puzzleLoading || error) {
+      return
+    }
+    if (id !== previousId) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
       fetchPuzzleById(id!).then(data => {
@@ -35,7 +38,7 @@ const PuzzlePage = () => {
       })
     }
     setPageLoading(false)
-  }, [dispatch, id, previousId, puzzleLoading])
+  }, [dispatch, id, previousId, puzzleLoading, error])
 
   return (
     <>

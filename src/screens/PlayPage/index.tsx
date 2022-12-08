@@ -30,7 +30,7 @@ const PlayPage = () => {
   const previousDifficulty = puzzleData?.difficulty
 
   useEffect(() => {
-    if (puzzleLoading) {
+    if (puzzleLoading || errorCode) {
       return
     }
     if ((variant !== previousVariant && previousVariant !== undefined) ||
@@ -51,7 +51,10 @@ const PlayPage = () => {
       })
     }
     setPageLoading(false)
-  }, [dispatch, variant, previousVariant, difficulty, previousDifficulty, lastUpdate, puzzleLoading, solved])
+  }, [
+    dispatch, puzzleLoading, errorCode,
+    variant, previousVariant, difficulty, previousDifficulty, lastUpdate, solved,
+  ])
 
   return (
     <>
