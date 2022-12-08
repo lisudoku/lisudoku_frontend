@@ -10,10 +10,10 @@ const ITEMS = [
     text: 'Learn',
     url: '/learn',
   },
-  {
-    text: 'Live',
-    url: '/tv',
-  },
+  // {
+  //   text: 'Live',
+  //   url: '/tv',
+  // },
 ]
 
 const ADMIN_ITEMS = [
