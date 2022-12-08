@@ -7,9 +7,9 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
   return (
     <footer className="flex flex-col gap-3 pt-2 pb-5 justify-center items-center">
       <div>© {new Date().getFullYear()} George Mărcuș</div>
-      <div>Lisudoku is a free sudoku app. Have fun!</div>
+      <div>lisudoku is a free sudoku app. Have fun!</div>
       {!admin && (
-        <div className="flex gap-10 text-medium">
+        <div className="flex px-7 gap-10 text-medium">
           {ACTIVE_VARIANTS.map((variant, index) => (
             <a key={index} href={`/play/${variant}/${difficulty}`}>Play {SudokuVariantDisplay[variant]} Sudoku</a>
           ))}

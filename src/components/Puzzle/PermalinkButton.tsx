@@ -30,7 +30,7 @@ const PermalinkButton = ({ publicId }: { publicId: string }) => {
       }}
     >
       <PopoverHandler onClick={handleClick}>
-        <Button variant="text" color="gray" className="w-fit mt-1">
+        <Button variant="text" color="gray" className="w-full md:w-fit mt-2 md:mt-1">
           <FontAwesomeIcon icon={faLink} />
           {' Copy puzzle permalink'}
         </Button>

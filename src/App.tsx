@@ -21,7 +21,7 @@ const theme = {}
 const App = () => {
   return (
     <ThemeProvider value={theme}>
-      <div className="min-h-screen flex flex-col text-white bg-black">
+      <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <BrowserRouter>

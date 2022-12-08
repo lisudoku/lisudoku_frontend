@@ -31,10 +31,15 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
   }, [notesActive, onSelectedCellValueChange, onSelectedCellNotesChange])
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap w-64">
+    <div className="flex flex-col gap-2 md:gap-4">
+      <div className="flex flex-wrap w-full md:w-64 mt-2 md:mt-0">
         {_.times(gridSize).map(value => (
-          <div key={value} className={classNames('h-20 pb-1 px-0.5', { 'w-1/3': gridSize > 4, 'w-1/2': gridSize <= 4 })}>
+          <div key={value}
+               className={classNames('h-12 md:h-20 grow md:pb-1 px-0.5 first:pl-0 last:pr-0', {
+                 'md:w-1/3': gridSize > 4,
+                 'md:w-1/2': gridSize <= 4,
+               })}
+          >
             <Button fullWidth
                     className="h-full text-xl p-0"
                     disabled={!controlEnabled}
@@ -45,10 +50,11 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
           </div>
         ))}
       </div>
-      <div className="flex gap-1 justify-center">
+      <div className="flex gap-1 justify-between md:justify-center">
         <Button color={notesActive ? 'green' : 'blue-gray'}
                 disabled={!controlEnabled}
                 onClick={onNotesActiveToggle}
+                className="grow"
         >
           <FontAwesomeIcon icon={faPencil} />
           <div className="inline-block w-7">

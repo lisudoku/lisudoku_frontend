@@ -24,14 +24,14 @@ const SudokuMisc = () => {
   }, [navigate, variant])
 
   return (
-    <div className="flex flex-col max-w-xs">
-      <div className="mb-3">
+    <div className="flex flex-col max-w-lg md:max-w-xs mt-3 md:mt-0">
+      <div>
         <SudokuRules constraints={constraints} />
       </div>
-      <div className="mt-2 ml-6 w-fit">
+      <div className="mt-5 w-full md:ml-6 md:w-fit">
         <VariantSelect value={variant} onChange={onVariantChange} />
       </div>
-      <div className="mt-2 ml-6 w-fit">
+      <div className="mt-2 w-full md:ml-6 md:w-fit">
         <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
       </div>
       <PermalinkButton publicId={publicId} />

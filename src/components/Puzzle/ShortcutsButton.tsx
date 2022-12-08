@@ -7,7 +7,7 @@ const CTRL_KEY_NAME = navigator.platform.indexOf('Mac') > -1 ? 'Cmd' : 'Ctrl'
 const ShortcutsButton = () => (
   <Popover placement="bottom">
     <PopoverHandler>
-      <Button variant="text" color="gray" className="w-fit">
+      <Button variant="text" color="gray" className="hidden md:block w-full md:w-fit">
         Shortcuts
       </Button>
     </PopoverHandler>
