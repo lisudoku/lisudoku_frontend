@@ -87,6 +87,10 @@ export const puzzleSlice = createSlice({
 
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
     },
+    clearPuzzle(state) {
+      state.data = null
+      state.lastUpdate = null
+    },
     changeSelectedCell: (state, action) => {
       state.controls.selectedCell = action.payload
     },
@@ -196,7 +200,7 @@ export const puzzleSlice = createSlice({
 })
 
 export const {
-  requestedPuzzle, receivedPuzzle, changeSelectedCell, changeSelectedCellValue,
+  requestedPuzzle, receivedPuzzle, clearPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
   fetchNewPuzzle, resetPuzzle, undoAction, redoAction,
 } = puzzleSlice.actions

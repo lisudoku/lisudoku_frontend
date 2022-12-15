@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
@@ -8,7 +8,7 @@ import { fetchRandomPuzzle } from 'src/utils/apiService'
 import Puzzle from 'src/components/Puzzle'
 import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
+import { clearPuzzle, receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 
 const PlayPage = () => {
@@ -22,7 +22,7 @@ const PlayPage = () => {
   }, [variant, difficulty])
 
   const dispatch = useDispatch()
-  const [ errorCode, setErrorCode ] = useState<number>()
+  const [ errorCode, setErrorCode ] = useState<number | null>(null)
   const [ pageLoading, setPageLoading ] = useState(true)
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
@@ -30,15 +30,25 @@ const PlayPage = () => {
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const solved = useSelector(state => state.puzzle.solved)
   const puzzleData = useSelector(state => state.puzzle.data)
-  const previousVariant = puzzleData?.variant
-  const previousDifficulty = puzzleData?.difficulty
+  const persistedVariant = puzzleData?.variant
+  const persistedDifficulty = puzzleData?.difficulty
+
+  const previousVariant = useRef(variant)
+  const previousDifficulty = useRef(difficulty)
+  useEffect(() => {
+    if (variant !== previousVariant.current || difficulty !== previousDifficulty.current) {
+      setErrorCode(null)
+    }
+    previousVariant.current = variant
+    previousDifficulty.current = difficulty
+  }, [variant, difficulty])
 
   useEffect(() => {
     if (puzzleLoading || errorCode) {
       return
     }
-    if ((variant !== previousVariant && previousVariant !== undefined) ||
-        (difficulty !== previousDifficulty && previousVariant !== undefined) ||
+    if ((variant !== persistedVariant && persistedVariant !== undefined) ||
+        (difficulty !== persistedDifficulty && persistedVariant !== undefined) ||
         lastUpdate === null ||
         differenceInMinutes(new Date(), parseISO(lastUpdate)) >= 10 ||
         (solved && differenceInSeconds(new Date(), parseISO(lastUpdate)) >= 1)
@@ -49,6 +59,7 @@ const PlayPage = () => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
+        dispatch(clearPuzzle())
         setErrorCode(e.response!.status)
       }).finally(() => {
         setPuzzleLoading(false)
@@ -57,7 +68,7 @@ const PlayPage = () => {
     setPageLoading(false)
   }, [
     dispatch, puzzleLoading, errorCode,
-    variant, previousVariant, difficulty, previousDifficulty, idBlacklist, lastUpdate, solved,
+    variant, persistedVariant, difficulty, persistedDifficulty, idBlacklist, lastUpdate, solved,
   ])
 
   return (
