@@ -36,7 +36,7 @@ const App = () => {
                     <Route path="p/:id" element={<PuzzlePage />} />
                     <Route path="*" element={<PageNotFound />} />
                   </Route>
-                  <Route path="/" element={<Layout admin={true} />}>
+                  <Route path="/" element={<Layout admin />}>
                     <Route path="/" element={<EnsureAdmin />}>
                       <Route path="admin/*" element={<AdminPage />} />
                     </Route>
