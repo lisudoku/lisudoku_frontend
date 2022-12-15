@@ -14,13 +14,14 @@ const PuzzlesPage = () => {
   const [ loading, setLoading ] = useState(true)
   const dispatch = useDispatch()
   const puzzles = useSelector(state => state.admin.puzzles)
+  const userToken = useSelector(state => state.userData.token)
 
   useEffect(() => {
-    fetchAllPuzzles().then(data => {
+    fetchAllPuzzles(userToken!).then(data => {
       dispatch(responsePuzzles(data.puzzles))
       setLoading(false)
     })
-  }, [dispatch])
+  }, [dispatch, userToken])
 
   const puzzleGroups = useMemo(() => (
     _.chain(puzzles)

@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch } from 'src/hooks'
+import { useDispatch, useSelector } from 'src/hooks'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { deletePuzzle } from 'src/reducers/admin'
 import { Puzzle } from 'src/types/sudoku'
@@ -9,6 +9,7 @@ import { getPuzzleRelativeUrl } from 'src/utils/misc'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const dispatch = useDispatch()
+  const userToken = useSelector(state => state.userData.token)
 
   const gridSize = puzzle.constraints.gridSize
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
@@ -20,9 +21,9 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const handleDelete = useCallback(() => {
     if (window.confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
       dispatch(deletePuzzle(id))
-      apiDeletePuzzle(id).catch(() => alert('Error'))
+      apiDeletePuzzle(id, userToken!).catch(() => alert('Error'))
     }
-  }, [dispatch, id])
+  }, [dispatch, id, userToken])
 
   return (
     <div className="flex flex-col items-center">

@@ -1,8 +1,8 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import EnsureAdmin from './components/EnsureAdmin'
 import HomePage from './screens/HomePage'
-import EnsureLogin from './components/EnsureLogin'
 import LoginPage from './screens/LoginPage'
 import LogoutPage from './screens/LogoutPage'
 import RegisterPage from './screens/RegisterPage'
@@ -28,10 +28,8 @@ const App = () => {
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
                   <Route path="/" element={<Layout />}>
-                    <Route path="/" element={<EnsureLogin />}>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
-                    </Route>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="logout" element={<LogoutPage />} />
                     <Route path="register" element={<RegisterPage />} />
@@ -39,7 +37,9 @@ const App = () => {
                     <Route path="*" element={<PageNotFound />} />
                   </Route>
                   <Route path="/" element={<Layout admin={true} />}>
-                    <Route path="admin/*" element={<AdminPage />} />
+                    <Route path="/" element={<EnsureAdmin />}>
+                      <Route path="admin/*" element={<AdminPage />} />
+                    </Route>
                   </Route>
                 </Routes>
               </Suspense>

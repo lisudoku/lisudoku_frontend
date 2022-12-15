@@ -5,28 +5,29 @@ axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
 
 export * from './admin'
 
-// axios.interceptors.response.use(
-//   response => {
-//     return response
-//   },
-//   error => {
-//     if (error.response.status === 401 && window.location.pathname !== '/login') {
-//       (window.location as any) = '/logout'
-//     }
-//     return Promise.reject(error)
-//   }
-// )
+axios.interceptors.response.use(
+  response => {
+    return response
+  },
+  error => {
+    if (error.response.status === 401 && window.location.pathname !== '/login') {
+      (window.location as any) = '/logout'
+    }
+    return Promise.reject(error)
+  }
+)
 
-// export const login = async user => {
-//   try {
-//     const response = await axios.post('/users/login', {
-//       user,
-//     })
-//     return response.data
-//   } catch (error) {
-//     return error.response.data
-//   }
-// }
+export type LoginData = {
+  username: string
+  password: string
+}
+
+export const login = async (user: LoginData) => {
+  return await axios.post('/users/login', {
+    user,
+  }).then(response => response.data)
+    .catch(error => error.response.data)
+}
 
 // export const register = async user => {
 //   try {
@@ -48,6 +49,7 @@ export const fetchRandomPuzzle = async (
       id_blacklist: idBlacklist,
     },
     {
+      // TODO: uncomment after allowing normal user accounts
       // headers: {
       //   'Authorization': `Bearer ${userToken()}`,
       // },

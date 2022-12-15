@@ -113,6 +113,7 @@ const computeIntuitiveSolutionDescription = (solution: SudokuIntuitiveSolveResul
 
 const PuzzleCommit = () => {
   const dispatch = useDispatch()
+  const userToken = useSelector(state => state.userData.token)
   const constraints = useSelector(state => state.admin.constraints)
   const solverRunning = useSelector(state => state.admin.solverRunning)
   const bruteSolution = useSelector(state => state.admin.bruteSolution)
@@ -156,12 +157,12 @@ const PuzzleCommit = () => {
       difficulty,
       solution: bruteSolution!.solution,
     }
-    apiAddPuzzle(puzzle).then(data => {
+    apiAddPuzzle(puzzle, userToken!).then(data => {
       dispatch(responseAddPuzzle(data.public_id))
     }).catch(() => {
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, constraints, bruteSolution, variant, difficulty])
+  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty])
 
   return (
     <>

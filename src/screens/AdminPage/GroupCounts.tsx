@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { fetchGroupCounts } from 'src/utils/apiService'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { useSelector } from 'src/hooks'
 
 type GroupCount = {
   variant: SudokuVariant
@@ -12,14 +13,15 @@ type GroupCount = {
 const GroupCounts = () => {
   const [ loading, setLoading ] = useState(true)
   const [ groupCounts, setGroupCounts ] = useState<GroupCount[]>([])
+  const userToken = useSelector(state => state.userData.token)
 
   useEffect(() => {
     setLoading(true)
-    fetchGroupCounts().then(data => {
+    fetchGroupCounts(userToken!).then(data => {
       setGroupCounts(data.group_counts)
       setLoading(false)
     })
-  }, [])
+  }, [userToken])
 
   return (
     <div>

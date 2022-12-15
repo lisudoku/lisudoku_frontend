@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
-import { userToken, userName } from 'src/utils/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'src/hooks'
@@ -48,6 +48,8 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   const items = admin ? ADMIN_ITEMS : ITEMS
 
   const solveCount = useSelector(state => state.userData.solvedPuzzleIds.length)
+  const username = useSelector(state => state.userData.username)
+  const userIsAdmin = useSelector(state => state.userData.admin)
 
   const navList = (
     <ul className="flex flex-col gap-2 mb-2 mt-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-end lg:gap-6">
@@ -66,23 +68,44 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   const rightButtons = (
-    <ul className="flex flex-col gap-2 pb-2 lg:pb-0">
+    <ul className="flex flex-row gap-5 pb-2 lg:pb-0">
       <Typography
         as="li"
         variant="small"
         color="white"
         className="font-normal"
       >
-        <div>Solved: {solveCount}</div>
+        Solved: {solveCount}
       </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="white"
-        className="font-normal hidden"
-      >
-        <Link to="#">Sign In</Link>
-      </Typography>
+      {username ? (
+        <>
+          <Typography
+            as="li"
+            variant="small"
+            color="white"
+            className="font-normal"
+          >
+            <Link to={userIsAdmin ? '/admin' : '#'}>{username}</Link>
+          </Typography>
+          <Typography
+            as="li"
+            variant="small"
+            color="white"
+            className="font-normal"
+          >
+            <Link to="/logout">Sign Out</Link>
+          </Typography>
+        </>
+      ) : (
+        <Typography
+          as="li"
+          variant="small"
+          color="white"
+          className={classNames('font-normal', { 'hidden': !admin })}
+        >
+          <Link to="/login">Sign In</Link>
+        </Typography>
+      )}
     </ul>
   )
 
