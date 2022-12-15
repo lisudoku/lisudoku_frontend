@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import Textarea from 'src/components/Textarea'
 import { useDispatch, useSelector } from 'src/hooks'
-import { wasm_intuitive_solve, wasm_brute_solve } from 'lisudoku-solver'
 import {
   changeDifficulty, errorAddPuzzle, errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseBruteSolution, responseIntuitiveSolution,
@@ -16,6 +15,7 @@ import VariantSelect from 'src/components/Puzzle/VariantSelect'
 import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { SudokuDifficultyDisplay } from 'src/utils/constants'
+import { bruteSolve, intuitiveSolve } from 'src/utils/wasm'
 
 const groupStepsByType = (steps: SolutionStep[]) => {
   const groups: { [index: string]: number } = {}
@@ -128,9 +128,8 @@ const PuzzleCommit = () => {
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
     console.log('Request brute solve', constraints)
-    const wasmConstraints = _.mapKeys(constraints, (_value, key) => _.snakeCase(key))
     try {
-      const solution = wasm_brute_solve(wasmConstraints)
+      const solution = bruteSolve(constraints!)
       dispatch(responseBruteSolution(solution))
     } catch (e: any) {
       dispatch(errorSolution())
@@ -140,8 +139,7 @@ const PuzzleCommit = () => {
 
   const handleIntuitiveSolveClick = useCallback(() => {
     dispatch(requestSolution())
-    const wasmConstraints = _.mapKeys(constraints, (_value, key) => _.snakeCase(key))
-    const solution = wasm_intuitive_solve(wasmConstraints)
+    const solution = intuitiveSolve(constraints!)
     dispatch(responseIntuitiveSolution(solution))
   }, [dispatch, constraints])
 
