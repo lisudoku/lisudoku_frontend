@@ -60,7 +60,7 @@ const PlayPage = () => {
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
         dispatch(clearPuzzle())
-        setErrorCode(e.response!.status)
+        setErrorCode(e.response?.status ?? 500)
       }).finally(() => {
         setPuzzleLoading(false)
       })

@@ -10,7 +10,7 @@ const HomePage = () => {
   }, [])
 
   return (
-    <div className="flex flex-wrap mx-auto w-full lg:w-2/3 p-1 bg-gray-900 drop-shadow-2xl border rounded border-gray-800">
+    <div className="flex flex-wrap mx-auto w-full lg:w-[36rem] p-1 bg-gray-900 border rounded border-gray-800">
       {ACTIVE_VARIANTS.map((variant, index) => (
         <SudokuVariantCard key={index} variant={variant} difficulty={difficulty} />
       ))}
