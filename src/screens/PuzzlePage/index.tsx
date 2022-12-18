@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Puzzle from 'src/components/Puzzle'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -19,6 +19,7 @@ const PuzzlePage = () => {
   const [ pageLoading, setPageLoading ] = useState(true)
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
+  const userToken = useSelector(state => state.userData.token)
   const puzzleData = useSelector(state => state.puzzle.data)
   const refreshKey = useSelector(state => state.puzzle.refreshKey)
   const persistedId = puzzleData?.publicId
@@ -32,7 +33,7 @@ const PuzzlePage = () => {
     if (id !== persistedId) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      fetchPuzzleById(id!).then(data => {
+      fetchPuzzleById(id!, userToken).then(data => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch(() => {
@@ -42,13 +43,15 @@ const PuzzlePage = () => {
       })
     }
     setPageLoading(false)
-  }, [dispatch, id, persistedId, puzzleLoading, error])
+  }, [dispatch, userToken, id, persistedId, puzzleLoading, error])
 
+  const previousRefreshKey = useRef(refreshKey)
   useEffect(() => {
-    if (!pageLoading) {
+    if (refreshKey !== previousRefreshKey.current) {
       navigate(`/play/${persistedVariant}/${persistedDifficulty}`)
     }
-  }, [navigate, refreshKey, pageLoading, persistedVariant, persistedDifficulty])
+    previousRefreshKey.current = refreshKey
+  }, [navigate, userToken, refreshKey, persistedVariant, persistedDifficulty])
 
   return (
     <>

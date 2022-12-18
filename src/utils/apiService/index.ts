@@ -5,6 +5,16 @@ axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
 
 export * from './admin'
 
+const generateHeader = (userToken: string | null) => {
+  if (!userToken) {
+    return undefined
+  }
+
+  return {
+    'Authorization': `Bearer ${userToken}`,
+  }
+}
+
 axios.interceptors.response.use(
   response => {
     return response
@@ -42,6 +52,7 @@ export const login = async (user: LoginData) => {
 
 export const fetchRandomPuzzle = async (
   variant: SudokuVariant, difficulty: SudokuDifficulty, idBlacklist: string[],
+  userToken: string | null
 ) => {
   return axios.post(
     '/puzzles/random',
@@ -49,10 +60,7 @@ export const fetchRandomPuzzle = async (
       id_blacklist: idBlacklist,
     },
     {
-      // TODO: uncomment after allowing normal user accounts
-      // headers: {
-      //   'Authorization': `Bearer ${userToken()}`,
-      // },
+      headers: generateHeader(userToken),
       params: {
         variant,
         difficulty,
@@ -61,11 +69,9 @@ export const fetchRandomPuzzle = async (
   ).then(response => response.data)
 }
 
-export const fetchPuzzleById = async (id: string) => {
+export const fetchPuzzleById = async (id: string, userToken: string | null) => {
   return axios.get(`/puzzles/${id}`, {
-    // headers: {
-    //   'Authorization': `Bearer ${userToken()}`,
-    // },
+    headers: generateHeader(userToken),
   }).then(response => response.data)
 }
 

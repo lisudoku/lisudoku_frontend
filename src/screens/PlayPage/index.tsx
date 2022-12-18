@@ -26,6 +26,7 @@ const PlayPage = () => {
   const [ pageLoading, setPageLoading ] = useState(true)
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
+  const userToken = useSelector(state => state.userData.token)
   const idBlacklist = useSelector(state => state.userData.solvedPuzzleIds)
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const refreshKey = useSelector(state => state.puzzle.refreshKey)
@@ -60,7 +61,7 @@ const PlayPage = () => {
 
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      fetchRandomPuzzle(variant, difficulty, idBlacklist).then((data) => {
+      fetchRandomPuzzle(variant, difficulty, idBlacklist, userToken).then((data) => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch((e: AxiosError) => {
@@ -72,7 +73,7 @@ const PlayPage = () => {
     }
     setPageLoading(false)
   }, [
-    dispatch, puzzleLoading, errorCode,
+    dispatch, puzzleLoading, errorCode, userToken,
     variant, persistedVariant, difficulty, persistedDifficulty, idBlacklist, lastUpdate, solved,
     refreshKey,
   ])
