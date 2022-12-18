@@ -33,6 +33,7 @@ type PuzzleState = {
   solveTimer: number
   solved: boolean
   lastUpdate: string | null
+  refreshKey: number
   controls: ControlsState
 }
 
@@ -61,6 +62,7 @@ export const puzzleSlice = createSlice({
     solveTimer: 0,
     solved: false,
     lastUpdate: null,
+    refreshKey: 0,
     controls: {
       selectedCell: null,
       notesActive: false,
@@ -171,6 +173,7 @@ export const puzzleSlice = createSlice({
     },
     fetchNewPuzzle(state) {
       // This will trigger refetching the puzzle
+      state.refreshKey += 1
       state.lastUpdate = null
     },
     resetPuzzle(state) {

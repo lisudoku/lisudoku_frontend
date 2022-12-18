@@ -28,6 +28,7 @@ const PlayPage = () => {
 
   const idBlacklist = useSelector(state => state.userData.solvedPuzzleIds)
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
+  const refreshKey = useSelector(state => state.puzzle.refreshKey)
   const solved = useSelector(state => state.puzzle.solved)
   const puzzleData = useSelector(state => state.puzzle.data)
   const persistedVariant = puzzleData?.variant
@@ -43,6 +44,7 @@ const PlayPage = () => {
     previousDifficulty.current = difficulty
   }, [variant, difficulty])
 
+  const previousRefreshKey = useRef(refreshKey)
   useEffect(() => {
     if (puzzleLoading || errorCode) {
       return
@@ -50,9 +52,12 @@ const PlayPage = () => {
     if ((variant !== persistedVariant && persistedVariant !== undefined) ||
         (difficulty !== persistedDifficulty && persistedVariant !== undefined) ||
         lastUpdate === null ||
+        refreshKey !== previousRefreshKey.current ||
         differenceInMinutes(new Date(), parseISO(lastUpdate)) >= 10 ||
         (solved && differenceInSeconds(new Date(), parseISO(lastUpdate)) >= 1)
     ) {
+      previousRefreshKey.current = refreshKey
+
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
       fetchRandomPuzzle(variant, difficulty, idBlacklist).then((data) => {
@@ -69,6 +74,7 @@ const PlayPage = () => {
   }, [
     dispatch, puzzleLoading, errorCode,
     variant, persistedVariant, difficulty, persistedDifficulty, idBlacklist, lastUpdate, solved,
+    refreshKey,
   ])
 
   return (
