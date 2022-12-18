@@ -40,7 +40,9 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "deploy": "sh -ac '. .env.prod && yarn build && aws s3 sync build s3://www.lisudoku.xyz --delete --profile lisudoku-frontend'"
+    "build:prod": "sh -ac '. .env.prod && yarn build'",
+    "deploy:s3": "sh -ac '. .env.prod && yarn build && aws s3 sync build s3://www.lisudoku.xyz --delete --profile lisudoku-frontend'",
+    "deploy": "yarn build:prod && netlify deploy --dir build --prod"
   },
   "eslintConfig": {
     "extends": [
