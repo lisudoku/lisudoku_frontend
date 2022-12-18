@@ -73,7 +73,7 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
 
   if (maxRank! <= 2) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
-  } else if (maxRank! <= 4) {
+  } else if (maxRank! <= 7) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Medium9x9]
   } else {
     return SudokuDifficultyDisplay[SudokuDifficulty.Hard9x9]
