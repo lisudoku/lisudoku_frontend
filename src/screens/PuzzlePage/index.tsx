@@ -48,7 +48,7 @@ const PuzzlePage = () => {
     if (!pageLoading) {
       navigate(`/play/${persistedVariant}/${persistedDifficulty}`)
     }
-  }, [navigate, refreshKey, persistedVariant, persistedDifficulty])
+  }, [navigate, refreshKey, pageLoading, persistedVariant, persistedDifficulty])
 
   return (
     <>
