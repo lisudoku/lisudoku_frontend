@@ -33,13 +33,17 @@ const logger = createLogger({
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: getDefaultMiddleware => (
-    getDefaultMiddleware({
+  middleware: getDefaultMiddleware => {
+    let middlewares = getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     })
-  ).concat(logger),
+    if (process.env.NODE_ENV !== 'production') {
+      (middlewares as any) = middlewares.concat(logger)
+    }
+    return middlewares
+  },
 })
 
 export const persistor = persistStore(store)
