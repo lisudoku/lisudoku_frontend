@@ -6,7 +6,6 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
 
   return (
     <footer className="flex flex-col gap-3 pt-2 pb-5 justify-center items-center">
-      <div>© {new Date().getFullYear()} George Mărcuș</div>
       <div>lisudoku is a free sudoku app. Have fun!</div>
       {!admin && (
         <div className="flex px-7 gap-10 text-medium">
