@@ -47,7 +47,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
 
   const items = admin ? ADMIN_ITEMS : ITEMS
 
-  const solveCount = useSelector(state => state.userData.solvedPuzzleIds?.length ?? 0)
+  const solveCount = useSelector(state => state.userData.solvedPuzzles?.length ?? 0)
   const username = useSelector(state => state.userData.username)
   const userIsAdmin = useSelector(state => state.userData.admin)
 

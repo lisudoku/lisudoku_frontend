@@ -1,5 +1,6 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import _ from 'lodash'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { AxiosError } from 'axios'
@@ -27,13 +28,15 @@ const PlayPage = () => {
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
   const userToken = useSelector(state => state.userData.token)
-  const idBlacklist = useSelector(state => state.userData.solvedPuzzleIds)
+  const solvedPuzzles = useSelector(state => state.userData.solvedPuzzles)
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const refreshKey = useSelector(state => state.puzzle.refreshKey)
   const solved = useSelector(state => state.puzzle.solved)
   const puzzleData = useSelector(state => state.puzzle.data)
   const persistedVariant = puzzleData?.variant
   const persistedDifficulty = puzzleData?.difficulty
+
+  const idBlacklist = useMemo(() => _.map(solvedPuzzles, 'id'), [solvedPuzzles])
 
   const previousVariant = useRef(variant)
   const previousDifficulty = useRef(difficulty)

@@ -14,6 +14,8 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   const id = useSelector(state => state.puzzle.data!.publicId!)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
+  const variant = useSelector(state => state.puzzle.data!.variant)
+  const difficulty = useSelector(state => state.puzzle.data!.difficulty)
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
 
@@ -25,13 +27,15 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         requestPuzzleCheck(id, grid).then(result => {
           dispatch(responseSolved({
             id,
+            variant,
+            difficulty,
             solved: result.correct,
           }))
           onIsSolvedLoadingChange(false)
         })
       }
     }
-  }, [dispatch, id, constraints, grid, solved, onIsSolvedLoadingChange])
+  }, [dispatch, id, variant, difficulty, constraints, grid, solved, onIsSolvedLoadingChange])
 
   useInterval(() => {
     if (!solved && !isSolvedLoading) {

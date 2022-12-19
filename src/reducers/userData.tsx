@@ -1,6 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { SudokuDifficulty } from 'src/types/sudoku'
+import _ from 'lodash'
+import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
+
+type SolvedPuzzle = {
+  id: string
+  variant: SudokuVariant
+  difficulty: SudokuDifficulty
+}
 
 type UserDataState = {
   username: string | null
@@ -8,7 +15,7 @@ type UserDataState = {
   token: string | null
   admin: boolean
   difficulty: SudokuDifficulty
-  solvedPuzzleIds: string[]
+  solvedPuzzles: SolvedPuzzle[]
 }
 
 export const userDataSlice = createSlice({
@@ -19,7 +26,7 @@ export const userDataSlice = createSlice({
     token: null,
     admin: false,
     difficulty: SudokuDifficulty.Easy9x9,
-    solvedPuzzleIds: [],
+    solvedPuzzles: [],
   } as UserDataState,
   reducers: {
     loginSuccess(state, action) {
@@ -40,9 +47,14 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
-      const id = action.payload.id
-      if (action.payload.solved && !state.solvedPuzzleIds.includes(id)) {
-        state.solvedPuzzleIds.push(id)
+      const { id, variant, difficulty } = action.payload
+      if (action.payload.solved && !_.some(state.solvedPuzzles, [ 'id', id ])) {
+        const solvedPuzzle: SolvedPuzzle = {
+          id,
+          variant,
+          difficulty,
+        }
+        state.solvedPuzzles.push(solvedPuzzle)
       }
     })
   }
