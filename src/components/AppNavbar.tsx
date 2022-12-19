@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'src/hooks'
 
-const ITEMS = [
-  {
-    text: 'Learn',
-    url: '/learn',
-  },
+const ITEMS: any[] = [
+  // {
+  //   text: 'Learn',
+  //   url: '/learn',
+  // },
   // {
   //   text: 'Live',
   //   url: '/tv',
