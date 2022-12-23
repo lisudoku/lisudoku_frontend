@@ -115,7 +115,11 @@ const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: n
   </>
 )
 
-const NotesGraphics = ({ notes, cellSize }: { notes: number[][][], cellSize: number }) => {
+const NotesGraphics = ({ notes, cellSize }: { notes?: number[][][], cellSize: number }) => {
+  if (!notes) {
+    return null
+  }
+
   const notesFontSize = cellSize * 3 / 14
   const notesPadding = cellSize / 14
   const notesFontWidth = notesFontSize * 2 / 3
@@ -168,7 +172,7 @@ const SudokuConstraintsGraphics = ({ constraints, notes, cellSize }: SudokuConst
 
 type SudokuConstraintsGraphicsProps = {
   constraints: SudokuConstraints
-  notes: number[][][]
+  notes?: number[][][]
   cellSize: number
 }
 

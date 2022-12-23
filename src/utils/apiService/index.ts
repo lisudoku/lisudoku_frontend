@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
+axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
 
 export * from './admin'
 

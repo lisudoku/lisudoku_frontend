@@ -3,19 +3,8 @@ import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
 import { useSelector } from 'src/hooks'
-import { useControlCallbacks } from './hooks'
-import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
-
-const computeCellSize = (gridSize: number, width: number) => {
-  if (width >= 720) { // md
-    return DEFAULT_CELL_SIZE
-  }
-
-  width = Math.min(width, 506)
-
-  // Should be synced with the formula in SudokuConstraintGraphics width={gridSize * cellSize + 2}
-  return (width - 2) / gridSize
-}
+import { useControlCallbacks, useTvPlayerWebsocket } from './hooks'
+import { computeCellSize } from 'src/utils/misc'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
@@ -32,6 +21,8 @@ const PuzzleComponent = () => {
   const width = (document.documentElement.clientWidth || window.innerWidth) - 40
 
   const cellSize = computeCellSize(constraints.gridSize, width)
+
+  useTvPlayerWebsocket()
 
   return (
     <div className="w-fit flex flex-col md:flex-row mx-auto">

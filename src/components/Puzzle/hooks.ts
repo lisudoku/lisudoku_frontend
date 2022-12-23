@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { computeErrorGrid, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
@@ -7,6 +7,8 @@ import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
   fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
 } from 'src/reducers/puzzle'
+import { useWebsocket } from 'src/utils/websocket'
+import { TvMessageType } from 'src/screens/TvPage/hooks'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -16,7 +18,7 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[
   useMemo(() => computeFixedNumbersGrid(gridSize, fixedNumbers), [gridSize, fixedNumbers])
 )
 
-export const useErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, fixedNumbersGrid: Grid, grid: Grid) => (
+export const useErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid) => (
   useMemo(() => (
     computeErrorGrid(checkErrors, constraints, grid)
   ), [checkErrors, constraints, grid])
@@ -171,4 +173,30 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
     onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange,
     onSelectedCellNotesChange, onUndo, onRedo
   ])
+}
+
+export const useTvPlayerWebsocket = () => {
+  const publicId = useSelector(state => state.puzzle.data!.publicId!)
+  const grid = useSelector(state => state.puzzle.grid)
+  const notes = useSelector(state => state.puzzle.notes)
+  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
+  const solved = useSelector(state => state.puzzle.solved)
+
+  const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true })
+
+  useEffect(() => {
+    if (!ready) {
+      return
+    }
+    sendMessage({
+      type: TvMessageType.PuzzleUpdate,
+      data: {
+        puzzle_id: publicId,
+        grid,
+        notes,
+        selected_cell: selectedCell,
+        solved,
+      },
+    })
+  }, [ready, publicId, sendMessage, grid, notes, selectedCell, solved])
 }

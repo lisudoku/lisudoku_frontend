@@ -58,10 +58,10 @@ type CountMap = {
   [key: number]: number
 }
 
-export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid: Grid) => {
+export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid) => {
   const { gridSize, fixedNumbers } = constraints
   const errorGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
-  if (!checkErrors) {
+  if (!checkErrors || !grid) {
     return errorGrid
   }
 

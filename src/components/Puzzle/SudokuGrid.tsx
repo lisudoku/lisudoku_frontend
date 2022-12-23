@@ -7,8 +7,8 @@ import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
 
-const isSelected = (rowIndex: number, cellIndex: number, selectedCell: CellPosition | null) => (
-  selectedCell !== null && rowIndex === selectedCell.row && cellIndex === selectedCell.col
+const isSelected = (rowIndex: number, cellIndex: number, selectedCell?: CellPosition | null) => (
+  !_.isNil(selectedCell) && rowIndex === selectedCell.row && cellIndex === selectedCell.col
 )
 
 const SudokuGrid = ({
@@ -18,16 +18,16 @@ const SudokuGrid = ({
   const { fixedNumbers, gridSize } = constraints
 
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
-  const errorGrid = useErrorGrid(checkErrors, constraints, fixedNumbersGrid, grid)
+  const errorGrid = useErrorGrid(checkErrors, constraints, grid)
 
   return (
     <div className="cursor-default select-none">
       <div className="relative">
         <div className="w-fit relative border">
-          {grid.map((row, rowIndex) => (
+          {_.range(gridSize).map(rowIndex => (
             <div key={rowIndex}
                 className="flex w-fit">
-              {row.map((cell, cellIndex) => (
+              {_.range(gridSize).map(cellIndex => (
                 <div key={cellIndex}
                      className={classNames(`flex justify-center items-center border-solid border-gray-600 border`, {
                        'bg-gray-700': isSelected(rowIndex, cellIndex, selectedCell),
@@ -42,7 +42,7 @@ const SudokuGrid = ({
                     'text-red-600': checkErrors && errorGrid[rowIndex][cellIndex],
                     'text-gray-400': !_.isNil(fixedNumbersGrid[rowIndex][cellIndex]),
                   })}>
-                    {fixedNumbersGrid[rowIndex][cellIndex] || cell}
+                    {fixedNumbersGrid[rowIndex][cellIndex] || grid?.[rowIndex][cellIndex]}
                   </div>
                 </div>
               ))}
@@ -73,9 +73,9 @@ SudokuGrid.defaultProps = {
 
 type SudokuGridProps = {
   constraints: SudokuConstraints
-  grid: Grid
-  notes: number[][][]
-  selectedCell: CellPosition | null
+  grid?: Grid
+  notes?: number[][][]
+  selectedCell?: CellPosition | null
   checkErrors: boolean
   loading: boolean
   onCellClick: Function | null
