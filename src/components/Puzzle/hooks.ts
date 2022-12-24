@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { computeErrorGrid, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'

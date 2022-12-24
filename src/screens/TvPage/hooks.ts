@@ -2,8 +2,7 @@ import { useCallback, useMemo } from 'react'
 import _ from 'lodash'
 import { useWebsocket } from 'src/utils/websocket'
 import { useDispatch, useSelector } from 'src/hooks'
-import { initPuzzles, TvPuzzle, updatePuzzle } from 'src/reducers/tv'
-const jcc = require('json-case-convertor')
+import { TvPuzzle, initPuzzles, removePuzzles, updatePuzzle } from 'src/reducers/tv'
 
 export enum TvMessageType {
   PuzzleUpdate = 'puzzle_update',
@@ -27,17 +26,12 @@ export const useTvWebsocket = () => {
       case TvMessageType.PuzzleUpdate:
         dispatch(updatePuzzle(message.data))
         break
-      // TODO: will be called from the background worker
-      // case TvMessageType.PuzzleRemove: {
-      //   const id = message.data
-      //   setTvPuzzles(puzzles => puzzles.filter(puzzle => {
-      //     const tvPuzzleId = `${puzzle.userId}_${puzzle.puzzleId}`
-      //     return tvPuzzleId !== id
-      //   }))
-      //   break
-      // }
+      case TvMessageType.PuzzleRemove: {
+        dispatch(removePuzzles(message.data))
+        break
+      }
     }
-  }, [])
+  }, [dispatch])
   useWebsocket('TvChannel', handleMessage)
 
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)

@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import _ from 'lodash'
 import { CellPosition, Grid, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 const jcc = require('json-case-convertor')
 
@@ -71,11 +70,17 @@ export const tvSlice = createSlice({
 
       state.tvPuzzles.unshift(tvPuzzle)
     },
+    removePuzzles(state, action) {
+      const ids = action.payload
+      state.tvPuzzles = state.tvPuzzles.filter(tvPuzzle => {
+        return !ids.includes(tvPuzzle.id)
+      })
+    },
   },
 })
 
 export const {
-  initPuzzles, updatePuzzle,
+  initPuzzles, updatePuzzle, removePuzzles,
 } = tvSlice.actions
 
 export default tvSlice.reducer
