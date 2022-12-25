@@ -19,7 +19,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   useEffect(() => {
     const _channel = consumer.subscriptions.create({ ...extraOptionsRef.current, channel: channelName }, {
       received(message: WebsocketMessage) {
-        console.log('[ws] Received', message)
+        console.info('[ws] Received', message)
         switch (message.type) {
           case '__init__':
             setWsUserId(message.data!)
@@ -31,18 +31,18 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
       },
 
       initialized() {
-        console.log('Channel initialized')
+        console.info('Channel initialized')
       },
 
       // Called when the subscription is ready for use on the server.
       connected() {
-        console.log('Websocket connected')
+        console.info('Websocket connected')
         setConnected(true)
       },
 
       // Called when the Websocket connection is closed.
       disconnected() {
-        console.log('Websocket disconnected')
+        console.info('Websocket disconnected')
       },
 
       // Called when the subscription is rejected by the server.
@@ -52,21 +52,21 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
     })
 
     setChannel(_channel)
-    console.log('Created subscription')
+    console.info('Created subscription')
 
     return () => {
       (consumer.subscriptions as any).remove(_channel)
       setChannel(undefined)
-      console.log('Unsubscribing')
+      console.info('Unsubscribing')
     }
   }, [channelName, onMessage])
 
   const sendMessage = useCallback((message: WebsocketMessage) => {
     if (!channel) {
-      console.log("Didn't send message because channel not initialized")
+      console.warn("Didn't send message because channel not initialized")
       return
     }
-    console.log('[ws] Sending', message)
+    console.info('[ws] Sending', message)
     channel.send(message)
   }, [channel])
 

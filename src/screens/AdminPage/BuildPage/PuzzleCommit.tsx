@@ -127,7 +127,7 @@ const PuzzleCommit = () => {
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
-    console.log('Request brute solve', constraints)
+    console.info('Request brute solve', constraints)
     try {
       const solution = bruteSolve(constraints!)
       dispatch(responseBruteSolution(solution))

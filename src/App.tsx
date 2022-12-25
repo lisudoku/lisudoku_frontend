@@ -19,6 +19,12 @@ const AdminPage = lazy(() => import('./screens/AdminPage'))
 
 const theme = {}
 
+if (process.env.NODE_ENV === 'production') {
+  console.debug = () => {}
+  console.log = () => {}
+  console.info = () => {}
+}
+
 const App = () => {
   return (
     <ThemeProvider value={theme}>
