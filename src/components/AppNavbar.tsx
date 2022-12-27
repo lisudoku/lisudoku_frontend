@@ -11,10 +11,10 @@ const ITEMS: any[] = [
   //   text: 'Learn',
   //   url: '/learn',
   // },
-  // {
-  //   text: 'Live',
-  //   url: '/tv',
-  // },
+  {
+    text: 'TV',
+    url: '/tv',
+  },
 ]
 
 const ADMIN_ITEMS = [
