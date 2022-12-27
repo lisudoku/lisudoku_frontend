@@ -33,9 +33,9 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
           Updated {getDurationShort(puzzle.updatedAt)} ago
         </div>
       )}
-      <Link to={getPuzzleRelativeUrl(puzzle.puzzleId)} target="_blank">
+      {/* <Link to={getPuzzleRelativeUrl(puzzle.puzzleId)} target="_blank">
         Play
-      </Link>
+      </Link> */}
     </div>
   )
 }
