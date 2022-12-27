@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'src/hooks'
 import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
-import { useSelector } from 'src/hooks'
 
 const ITEMS: any[] = [
   // {

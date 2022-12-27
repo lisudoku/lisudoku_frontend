@@ -2,12 +2,13 @@ import { useCallback, useMemo } from 'react'
 import _ from 'lodash'
 import { useWebsocket } from 'src/utils/websocket'
 import { useDispatch, useSelector } from 'src/hooks'
-import { TvPuzzle, initPuzzles, removePuzzles, updatePuzzle } from 'src/reducers/tv'
+import { TvPuzzle, initPuzzles, removePuzzles, updatePuzzle, updateViewerCount } from 'src/reducers/tv'
 
 export enum TvMessageType {
   PuzzleUpdate = 'puzzle_update',
   InitPuzzles = 'init_puzzles',
   PuzzleRemove = 'puzzle_remove',
+  ViewerCountUpdate = 'viewer_count_update',
 }
 
 type TvMessage = {
@@ -30,11 +31,16 @@ export const useTvWebsocket = () => {
         dispatch(removePuzzles(message.data))
         break
       }
+      case TvMessageType.ViewerCountUpdate: {
+        dispatch(updateViewerCount(message.data))
+        break
+      }
     }
   }, [dispatch])
   useWebsocket('TvChannel', handleMessage)
 
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)
+  const viewerCount = useSelector(state => state.tv.viewerCount)
   const sortedTvPuzzles = useMemo(() => (
     _.orderBy(
       tvPuzzles,
@@ -48,5 +54,6 @@ export const useTvWebsocket = () => {
 
   return {
     tvPuzzles: sortedTvPuzzles,
+    viewerCount,
   }
 }

@@ -19,21 +19,24 @@ export type TvPuzzle = {
 
 type TvState = {
   tvPuzzles: TvPuzzle[]
+  viewerCount: number,
 }
 
 export const tvSlice = createSlice({
   name: 'tv',
   initialState: {
     tvPuzzles: [],
+    viewerCount: 0,
   } as TvState,
   reducers: {
     initPuzzles(state, action) {
-      const tvPuzzles = action.payload.map((tvPuzzle: any) => ({
+      const tvPuzzles = action.payload.tv_puzzles.map((tvPuzzle: any) => ({
         ...jcc.camelCaseKeys(tvPuzzle),
         // grid has to be handled separately because of jcc
         grid: tvPuzzle.grid,
       }))
       state.tvPuzzles = tvPuzzles
+      state.viewerCount = action.payload.viewer_count
     },
     updatePuzzle(state, action) {
       const data = action.payload
@@ -76,11 +79,14 @@ export const tvSlice = createSlice({
         return !ids.includes(tvPuzzle.id)
       })
     },
+    updateViewerCount(state, action) {
+      state.viewerCount = action.payload
+    },
   },
 })
 
 export const {
-  initPuzzles, updatePuzzle, removePuzzles,
+  initPuzzles, updatePuzzle, removePuzzles, updateViewerCount,
 } = tvSlice.actions
 
 export default tvSlice.reducer

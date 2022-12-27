@@ -34,3 +34,10 @@ export const computeCellSize = (gridSize: number, width: number, ratio: number =
   // Should be synced with the formula in SudokuConstraintGraphics width={gridSize * cellSize + 2}
   return (width - 2) / gridSize
 }
+
+export const pluralize = (count: number, word: string) => {
+  if (count !== 1) {
+    return word + 's'
+  }
+  return word
+}
