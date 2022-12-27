@@ -1,9 +1,14 @@
+import { useLayoutEffect } from 'react'
 import { Typography } from '@material-tailwind/react'
 import TvPuzzleCard from './TvPuzzleCard'
 import { useTvWebsocket } from './hooks'
 
 const TvPage = () => {
   const { tvPuzzles } = useTvWebsocket()
+
+  useLayoutEffect(() => {
+    document.title = `lisudoku TV (${tvPuzzles.length})`
+  }, [tvPuzzles.length])
 
   return (
     <>
