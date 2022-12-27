@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
-import { computeCellSize, getDurationShort, getPuzzleRelativeUrl } from 'src/utils/misc'
+import { computeCellSize, getDurationShort } from 'src/utils/misc'
 import useInterval from 'react-useinterval'
 import { useState } from 'react'
 import classNames from 'classnames'
