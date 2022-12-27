@@ -30,14 +30,18 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
     }
   }, [notesActive, onSelectedCellValueChange, onSelectedCellNotesChange])
 
+  const buttonsPerRow = gridSize > 4 ? 3 : 2
+
   return (
     <div className="flex flex-col gap-2 md:gap-4">
       <div className="flex flex-wrap w-full md:w-64 mt-2 md:mt-0">
         {_.times(gridSize).map(value => (
           <div key={value}
                className={classNames('h-12 md:h-20 grow md:pb-1 px-0.5 first:pl-0 last:pr-0', {
-                 'md:w-1/3': gridSize > 4,
-                 'md:w-1/2': gridSize <= 4,
+                 'md:w-1/3': buttonsPerRow === 3,
+                 'md:w-1/2': buttonsPerRow === 2,
+                 'md:pl-0': value % buttonsPerRow === 0,
+                 'md:pr-0': value % buttonsPerRow === buttonsPerRow - 1,
                })}
           >
             <Button fullWidth
