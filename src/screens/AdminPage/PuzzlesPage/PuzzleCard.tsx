@@ -6,10 +6,13 @@ import { deletePuzzle } from 'src/reducers/admin'
 import { Puzzle } from 'src/types/sudoku'
 import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
+  const solvedPuzzleIds = useSelector(state => state.userData.solvedPuzzles.map(puzzle => puzzle.id))
 
   const gridSize = puzzle.constraints.gridSize
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
@@ -42,6 +45,11 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
         <button className="text-red-700" onClick={handleDelete}>
           Delete
         </button>
+        {solvedPuzzleIds.includes(puzzle.publicId!) && (
+          <div>
+            <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
+          </div>
+        )}
       </div>
     </div>
   )
