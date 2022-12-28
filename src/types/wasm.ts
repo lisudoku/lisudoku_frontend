@@ -6,10 +6,15 @@ export type SudokuBruteSolveResult = {
 }
 
 export type SudokuIntuitiveSolveResult = {
-  full_solution: boolean
-  no_solution: boolean
+  solution_type: SolutionType
   solution?: Grid
   steps?: SolutionStep[]
+}
+
+export enum SolutionType {
+  Full = 'Full',
+  Partial = 'Partial',
+  None = 'None',
 }
 
 export type SolutionStep = {

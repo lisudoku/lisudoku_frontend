@@ -8,7 +8,7 @@ import {
   changeDifficulty, errorAddPuzzle, errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseBruteSolution, responseIntuitiveSolution,
 } from 'src/reducers/admin'
-import { SolutionStep, StepRule, SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import { SolutionStep, SolutionType, StepRule, SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 import { Puzzle, SudokuConstraints, SudokuDifficulty } from 'src/types/sudoku'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import VariantSelect from 'src/components/Puzzle/VariantSelect'
@@ -84,14 +84,14 @@ const computeIntuitiveSolutionDescription = (solution: SudokuIntuitiveSolveResul
   let text = ''
 
   if (solution !== null) {
-    if (solution.no_solution) {
+    if (solution.solution_type === SolutionType.None) {
       text += "No solutions 🙁\n"
-    } else if (solution.full_solution) {
+    } else if (solution.solution_type === SolutionType.Full) {
       text += "Found solution 🎉\n"
     } else {
       text += "There might be a solution... 😢\n"
     }
-    if (solution.full_solution) {
+    if (solution.solution_type === SolutionType.Full) {
       text += `Steps: ${solution.steps!.length}\n`
       text += groupStepsByType(solution.steps!).map(([ rule, count ]) => (
         `${rule} x ${count}`
@@ -123,7 +123,7 @@ const PuzzleCommit = () => {
   const puzzlePublicId = useSelector(state => state.admin.puzzlePublicId)
   const puzzleAdding = useSelector(state => state.admin.puzzleAdding)
 
-  const addPuzzleEnabled = intuitiveSolution?.full_solution && bruteSolution?.solution_count === 1
+  const addPuzzleEnabled = intuitiveSolution?.solution_type === SolutionType.Full && bruteSolution?.solution_count === 1
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
