@@ -134,3 +134,17 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
 
   return errorGrid
 }
+
+export const getAllCells = (gridSize: number) => {
+  const cells: CellPosition[] = _.flatten(
+    _.times(gridSize, rowIndex => (
+      _.times(gridSize, colIndex => (
+        {
+          row: rowIndex,
+          col: colIndex,
+        }
+      ))
+    ))
+  )
+  return cells
+}
