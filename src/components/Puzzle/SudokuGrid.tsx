@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import classNames from 'classnames'
-import SudokuConstraintsGraphics from './SudokuConstraintsGraphics'
+import SudokuConstraintsGraphics from './SudokuGridGraphics'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
