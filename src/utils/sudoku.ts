@@ -58,6 +58,7 @@ type CountMap = {
   [key: number]: number
 }
 
+// TODO: refactor this to remove duplicate code
 export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid) => {
   const { gridSize, fixedNumbers } = constraints
   const errorGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
@@ -72,6 +73,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
+  // Rows
   for (let row = 0; row < gridSize; row++) {
     const valueCounts: CountMap = {}
     for (let col = 0; col < gridSize; col++) {
@@ -86,6 +88,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
+  // Columns
   for (let col = 0; col < gridSize; col++) {
     const valueCounts: CountMap = {}
     for (let row = 0; row < gridSize; row++) {
@@ -101,6 +104,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
+  // Regions
   for (const region of constraints.regions) {
     const valueCounts: CountMap = {}
     for (let { row, col } of region) {
@@ -116,6 +120,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
+  // Thermos
   for (const thermo of constraints.thermos ?? []) {
     let prevValue = 0
     let prevCell: CellPosition | null = null
@@ -128,6 +133,36 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
       if (value) {
         prevValue = value!
         prevCell = cell
+      }
+    }
+  }
+
+  if (constraints.primaryDiagonal) {
+    const valueCounts: CountMap = {}
+    for (let index = 0; index < gridSize; index++) {
+      const value = valuesGrid[index][index]
+      valueCounts[value!] ||= 0
+      valueCounts[value!] += 1
+    }
+    for (let index = 0; index < gridSize; index++) {
+      const value = valuesGrid[index][index]
+      if (valueCounts[value!] > 1) {
+        errorGrid[index][index] = true
+      }
+    }
+  }
+
+  if (constraints.secondaryDiagonal) {
+    const valueCounts: CountMap = {}
+    for (let index = 0; index < gridSize; index++) {
+      const value = valuesGrid[index][gridSize - 1 - index]
+      valueCounts[value!] ||= 0
+      valueCounts[value!] += 1
+    }
+    for (let index = 0; index < gridSize; index++) {
+      const value = valuesGrid[index][gridSize - 1 - index]
+      if (valueCounts[value!] > 1) {
+        errorGrid[index][gridSize - 1 - index] = true
       }
     }
   }

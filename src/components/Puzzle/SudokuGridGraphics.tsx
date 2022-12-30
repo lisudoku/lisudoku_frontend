@@ -217,7 +217,7 @@ const GridGraphics = ({ gridSize, cellSize }: GridGraphicsProps) => {
   }
 
   return (
-    <g className="stroke-gray-500">
+    <g className="stroke-gray-700">
       {gridLines.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
@@ -255,8 +255,26 @@ const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
     const row = Math.floor(Math.max(0, y - 1) / cellSize)
     const col = Math.floor(Math.max(0, x - 1) / cellSize)
     onCellClick?.({ row, col })
-  }, [cellSize])
+  }, [cellSize, onCellClick])
 )
+
+const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGraphicsProps) => (
+  <g className="stroke-purple-400 stroke-[3px]">
+    {primary && (
+      <line x1={1} y1={1} x2={1 + cellSize * gridSize} y2={1 + cellSize * gridSize} />
+    )}
+    {secondary && (
+      <line x1={1} y1={1 + cellSize * gridSize} x2={1 + cellSize * gridSize} y2={1} />
+    )}
+  </g>
+)
+
+type DiagonalGraphicsProps = {
+  gridSize: number
+  cellSize: number
+  primary: boolean
+  secondary: boolean
+}
 
 const SudokuConstraintsGraphics = (
   { constraints, notes, cellSize, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
@@ -272,6 +290,10 @@ const SudokuConstraintsGraphics = (
     >
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
+      <DiagonalGraphics gridSize={gridSize}
+                        cellSize={cellSize}
+                        primary={constraints.primaryDiagonal}
+                        secondary={constraints.secondaryDiagonal} />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} grid={grid} checkErrors={checkErrors} />

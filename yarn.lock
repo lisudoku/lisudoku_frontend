@@ -6416,10 +6416,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-lisudoku-solver@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.2.tgz#b9f8f84e9eb01ffca3162086f1f311b601b5f972"
-  integrity sha512-GQul0wOpWe6Lm1vzdGm1/FDJEQ4sLyPPxroiO79cLkFfenPOZ/GWTt4ED+7JcK/nqj3SmJNZZTIGWZwBA2CzLg==
+lisudoku-solver@0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.3.tgz#97f41d2b5572c1b95dce32582920d746b2de665a"
+  integrity sha512-tIjU7/cv7g92fWGJLz/Bic9HVp/fN4O0M4MANTIPz2ZS1iqNi8yJfS3DjZlH7co47i66lYEKdyP+5Rq2PGlRtQ==
 
 loader-runner@^4.2.0:
   version "4.3.0"

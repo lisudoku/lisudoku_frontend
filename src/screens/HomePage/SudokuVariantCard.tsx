@@ -17,7 +17,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
             preserveAspectRatio="none"
         >
           {variant === SudokuVariant.Diagonal && (
-            <g style={{ opacity: 0.6 }}>
+            <g className="opacity-60">
               <line x1="0" y1="0" x2="100" y2="100" />
               <line x1="100" y1="0" x2="0" y2="100" />
             </g>
@@ -56,10 +56,10 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
             </g>
           )}
           {variant === SudokuVariant.TopBot && (
-            <polyline points="75,0 75,15 62,30 62,45 53,53 53,70 40,85 40,100" style={{ opacity: 0.6 }} />
+            <polyline points="75,0 75,15 62,30 62,45 53,53 53,70 40,85 40,100" className="opacity-60" />
           )}
           {variant === SudokuVariant.Classic && (
-            <g style={{ opacity: 0.6 }}>
+            <g className="opacity-60">
               <line x1="33" y1="0" x2="33" y2="30" stroke="grey" />
               <line x1="33" y1="70" x2="33" y2="100" stroke="grey" />
 
@@ -78,6 +78,13 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
                 <text x="82" y="75">2</text>
                 <text x="25" y="94">4</text>
               </g>
+            </g>
+          )}
+          {variant === SudokuVariant.Mixed && (
+            <g className="fill-gray-500 stroke-0">
+              <text x="20" y="18" className="origin-center -rotate-12">?</text>
+              <text x="70" y="18" className="origin-center rotate-[25deg]">?</text>
+              <text x="70" y="85" className="origin-center rotate-12">?</text>
             </g>
           )}
         </svg>

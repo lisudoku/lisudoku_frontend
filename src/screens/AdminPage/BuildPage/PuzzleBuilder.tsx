@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import {
-  addConstraint, changeConstraintType, ConstraintType, initPuzzle,
+  addConstraint, changeConstraintType, changePrimaryDiagonal, changeSecondaryDiagonal, ConstraintType, initPuzzle,
 } from 'src/reducers/admin'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
@@ -42,6 +42,14 @@ const PuzzleBuilder = () => {
   const handleConstraintAdd = useCallback(() => {
     dispatch(addConstraint())
   }, [dispatch])
+
+  const handlePrimaryDiagonalChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changePrimaryDiagonal(e.target.checked))
+  ), [dispatch])
+
+  const handleSecondaryDiagonalChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changeSecondaryDiagonal(e.target.checked))
+  ), [dispatch])
 
   if (!constraints) {
     return null
@@ -100,12 +108,12 @@ const PuzzleBuilder = () => {
         <div className="flex flex-col">
           <Checkbox id="primary-diagonal"
                     label="Primary Diagonal"
-                    disabled
-                    labelProps={{ className: 'line-through' }} />
+                    checked={constraints.primaryDiagonal}
+                    onChange={handlePrimaryDiagonalChange} />
           <Checkbox id="secondary-diagonal"
                     label="Secondary Diagonal"
-                    disabled
-                    labelProps={{ className: 'line-through' }} />
+                    checked={constraints.secondaryDiagonal}
+                    onChange={handleSecondaryDiagonalChange} />
         </div>
       </div>
       <div className="flex flex-col gap-2">

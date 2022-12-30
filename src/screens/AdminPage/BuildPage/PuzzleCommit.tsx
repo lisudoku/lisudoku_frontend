@@ -48,7 +48,13 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
     return SudokuDifficulty.Easy6x6
   }
 
-  const nonEmptyCells = constraints.fixedNumbers.length + _.sumBy(constraints.thermos, 'length') / 2
+  let nonEmptyCells = constraints.fixedNumbers.length + _.sumBy(constraints.thermos, 'length') / 2
+  if (constraints.primaryDiagonal) {
+    nonEmptyCells += 3
+  }
+  if (constraints.secondaryDiagonal) {
+    nonEmptyCells += 3
+  }
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]

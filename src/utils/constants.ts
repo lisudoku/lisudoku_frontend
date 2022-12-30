@@ -4,6 +4,8 @@ import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Classic,
   SudokuVariant.Thermo,
+  SudokuVariant.Diagonal,
+  SudokuVariant.Mixed,
 ]
 
 export const DEFAULT_CELL_SIZE = 56

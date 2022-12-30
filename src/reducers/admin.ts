@@ -67,14 +67,20 @@ const handleConstraintChange = (state: AdminState) => {
 }
 
 const detectVariant = (state: AdminState) => {
-  const usedConstraints = _.compact([ _.gt(state.constraints?.thermos?.length, 0) ])
-  if (usedConstraints.length > 1) {
+  const variants = []
+  if (!_.isEmpty(state.constraints?.thermos)) {
+    variants.push(SudokuVariant.Thermo)
+  }
+  if (state.constraints?.primaryDiagonal || state.constraints?.secondaryDiagonal) {
+    variants.push(SudokuVariant.Diagonal)
+  }
+  if (variants.length > 1) {
     return SudokuVariant.Mixed
+  } else if (variants.length === 1) {
+    return variants[0]
+  } else {
+    return SudokuVariant.Classic
   }
-  if (_.gt(state.constraints?.thermos?.length, 0)) {
-    return SudokuVariant.Thermo
-  }
-  return SudokuVariant.Classic
 }
 
 export const adminSlice = createSlice({
@@ -103,6 +109,8 @@ export const adminSlice = createSlice({
         fixedNumbers: [],
         regions: ensureDefaultRegions(gridSize),
         thermos: [],
+        primaryDiagonal: false,
+        secondaryDiagonal: false,
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
@@ -230,6 +238,14 @@ export const adminSlice = createSlice({
     deletePuzzle(state, action) {
       state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
     },
+    changePrimaryDiagonal(state, action) {
+      state.constraints!.primaryDiagonal = action.payload
+      handleConstraintChange(state)
+    },
+    changeSecondaryDiagonal(state, action) {
+      state.constraints!.secondaryDiagonal = action.payload
+      handleConstraintChange(state)
+    }
   },
 })
 
@@ -239,6 +255,7 @@ export const {
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
+  changePrimaryDiagonal, changeSecondaryDiagonal,
 } = adminSlice.actions
 
 export default adminSlice.reducer

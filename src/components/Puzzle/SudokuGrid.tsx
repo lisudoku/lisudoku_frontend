@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import classNames from 'classnames'
 import SudokuConstraintsGraphics from './SudokuGridGraphics'
 import ClipLoader from 'react-spinners/ClipLoader'

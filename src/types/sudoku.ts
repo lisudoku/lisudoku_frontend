@@ -30,6 +30,8 @@ export type SudokuConstraints = {
   fixedNumbers: FixedNumber[]
   regions: Region[]
   thermos?: Thermo[]
+  primaryDiagonal: boolean
+  secondaryDiagonal: boolean
 }
 
 export type FixedNumber = {
