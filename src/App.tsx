@@ -9,11 +9,12 @@ import RegisterPage from './screens/RegisterPage'
 import PageNotFound from './screens/PageNotFound'
 import PuzzlePage from './screens/PuzzlePage'
 import PlayPage from './screens/PlayPage'
+import TvPage from './screens/TvPage'
+import AboutPage from './screens/AboutPage'
 import { ThemeProvider } from '@material-tailwind/react'
 import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import TvPage from './screens/TvPage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -42,6 +43,7 @@ const App = () => {
                     <Route path="register" element={<RegisterPage />} />
                     <Route path="p/:id" element={<PuzzlePage />} />
                     <Route path="tv" element={<TvPage />} />
+                    <Route path="about" element={<AboutPage />} />
                     <Route path="*" element={<PageNotFound />} />
                   </Route>
                   <Route path="/" element={<Layout admin />}>
