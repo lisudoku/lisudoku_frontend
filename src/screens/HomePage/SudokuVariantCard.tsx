@@ -82,9 +82,9 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
           )}
           {variant === SudokuVariant.Mixed && (
             <g className="fill-gray-500 stroke-0">
-              <text x="20" y="18" className="origin-center -rotate-12">?</text>
-              <text x="70" y="18" className="origin-center rotate-[25deg]">?</text>
-              <text x="70" y="85" className="origin-center rotate-12">?</text>
+              <text x="15" y="25" rotate={-15}>?</text>
+              <text x="80" y="30" rotate={20}>?</text>
+              <text x="60" y="90" rotate={15}>?</text>
             </g>
           )}
         </svg>
