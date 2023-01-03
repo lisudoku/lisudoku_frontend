@@ -14,6 +14,7 @@ import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
 import { Typography } from '@material-tailwind/react'
 import PuzzleCommit from './PuzzleCommit'
+import { Grid } from 'src/types/sudoku'
 
 const PuzzleBuilder = () => {
   const { gridSize: paramGridSize } = useParams()
@@ -28,10 +29,11 @@ const PuzzleBuilder = () => {
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
   const currentThermo = useSelector(state => state.admin.currentThermo)
+  const regionsGrid = useSelector(state => state.admin.regionsGrid!)
   const notes = useSelector(state => state.admin.notes)
 
   // Not really used, but SudokuGrid needs them... there are better solutions
-  const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+  const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler()
@@ -72,10 +74,10 @@ const PuzzleBuilder = () => {
   return (
     <div className="flex gap-10">
       <SudokuGrid constraints={constraintPreview}
-                  grid={grid}
+                  grid={constraintType === ConstraintType.Regions ? regionsGrid : grid}
                   notes={notes!}
                   selectedCell={selectedCell!}
-                  checkErrors
+                  checkErrors={constraintType !== ConstraintType.Regions}
                   loading={false}
                   onCellClick={onCellClick}
       />
@@ -95,17 +97,18 @@ const PuzzleBuilder = () => {
                  label="Thermometer"
                  color="cyan"
                  checked={constraintType === ConstraintType.Thermo}
-                 labelProps={{ className: classNames({
+                 labelProps={{ className: classNames('text-white', {
                    'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize,
                    'text-green-600': _.inRange(currentThermo.length, 2, gridSize + 1),
                  })}}
                  onChange={handleConstraintTypeChange} />
           <Radio name="build-item"
+                 id={ConstraintType.Regions}
                  label="Regions"
                  color="cyan"
-                 disabled
-                 labelProps={{ className: 'line-through' }} />
-          {constraintType === ConstraintType.Thermo && (
+                 checked={constraintType === ConstraintType.Regions}
+                 onChange={handleConstraintTypeChange} />
+          {(constraintType === ConstraintType.Thermo || constraintType === ConstraintType.Regions) && (
             <Button onClick={handleConstraintAdd}>Add</Button>
           )}
         </div>

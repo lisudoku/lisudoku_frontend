@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition } from 'src/types/sudoku'
 import {
-  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
+  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellRegion, changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
 } from 'src/reducers/admin'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
@@ -34,6 +34,10 @@ export const useControlCallbacks = () => {
   const handleSelectedCellNotesChange = useCallback((value: number) => {
     dispatch(changeSelectedCellNotes(value))
   }, [dispatch])
+  const handleSelectedCellRegionChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellRegion(value))
+  }, [dispatch])
+
   // const handleUndo = useCallback(() => {
   //   dispatch(undoAction())
   // }, [dispatch])
@@ -47,6 +51,7 @@ export const useControlCallbacks = () => {
     onSelectedCellNotesChange: handleSelectedCellNotesChange,
     onCellClick: handleCellClick,
     onDelete: handleDelete,
+    onSelectedCellRegionChange: handleSelectedCellRegionChange,
     // undoActive,
     // redoActive,
     // onUndo: handleUndo,
@@ -65,6 +70,7 @@ export const useKeyboardHandler = () => {
   const {
     onCellClick, onDelete,
     onSelectedCellValueChange, onNotesActiveToggle, onSelectedCellNotesChange,
+    onSelectedCellRegionChange,
     // undoActive, redoActive, onUndo, onRedo,
   } = useControlCallbacks()
 
@@ -133,6 +139,8 @@ export const useKeyboardHandler = () => {
         onSelectedCellNotesChange(value)
       } else if (constraintType === ConstraintType.FixedNumber) {
         onSelectedCellValueChange(value)
+      } else if (constraintType === ConstraintType.Regions) {
+        onSelectedCellRegionChange(value)
       }
     }
 
@@ -141,7 +149,7 @@ export const useKeyboardHandler = () => {
   }, [
     gridSize, selectedCell, constraintType, notesActive,
     onCellClick, onSelectedCellValueChange, onDelete,
-    onNotesActiveToggle, onSelectedCellNotesChange,
+    onNotesActiveToggle, onSelectedCellNotesChange, onSelectedCellRegionChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
 }

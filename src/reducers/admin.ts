@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, Puzzle, SudokuConstraints,
+  CellPosition, FixedNumber, Grid, Puzzle, Region, SudokuConstraints,
   SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
@@ -11,6 +11,7 @@ const jcc = require('json-case-convertor')
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
   Thermo = 'thermo',
+  Regions = 'regions',
 }
 
 type AdminState = {
@@ -28,6 +29,7 @@ type AdminState = {
   puzzleAdding: boolean
   selectedCell: CellPosition | null
   currentThermo: Thermo
+  regionsGrid: Grid | null
 }
 
 const defaultDifficulty = (gridSize: number) => {
@@ -77,6 +79,9 @@ const detectVariant = (state: AdminState) => {
   if (state.constraints?.antiKnight) {
     variants.push(SudokuVariant.AntiKnight)
   }
+  if (!_.isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
+    variants.push(SudokuVariant.Irregular)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -103,6 +108,7 @@ export const adminSlice = createSlice({
     puzzleAdding: false,
     selectedCell: null,
     currentThermo: [],
+    regionsGrid: null,
   } as AdminState,
   reducers: {
     initPuzzle(state, action) {
@@ -118,6 +124,12 @@ export const adminSlice = createSlice({
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.regionsGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+      state.constraints.regions.forEach((region, index) => {
+        region.forEach(({ row, col }) => {
+          state.regionsGrid![row][col] = index + 1
+        })
+      })
     },
     changeSelectedCell(state, action) {
       state.selectedCell = action.payload
@@ -171,6 +183,22 @@ export const adminSlice = createSlice({
             state.constraints!.thermos!.push(state.currentThermo)
             state.currentThermo = []
           }
+          break
+        }
+        case ConstraintType.Regions: {
+          const regions: Region[] = []
+          _.times(state.constraints!.gridSize, row => {
+            _.times(state.constraints!.gridSize, col => {
+              const regionIndex = state.regionsGrid![row][col]! - 1
+              regions[regionIndex] ||= []
+              const cell: CellPosition = {
+                row,
+                col,
+              }
+              regions[regionIndex].push(cell)
+            })
+          })
+          state.constraints!.regions = regions
           break
         }
       }
@@ -239,6 +267,15 @@ export const adminSlice = createSlice({
 
       state.notes![row][col] = _.xor(state.notes![row][col], [action.payload])
     },
+    changeSelectedCellRegion(state, action) {
+      if (state.selectedCell === null) {
+        return
+      }
+
+      const { row, col } = state.selectedCell
+
+      state.regionsGrid![row][col] = action.payload
+    },
     deletePuzzle(state, action) {
       state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
     },
@@ -263,7 +300,7 @@ export const {
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
-  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
+  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeSelectedCellRegion,
 } = adminSlice.actions
 
 export default adminSlice.reducer
