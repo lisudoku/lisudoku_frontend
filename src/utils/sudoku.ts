@@ -167,6 +167,25 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
+  if (constraints.antiKnight) {
+    const cells = getAllCells(gridSize)
+    cells.forEach(cell => {
+      const value = valuesGrid[cell.row][cell.col]
+      if (!value) {
+        return
+      }
+      const peers = getKnightPeers(cell, gridSize)
+      peers.forEach(peer => {
+        const peerValue = valuesGrid[peer.row][peer.col]
+        if (value !== peerValue) {
+          return
+        }
+        errorGrid[cell.row][cell.col] = true
+        errorGrid[peer.row][peer.col] = true
+      })
+    })
+  }
+
   return errorGrid
 }
 
@@ -182,4 +201,21 @@ export const getAllCells = (gridSize: number) => {
     ))
   )
   return cells
+}
+
+const KNIGHT_ROW_DELTA = [ 1, 2, -1, -2, 1, 2, -1, -2 ]
+const KNIGHT_COL_DELTA = [ 2, 1, 2, 1, -2, -1, -2, -1 ]
+const getKnightPeers = (cell: CellPosition, gridSize: number) => {
+  const peers: CellPosition[] = []
+  _.times(8, dir => {
+    const peer = {
+      row: cell.row + KNIGHT_ROW_DELTA[dir],
+      col: cell.col + KNIGHT_COL_DELTA[dir],
+    }
+    if (peer.row < 0 || peer.row >= gridSize || peer.col < 0 || peer.col >= gridSize) {
+      return
+    }
+    peers.push(peer)
+  })
+  return peers
 }

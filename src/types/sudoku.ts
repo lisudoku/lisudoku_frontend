@@ -15,6 +15,7 @@ export enum SudokuVariant {
   TopBot = 'topbot',
   Diagonal = 'diagonal',
   Mixed = 'mixed',
+  AntiKnight = 'antiknight',
 }
 
 export enum SudokuDifficulty {
@@ -32,6 +33,7 @@ export type SudokuConstraints = {
   thermos?: Thermo[]
   primaryDiagonal: boolean
   secondaryDiagonal: boolean
+  antiKnight: boolean
 }
 
 export type FixedNumber = {

@@ -5,7 +5,8 @@ import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import {
-  addConstraint, changeConstraintType, changePrimaryDiagonal, changeSecondaryDiagonal, ConstraintType, initPuzzle,
+  addConstraint, changeAntiKnight, changeConstraintType, changePrimaryDiagonal, changeSecondaryDiagonal,
+  ConstraintType, initPuzzle,
 } from 'src/reducers/admin'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
@@ -49,6 +50,10 @@ const PuzzleBuilder = () => {
 
   const handleSecondaryDiagonalChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
     dispatch(changeSecondaryDiagonal(e.target.checked))
+  ), [dispatch])
+
+  const handleAntiKnightChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changeAntiKnight(e.target.checked))
   ), [dispatch])
 
   if (!constraints) {
@@ -114,6 +119,10 @@ const PuzzleBuilder = () => {
                     label="Secondary Diagonal"
                     checked={constraints.secondaryDiagonal}
                     onChange={handleSecondaryDiagonalChange} />
+          <Checkbox id="anti-knight"
+                    label="Anti Knight"
+                    checked={constraints.antiKnight}
+                    onChange={handleAntiKnightChange} />
         </div>
       </div>
       <div className="flex flex-col gap-2">

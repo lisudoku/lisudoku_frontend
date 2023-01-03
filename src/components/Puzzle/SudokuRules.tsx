@@ -21,6 +21,9 @@ const computeRules = (constraints: SudokuConstraints) => {
     rule += ` purple diagonal must contain distinct digits from 1 to ${constraints.gridSize}.`
     rules.push(rule)
   }
+  if (constraints.antiKnight) {
+    rules.push('Cells a knight move away must not contain the same digit.')
+  }
   return rules
 }
 

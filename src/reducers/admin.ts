@@ -74,6 +74,9 @@ const detectVariant = (state: AdminState) => {
   if (state.constraints?.primaryDiagonal || state.constraints?.secondaryDiagonal) {
     variants.push(SudokuVariant.Diagonal)
   }
+  if (state.constraints?.antiKnight) {
+    variants.push(SudokuVariant.AntiKnight)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -111,6 +114,7 @@ export const adminSlice = createSlice({
         thermos: [],
         primaryDiagonal: false,
         secondaryDiagonal: false,
+        antiKnight: false,
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
@@ -245,7 +249,11 @@ export const adminSlice = createSlice({
     changeSecondaryDiagonal(state, action) {
       state.constraints!.secondaryDiagonal = action.payload
       handleConstraintChange(state)
-    }
+    },
+    changeAntiKnight(state, action) {
+      state.constraints!.antiKnight = action.payload
+      handleConstraintChange(state)
+    },
   },
 })
 
@@ -255,7 +263,7 @@ export const {
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
-  changePrimaryDiagonal, changeSecondaryDiagonal,
+  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
 } = adminSlice.actions
 
 export default adminSlice.reducer

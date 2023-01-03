@@ -2,14 +2,24 @@ import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { SudokuVariantDisplay } from 'src/utils/constants'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChessKnight } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
-  <div className="w-full sm:w-1/2 md:w-1/2 p-1.5">
+  <div className="w-full sm:w-1/2 md:w-1/3 p-1.5">
     <Link to={`/play/${variant}/${difficulty}`}>
       <div className="relative h-48 border rounded border-gray-700 cursor-pointer text-3xl bg-gray-800 hover:bg-cyan-900 hover:text-gray-300 hover:shadow-sm hover:shadow-gray-700">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
           <span className={classNames('z-10', { 'pr-10': variant === SudokuVariant.Irregular })}>{SudokuVariantDisplay[variant]}</span>
           <span className={classNames('z-10', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
+        </div>
+        <div className="absolute z-0 w-full h-full top-0 left-0">
+          {variant === SudokuVariant.AntiKnight && (
+            <>
+              <FontAwesomeIcon icon={faChessKnight} size="sm" className="absolute top-5 left-5" />
+              <FontAwesomeIcon icon={faChessKnight} size="sm" className="absolute bottom-5 right-5" />
+            </>
+          )}
         </div>
         <svg className="absolute text-lg z-0 w-full h-full top-0 left-0"
             style={{ fill: 'none', stroke: 'grey', strokeWidth: 1, strokeLinecap: 'square' }}
