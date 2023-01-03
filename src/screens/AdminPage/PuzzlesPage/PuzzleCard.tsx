@@ -7,7 +7,7 @@ import { Puzzle } from 'src/types/sudoku'
 import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCircleCheck, faChessKnight } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const dispatch = useDispatch()
@@ -39,6 +39,11 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
                   onCellClick={null}
                   cellSize={cellSize} />
       <div className="flex gap-5 w-fit text-sm">
+        {puzzle.constraints.antiKnight && (
+          <div>
+            <FontAwesomeIcon icon={faChessKnight} size="sm" />
+          </div>
+        )}
         <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
           Play
         </Link>
