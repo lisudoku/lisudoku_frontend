@@ -43,7 +43,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
           {variant === SudokuVariant.Killer && (
             <g>
               <polyline points="15,15 85,15 85,85 15,85 15,15" style={{ strokeDasharray: 3 }} />
-              <text x="16" y="20" style={{ fill: 'white', stroke: 'none', fontSize: 4 }}>100</text>
+              <text x="16" y="20" style={{ fill: 'white', stroke: 'none', fontSize: 4 }}>45</text>
             </g>
           )}
           {variant === SudokuVariant.Irregular && (

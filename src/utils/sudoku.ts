@@ -105,7 +105,11 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
   }
 
   // Regions
-  for (const region of constraints.regions) {
+  const allRegions = [
+    ...constraints.regions,
+    ...constraints.killerCages.map(cage => cage.region),
+  ]
+  for (const region of allRegions) {
     const valueCounts: CountMap = {}
     for (let { row, col } of region) {
       const value = valuesGrid[row][col]
@@ -184,6 +188,20 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
         errorGrid[peer.row][peer.col] = true
       })
     })
+  }
+
+  for (const killerCage of constraints.killerCages) {
+    if (!killerCage.sum) {
+      continue
+    }
+    const sum = _.sumBy(killerCage.region, cell => (
+      valuesGrid[cell.row][cell.col]
+    ))
+    if (sum > killerCage.sum) {
+      for (const cell of killerCage.region) {
+        errorGrid[cell.row][cell.col] = true
+      }
+    }
   }
 
   return errorGrid

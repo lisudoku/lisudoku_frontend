@@ -21,6 +21,7 @@ const Radio = forwardRef((props: any, ref) => {
   return (
     <MuiRadio {...props}
               ref={ref}
+              color="cyan"
               className={`${EXTRA_CLASSNAME} ${props.className}`}
               labelProps={{ ...LABEL_PROPS, ...props.labelProps }}
               containerProps={{ ...CONTAINER_PROPS, ...props.containerProps }}

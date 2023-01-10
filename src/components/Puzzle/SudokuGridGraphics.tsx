@@ -1,7 +1,7 @@
 import { ReactElement, MouseEvent, useCallback } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
-import { CellPosition, Grid, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { CellPosition, Grid, KillerCage, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useErrorGrid, useFixedNumbersGrid } from './hooks'
 
@@ -44,7 +44,7 @@ const BordersGraphics = ({ gridSize, regions, cellSize }: BordersGraphicsProps) 
   })
 
   return (
-    <g className="stroke-white">
+    <g className="regions stroke-white">
       <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
       <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
       <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
@@ -106,16 +106,19 @@ const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: n
   </>
 )
 
-const NotesGraphics = ({ notes, cellSize }: { notes?: number[][][], cellSize: number }) => {
+const NotesGraphics = ({ notes, cellSize, killerActive }: NotesGraphicsProps) => {
   if (!notes) {
     return null
   }
 
+  const notesPaddingX = cellSize / 14 + (killerActive ? 3 : 0)
+  const notesPaddingY = cellSize / 14 + (killerActive ? 10 : 0)
   const notesFontSize = cellSize * 3 / 14
-  const notesPadding = cellSize / 14
   const notesFontWidth = notesFontSize * 2 / 3
-  const notesSize = cellSize - notesPadding * 2
-  const notesColumnSize = notesSize / 3
+  const notesWidth = cellSize - notesPaddingX * 2
+  const notesHeight = cellSize - notesPaddingY * 2
+  const notesColumnWidth = notesWidth / 3
+  const notesColumnHeight = notesHeight / 3
 
   const noteElements: ReactElement[] = []
   notes.forEach((rowNotes, rowIndex) => {
@@ -124,8 +127,8 @@ const NotesGraphics = ({ notes, cellSize }: { notes?: number[][][], cellSize: nu
         const noteRow = Math.floor((value - 1) / 3)
         const noteCol = (value - 1) % 3
 
-        const x = colIndex * cellSize + 1 + noteCol * notesColumnSize + notesPadding + notesColumnSize / 2 - notesFontWidth / 2
-        const y = rowIndex * cellSize + 1 + noteRow * notesColumnSize + notesPadding + notesFontSize
+        const x = colIndex * cellSize + 1 + noteCol * notesColumnWidth + notesPaddingX + notesColumnWidth / 2 - notesFontWidth / 2
+        const y = rowIndex * cellSize + 1 + noteRow * notesColumnHeight + notesPaddingY + notesFontSize
         const key = value + 10 * (colIndex + rowIndex * rowNotes.length)
         noteElements.push((
           <text x={x}
@@ -139,10 +142,16 @@ const NotesGraphics = ({ notes, cellSize }: { notes?: number[][][], cellSize: nu
   })
 
   return (
-    <g className="fill-blue-200 font-bold" style={{ stroke: 'none', fontSize: notesFontSize }}>
+    <g className="notes fill-blue-200 font-bold" style={{ stroke: 'none', fontSize: notesFontSize }}>
       {noteElements}
     </g>
   )
+}
+
+type NotesGraphicsProps = {
+  notes?: number[][][]
+  cellSize: number
+  killerActive: boolean
 }
 
 const DigitGraphics = ({ cellSize, constraints, grid, checkErrors }: DigitGraphicsProps) => {
@@ -183,7 +192,7 @@ const DigitGraphics = ({ cellSize, constraints, grid, checkErrors }: DigitGraphi
   })
 
   return (
-    <g className="font-medium"
+    <g className="digits font-medium"
        style={{ stroke: 'none', fontSize: digitFontSize }}>
       {digitElements}
     </g>
@@ -217,7 +226,7 @@ const GridGraphics = ({ gridSize, cellSize }: GridGraphicsProps) => {
   }
 
   return (
-    <g className="stroke-gray-700">
+    <g className="grid-lines stroke-gray-700">
       {gridLines.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
@@ -259,7 +268,7 @@ const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
 )
 
 const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGraphicsProps) => (
-  <g className="stroke-purple-400 stroke-[3px]">
+  <g className="diagonals stroke-purple-400 stroke-[3px]">
     {primary && (
       <line x1={1} y1={1} x2={1 + cellSize * gridSize} y2={1 + cellSize * gridSize} />
     )}
@@ -276,6 +285,111 @@ type DiagonalGraphicsProps = {
   secondary: boolean
 }
 
+type KillerSum = {
+  sum: number | null
+  x: number
+  y: number
+}
+
+// TODO: we could use a single polyline per killer cage
+const KillerGraphics = ({ gridSize, cellSize, killerCages }: KillerGraphicsProps) => {
+  const KILLER_PADDING = cellSize / 15
+  const KILLER_SUM_FONT_SIZE = cellSize * 3 / 14
+
+  const cagesGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(0))
+  killerCages.forEach((killerCage, killerIndex) => {
+    killerCage.region.forEach(cell => {
+      cagesGrid[cell.row][cell.col] = killerIndex + 1
+    })
+  })
+
+  const borders: Border[] = []
+  const cells = getAllCells(gridSize)
+  cells.forEach(({ row, col }) => {
+    if (cagesGrid[row][col] === 0) {
+      return
+    }
+
+    const ADJACENT_ROW_DELTA = [ 0, 1, 0, -1 ]
+    const ADJACENT_COL_DELTA = [ 1, 0, -1, 0 ]
+    for (let dir = 0; dir < 4; dir++) {
+      const drow = row + ADJACENT_ROW_DELTA[dir]
+      const dcol = col + ADJACENT_COL_DELTA[dir]
+
+      if (cagesGrid[row][col] !== 0 && (
+            drow < 0 || drow >= gridSize || dcol < 0 || dcol >= gridSize ||
+            cagesGrid[row][col] !== cagesGrid[drow][dcol]
+          )
+      ) {
+        borders.push({
+          x1: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
+          y1: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
+          x2: col * cellSize + 1 + KILLER_PADDING + (dcol < col ? 0 : (cellSize - 2 * KILLER_PADDING)),
+          y2: row * cellSize + 1 + KILLER_PADDING + (drow < row ? 0 : (cellSize - 2 * KILLER_PADDING)),
+        })
+      }
+    }
+
+    const DIAGONAL_ROW_DELTA = [ 1, 1, -1, -1 ]
+    const DIAGONAL_COL_DELTA = [ 1, -1, 1, -1 ]
+    for (let dir = 0; dir < 4; dir++) {
+      const drow = row + DIAGONAL_ROW_DELTA[dir]
+      const dcol = col + DIAGONAL_COL_DELTA[dir]
+
+      if (cagesGrid[row][col] !== 0 &&
+          drow >= 0 && drow < gridSize && dcol >= 0 && dcol < gridSize &&
+          cagesGrid[drow][dcol] !== cagesGrid[row][col] &&
+          cagesGrid[row][dcol] === cagesGrid[row][col] &&
+          cagesGrid[drow][col] === cagesGrid[row][col]) {
+        // vertical
+        borders.push({
+          x1: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
+          y1: row * cellSize + 1 + (drow > row ? (cellSize - KILLER_PADDING) : 0),
+          x2: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
+          y2: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - KILLER_PADDING) : 0),
+        })
+        // horizontal
+        borders.push({
+          x1: col * cellSize + 1 + (dcol > col ? (cellSize - KILLER_PADDING) : 0),
+          y1: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
+          x2: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - KILLER_PADDING) : 0),
+          y2: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
+        })
+      }
+    }
+  })
+
+  const killerSums: KillerSum[] = killerCages.map(killerCage => {
+    const cell = killerCage.region[0]
+    return {
+      sum: killerCage.sum,
+      x: cell.col * cellSize + 1 + 1 + KILLER_PADDING,
+      y: cell.row * cellSize + 1 + KILLER_PADDING,
+    }
+  })
+
+  return (
+    <>
+    <g className="killer-cage-borders stroke-white stroke-2" style={{ strokeDasharray: cellSize / 10 }}>
+      {borders.map(({ x1, y1, x2, y2 }, index) => (
+        <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
+      ))}
+    </g>
+    <g className="killer-cage-sums stroke-0 fill-white font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
+      {killerSums.map(({ sum, x, y }, index) => (
+        <text key={index} x={x} y={y} dominantBaseline="text-before-edge">{sum}</text>
+      ))}
+    </g>
+    </>
+  )
+}
+
+type KillerGraphicsProps = {
+  gridSize: number
+  cellSize: number
+  killerCages: KillerCage[]
+}
+
 const SudokuConstraintsGraphics = (
   { constraints, notes, cellSize, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
@@ -289,6 +403,7 @@ const SudokuConstraintsGraphics = (
          onClick={onGridClick}
     >
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
+      <KillerGraphics killerCages={constraints.killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
       <DiagonalGraphics gridSize={gridSize}
                         cellSize={cellSize}
@@ -297,7 +412,7 @@ const SudokuConstraintsGraphics = (
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} grid={grid} checkErrors={checkErrors} />
-      <NotesGraphics notes={notes} cellSize={cellSize} />
+      <NotesGraphics notes={notes} cellSize={cellSize} killerActive={!_.isEmpty(constraints.killerCages)} />
     </svg>
   )
 }

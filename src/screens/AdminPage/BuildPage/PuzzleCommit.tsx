@@ -48,13 +48,18 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
     return SudokuDifficulty.Easy6x6
   }
 
-  let nonEmptyCells = constraints.fixedNumbers.length + _.sumBy(constraints.thermos, 'length') / 2
+  let nonEmptyCells = constraints.fixedNumbers.length
+  nonEmptyCells += _.sumBy(constraints.thermos, 'length') / 3
   if (constraints.primaryDiagonal) {
     nonEmptyCells += 3
   }
   if (constraints.secondaryDiagonal) {
     nonEmptyCells += 3
   }
+  if (constraints.antiKnight) {
+    nonEmptyCells += constraints.gridSize
+  }
+  nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
@@ -79,7 +84,7 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
 
   if (maxRank! <= 2) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
-  } else if (maxRank! <= 7) {
+  } else if (maxRank! <= 9) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Medium9x9]
   } else {
     return SudokuDifficultyDisplay[SudokuDifficulty.Hard9x9]

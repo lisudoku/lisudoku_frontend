@@ -75,6 +75,7 @@ export const puzzleSlice = createSlice({
     },
     receivedPuzzle(state, action) {
       const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)
+      puzzleData.constraints.killerCages ||= []
       state.data = puzzleData
       state.solved = false
       state.solveTimer = 0

@@ -34,6 +34,7 @@ export type SudokuConstraints = {
   primaryDiagonal: boolean
   secondaryDiagonal: boolean
   antiKnight: boolean
+  killerCages: KillerCage[]
 }
 
 export type FixedNumber = {
@@ -44,6 +45,11 @@ export type FixedNumber = {
 export type Region = CellPosition[]
 
 export type Thermo = CellPosition[]
+
+export type KillerCage = {
+  sum: number | null
+  region: Region
+}
 
 export type Puzzle = {
   variant: SudokuVariant

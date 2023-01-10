@@ -33,6 +33,8 @@ export enum StepRule {
   // Medium
   Candidates = 'Candidates',
   ThermoCandidates = 'ThermoCandidates',
+  KillerCandidates = 'KillerCandidates',
+  Killer45 = 'Killer45',
   LockedCandidatesPairs = 'LockedCandidatesPairs',
   NakedPairs = 'NakedPairs',
   HiddenPairs = 'HiddenPairs',

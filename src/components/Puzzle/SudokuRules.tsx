@@ -38,6 +38,16 @@ const computeRules = (constraints: SudokuConstraints) => {
       Cells a knight move away must not contain the same digit.
     </>)
   }
+  if (!_.isEmpty(constraints.killerCages)) {
+    rules.push(<>
+      <svg height={13} width={13} className="inline-block">
+        <rect x="0" y="0" width="100%" height="100%" fill="transparent" stroke="white" strokeDasharray="2" />
+      </svg>
+      {' '}
+      The sum of all numbers in a cage must match the small number in the corner of the cage.
+      No number appears more than once in a cage.
+    </>)
+  }
   return rules
 }
 

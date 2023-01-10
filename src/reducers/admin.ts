@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, Grid, Puzzle, Region, SudokuConstraints,
+  CellPosition, FixedNumber, Grid, KillerCage, Puzzle, Region, SudokuConstraints,
   SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
@@ -12,6 +12,7 @@ export enum ConstraintType {
   FixedNumber = 'fixed_number',
   Thermo = 'thermo',
   Regions = 'regions',
+  Killer = 'killer',
 }
 
 type AdminState = {
@@ -30,6 +31,8 @@ type AdminState = {
   selectedCell: CellPosition | null
   currentThermo: Thermo
   regionsGrid: Grid | null
+  killerSum: number | null
+  killerGrid: Grid | null
 }
 
 const defaultDifficulty = (gridSize: number) => {
@@ -82,6 +85,9 @@ const detectVariant = (state: AdminState) => {
   if (!_.isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
     variants.push(SudokuVariant.Irregular)
   }
+  if (!_.isEmpty(state.constraints?.killerCages)) {
+    variants.push(SudokuVariant.Killer)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -109,6 +115,8 @@ export const adminSlice = createSlice({
     selectedCell: null,
     currentThermo: [],
     regionsGrid: null,
+    killerSum: null,
+    killerGrid: null,
   } as AdminState,
   reducers: {
     initPuzzle(state, action) {
@@ -118,6 +126,7 @@ export const adminSlice = createSlice({
         fixedNumbers: [],
         regions: ensureDefaultRegions(gridSize),
         thermos: [],
+        killerCages: [],
         primaryDiagonal: false,
         secondaryDiagonal: false,
         antiKnight: false,
@@ -130,6 +139,7 @@ export const adminSlice = createSlice({
           state.regionsGrid![row][col] = index + 1
         })
       })
+      state.killerGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
     },
     changeSelectedCell(state, action) {
       state.selectedCell = action.payload
@@ -191,14 +201,32 @@ export const adminSlice = createSlice({
             _.times(state.constraints!.gridSize, col => {
               const regionIndex = state.regionsGrid![row][col]! - 1
               regions[regionIndex] ||= []
-              const cell: CellPosition = {
-                row,
-                col,
-              }
+              const cell: CellPosition = { row, col }
               regions[regionIndex].push(cell)
             })
           })
           state.constraints!.regions = regions
+          break
+        }
+        case ConstraintType.Killer: {
+          const region: Region = []
+          _.times(state.constraints!.gridSize, row => {
+            _.times(state.constraints!.gridSize, col => {
+              const value = state.killerGrid![row][col]
+              if (value) {
+                const cell: CellPosition = { row, col }
+                region.push(cell)
+              }
+            })
+          })
+          const killerCage: KillerCage = {
+            sum: state.killerSum!,
+            region,
+          }
+          state.constraints!.killerCages!.push(killerCage)
+          state.killerSum = null
+          const gridSize = state.constraints!.gridSize
+          state.killerGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
           break
         }
       }
@@ -207,20 +235,34 @@ export const adminSlice = createSlice({
     },
     deleteConstraint(state) {
       const cell = state.selectedCell
+      if (!cell) {
+        return
+      }
 
+      // Fixed numbers
       _.remove(
         state.constraints!.fixedNumbers,
         (existingFixedNumber: FixedNumber) => _.isEqual(existingFixedNumber.position, cell)
       )
 
+      // Thermo
       const thermoPredicate = (thermoCell: CellPosition) => _.isEqual(thermoCell, cell)
       if (state.currentThermo.find(thermoPredicate)) {
         state.currentThermo = []
       }
 
-      const index = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(thermoPredicate))
-      if (index !== -1) {
-        state.constraints!.thermos?.splice(index, 1)
+      const thermoIndex = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(thermoPredicate))
+      if (thermoIndex !== -1) {
+        state.constraints!.thermos?.splice(thermoIndex, 1)
+      }
+
+      // Killer
+      const killerPredicate = (killerCell: CellPosition) => _.isEqual(killerCell, cell)
+      state.killerGrid![cell.row][cell.col] = null
+
+      const killerIndex = _.findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(killerPredicate))
+      if (killerIndex !== -1) {
+        state.constraints!.killerCages?.splice(killerIndex, 1)
       }
     },
     requestSolution(state) {
@@ -264,7 +306,6 @@ export const adminSlice = createSlice({
       }
 
       const { row, col } = state.selectedCell
-
       state.notes![row][col] = _.xor(state.notes![row][col], [action.payload])
     },
     changeSelectedCellRegion(state, action) {
@@ -273,8 +314,15 @@ export const adminSlice = createSlice({
       }
 
       const { row, col } = state.selectedCell
-
       state.regionsGrid![row][col] = action.payload
+    },
+    changeSelectedCellKiller(state, action) {
+      if (state.selectedCell === null) {
+        return
+      }
+
+      const { row, col } = state.selectedCell
+      state.killerGrid![row][col] = action.payload
     },
     deletePuzzle(state, action) {
       state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
@@ -291,6 +339,9 @@ export const adminSlice = createSlice({
       state.constraints!.antiKnight = action.payload
       handleConstraintChange(state)
     },
+    changeKillerSum(state, action) {
+      state.killerSum = action.payload
+    },
   },
 })
 
@@ -301,6 +352,7 @@ export const {
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeSelectedCellRegion,
+  changeKillerSum, changeSelectedCellKiller,
 } = adminSlice.actions
 
 export default adminSlice.reducer

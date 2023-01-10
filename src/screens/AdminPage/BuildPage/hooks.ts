@@ -3,7 +3,8 @@ import { useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition } from 'src/types/sudoku'
 import {
-  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellRegion, changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
+  changeSelectedCell, changeSelectedCellKiller, changeSelectedCellNotes,changeSelectedCellRegion,
+  changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
 } from 'src/reducers/admin'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
@@ -37,6 +38,9 @@ export const useControlCallbacks = () => {
   const handleSelectedCellRegionChange = useCallback((value: number) => {
     dispatch(changeSelectedCellRegion(value))
   }, [dispatch])
+  const handleSelectedCellKillerChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellKiller(value))
+  }, [dispatch])
 
   // const handleUndo = useCallback(() => {
   //   dispatch(undoAction())
@@ -52,6 +56,7 @@ export const useControlCallbacks = () => {
     onCellClick: handleCellClick,
     onDelete: handleDelete,
     onSelectedCellRegionChange: handleSelectedCellRegionChange,
+    onSelectedCellKillerChange: handleSelectedCellKillerChange,
     // undoActive,
     // redoActive,
     // onUndo: handleUndo,
@@ -59,7 +64,7 @@ export const useControlCallbacks = () => {
   }
 }
 
-export const useKeyboardHandler = () => {
+export const useKeyboardHandler = (digitsActive = true) => {
   const constraints = useSelector(state => state.admin.constraints)
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
@@ -70,7 +75,7 @@ export const useKeyboardHandler = () => {
   const {
     onCellClick, onDelete,
     onSelectedCellValueChange, onNotesActiveToggle, onSelectedCellNotesChange,
-    onSelectedCellRegionChange,
+    onSelectedCellRegionChange, onSelectedCellKillerChange,
     // undoActive, redoActive, onUndo, onRedo,
   } = useControlCallbacks()
 
@@ -121,6 +126,10 @@ export const useKeyboardHandler = () => {
       //   return
       // }
 
+      if (!digitsActive) {
+        return
+      }
+
       if (e.key === 'Backspace') {
         onDelete()
         return
@@ -141,15 +150,18 @@ export const useKeyboardHandler = () => {
         onSelectedCellValueChange(value)
       } else if (constraintType === ConstraintType.Regions) {
         onSelectedCellRegionChange(value)
+      } else if (constraintType === ConstraintType.Killer) {
+        onSelectedCellKillerChange(value)
       }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    gridSize, selectedCell, constraintType, notesActive,
+    gridSize, selectedCell, constraintType, notesActive, digitsActive,
     onCellClick, onSelectedCellValueChange, onDelete,
     onNotesActiveToggle, onSelectedCellNotesChange, onSelectedCellRegionChange,
+    onSelectedCellKillerChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
 }
