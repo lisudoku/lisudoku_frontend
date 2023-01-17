@@ -60,6 +60,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
     nonEmptyCells += constraints.gridSize
   }
   nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
+  nonEmptyCells += constraints.kropkiDots.length / 2
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
@@ -84,7 +85,7 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
 
   if (maxRank! <= 2) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
-  } else if (maxRank! <= 9) {
+  } else if (maxRank! <= 12) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Medium9x9]
   } else {
     return SudokuDifficultyDisplay[SudokuDifficulty.Hard9x9]
@@ -138,7 +139,6 @@ const PuzzleCommit = () => {
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
-    console.info('Request brute solve', constraints)
     try {
       const solution = bruteSolve(constraints!)
       dispatch(responseBruteSolution(solution))

@@ -35,6 +35,8 @@ export type SudokuConstraints = {
   secondaryDiagonal: boolean
   antiKnight: boolean
   killerCages: KillerCage[]
+  kropkiDots: KropkiDot[]
+  kropkiNegative: boolean
 }
 
 export type FixedNumber = {
@@ -49,6 +51,17 @@ export type Thermo = CellPosition[]
 export type KillerCage = {
   sum: number | null
   region: Region
+}
+
+export type KropkiDot = {
+  dotType: KropkiDotType
+  cell1: CellPosition
+  cell2: CellPosition
+}
+
+export enum KropkiDotType {
+  Consecutive = 'Consecutive',
+  Double = 'Double',
 }
 
 export type Puzzle = {

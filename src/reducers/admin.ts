@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, Grid, KillerCage, Puzzle, Region, SudokuConstraints,
+  CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints,
   SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
@@ -13,6 +13,7 @@ export enum ConstraintType {
   Thermo = 'thermo',
   Regions = 'regions',
   Killer = 'killer',
+  Kropki = 'kropki',
 }
 
 type AdminState = {
@@ -33,6 +34,7 @@ type AdminState = {
   regionsGrid: Grid | null
   killerSum: number | null
   killerGrid: Grid | null
+  kropkiGrid: Grid | null
 }
 
 const defaultDifficulty = (gridSize: number) => {
@@ -88,6 +90,9 @@ const detectVariant = (state: AdminState) => {
   if (!_.isEmpty(state.constraints?.killerCages)) {
     variants.push(SudokuVariant.Killer)
   }
+  if (!_.isEmpty(state.constraints?.kropkiDots)) {
+    variants.push(SudokuVariant.Kropki)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -117,6 +122,7 @@ export const adminSlice = createSlice({
     regionsGrid: null,
     killerSum: null,
     killerGrid: null,
+    kropkiGrid: null,
   } as AdminState,
   reducers: {
     initPuzzle(state, action) {
@@ -127,6 +133,8 @@ export const adminSlice = createSlice({
         regions: ensureDefaultRegions(gridSize),
         thermos: [],
         killerCages: [],
+        kropkiDots: [],
+        kropkiNegative: false,
         primaryDiagonal: false,
         secondaryDiagonal: false,
         antiKnight: false,
@@ -140,6 +148,7 @@ export const adminSlice = createSlice({
         })
       })
       state.killerGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+      state.kropkiGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
     },
     changeSelectedCell(state, action) {
       state.selectedCell = action.payload
@@ -229,6 +238,36 @@ export const adminSlice = createSlice({
           state.killerGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
           break
         }
+        case ConstraintType.Kropki: {
+          const cells: CellPosition[] = []
+          let cellsValue = 0
+          _.times(state.constraints!.gridSize, row => {
+            _.times(state.constraints!.gridSize, col => {
+              const value = state.kropkiGrid![row][col]
+              if (value) {
+                const cell: CellPosition = { row, col }
+                cells.push(cell)
+                console.assert(cellsValue === 0 || cellsValue === value, 'cell value different')
+                cellsValue = value
+              }
+            })
+          })
+          console.assert(cellsValue !== 0, 'no cell value found')
+          console.assert(cells.length === 2, 'we need exact 2 cells')
+          console.assert(
+            Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
+            'cells need to be adjacent'
+          )
+          const kropkiDot: KropkiDot = {
+            dotType: cellsValue === 1 ? KropkiDotType.Consecutive : KropkiDotType.Double,
+            cell1: cells[0],
+            cell2: cells[1],
+          }
+          state.constraints!.kropkiDots!.push(kropkiDot)
+          const gridSize = state.constraints!.gridSize
+          state.kropkiGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+          break
+        }
       }
 
       handleConstraintChange(state)
@@ -264,6 +303,12 @@ export const adminSlice = createSlice({
       if (killerIndex !== -1) {
         state.constraints!.killerCages?.splice(killerIndex, 1)
       }
+
+      // Kropki
+      state.kropkiGrid![cell.row][cell.col] = null
+      _.remove(state.constraints!.kropkiDots, kropkiDot => (
+        _.isEqual(kropkiDot.cell1, cell) || _.isEqual(kropkiDot.cell2, cell)
+      ))
     },
     requestSolution(state) {
       state.solverRunning = true
@@ -324,6 +369,14 @@ export const adminSlice = createSlice({
       const { row, col } = state.selectedCell
       state.killerGrid![row][col] = action.payload
     },
+    changeSelectedCellKropki(state, action) {
+      if (state.selectedCell === null) {
+        return
+      }
+
+      const { row, col } = state.selectedCell
+      state.kropkiGrid![row][col] = action.payload
+    },
     deletePuzzle(state, action) {
       state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
     },
@@ -341,7 +394,12 @@ export const adminSlice = createSlice({
     },
     changeKillerSum(state, action) {
       state.killerSum = action.payload
+      handleConstraintChange(state)
     },
+    changeKropkiNegative(state, action) {
+      state.constraints!.kropkiNegative = action.payload
+      handleConstraintChange(state)
+    }
   },
 })
 
@@ -352,7 +410,7 @@ export const {
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeSelectedCellRegion,
-  changeKillerSum, changeSelectedCellKiller,
+  changeKillerSum, changeSelectedCellKiller, changeSelectedCellKropki, changeKropkiNegative,
 } = adminSlice.actions
 
 export default adminSlice.reducer

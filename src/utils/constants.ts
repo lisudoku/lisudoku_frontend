@@ -5,6 +5,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Classic,
   SudokuVariant.Killer,
   SudokuVariant.Thermo,
+  SudokuVariant.Kropki,
   SudokuVariant.Diagonal,
   SudokuVariant.AntiKnight,
   SudokuVariant.Irregular,

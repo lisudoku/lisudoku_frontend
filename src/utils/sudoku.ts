@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, Grid, Region, SudokuConstraints,
+  CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
 } from 'src/types/sudoku'
 
 const computeRegionSizes = (gridSize: number) => {
@@ -190,6 +190,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     })
   }
 
+  // Killer cages (region restriction is handled above)
   for (const killerCage of constraints.killerCages) {
     if (!killerCage.sum) {
       continue
@@ -202,6 +203,57 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
         errorGrid[cell.row][cell.col] = true
       }
     }
+  }
+
+  // Kropki
+  for (const kropkiDot of constraints.kropkiDots) {
+    let { row: row1, col: col1 } = kropkiDot.cell1
+    let { row: row2, col: col2 } = kropkiDot.cell2
+    let value1 = valuesGrid[row1][col1]
+    let value2 = valuesGrid[row2][col2]
+    if (!value1 || !value2) {
+      continue
+    }
+    if (value1 > value2) {
+      [ value1, value2 ] = [ value2, value1 ]
+    }
+    if ((kropkiDot.dotType === KropkiDotType.Consecutive && value1 + 1 !== value2) ||
+        (kropkiDot.dotType === KropkiDotType.Double && value1 * 2 !== value2)) {
+      errorGrid[row1][col1] = true
+      errorGrid[row2][col2] = true
+    }
+  }
+  if (constraints.kropkiNegative) {
+    const gridToKropkiDots: CellPosition[][][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+    for (const kropkiDot of constraints.kropkiDots) {
+      const { cell1, cell2 } = kropkiDot
+      gridToKropkiDots[cell1.row][cell1.col].push(cell2)
+      gridToKropkiDots[cell2.row][cell2.col].push(cell1)
+    }
+    const cells = getAllCells(gridSize)
+    cells.forEach(cell => {
+      const value = valuesGrid[cell.row][cell.col]
+      if (!value) {
+        return
+      }
+      const peers = getAdjacentPeers(cell, gridSize)
+      const dotPeers = gridToKropkiDots[cell.row][cell.col]
+      const negativePeers = _.differenceWith(peers, dotPeers, _.isEqual)
+
+      negativePeers.forEach((peer: CellPosition) => {
+        const peerValue = valuesGrid[peer.row][peer.col]
+        if (!peerValue) {
+          return
+        }
+        if (value + 1 === peerValue ||
+            peerValue + 1 === value ||
+            value * 2 === peerValue ||
+            peerValue * 2 === value) {
+          errorGrid[cell.row][cell.col] = true
+          errorGrid[peer.row][peer.col] = true
+        }
+      })
+    })
   }
 
   return errorGrid
@@ -229,6 +281,23 @@ const getKnightPeers = (cell: CellPosition, gridSize: number) => {
     const peer = {
       row: cell.row + KNIGHT_ROW_DELTA[dir],
       col: cell.col + KNIGHT_COL_DELTA[dir],
+    }
+    if (peer.row < 0 || peer.row >= gridSize || peer.col < 0 || peer.col >= gridSize) {
+      return
+    }
+    peers.push(peer)
+  })
+  return peers
+}
+
+const ADJACENT_ROW_DELTA = [ 0, 0, 1, -1 ]
+const ADJACENT_COL_DELTA = [ 1, -1, 0, 0 ]
+const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
+  const peers: CellPosition[] = []
+  _.times(4, dir => {
+    const peer = {
+      row: cell.row + ADJACENT_ROW_DELTA[dir],
+      col: cell.col + ADJACENT_COL_DELTA[dir],
     }
     if (peer.row < 0 || peer.row >= gridSize || peer.col < 0 || peer.col >= gridSize) {
       return

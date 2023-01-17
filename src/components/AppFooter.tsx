@@ -9,7 +9,7 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
     <footer className="flex flex-col gap-3 pt-2 pb-5 justify-center items-center">
       {!admin && (
         <>
-          <div className="flex flex-wrap w-full md:w-3/4 text-medium justify-center">
+          <div className="flex flex-wrap w-full md:w-3/4 text-medium justify-start">
             {ACTIVE_VARIANTS.map((variant, index) => (
               <Link key={index} to={`/play/${variant}/${difficulty}`} className="w-full sm:w-1/3 text-center">
                 Play {SudokuVariantDisplay[variant]} Sudoku

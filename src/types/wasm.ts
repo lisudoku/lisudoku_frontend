@@ -35,9 +35,12 @@ export enum StepRule {
   ThermoCandidates = 'ThermoCandidates',
   KillerCandidates = 'KillerCandidates',
   Killer45 = 'Killer45',
+  Kropki = 'Kropki',
+  KropkiChainCandidates = 'KropkiChainCandidates',
   LockedCandidatesPairs = 'LockedCandidatesPairs',
   NakedPairs = 'NakedPairs',
   HiddenPairs = 'HiddenPairs',
+  CommonPeerEliminationKropki = 'CommonPeerEliminationKropki',
   // Hard
   LockedCandidatesTriples = 'LockedCandidatesTriples',
   HiddenTriples = 'HiddenTriples',

@@ -1,7 +1,7 @@
 import { ReactElement, MouseEvent, useCallback } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
-import { CellPosition, Grid, KillerCage, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useErrorGrid, useFixedNumbersGrid } from './hooks'
 
@@ -390,10 +390,44 @@ type KillerGraphicsProps = {
   killerCages: KillerCage[]
 }
 
+type KropkiCircle = {
+  x: number
+  y: number
+  fill: string
+}
+
+const KropkiGraphics = ({ kropkiDots, cellSize }: KropkiGraphicsProps) => {
+  const KROPKI_CIRCLE_RADIUS = cellSize / 9
+
+  const circles: KropkiCircle[] = kropkiDots.map(kropkiDot => ({
+    x: 1 + (kropkiDot.cell1.col + kropkiDot.cell2.col + 1) / 2 * cellSize,
+    y: 1 + (kropkiDot.cell1.row + kropkiDot.cell2.row + 1) / 2 * cellSize,
+    fill: kropkiDot.dotType === KropkiDotType.Consecutive ? 'white' : 'black',
+  }))
+
+  return (
+    <g className="kropki-dots" stroke="white" strokeWidth="1.5">
+      {circles.map((circle, index) => (
+        <circle key={index}
+                cx={circle.x}
+                cy={circle.y}
+                r={KROPKI_CIRCLE_RADIUS}
+                fill={circle.fill}
+        />
+      ))}
+    </g>
+  )
+}
+
+type KropkiGraphicsProps = {
+  kropkiDots: KropkiDot[]
+  cellSize: number
+}
+
 const SudokuConstraintsGraphics = (
   { constraints, notes, cellSize, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
-  const { gridSize, regions, thermos } = constraints
+  const { gridSize, regions, thermos, killerCages, kropkiDots } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
 
   return (
@@ -403,7 +437,7 @@ const SudokuConstraintsGraphics = (
          onClick={onGridClick}
     >
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
-      <KillerGraphics killerCages={constraints.killerCages || []} gridSize={gridSize} cellSize={cellSize} />
+      <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
       <DiagonalGraphics gridSize={gridSize}
                         cellSize={cellSize}
@@ -412,7 +446,8 @@ const SudokuConstraintsGraphics = (
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} grid={grid} checkErrors={checkErrors} />
-      <NotesGraphics notes={notes} cellSize={cellSize} killerActive={!_.isEmpty(constraints.killerCages)} />
+      <NotesGraphics notes={notes} cellSize={cellSize} killerActive={!_.isEmpty(killerCages)} />
+      <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
     </svg>
   )
 }

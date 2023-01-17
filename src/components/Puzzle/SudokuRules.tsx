@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThermometer4, faXmark, faChessKnight } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
 const computeRules = (constraints: SudokuConstraints) => {
   const rules = []
@@ -47,6 +48,21 @@ const computeRules = (constraints: SudokuConstraints) => {
       The sum of all numbers in a cage must match the small number in the corner of the cage.
       No number appears more than once in a cage.
     </>)
+  }
+  if (!_.isEmpty(constraints.kropkiDots)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faCircle} size="sm"/>
+      {' '}
+      Adjacent cells containing digits whose difference is 1 are marked with a white circle.
+      Adjacent cells containing digits whose ratio is 2 are marked with a black circle.
+    </>)
+    if (constraints.kropkiNegative) {
+      rules.push(<>
+        <FontAwesomeIcon icon={faCircleXmark} size="sm"/>
+        {' '}
+        Adjacent cells with no marking must not contain digits either whose difference is 1 or whose ratio is 2.
+      </>)
+    }
   }
   return rules
 }

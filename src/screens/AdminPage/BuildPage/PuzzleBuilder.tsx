@@ -5,17 +5,19 @@ import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import {
-  addConstraint, changeAntiKnight, changeConstraintType, changeKillerSum, changePrimaryDiagonal, changeSecondaryDiagonal,
+  addConstraint, changeAntiKnight, changeConstraintType, changeKillerSum, changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   ConstraintType, initPuzzle,
 } from 'src/reducers/admin'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
-import { Typography } from '@material-tailwind/react'
+import { Typography, Tooltip, } from '@material-tailwind/react'
 import PuzzleCommit from './PuzzleCommit'
 import { Grid } from 'src/types/sudoku'
 import Input from 'src/components/Input'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleBuilder = () => {
   const { gridSize: paramGridSize } = useParams()
@@ -36,6 +38,7 @@ const PuzzleBuilder = () => {
   const notes = useSelector(state => state.admin.notes)
   const killerSum = useSelector(state => state.admin.killerSum ?? '')
   const killerGrid = useSelector(state => state.admin.killerGrid!)
+  const kropkiGrid = useSelector(state => state.admin.kropkiGrid!)
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler(!inputActive)
@@ -64,6 +67,10 @@ const PuzzleBuilder = () => {
     dispatch(changeKillerSum(sum))
   }, [dispatch])
 
+  const handleKropkiNegativeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changeKropkiNegative(e.target.checked))
+  ), [dispatch])
+
   if (!constraints) {
     return null
   }
@@ -87,6 +94,9 @@ const PuzzleBuilder = () => {
   } else if (constraintType === ConstraintType.Killer) {
     usedGrid = killerGrid
     constraintPreview.fixedNumbers = []
+  } else if (constraintType === ConstraintType.Kropki) {
+    usedGrid = kropkiGrid
+    constraintPreview.fixedNumbers = []
   }
 
   return (
@@ -95,7 +105,7 @@ const PuzzleBuilder = () => {
                   grid={usedGrid}
                   notes={notes!}
                   selectedCell={selectedCell!}
-                  checkErrors={constraintType !== ConstraintType.Regions && constraintType !== ConstraintType.Killer}
+                  checkErrors={![ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType)}
                   loading={false}
                   onCellClick={onCellClick}
       />
@@ -128,6 +138,16 @@ const PuzzleBuilder = () => {
                  label="Killer"
                  checked={constraintType === ConstraintType.Killer}
                  onChange={handleConstraintTypeChange} />
+          <div className="flex items-center gap-2">
+            <Radio name="build-item"
+                  id={ConstraintType.Kropki}
+                  label="Kropki"
+                  checked={constraintType === ConstraintType.Kropki}
+                  onChange={handleConstraintTypeChange} />
+            <Tooltip content="1 for consecutive, 2 for double">
+              <FontAwesomeIcon icon={faCircleInfo} size="sm" />
+            </Tooltip>
+          </div>
           <div className="flex flex-col w-full mt-2 gap-y-1">
             {constraintType === ConstraintType.Killer && (
               <Input label="Sum"
@@ -137,7 +157,7 @@ const PuzzleBuilder = () => {
                      onBlur={() => setInputActive(false)}
               />
             )}
-            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer].includes(constraintType) && (
+            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType) && (
               <Button onClick={handleConstraintAdd}>Add</Button>
             )}
           </div>
@@ -156,6 +176,10 @@ const PuzzleBuilder = () => {
                     label="Anti Knight"
                     checked={constraints.antiKnight}
                     onChange={handleAntiKnightChange} />
+          <Checkbox id="kropki-negative"
+                    label="Kropki Negative"
+                    checked={constraints.kropkiNegative}
+                    onChange={handleKropkiNegativeChange} />
         </div>
       </div>
       <div className="flex flex-col gap-2">
