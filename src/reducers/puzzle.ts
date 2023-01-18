@@ -43,7 +43,6 @@ const performAction = (state: PuzzleState, action: UserAction) => {
 
   switch(action.type) {
     case ActionType.Digit: state.grid![row][col] = action.value
-                           state.notes![row][col] = []
                            break
     case ActionType.Note: state.notes![row][col] = _.xor(state.notes![row][col], [action.value])
                           break

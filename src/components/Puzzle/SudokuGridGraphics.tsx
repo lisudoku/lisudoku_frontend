@@ -106,7 +106,7 @@ const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: n
   </>
 )
 
-const NotesGraphics = ({ notes, cellSize, killerActive }: NotesGraphicsProps) => {
+const NotesGraphics = ({ cellSize, notes, grid, fixedNumbersGrid, killerActive }: NotesGraphicsProps) => {
   if (!notes) {
     return null
   }
@@ -123,6 +123,10 @@ const NotesGraphics = ({ notes, cellSize, killerActive }: NotesGraphicsProps) =>
   const noteElements: ReactElement[] = []
   notes.forEach((rowNotes, rowIndex) => {
     rowNotes.forEach((cellNotes, colIndex) => {
+      const value = fixedNumbersGrid[rowIndex][colIndex] || grid?.[rowIndex][colIndex]
+      if (value) {
+        return
+      }
       cellNotes.forEach(value => {
         const noteRow = Math.floor((value - 1) / 3)
         const noteCol = (value - 1) % 3
@@ -150,13 +154,14 @@ const NotesGraphics = ({ notes, cellSize, killerActive }: NotesGraphicsProps) =>
 
 type NotesGraphicsProps = {
   notes?: number[][][]
+  grid?: Grid
+  fixedNumbersGrid: Grid
   cellSize: number
   killerActive: boolean
 }
 
-const DigitGraphics = ({ cellSize, constraints, grid, checkErrors }: DigitGraphicsProps) => {
-  const { gridSize, fixedNumbers } = constraints
-  const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
+const DigitGraphics = ({ cellSize, constraints, grid, fixedNumbersGrid, checkErrors }: DigitGraphicsProps) => {
+  const gridSize = constraints.gridSize
   const errorGrid = useErrorGrid(checkErrors, constraints, grid)
 
   const digitFontSize = cellSize * 9 / 14
@@ -203,6 +208,7 @@ type DigitGraphicsProps = {
   cellSize: number
   constraints: SudokuConstraints
   grid?: Grid
+  fixedNumbersGrid: Grid
   checkErrors: boolean
 }
 
@@ -425,10 +431,11 @@ type KropkiGraphicsProps = {
 }
 
 const SudokuConstraintsGraphics = (
-  { constraints, notes, cellSize, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
+  { cellSize, constraints, notes, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
-  const { gridSize, regions, thermos, killerCages, kropkiDots } = constraints
+  const { gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
+  const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
   return (
     <svg height={gridSize * cellSize + 2}
@@ -445,8 +452,8 @@ const SudokuConstraintsGraphics = (
                         secondary={constraints.secondaryDiagonal} />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
-      <DigitGraphics cellSize={cellSize} constraints={constraints} grid={grid} checkErrors={checkErrors} />
-      <NotesGraphics notes={notes} cellSize={cellSize} killerActive={!_.isEmpty(killerCages)} />
+      <DigitGraphics cellSize={cellSize} constraints={constraints} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
+      <NotesGraphics cellSize={cellSize} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={!_.isEmpty(killerCages)} />
       <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
     </svg>
   )
