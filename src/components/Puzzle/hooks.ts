@@ -129,17 +129,17 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (e.key === 'z' && (e.metaKey || e.ctrlKey)) {
-        if (undoActive) {
-          onUndo()
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || e.key === 'z' && e.shiftKey)) {
+        if (redoActive) {
+          onRedo()
         }
         e.preventDefault()
         return
       }
 
-      if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
-        if (redoActive) {
-          onRedo()
+      if (e.key === 'z' && (e.metaKey || e.ctrlKey)) {
+        if (undoActive) {
+          onUndo()
         }
         e.preventDefault()
         return
