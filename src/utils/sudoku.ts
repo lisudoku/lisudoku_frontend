@@ -206,7 +206,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
   }
 
   // Kropki
-  for (const kropkiDot of constraints.kropkiDots) {
+  for (const kropkiDot of constraints.kropkiDots ?? []) {
     let { row: row1, col: col1 } = kropkiDot.cell1
     let { row: row2, col: col2 } = kropkiDot.cell2
     let value1 = valuesGrid[row1][col1]
@@ -225,7 +225,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
   }
   if (constraints.kropkiNegative) {
     const gridToKropkiDots: CellPosition[][][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
-    for (const kropkiDot of constraints.kropkiDots) {
+    for (const kropkiDot of constraints.kropkiDots ?? []) {
       const { cell1, cell2 } = kropkiDot
       gridToKropkiDots[cell1.row][cell1.col].push(cell2)
       gridToKropkiDots[cell2.row][cell2.col].push(cell1)
