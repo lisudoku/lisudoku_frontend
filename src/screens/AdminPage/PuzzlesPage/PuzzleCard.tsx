@@ -8,6 +8,7 @@ import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faChessKnight } from '@fortawesome/free-solid-svg-icons'
+import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const dispatch = useDispatch()
@@ -39,22 +40,25 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
                   onCellClick={null}
                   cellSize={cellSize} />
       <div className="flex gap-5 w-fit text-sm">
-        {puzzle.constraints.antiKnight && (
-          <div>
+        <div>
+          {puzzle.constraints.antiKnight && (
             <FontAwesomeIcon icon={faChessKnight} size="sm" />
-          </div>
-        )}
+          )}
+          {puzzle.constraints.kropkiNegative && (
+            <FontAwesomeIcon icon={faCircleXmark} size="sm" />
+          )}
+        </div>
         <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
           Play
         </Link>
         <button className="text-red-700" onClick={handleDelete}>
           Delete
         </button>
-        {solvedPuzzleIds.includes(puzzle.publicId!) && (
-          <div>
+        <div>
+          {solvedPuzzleIds.includes(puzzle.publicId!) && (
             <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
