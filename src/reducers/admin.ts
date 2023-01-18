@@ -17,6 +17,7 @@ export enum ConstraintType {
 }
 
 type AdminState = {
+  inputActive: boolean
   puzzles: Puzzle[]
   constraints: SudokuConstraints | null
   variant: SudokuVariant
@@ -27,6 +28,8 @@ type AdminState = {
   bruteSolution: SudokuBruteSolveResult | null
   intuitiveSolution: SudokuIntuitiveSolveResult | null
   solverRunning: boolean
+  sourceName: string
+  sourceUrl: string
   puzzlePublicId: string | null
   puzzleAdding: boolean
   selectedCell: CellPosition | null
@@ -105,6 +108,7 @@ const detectVariant = (state: AdminState) => {
 export const adminSlice = createSlice({
   name: 'admin',
   initialState: {
+    inputActive: false,
     puzzles: [],
     constraints: null,
     variant: SudokuVariant.Classic,
@@ -115,6 +119,8 @@ export const adminSlice = createSlice({
     bruteSolution: null,
     intuitiveSolution: null,
     solverRunning: false,
+    sourceName: '',
+    sourceUrl: '',
     puzzlePublicId: null,
     puzzleAdding: false,
     selectedCell: null,
@@ -399,7 +405,16 @@ export const adminSlice = createSlice({
     changeKropkiNegative(state, action) {
       state.constraints!.kropkiNegative = action.payload
       handleConstraintChange(state)
-    }
+    },
+    changeSourceName(state, action) {
+      state.sourceName = action.payload
+    },
+    changeSourceUrl(state, action) {
+      state.sourceUrl = action.payload
+    },
+    changeInputActive(state, action) {
+      state.inputActive = action.payload
+    },
   },
 })
 
@@ -411,6 +426,7 @@ export const {
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeSelectedCellRegion,
   changeKillerSum, changeSelectedCellKiller, changeSelectedCellKropki, changeKropkiNegative,
+  changeSourceName, changeSourceUrl, changeInputActive,
 } = adminSlice.actions
 
 export default adminSlice.reducer

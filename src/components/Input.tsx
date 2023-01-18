@@ -6,10 +6,16 @@ const CONTAINER_CLASSES = 'min-w-0'
 
 const Input = (props: any) => {
   const propsOnChange = props.onChange
+  const propsType = props.type
   const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value === '' ? null : +e.target.value
+    let newValue
+    if (propsType === 'number') {
+      newValue = e.target.value === '' ? null : +e.target.value
+    } else {
+      newValue = e.target.value
+    }
     propsOnChange?.(newValue)
-  }, [propsOnChange])
+  }, [propsType, propsOnChange])
 
   return (
     <MuiInput 

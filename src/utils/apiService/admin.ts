@@ -1,6 +1,6 @@
 import axios from 'axios'
-import _ from 'lodash'
 import { Puzzle } from 'src/types/sudoku'
+const jcc = require('json-case-convertor')
 
 export const fetchGroupCounts = async (userToken: string) => {
   return axios.get('/puzzles/group_counts', {
@@ -9,10 +9,7 @@ export const fetchGroupCounts = async (userToken: string) => {
 }
 
 export const apiAddPuzzle = async (puzzle: Puzzle, userToken: string) => {
-  const apiPuzzle = {
-    ...puzzle,
-    constraints: _.mapKeys(puzzle.constraints, (_value, key) => _.snakeCase(key)),
-  }
+  const apiPuzzle = jcc.snakeCaseKeys(puzzle)
   return axios.post('/puzzles', {
     puzzle: apiPuzzle,
   }, {

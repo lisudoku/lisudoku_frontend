@@ -3,9 +3,11 @@ import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import Textarea from 'src/components/Textarea'
+import Input from 'src/components/Input'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
-  changeDifficulty, errorAddPuzzle, errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
+  changeDifficulty, changeInputActive, changeSourceName, changeSourceUrl, errorAddPuzzle,
+  errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseBruteSolution, responseIntuitiveSolution,
 } from 'src/reducers/admin'
 import { SolutionStep, SolutionType, StepRule, SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
@@ -134,8 +136,17 @@ const PuzzleCommit = () => {
   const difficulty = useSelector(state => state.admin.difficulty)
   const puzzlePublicId = useSelector(state => state.admin.puzzlePublicId)
   const puzzleAdding = useSelector(state => state.admin.puzzleAdding)
+  const sourceName = useSelector(state => state.admin.sourceName)
+  const sourceUrl = useSelector(state => state.admin.sourceUrl)
 
   const addPuzzleEnabled = intuitiveSolution?.solution_type === SolutionType.Full && bruteSolution?.solution_count === 1
+
+  const handleInputFocus = useCallback(() => {
+    dispatch(changeInputActive(true))
+  }, [dispatch])
+  const handleInputBlur = useCallback(() => {
+    dispatch(changeInputActive(false))
+  }, [dispatch])
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
@@ -158,6 +169,13 @@ const PuzzleCommit = () => {
     dispatch(changeDifficulty(difficulty))
   }, [dispatch])
 
+  const handleSourceNameChange = useCallback((sourceName: string) => {
+    dispatch(changeSourceName(sourceName))
+  }, [dispatch])
+  const handleSourceUrlChange = useCallback((sourceUrl: string) => {
+    dispatch(changeSourceUrl(sourceUrl))
+  }, [dispatch])
+
   const handleAddPuzzleClick = useCallback(() => {
     dispatch(requestAddPuzzle())
     const puzzle: Puzzle = {
@@ -165,13 +183,15 @@ const PuzzleCommit = () => {
       variant,
       difficulty,
       solution: bruteSolution!.solution,
+      sourceName,
+      sourceUrl,
     }
     apiAddPuzzle(puzzle, userToken!).then(data => {
       dispatch(responseAddPuzzle(data.public_id))
     }).catch(() => {
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty])
+  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceName, sourceUrl])
 
   return (
     <>
@@ -193,6 +213,18 @@ const PuzzleCommit = () => {
                 className="w-64 h-40" />
       <DifficultySelect value={difficulty} onChange={handleDifficultyChange} />
       <VariantSelect value={variant} label="Variant (autodetected)" disabled />
+      <Input label="Source Name"
+             value={sourceName}
+             onChange={handleSourceNameChange}
+             onFocus={handleInputFocus}
+             onBlur={handleInputBlur}
+      />
+      <Input label="Source URL"
+             value={sourceUrl}
+             onChange={handleSourceUrlChange}
+             onFocus={handleInputFocus}
+             onBlur={handleInputBlur}
+      />
       <Button onClick={handleAddPuzzleClick}
               disabled={!addPuzzleEnabled || puzzleAdding}
       >

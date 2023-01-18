@@ -1,11 +1,12 @@
-import { useCallback, useEffect, ChangeEvent, useState } from 'react'
+import { useCallback, useEffect, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import {
-  addConstraint, changeAntiKnight, changeConstraintType, changeKillerSum, changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
+  addConstraint, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
+  changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   ConstraintType, initPuzzle,
 } from 'src/reducers/admin'
 import Radio from 'src/components/Radio'
@@ -24,12 +25,11 @@ const PuzzleBuilder = () => {
   const gridSize = Number.parseInt(paramGridSize!)
   const dispatch = useDispatch()
 
-  const [inputActive, setInputActive] = useState(false)
-
   useEffect(() => {
     dispatch(initPuzzle(gridSize))
   }, [dispatch, gridSize])
 
+  const inputActive = useSelector(state => state.admin.inputActive)
   const constraints = useSelector(state => state.admin.constraints)
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
@@ -42,6 +42,13 @@ const PuzzleBuilder = () => {
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler(!inputActive)
+
+  const handleInputFocus = useCallback(() => {
+    dispatch(changeInputActive(true))
+  }, [dispatch])
+  const handleInputBlur = useCallback(() => {
+    dispatch(changeInputActive(false))
+  }, [dispatch])
 
   const handleConstraintTypeChange = useCallback((id: string) => {
     dispatch(changeConstraintType(id))
@@ -151,10 +158,11 @@ const PuzzleBuilder = () => {
           <div className="flex flex-col w-full mt-2 gap-y-1">
             {constraintType === ConstraintType.Killer && (
               <Input label="Sum"
+                     type="number"
                      value={killerSum}
                      onChange={handleKillerSumChange}
-                     onFocus={() => setInputActive(true)}
-                     onBlur={() => setInputActive(false)}
+                     onFocus={handleInputFocus}
+                     onBlur={handleInputBlur}
               />
             )}
             {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType) && (

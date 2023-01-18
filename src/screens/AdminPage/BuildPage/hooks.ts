@@ -85,6 +85,10 @@ export const useKeyboardHandler = (digitsActive = true) => {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      if (!digitsActive) {
+        return
+      }
+
       if (ARROWS.includes(e.key)) {
         let nextCell
         if (selectedCell !== null) {
@@ -129,10 +133,6 @@ export const useKeyboardHandler = (digitsActive = true) => {
       //   e.preventDefault()
       //   return
       // }
-
-      if (!digitsActive) {
-        return
-      }
 
       if (e.key === 'Backspace') {
         onDelete()

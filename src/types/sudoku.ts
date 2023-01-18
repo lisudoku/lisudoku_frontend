@@ -70,4 +70,6 @@ export type Puzzle = {
   constraints: SudokuConstraints
   publicId?: string
   solution?: Grid
+  sourceName: string
+  sourceUrl: string
 }
