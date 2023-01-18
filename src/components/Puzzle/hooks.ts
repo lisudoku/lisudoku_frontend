@@ -129,7 +129,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || e.key === 'z' && e.shiftKey)) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         if (redoActive) {
           onRedo()
         }
