@@ -4,7 +4,14 @@ const jcc = require('json-case-convertor')
 
 const computeWasmConstraints = (constraints: SudokuConstraints) => {
   const wasmConstraints = jcc.snakeCaseKeys(constraints)
+  // Some puzzles may not have some fields because they didn't exist yet
   wasmConstraints.thermos ||= []
+  wasmConstraints.kropki_dots ||= []
+  wasmConstraints.killer_cages ||= []
+  wasmConstraints.kropki_negative ||= false
+  wasmConstraints.primary_diagonal ||= false
+  wasmConstraints.secondary_diagonal ||= false
+  wasmConstraints.anti_knight ||= false
   return wasmConstraints
 }
 
