@@ -122,6 +122,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 
       if (e.key.toLowerCase() === ' ') {
         onNotesActiveToggle()
+        e.preventDefault()
         return
       }
 
@@ -147,6 +148,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 
       if (e.key === 'Backspace') {
         onSelectedCellValueChange(null)
+        e.preventDefault()
         return
       }
 
