@@ -21,6 +21,7 @@ export enum SudokuVariant {
 export enum SudokuDifficulty {
   Easy4x4 = 'easy4x4',
   Easy6x6 = 'easy6x6',
+  Hard6x6 = 'hard6x6',
   Easy9x9 = 'easy9x9',
   Medium9x9 = 'medium9x9',
   Hard9x9 = 'hard9x9',
