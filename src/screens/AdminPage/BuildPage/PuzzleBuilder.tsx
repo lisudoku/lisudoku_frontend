@@ -39,6 +39,8 @@ const PuzzleBuilder = () => {
   const killerSum = useSelector(state => state.admin.killerSum ?? '')
   const killerGrid = useSelector(state => state.admin.killerGrid!)
   const kropkiGrid = useSelector(state => state.admin.kropkiGrid!)
+  const bruteSolution = useSelector(state => state.admin.bruteSolution?.solution)
+  const intuitiveSolution = useSelector(state => state.admin.intuitiveSolution?.solution)
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler(!inputActive)
@@ -106,11 +108,20 @@ const PuzzleBuilder = () => {
     constraintPreview.fixedNumbers = []
   }
 
+  // Visualize solutions while building the puzzle
+  let usedNotes = notes!
+  const solution = bruteSolution || intuitiveSolution
+  if (solution) {
+    usedNotes = solution.map(solutionRow => (
+      solutionRow.map(digit => digit === 0 ? [] : [ digit! ])
+    ))
+  }
+
   return (
     <div className="flex gap-10">
       <SudokuGrid constraints={constraintPreview}
                   grid={usedGrid}
-                  notes={notes!}
+                  notes={usedNotes}
                   selectedCell={selectedCell!}
                   checkErrors={![ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType)}
                   loading={false}
