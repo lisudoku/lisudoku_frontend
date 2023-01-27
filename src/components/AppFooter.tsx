@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { ACTIVE_VARIANTS, SudokuVariantDisplay } from 'src/utils/constants'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
 const AppFooter = ({ admin }: { admin: boolean }) => {
   const difficulty = useSelector(state => state.userData.difficulty)
@@ -16,7 +18,15 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
               </Link>
             ))}
           </div>
-          <Link to="/about">About</Link>
+          <div className="flex align-middle gap-3">
+            <Link to="/about">About</Link>
+            |
+            <a href="https://discord.gg/SGV8TQVSeT"
+               target="_blank"
+               rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faDiscord} size="1x" color="#7d87fe" />
+            </a>
+          </div>
         </>
       )}
     </footer>
