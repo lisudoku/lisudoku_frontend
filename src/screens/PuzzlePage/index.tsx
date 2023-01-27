@@ -1,10 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import LoadingSpinner from 'src/components/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import { useDispatch, useSelector } from 'src/hooks'
 import { updateDifficulty } from 'src/reducers/userData'
 import { fetchPuzzleById } from 'src/utils/apiService'
 import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
+import { Typography } from '@material-tailwind/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzlePage = () => {
   const { id } = useParams()
@@ -56,9 +60,16 @@ const PuzzlePage = () => {
   return (
     <>
       {error ? (
-        'Error'
+        <div className="w-full pt-20 text-center">
+          <Typography variant="h4" className="font-normal mb-3">
+            Something went wrong
+          </Typography>
+          <FontAwesomeIcon icon={faCircleExclamation} size="4x" color="red" />
+        </div>
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
-        'Loading...'
+        <div className="flex w-full justify-center pt-20">
+          <LoadingSpinner />
+        </div>
       ) : (
         <Puzzle />
       )}

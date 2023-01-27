@@ -11,6 +11,10 @@ import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { clearPuzzle, receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
+import LoadingSpinner from 'src/components/LoadingSpinner'
+import { Typography } from '@material-tailwind/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 const PlayPage = () => {
   const { variant: variantParam, difficulty: difficultyParam } = useParams()
@@ -86,9 +90,16 @@ const PlayPage = () => {
       {errorCode === 404 ? (
         <EmptyCategory variant={variant} difficulty={difficulty} />
       ) : errorCode ? (
-        'Error'
+        <div className="w-full pt-20 text-center">
+          <Typography variant="h4" className="font-normal mb-3">
+            Something went wrong
+          </Typography>
+          <FontAwesomeIcon icon={faCircleExclamation} size="4x" color="red" />
+        </div>
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
-        'Loading...'
+        <div className="flex w-full justify-center pt-20">
+          <LoadingSpinner />
+        </div>
       ) : (
         <Puzzle />
       )}

@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import SudokuConstraintsGraphics from './SudokuGridGraphics'
-import ClipLoader from 'react-spinners/ClipLoader'
+import LoadingSpinner from '../LoadingSpinner'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
@@ -26,11 +26,7 @@ const SudokuGrid = ({
             'pointer-events-none': !loading,
           }
         )}>
-          <ClipLoader
-            color="#607D8B"
-            loading={loading}
-            size={50}
-          />
+          <LoadingSpinner loading={loading} />
         </div>
       </div>
     </div>
