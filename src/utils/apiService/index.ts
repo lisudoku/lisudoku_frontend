@@ -69,7 +69,7 @@ export const fetchRandomPuzzle = async (
   ).then(response => response.data)
 }
 
-export const fetchPuzzleById = async (id: string, userToken: string | null) => {
+export const fetchPuzzleByPublicId = async (id: string, userToken: string | null) => {
   return axios.get(`/puzzles/${id}`, {
     headers: generateHeader(userToken),
   }).then(response => response.data)
@@ -83,4 +83,9 @@ export const requestPuzzleCheck = async (id: string, grid: Grid) => {
     //   'Authorization': `Bearer ${userToken()}`,
     // },
   }).then(response => response.data)
+}
+
+export const fetchPuzzleCollection = async (id: string) => {
+  return axios.get(`/puzzle_collections/${id}`)
+              .then(response => response.data)
 }

@@ -97,9 +97,7 @@ const PlayPage = () => {
           <FontAwesomeIcon icon={faCircleExclamation} size="4x" color="red" />
         </div>
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
-        <div className="flex w-full justify-center pt-20">
-          <LoadingSpinner />
-        </div>
+        <LoadingSpinner fullPage />
       ) : (
         <Puzzle />
       )}

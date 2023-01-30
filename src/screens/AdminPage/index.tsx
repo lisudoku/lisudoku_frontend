@@ -1,7 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import BuildPage from './BuildPage'
+import CollectionsEditPage from './CollectionsEditPage'
+import CollectionsPage from './CollectionsPage'
 import GroupCounts from './GroupCounts'
 import Overview from './Overview'
+import PuzzleEditPage from './PuzzleEditPage'
 import PuzzlesPage from './PuzzlesPage'
 
 const AdminPage = () => (
@@ -9,7 +12,10 @@ const AdminPage = () => (
     <Route path="/" element={<Overview />} />
     <Route path="group_counts" element={<GroupCounts />} />
     <Route path="puzzles" element={<PuzzlesPage />} />
+    <Route path="puzzles/:id/edit" element={<PuzzleEditPage />} />
     <Route path="build/*" element={<BuildPage />} />
+    <Route path="collections" element={<CollectionsPage />} />
+    <Route path="collections/:id/edit" element={<CollectionsEditPage />} />
   </Routes>
 )
 

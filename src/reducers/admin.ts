@@ -16,9 +16,11 @@ export enum ConstraintType {
   Kropki = 'kropki',
 }
 
+// TODO: split into separate reducers
 type AdminState = {
   inputActive: boolean
   puzzles: Puzzle[]
+  sourceCollectionId: string
   constraints: SudokuConstraints | null
   variant: SudokuVariant
   difficulty: SudokuDifficulty
@@ -28,8 +30,6 @@ type AdminState = {
   bruteSolution: SudokuBruteSolveResult | null
   intuitiveSolution: SudokuIntuitiveSolveResult | null
   solverRunning: boolean
-  sourceName: string
-  sourceUrl: string
   puzzlePublicId: string | null
   puzzleAdding: boolean
   selectedCell: CellPosition | null
@@ -110,6 +110,7 @@ export const adminSlice = createSlice({
   initialState: {
     inputActive: false,
     puzzles: [],
+    sourceCollectionId: '',
     constraints: null,
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
@@ -384,7 +385,7 @@ export const adminSlice = createSlice({
       state.kropkiGrid![row][col] = action.payload
     },
     deletePuzzle(state, action) {
-      state.puzzles = state.puzzles.filter(puzzle => puzzle.publicId !== action.payload)
+      state.puzzles = state.puzzles.filter(puzzle => puzzle.id !== action.payload)
     },
     changePrimaryDiagonal(state, action) {
       state.constraints!.primaryDiagonal = action.payload
@@ -406,11 +407,8 @@ export const adminSlice = createSlice({
       state.constraints!.kropkiNegative = action.payload
       handleConstraintChange(state)
     },
-    changeSourceName(state, action) {
-      state.sourceName = action.payload
-    },
-    changeSourceUrl(state, action) {
-      state.sourceUrl = action.payload
+    changeSourceCollectionId(state, action) {
+      state.sourceCollectionId = action.payload
     },
     changeInputActive(state, action) {
       state.inputActive = action.payload
@@ -426,7 +424,7 @@ export const {
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeSelectedCellRegion,
   changeKillerSum, changeSelectedCellKiller, changeSelectedCellKropki, changeKropkiNegative,
-  changeSourceName, changeSourceUrl, changeInputActive,
+  changeInputActive, changeSourceCollectionId,
 } = adminSlice.actions
 
 export default adminSlice.reducer

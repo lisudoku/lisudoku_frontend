@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import SudokuRules from './SudokuRules'
@@ -15,6 +15,8 @@ const SudokuMisc = () => {
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const variant = useSelector(state => state.puzzle.data!.variant)
   const difficulty = useSelector(state => state.userData.difficulty)
+  const sourceCollectionId = useSelector(state => state.puzzle.data!.sourceCollectionId)
+  const sourceCollectionName = useSelector(state => state.puzzle.data!.sourceCollectionName)
 
   const onVariantChange = useCallback((variant: SudokuVariant) => {
     navigate(`/play/${variant}/${difficulty}`)
@@ -36,6 +38,19 @@ const SudokuMisc = () => {
       </div>
       <PermalinkButton publicId={publicId} />
       <ShortcutsButton />
+      {sourceCollectionId && (
+        <div className="flex flex-col mt-2 w-full md:ml-6 md:w-fit">
+          <div className="text-gray-400 text-sm">
+            Source
+          </div>
+          <Link to={`/collections/${sourceCollectionId}`}
+                target="_blank"
+                className="text-gray-300 font-bold"
+          >
+            {sourceCollectionName}
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

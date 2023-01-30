@@ -34,6 +34,10 @@ const ADMIN_ITEMS = [
     text: 'Build',
     url: '/admin/build',
   },
+  {
+    text: 'Collections',
+    url: '/admin/collections',
+  },
 ]
 
 const AppNavbar = ({ admin }: { admin: boolean }) => {

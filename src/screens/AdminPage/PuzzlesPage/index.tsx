@@ -53,7 +53,7 @@ const PuzzlesPage = () => {
                 </Typography>
                 <div className="flex flex-wrap p-5 pt-2 gap-4">
                   {puzzles.map(puzzle => (
-                    <div key={puzzle.publicId} className="w-fit">
+                    <div key={puzzle.id} className="w-fit">
                       <PuzzleCard puzzle={puzzle} />
                     </div>
                   ))}

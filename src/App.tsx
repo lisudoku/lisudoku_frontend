@@ -15,6 +15,7 @@ import { ThemeProvider } from '@material-tailwind/react'
 import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
+import CollectionPage from './screens/CollectionPage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -44,6 +45,7 @@ const App = () => {
                     <Route path="p/:id" element={<PuzzlePage />} />
                     <Route path="tv" element={<TvPage />} />
                     <Route path="about" element={<AboutPage />} />
+                    <Route path="collections/:id" element={<CollectionPage />} />
                     <Route path="*" element={<PageNotFound />} />
                   </Route>
                   <Route path="/" element={<Layout admin />}>

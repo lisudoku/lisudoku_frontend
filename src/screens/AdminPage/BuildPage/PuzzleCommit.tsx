@@ -3,17 +3,20 @@ import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import Textarea from 'src/components/Textarea'
-import Input from 'src/components/Input'
 import { useDispatch, useSelector } from 'src/hooks'
 import {
-  changeDifficulty, changeInputActive, changeSourceName, changeSourceUrl, errorAddPuzzle,
+  changeDifficulty, changeSourceCollectionId, errorAddPuzzle,
   errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseBruteSolution, responseIntuitiveSolution,
 } from 'src/reducers/admin'
-import { SolutionStep, SolutionType, StepRule, SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import {
+  SolutionStep, SolutionType, StepRule, SudokuBruteSolveResult,
+  SudokuIntuitiveSolveResult,
+} from 'src/types/wasm'
 import { Puzzle, SudokuConstraints, SudokuDifficulty } from 'src/types/sudoku'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import VariantSelect from 'src/components/Puzzle/VariantSelect'
+import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { SudokuDifficultyDisplay } from 'src/utils/constants'
@@ -136,17 +139,12 @@ const PuzzleCommit = () => {
   const difficulty = useSelector(state => state.admin.difficulty)
   const puzzlePublicId = useSelector(state => state.admin.puzzlePublicId)
   const puzzleAdding = useSelector(state => state.admin.puzzleAdding)
-  const sourceName = useSelector(state => state.admin.sourceName)
-  const sourceUrl = useSelector(state => state.admin.sourceUrl)
+  const sourceCollectionId = useSelector(state => state.admin.sourceCollectionId)
 
-  const addPuzzleEnabled = intuitiveSolution?.solution_type === SolutionType.Full && bruteSolution?.solution_count === 1
-
-  const handleInputFocus = useCallback(() => {
-    dispatch(changeInputActive(true))
-  }, [dispatch])
-  const handleInputBlur = useCallback(() => {
-    dispatch(changeInputActive(false))
-  }, [dispatch])
+  const addPuzzleEnabled = (
+    intuitiveSolution?.solution_type === SolutionType.Full &&
+    bruteSolution?.solution_count === 1
+  )
 
   const handleBruteSolveClick = useCallback(() => {
     dispatch(requestSolution())
@@ -169,11 +167,8 @@ const PuzzleCommit = () => {
     dispatch(changeDifficulty(difficulty))
   }, [dispatch])
 
-  const handleSourceNameChange = useCallback((sourceName: string) => {
-    dispatch(changeSourceName(sourceName))
-  }, [dispatch])
-  const handleSourceUrlChange = useCallback((sourceUrl: string) => {
-    dispatch(changeSourceUrl(sourceUrl))
+  const handleSourceCollectionChange = useCallback((id: string) => {
+    dispatch(changeSourceCollectionId(id))
   }, [dispatch])
 
   const handleAddPuzzleClick = useCallback(() => {
@@ -183,15 +178,14 @@ const PuzzleCommit = () => {
       variant,
       difficulty,
       solution: bruteSolution!.solution,
-      sourceName,
-      sourceUrl,
+      sourceCollectionId: sourceCollectionId === '' ? undefined : parseInt(sourceCollectionId),
     }
     apiAddPuzzle(puzzle, userToken!).then(data => {
       dispatch(responseAddPuzzle(data.public_id))
     }).catch(() => {
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceName, sourceUrl])
+  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId])
 
   return (
     <>
@@ -213,18 +207,12 @@ const PuzzleCommit = () => {
                 className="w-64 h-40" />
       <DifficultySelect value={difficulty} onChange={handleDifficultyChange} />
       <VariantSelect value={variant} label="Variant (autodetected)" disabled />
-      <Input label="Source Name"
-             value={sourceName}
-             onChange={handleSourceNameChange}
-             onFocus={handleInputFocus}
-             onBlur={handleInputBlur}
+
+      <PuzzleCollectionsSelect
+        value={sourceCollectionId}
+        onChange={handleSourceCollectionChange}
       />
-      <Input label="Source URL"
-             value={sourceUrl}
-             onChange={handleSourceUrlChange}
-             onFocus={handleInputFocus}
-             onBlur={handleInputBlur}
-      />
+
       <Button onClick={handleAddPuzzleClick}
               disabled={!addPuzzleEnabled || puzzleAdding}
       >

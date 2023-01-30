@@ -21,7 +21,7 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   // 4 => ~40; 6 => ~35; 9 => ~30
   const cellSize = 90 / Math.sqrt(gridSize)
 
-  const id = puzzle.publicId!
+  const id = puzzle.id!
   const handleDelete = useCallback(() => {
     if (window.confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
       dispatch(deletePuzzle(id))
@@ -39,7 +39,10 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
                   loading={false}
                   onCellClick={null}
                   cellSize={cellSize} />
-      <div className="flex gap-5 w-fit text-sm">
+      <div className="flex gap-3 w-fit text-sm text-gray-300">
+        {puzzle.publicId!}
+      </div>
+      <div className="flex gap-3 w-fit text-sm">
         <div>
           {puzzle.constraints.antiKnight && (
             <FontAwesomeIcon icon={faChessKnight} size="sm" />
@@ -50,6 +53,9 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
         </div>
         <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
           Play
+        </Link>
+        <Link to={`/admin/puzzles/${id}/edit`}>
+          Edit
         </Link>
         <button className="text-red-700" onClick={handleDelete}>
           Delete

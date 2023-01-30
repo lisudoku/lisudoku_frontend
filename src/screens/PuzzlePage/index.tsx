@@ -4,7 +4,7 @@ import LoadingSpinner from 'src/components/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import { useDispatch, useSelector } from 'src/hooks'
 import { updateDifficulty } from 'src/reducers/userData'
-import { fetchPuzzleById } from 'src/utils/apiService'
+import { fetchPuzzleByPublicId } from 'src/utils/apiService'
 import { receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 import { Typography } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -37,7 +37,7 @@ const PuzzlePage = () => {
     if (id !== persistedId) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
-      fetchPuzzleById(id!, userToken).then(data => {
+      fetchPuzzleByPublicId(id!, userToken).then(data => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
       }).catch(() => {
@@ -67,9 +67,7 @@ const PuzzlePage = () => {
           <FontAwesomeIcon icon={faCircleExclamation} size="4x" color="red" />
         </div>
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
-        <div className="flex w-full justify-center pt-20">
-          <LoadingSpinner />
-        </div>
+        <LoadingSpinner fullPage />
       ) : (
         <Puzzle />
       )}
