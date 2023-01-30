@@ -11,30 +11,31 @@ import {
 } from 'src/utils/apiService'
 
 const CollectionsEditPage = () => {
-  const { id } = useParams()
+  const { id: paramId } = useParams()
+  const id = paramId!
   const userToken = useSelector(state => state.userData.token!)
 
   const [ puzzleCollection, setPuzzleCollection ] = useState<PuzzleCollection>()
 
   useEffect(() => {
-    fetchPuzzleCollection(id!).then(puzzleCollection => {
+    fetchPuzzleCollection(id).then(puzzleCollection => {
       setPuzzleCollection(puzzleCollection)
     })
-  }, [userToken])
+  }, [id, userToken])
 
   const onSubmit = useCallback(async (values: Record<string, any>) => {
     const puzzleCollection: PuzzleCollectionInput = {
       name: values.name,
       url: values.url,
     }
-    const result = await apiUpdatePuzzleCollection(id!, puzzleCollection, userToken)
+    const result = await apiUpdatePuzzleCollection(id, puzzleCollection, userToken)
 
     if (result.error) {
       return { [FORM_ERROR]: result.error }
     }
 
     setPuzzleCollection(result)
-  }, [id!, userToken])
+  }, [id, userToken])
 
   if (!puzzleCollection) {
     return <LoadingSpinner />

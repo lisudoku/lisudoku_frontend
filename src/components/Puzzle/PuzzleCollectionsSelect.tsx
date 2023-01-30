@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import _ from 'lodash'
 import LoadingSpinner from '../LoadingSpinner'
 import { Select, Option } from '../Select'
 import { fetchAllCollections } from 'src/utils/apiService'

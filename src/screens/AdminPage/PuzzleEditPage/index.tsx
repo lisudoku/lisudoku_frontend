@@ -21,23 +21,25 @@ const puzzleToFormData = (puzzle: any) => ({
 })
 
 const PuzzleEditPage = () => {
-  const { id } = useParams()
+  const { id: paramId } = useParams()
+  const id = paramId!
+
   const userToken = useSelector(state => state.userData.token!)
   const [ loading, setLoading ] = useState(true)
   const [ formData, setFormData ] = useState<PuzzleFormData>()
 
   useEffect(() => {
-    fetchPuzzleById(id!, userToken).then(data => {
+    fetchPuzzleById(id, userToken).then(data => {
       const puzzle = data.puzzles[0]
       const formData: PuzzleFormData = puzzleToFormData(puzzle)
       setFormData(formData)
       setLoading(false)
     })
-  }, [userToken])
+  }, [id, userToken])
 
   const onSubmit = useCallback(async (values: Record<string, any>) => {
     const puzzle = values as PuzzleFormData
-    const result = await apiUpdatePuzzle(id!, puzzle, userToken)
+    const result = await apiUpdatePuzzle(id, puzzle, userToken)
 
     if (result.error) {
       return { [FORM_ERROR]: result.error }
@@ -45,7 +47,7 @@ const PuzzleEditPage = () => {
 
     const formData: PuzzleFormData = puzzleToFormData(result)
     setFormData(formData)
-  }, [id!, userToken])
+  }, [id, userToken])
 
   if (loading) {
     return <LoadingSpinner />
