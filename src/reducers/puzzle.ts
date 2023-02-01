@@ -3,12 +3,18 @@ import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { SudokuIntuitiveSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
 enum ActionType {
   Digit = 'digit',
   Note = 'note',
   Delete = 'delete',
+}
+
+export enum HintLevel {
+  Small = 'Small',
+  Big = 'Big',
 }
 
 type UserAction = {
@@ -24,6 +30,9 @@ type ControlsState = {
   notesActive: boolean
   actions: UserAction[]
   actionIndex: number
+  hintSolution: SudokuIntuitiveSolveResult | null
+  lastHint: string | null
+  hintLevel: HintLevel | null
 }
 
 type PuzzleState = {
@@ -67,6 +76,9 @@ export const puzzleSlice = createSlice({
       notesActive: false,
       actions: [],
       actionIndex: -1,
+      hintSolution: null,
+      lastHint: null,
+      hintLevel: null,
     },
   } as PuzzleState,
   reducers: {
@@ -82,6 +94,9 @@ export const puzzleSlice = createSlice({
       state.controls.selectedCell = null
       state.controls.actions = []
       state.controls.actionIndex = -1
+      state.controls.hintSolution = null
+      state.controls.lastHint = null
+      state.controls.hintLevel = null
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -128,6 +143,8 @@ export const puzzleSlice = createSlice({
 
       performAction(state, userAction)
 
+      state.controls.hintSolution = null
+      state.controls.hintLevel = null
       state.lastUpdate = formatISO(new Date())
     },
     changeSelectedCellNotes(state, action) {
@@ -199,13 +216,27 @@ export const puzzleSlice = createSlice({
       state.controls.selectedCell = userAction.cell
       performAction(state, userAction)
     },
+    changeHintSolution(state, action) {
+      state.controls.hintSolution = action.payload
+      state.controls.lastHint = formatISO(new Date())
+      if (state.controls.hintSolution) {
+        if (state.controls.hintLevel === null) {
+          state.controls.hintLevel = HintLevel.Small
+        } else if (state.controls.hintLevel === HintLevel.Small) {
+          state.controls.hintLevel = HintLevel.Big
+        }
+      }
+    },
+    changeHintLevel(state, action) {
+      state.controls.hintLevel = action.payload
+    },
   }
 })
 
 export const {
   requestedPuzzle, receivedPuzzle, clearPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
-  fetchNewPuzzle, resetPuzzle, undoAction, redoAction,
+  fetchNewPuzzle, resetPuzzle, undoAction, redoAction, changeHintSolution, changeHintLevel,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer

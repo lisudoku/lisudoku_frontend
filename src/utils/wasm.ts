@@ -1,5 +1,8 @@
-import { wasm_check_solved, wasm_intuitive_solve, wasm_brute_solve } from 'lisudoku-solver'
+import {
+  wasm_check_solved, wasm_intuitive_solve, wasm_brute_solve, wasm_intuitive_hint,
+} from 'lisudoku-solver'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
+import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
 const computeWasmConstraints = (constraints: SudokuConstraints) => {
@@ -26,12 +29,18 @@ export const checkSolved = (constraints: SudokuConstraints, grid: Grid) => {
 export const bruteSolve = (constraints: SudokuConstraints) => {
   const wasmConstraints = computeWasmConstraints(constraints)
   console.info('Request brute solve', wasmConstraints)
-  const solution = wasm_brute_solve(wasmConstraints)
+  const solution: SudokuBruteSolveResult = wasm_brute_solve(wasmConstraints)
   return solution
 }
 
 export const intuitiveSolve = (constraints: SudokuConstraints) => {
   const wasmConstraints = computeWasmConstraints(constraints)
-  const solution = wasm_intuitive_solve(wasmConstraints)
+  const solution: SudokuIntuitiveSolveResult = wasm_intuitive_solve(wasmConstraints)
+  return solution
+}
+
+export const intuitiveHint = (constraints: SudokuConstraints) => {
+  const wasmConstraints = computeWasmConstraints(constraints)
+  const solution: SudokuIntuitiveSolveResult = wasm_intuitive_hint(wasmConstraints)
   return solution
 }

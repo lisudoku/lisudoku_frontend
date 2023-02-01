@@ -5,6 +5,8 @@ export type CellPosition = {
 
 export type Grid = (number | null)[][]
 
+export type CellNotes = number[]
+
 export enum SudokuVariant {
   Classic = 'classic',
   Thermo = 'thermo',

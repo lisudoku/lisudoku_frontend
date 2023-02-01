@@ -7,6 +7,8 @@ import ShortcutsButton from './ShortcutsButton'
 import PermalinkButton from './PermalinkButton'
 import VariantSelect from './VariantSelect'
 import DifficultySelect from './DifficultySelect'
+import HintButtons from './HintButtons'
+import HintPanel from './HintPanel'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
@@ -26,7 +28,8 @@ const SudokuMisc = () => {
   }, [navigate, variant])
 
   return (
-    <div className="flex flex-col max-w-lg md:max-w-xs mt-3 md:mt-0">
+    <div className="relative flex flex-col max-w-lg md:max-w-xs mt-3 md:mt-0">
+      <HintPanel />
       <div>
         <SudokuRules constraints={constraints} />
       </div>
@@ -38,6 +41,7 @@ const SudokuMisc = () => {
       </div>
       <PermalinkButton publicId={publicId} />
       <ShortcutsButton />
+      <HintButtons />
       {sourceCollectionId && (
         <div className="flex flex-col mt-2 w-full md:ml-6 md:w-fit">
           <div className="text-gray-400 text-sm">

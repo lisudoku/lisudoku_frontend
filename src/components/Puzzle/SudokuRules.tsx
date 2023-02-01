@@ -69,7 +69,7 @@ const computeRules = (constraints: SudokuConstraints) => {
 
 const SudokuRules = ({ constraints }: { constraints: SudokuConstraints }) => (
   <>
-    <Card color="gray" className="rounded w-full">
+    <Card className="rounded w-full bg-gray-600 text-white">
       <CardBody>
         <Typography variant="h6">
           Rules

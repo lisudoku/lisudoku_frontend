@@ -36,7 +36,7 @@ export const ensureDefaultRegions = (gridSize: number): Region[] => {
 }
 
 export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => {
-  const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+  const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   for (const fixedNumber of fixedNumbers) {
     grid[fixedNumber.position.row][fixedNumber.position.col] = fixedNumber.value
   }
@@ -196,7 +196,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
       continue
     }
     const sum = _.sumBy(killerCage.region, cell => (
-      valuesGrid[cell.row][cell.col]
+      valuesGrid[cell.row][cell.col]!
     ))
     if (sum > killerCage.sum) {
       for (const cell of killerCage.region) {
