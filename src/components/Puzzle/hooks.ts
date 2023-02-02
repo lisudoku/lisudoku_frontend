@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { useEffect, useCallback, useMemo } from 'react'
-import { CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { computeErrorGrid, computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { computeErrors, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
@@ -18,10 +18,20 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[
   useMemo(() => computeFixedNumbersGrid(gridSize, fixedNumbers), [gridSize, fixedNumbers])
 )
 
-export const useErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid) => (
+export const useGridErrors = (
+  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]
+) => (
   useMemo(() => (
-    computeErrorGrid(checkErrors, constraints, grid)
-  ), [checkErrors, constraints, grid])
+    computeErrors(checkErrors, constraints, grid, notes).gridErrors
+  ), [checkErrors, constraints, grid, notes])
+)
+
+export const useNoteErrors = (
+  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]
+) => (
+  useMemo(() => (
+    computeErrors(checkErrors, constraints, grid, notes).noteErrors
+  ), [checkErrors, constraints, grid, notes])
 )
 
 export const useControlCallbacks = (isSolvedLoading: boolean) => {

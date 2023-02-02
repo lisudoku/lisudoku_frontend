@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {
-  CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
+  CellNotes, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
 } from 'src/types/sudoku'
 
 const computeRegionSizes = (gridSize: number) => {
@@ -58,12 +58,103 @@ type CountMap = {
   [key: number]: number
 }
 
-// TODO: refactor this to remove duplicate code
-export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid) => {
+const getRowCells = (row: number, gridSize: number) => (
+  _.times(gridSize, col => ({ row, col }))
+)
+const getColCells = (col: number, gridSize: number) => (
+  _.times(gridSize, row => ({ row, col }))
+)
+const getPrimaryDiagonalCells = (gridSize: number) => (
+  _.times(gridSize, index => ({ row: index, col: index }))
+)
+const getSecondaryDiagonalCells = (gridSize: number) => (
+  _.times(gridSize, index => ({ row: index, col: gridSize - 1 - index }))
+)
+
+const isCompletelyEmpty = (cell: CellPosition, valuesGrid: Grid, notes: CellNotes[][]) => {
+  const value = valuesGrid[cell.row][cell.col]
+  const noteSet = notes[cell.row][cell.col]
+  return !value && noteSet.length === 0
+}
+
+enum CheckType {
+  Equal,
+  KropkiConsecutive,
+  KropkiDouble,
+  KropkiNegative,
+}
+
+const validPeersForValue = (value: number, checkType: CheckType, gridSize: number) => {
+  switch (checkType) {
+    case CheckType.Equal:
+      return _.range(1, gridSize + 1).filter(x => x !== value)
+    case CheckType.KropkiConsecutive: {
+      const values = []
+      if (value > 1) {
+        values.push(value - 1)
+      }
+      if (value + 1 <= gridSize) {
+        values.push(value + 1)
+      }
+      return values
+    }
+    case CheckType.KropkiDouble: {
+      const values = []
+      if (value % 2 === 0) {
+        values.push(value / 2)
+      }
+      if (value * 2 <= gridSize) {
+        values.push(value * 2)
+      }
+      return values
+    }
+    case CheckType.KropkiNegative: {
+      const values = _.range(1, gridSize + 1).filter(x => {
+        const peerValue = x
+        return value * 2 !== peerValue &&
+               peerValue * 2 !== value &&
+               value + 1 !== peerValue &&
+               peerValue + 1 !== value
+      })
+      return values
+    }
+  }
+}
+
+const checkErrorsBetween = (
+  cell: CellPosition, peer: CellPosition, valuesGrid: Grid, notes: CellNotes[][], checkType: CheckType,
+  gridErrors: boolean[][], noteErrors: Set<number>[][]
+) => {
+  const value = valuesGrid[cell.row][cell.col]
+  const noteSet = notes[cell.row][cell.col]
+  const peerValue = valuesGrid[peer.row][peer.col]
+  const peerNoteSet = notes[peer.row][peer.col]
+  const gridSize = gridErrors.length
+
+  if (value && peerValue) {
+    if (!validPeersForValue(value, checkType, gridSize).includes(peerValue)) {
+      gridErrors[cell.row][cell.col] = true
+      gridErrors[peer.row][peer.col] = true
+    }
+  } else if (value) {
+    const extraValues = _.difference(peerNoteSet, validPeersForValue(value, checkType, gridSize))
+    for (const extraValue of extraValues) {
+      noteErrors[peer.row][peer.col].add(extraValue)
+    }
+  } else if (peerValue) {
+    const extraValues = _.difference(noteSet, validPeersForValue(peerValue, checkType, gridSize))
+    for (const extraValue of extraValues) {
+      noteErrors[cell.row][cell.col].add(extraValue)
+    }
+  }
+}
+
+export const computeErrors = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]) => {
   const { gridSize, fixedNumbers } = constraints
-  const errorGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
-  if (!checkErrors || !grid) {
-    return errorGrid
+  const gridErrors: boolean[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
+  const noteErrors: Set<number>[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => new Set()))
+  if (!checkErrors || !grid || !notes) {
+    return { gridErrors, noteErrors }
   }
 
   const valuesGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -73,53 +164,50 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
-  // Rows
+  const regions = []
   for (let row = 0; row < gridSize; row++) {
-    const valueCounts: CountMap = {}
-    for (let col = 0; col < gridSize; col++) {
-      const value = valuesGrid[row][col]
-      valueCounts[value!] = (valueCounts[value!] || 0) + 1
-    }
-    for (let col = 0; col < gridSize; col++) {
-      const value = valuesGrid[row][col]
-      if (valueCounts[value!] > 1) {
-        errorGrid[row][col] = true
-      }
-    }
+    regions.push(getRowCells(row, gridSize))
   }
-
-  // Columns
   for (let col = 0; col < gridSize; col++) {
+    regions.push(getColCells(col, gridSize))
+  }
+  regions.push(...constraints.regions)
+  regions.push(..._.map(constraints.killerCages, 'region'))
+  if (constraints.primaryDiagonal) {
+    regions.push(getPrimaryDiagonalCells(gridSize))
+  }
+  if (constraints.secondaryDiagonal) {
+    regions.push(getSecondaryDiagonalCells(gridSize))
+  }
+  regions.push(...(constraints.thermos ?? []))
+
+  for (const region of regions) {
     const valueCounts: CountMap = {}
-    for (let row = 0; row < gridSize; row++) {
+    for (const { row, col } of region) {
       const value = valuesGrid[row][col]
-      valueCounts[value!] ||= 0
-      valueCounts[value!] += 1
+      if (!value) {
+        continue
+      }
+      valueCounts[value] = (valueCounts[value] || 0) + 1
     }
-    for (let row = 0; row < gridSize; row++) {
+    for (const { row, col } of region) {
       const value = valuesGrid[row][col]
-      if (valueCounts[value!] > 1) {
-        errorGrid[row][col] = true
+      if (!value) {
+        continue
+      }
+      if (valueCounts[value] > 1) {
+        gridErrors[row][col] = true
       }
     }
-  }
-
-  // Regions
-  const allRegions = [
-    ...constraints.regions,
-    ...constraints.killerCages.map(cage => cage.region),
-  ]
-  for (const region of allRegions) {
-    const valueCounts: CountMap = {}
-    for (let { row, col } of region) {
-      const value = valuesGrid[row][col]
-      valueCounts[value!] ||= 0
-      valueCounts[value!] += 1
-    }
-    for (let { row, col } of region) {
-      const value = valuesGrid[row][col]
-      if (valueCounts[value!] > 1) {
-        errorGrid[row][col] = true
+    for (const { row, col } of region) {
+      const value = valuesGrid[row][col]!
+      if (value) {
+        continue
+      }
+      for (const note of notes[row][col]) {
+        if (valueCounts[note] && valueCounts[note] > 0) {
+          noteErrors[row][col].add(note)
+        }
       }
     }
   }
@@ -131,8 +219,8 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     for (let cell of thermo) {
       const value = valuesGrid[cell.row][cell.col]
       if (value && value <= prevValue) {
-        errorGrid[cell.row][cell.col] = true
-        errorGrid[prevCell!.row][prevCell!.col] = true
+        gridErrors[cell.row][cell.col] = true
+        gridErrors[prevCell!.row][prevCell!.col] = true
       }
       if (value) {
         prevValue = value!
@@ -141,51 +229,18 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
   }
 
-  if (constraints.primaryDiagonal) {
-    const valueCounts: CountMap = {}
-    for (let index = 0; index < gridSize; index++) {
-      const value = valuesGrid[index][index]
-      valueCounts[value!] ||= 0
-      valueCounts[value!] += 1
-    }
-    for (let index = 0; index < gridSize; index++) {
-      const value = valuesGrid[index][index]
-      if (valueCounts[value!] > 1) {
-        errorGrid[index][index] = true
-      }
-    }
-  }
-
-  if (constraints.secondaryDiagonal) {
-    const valueCounts: CountMap = {}
-    for (let index = 0; index < gridSize; index++) {
-      const value = valuesGrid[index][gridSize - 1 - index]
-      valueCounts[value!] ||= 0
-      valueCounts[value!] += 1
-    }
-    for (let index = 0; index < gridSize; index++) {
-      const value = valuesGrid[index][gridSize - 1 - index]
-      if (valueCounts[value!] > 1) {
-        errorGrid[index][gridSize - 1 - index] = true
-      }
-    }
-  }
-
   if (constraints.antiKnight) {
     const cells = getAllCells(gridSize)
     cells.forEach(cell => {
-      const value = valuesGrid[cell.row][cell.col]
-      if (!value) {
+      if (isCompletelyEmpty(cell, valuesGrid, notes)) {
         return
       }
       const peers = getKnightPeers(cell, gridSize)
       peers.forEach(peer => {
-        const peerValue = valuesGrid[peer.row][peer.col]
-        if (value !== peerValue) {
+        if (isCompletelyEmpty(peer, valuesGrid, notes)) {
           return
         }
-        errorGrid[cell.row][cell.col] = true
-        errorGrid[peer.row][peer.col] = true
+        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.Equal, gridErrors, noteErrors)
       })
     })
   }
@@ -200,29 +255,18 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     ))
     if (sum > killerCage.sum) {
       for (const cell of killerCage.region) {
-        errorGrid[cell.row][cell.col] = true
+        gridErrors[cell.row][cell.col] = true
       }
     }
   }
 
   // Kropki
   for (const kropkiDot of constraints.kropkiDots ?? []) {
-    let { row: row1, col: col1 } = kropkiDot.cell1
-    let { row: row2, col: col2 } = kropkiDot.cell2
-    let value1 = valuesGrid[row1][col1]
-    let value2 = valuesGrid[row2][col2]
-    if (!value1 || !value2) {
-      continue
-    }
-    if (value1 > value2) {
-      [ value1, value2 ] = [ value2, value1 ]
-    }
-    if ((kropkiDot.dotType === KropkiDotType.Consecutive && value1 + 1 !== value2) ||
-        (kropkiDot.dotType === KropkiDotType.Double && value1 * 2 !== value2)) {
-      errorGrid[row1][col1] = true
-      errorGrid[row2][col2] = true
-    }
+    const { cell1: cell, cell2: peer } = kropkiDot
+    const checkType = kropkiDot.dotType === KropkiDotType.Consecutive ? CheckType.KropkiConsecutive : CheckType.KropkiDouble
+    checkErrorsBetween(cell, peer, valuesGrid, notes, checkType, gridErrors, noteErrors)
   }
+
   if (constraints.kropkiNegative) {
     const gridToKropkiDots: CellPosition[][][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
     for (const kropkiDot of constraints.kropkiDots ?? []) {
@@ -232,8 +276,7 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
     }
     const cells = getAllCells(gridSize)
     cells.forEach(cell => {
-      const value = valuesGrid[cell.row][cell.col]
-      if (!value) {
+      if (isCompletelyEmpty(cell, grid, notes)) {
         return
       }
       const peers = getAdjacentPeers(cell, gridSize)
@@ -241,22 +284,15 @@ export const computeErrorGrid = (checkErrors: boolean, constraints: SudokuConstr
       const negativePeers = _.differenceWith(peers, dotPeers, _.isEqual)
 
       negativePeers.forEach((peer: CellPosition) => {
-        const peerValue = valuesGrid[peer.row][peer.col]
-        if (!peerValue) {
+        if (isCompletelyEmpty(peer, grid, notes)) {
           return
         }
-        if (value + 1 === peerValue ||
-            peerValue + 1 === value ||
-            value * 2 === peerValue ||
-            peerValue * 2 === value) {
-          errorGrid[cell.row][cell.col] = true
-          errorGrid[peer.row][peer.col] = true
-        }
+        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.KropkiNegative, gridErrors, noteErrors)
       })
     })
   }
 
-  return errorGrid
+  return { gridErrors, noteErrors }
 }
 
 export const getAllCells = (gridSize: number) => {
