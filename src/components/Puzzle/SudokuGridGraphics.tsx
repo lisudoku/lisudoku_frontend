@@ -82,7 +82,7 @@ const ThermoGraphics = ({ thermo, cellSize }: { thermo: Thermo, cellSize: number
   }).join(' ')
 
   return (
-    <g className="fill-gray-500 stroke-gray-500 opacity-80">
+    <g className="thermo fill-gray-500 stroke-gray-500 opacity-80">
       <circle cx={bulb.col * cellSize + 1 + half}
               cy={bulb.row * cellSize + 1 + half}
               r={bulbRadius} />
@@ -437,10 +437,28 @@ type KropkiGraphicsProps = {
   cellSize: number
 }
 
+const ExtraRegionsGraphics = ({ cellSize, extraRegions }: ExtraRegionsGraphicsProps) => (
+  <g className="extra-regions stroke-0 fill-cyan-900">
+    {extraRegions.flat().map((cell, index) => (
+      <rect x={1 + cellSize * cell.col}
+            y={1 + cellSize * cell.row}
+            width={cellSize}
+            height={cellSize}
+            key={index}
+      />
+    ))}
+  </g>
+)
+
+type ExtraRegionsGraphicsProps = {
+  cellSize: number
+  extraRegions: Region[]
+}
+
 const SudokuConstraintsGraphics = (
   { cellSize, constraints, notes, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
-  const { gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots } = constraints
+  const { gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
@@ -450,6 +468,7 @@ const SudokuConstraintsGraphics = (
          style={{ top: 0, left: 0, stroke: 'black', strokeWidth: 2 }}
          onClick={onGridClick}
     >
+      <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />

@@ -18,6 +18,7 @@ export enum SudokuVariant {
   Diagonal = 'diagonal',
   Mixed = 'mixed',
   AntiKnight = 'antiknight',
+  ExtraRegions = 'extraregions',
 }
 
 export enum SudokuDifficulty {
@@ -33,6 +34,7 @@ export type SudokuConstraints = {
   gridSize: number
   fixedNumbers: FixedNumber[]
   regions: Region[]
+  extraRegions: Region[]
   thermos?: Thermo[]
   primaryDiagonal: boolean
   secondaryDiagonal: boolean

@@ -2,7 +2,7 @@ import { Card, CardBody, Typography } from '@material-tailwind/react'
 import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThermometer4, faXmark, faChessKnight } from '@fortawesome/free-solid-svg-icons'
+import { faThermometer4, faXmark, faChessKnight, faSquare } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
 const computeRules = (constraints: SudokuConstraints) => {
@@ -11,6 +11,13 @@ const computeRules = (constraints: SudokuConstraints) => {
     `Place a digit from 1 to ${constraints.gridSize} in each of the empty cells so ` +
     `that each digit appears exactly once in each row, column and outlined region.`
   )
+  if (!_.isEmpty(constraints.extraRegions)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faSquare} size="sm" className="text-cyan-700" />
+      {' '}
+      Each blue region contains each digit from 1 to {constraints.gridSize}.
+    </>)
+  }
   if (!_.isEmpty(constraints.thermos)) {
     rules.push(<>
       <FontAwesomeIcon icon={faThermometer4} size="sm"/>

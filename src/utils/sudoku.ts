@@ -172,6 +172,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     regions.push(getColCells(col, gridSize))
   }
   regions.push(...constraints.regions)
+  regions.push(...constraints.extraRegions ?? [])
   regions.push(..._.map(constraints.killerCages, 'region'))
   if (constraints.primaryDiagonal) {
     regions.push(getPrimaryDiagonalCells(gridSize))

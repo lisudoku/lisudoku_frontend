@@ -11,6 +11,7 @@ const computeWasmConstraints = (constraints: SudokuConstraints) => {
   wasmConstraints.thermos ||= []
   wasmConstraints.kropki_dots ||= []
   wasmConstraints.killer_cages ||= []
+  wasmConstraints.extra_regions ||= []
   wasmConstraints.kropki_negative ||= false
   wasmConstraints.primary_diagonal ||= false
   wasmConstraints.secondary_diagonal ||= false

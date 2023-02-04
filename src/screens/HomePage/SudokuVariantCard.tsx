@@ -97,6 +97,12 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
               <text x="60" y="90" rotate={15}>?</text>
             </g>
           )}
+          {variant === SudokuVariant.ExtraRegions && (
+            <g className="fill-gray-700 stroke-0">
+                <rect x="7" y="30" width="33" height="18" />
+                <rect x="42" y="30" width="51" height="18" />
+            </g>
+          )}
         </svg>
       </div>
     </Link>
