@@ -293,6 +293,20 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     })
   }
 
+  // Odd Even
+  for (const cell of constraints.oddCells ?? []) {
+    const value = valuesGrid[cell.row][cell.col]
+    if (value && value % 2 !== 1) {
+      gridErrors[cell.row][cell.col] = true
+    }
+  }
+  for (const cell of constraints.evenCells ?? []) {
+    const value = valuesGrid[cell.row][cell.col]
+    if (value && value % 2 !== 0) {
+      gridErrors[cell.row][cell.col] = true
+    }
+  }
+
   return { gridErrors, noteErrors }
 }
 

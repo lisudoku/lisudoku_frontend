@@ -19,6 +19,7 @@ export enum SudokuVariant {
   Mixed = 'mixed',
   AntiKnight = 'antiknight',
   ExtraRegions = 'extraregions',
+  OddEven = 'oddeven',
 }
 
 export enum SudokuDifficulty {
@@ -42,6 +43,8 @@ export type SudokuConstraints = {
   killerCages: KillerCage[]
   kropkiDots: KropkiDot[]
   kropkiNegative: boolean
+  oddCells: CellPosition[]
+  evenCells: CellPosition[]
 }
 
 export type FixedNumber = {

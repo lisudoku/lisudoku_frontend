@@ -2,7 +2,9 @@ import { Card, CardBody, Typography } from '@material-tailwind/react'
 import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThermometer4, faXmark, faChessKnight, faSquare } from '@fortawesome/free-solid-svg-icons'
+import {
+  faThermometer4, faXmark, faChessKnight, faSquare, faCircle as faCircleSolid,
+} from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
 const computeRules = (constraints: SudokuConstraints) => {
@@ -70,6 +72,20 @@ const computeRules = (constraints: SudokuConstraints) => {
         Adjacent cells with no marking must not contain digits either whose difference is 1 or whose ratio is 2.
       </>)
     }
+  }
+  if (!_.isEmpty(constraints.oddCells)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faCircleSolid} size="sm" color="lightgray" />
+      {' '}
+      Cells with shaded circles contain odd digits.
+    </>)
+  }
+  if (!_.isEmpty(constraints.evenCells)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faSquare} size="sm" color="lightgray" />
+      {' '}
+      Cells with shaded squares contain even digits.
+    </>)
   }
   return rules
 }

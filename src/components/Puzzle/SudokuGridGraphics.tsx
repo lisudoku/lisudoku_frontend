@@ -455,10 +455,57 @@ type ExtraRegionsGraphicsProps = {
   extraRegions: Region[]
 }
 
+const OddGraphics = ({ cellSize, cells }: OddGraphicsProps) => {
+  const half = cellSize / 2
+  const radius = Math.floor(half * 21 / 28)
+
+  return (
+    <g className="odd-cells fill-gray-600 stroke-gray-600">
+      {cells.map((cell, index) => (
+        <circle cx={cell.col * cellSize + 1 + half}
+                cy={cell.row * cellSize + 1 + half}
+                r={radius}
+                key={index} />
+      ))}
+    </g>
+  )
+}
+
+type OddGraphicsProps = {
+  cellSize: number
+  cells: CellPosition[]
+}
+
+const EvenGraphics = ({ cellSize, cells }: EvenGraphicsProps) => {
+  const PADDING = 7
+  const sideLength = cellSize - 2 * PADDING
+
+  return (
+    <g className="even-cells fill-gray-600 stroke-gray-600">
+      {cells.map((cell, index) => (
+        <rect x={1 + cellSize * cell.col + PADDING}
+              y={1 + cellSize * cell.row + PADDING}
+              width={sideLength}
+              height={sideLength}
+              key={index} />
+      ))}
+    </g>
+  )
+}
+
+type EvenGraphicsProps = {
+  cellSize: number
+  cells: CellPosition[]
+}
+
+
 const SudokuConstraintsGraphics = (
   { cellSize, constraints, notes, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
-  const { gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions } = constraints
+  const {
+    gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions,
+    oddCells, evenCells,
+  } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
@@ -472,6 +519,8 @@ const SudokuConstraintsGraphics = (
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
+      <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
+      <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
       <DiagonalGraphics gridSize={gridSize}
                         cellSize={cellSize}
                         primary={constraints.primaryDiagonal}

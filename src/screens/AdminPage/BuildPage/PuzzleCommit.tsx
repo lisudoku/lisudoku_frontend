@@ -67,6 +67,8 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
   nonEmptyCells += constraints.kropkiDots.length / 2
   nonEmptyCells += constraints.extraRegions.length * 2
+  nonEmptyCells += constraints.oddCells.length / 2
+  nonEmptyCells += constraints.evenCells.length / 2
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]

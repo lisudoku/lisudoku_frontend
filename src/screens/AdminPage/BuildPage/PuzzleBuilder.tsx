@@ -95,7 +95,7 @@ const PuzzleBuilder = () => {
   const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
 
   let usedGrid = grid
-  if (constraintType !== ConstraintType.FixedNumber && constraintType !== ConstraintType.Thermo) {
+  if (![ConstraintType.FixedNumber, ConstraintType.Thermo, ConstraintType.OddCells, ConstraintType.EvenCells].includes(constraintType)) {
     usedGrid = constraintGrid
     constraintPreview.fixedNumbers = []
   }
@@ -163,6 +163,16 @@ const PuzzleBuilder = () => {
               <FontAwesomeIcon icon={faCircleInfo} size="sm" />
             </Tooltip>
           </div>
+          <Radio name="build-item"
+                 id={ConstraintType.OddCells}
+                 label="Odd"
+                 checked={constraintType === ConstraintType.OddCells}
+                 onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
+                 id={ConstraintType.EvenCells}
+                 label="Even"
+                 checked={constraintType === ConstraintType.EvenCells}
+                 onChange={handleConstraintTypeChange} />
           <div className="flex flex-col w-full mt-2 gap-y-1">
             {constraintType === ConstraintType.Killer && (
               <Input label="Sum"

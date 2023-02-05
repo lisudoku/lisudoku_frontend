@@ -12,6 +12,8 @@ const computeWasmConstraints = (constraints: SudokuConstraints) => {
   wasmConstraints.kropki_dots ||= []
   wasmConstraints.killer_cages ||= []
   wasmConstraints.extra_regions ||= []
+  wasmConstraints.odd_cells ||= []
+  wasmConstraints.even_cells ||= []
   wasmConstraints.kropki_negative ||= false
   wasmConstraints.primary_diagonal ||= false
   wasmConstraints.secondary_diagonal ||= false

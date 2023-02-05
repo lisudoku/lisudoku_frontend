@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChessKnight } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
-  <div className="w-full sm:w-1/2 lg:w-1/4 p-1.5">
+  <div className="w-[14rem] p-1.5">
     <Link to={`/play/${variant}/${difficulty}`}>
       <div className="relative h-48 border rounded border-gray-700 cursor-pointer text-3xl bg-gray-800 hover:bg-cyan-900 hover:text-gray-300 hover:shadow-sm hover:shadow-gray-700">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
@@ -99,8 +99,14 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
           )}
           {variant === SudokuVariant.ExtraRegions && (
             <g className="fill-gray-700 stroke-0">
-                <rect x="7" y="30" width="33" height="18" />
-                <rect x="42" y="30" width="51" height="18" />
+              <rect x="7" y="30" width="33" height="18" />
+              <rect x="42" y="30" width="51" height="18" />
+            </g>
+          )}
+          {variant === SudokuVariant.OddEven && (
+            <g className="fill-gray-700 stroke-0">
+              <ellipse cx="34" cy="39" rx="14" ry="12" />
+              <rect x="50" y="30" width="30" height="18" />
             </g>
           )}
         </svg>

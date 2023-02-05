@@ -15,6 +15,8 @@ export enum ConstraintType {
   Killer = 'killer',
   Kropki = 'kropki',
   ExtraRegions = 'extraregions',
+  OddCells = 'oddcells',
+  EvenCells = 'evencells',
 }
 
 // TODO: split into separate reducers
@@ -98,6 +100,9 @@ const detectVariant = (state: AdminState) => {
   if (!_.isEmpty(state.constraints?.extraRegions)) {
     variants.push(SudokuVariant.ExtraRegions)
   }
+  if (!_.isEmpty(state.constraints?.oddCells) || !_.isEmpty(state.constraints?.evenCells)) {
+    variants.push(SudokuVariant.OddEven)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -146,6 +151,8 @@ export const adminSlice = createSlice({
         primaryDiagonal: false,
         secondaryDiagonal: false,
         antiKnight: false,
+        oddCells: [],
+        evenCells: [],
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
@@ -154,10 +161,28 @@ export const adminSlice = createSlice({
     changeSelectedCell(state, action) {
       state.selectedCell = action.payload
 
+      const isSelectedCell = (cell: CellPosition) => _.isEqual(cell, state.selectedCell!)
+
       switch (state.constraintType) {
         case ConstraintType.Thermo: {
           if (expandsThermo(state.currentThermo, action.payload)) {
             state.currentThermo.push(action.payload)
+          }
+          break
+        }
+        case ConstraintType.OddCells: {
+          if (!state.constraints?.oddCells.find(isSelectedCell) &&
+              !state.constraints?.evenCells.find(isSelectedCell)
+          ) {
+            state.constraints!.oddCells.push(state.selectedCell!)
+          }
+          break
+        }
+        case ConstraintType.EvenCells: {
+          if (!state.constraints?.oddCells.find(isSelectedCell) &&
+              !state.constraints?.evenCells.find(isSelectedCell)
+          ) {
+            state.constraints!.evenCells.push(state.selectedCell!)
           }
           break
         }
@@ -348,6 +373,10 @@ export const adminSlice = createSlice({
       if (regionIndex !== -1) {
         state.constraints!.extraRegions?.splice(regionIndex, 1)
       }
+
+      // Odd Even
+      _.remove(state.constraints!.oddCells, isSelectedCell)
+      _.remove(state.constraints!.evenCells, isSelectedCell)
     },
     requestSolution(state) {
       state.solverRunning = true
