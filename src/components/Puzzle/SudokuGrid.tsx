@@ -1,13 +1,18 @@
-import classNames from 'classnames'
+import { useCallback } from 'react'
 import SudokuConstraintsGraphics from './SudokuGridGraphics'
 import LoadingSpinner from '../LoadingSpinner'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuGrid = ({
   constraints, grid, notes, selectedCell, checkErrors, loading, onCellClick, cellSize,
+  paused, onUnpause,
 }: SudokuGridProps) => {
+  const handleUnpause = useCallback(() => { onUnpause?.() }, [onUnpause])
+
   return (
     <div className="cursor-default select-none">
       <div className="relative">
@@ -20,14 +25,17 @@ const SudokuGrid = ({
           selectedCell={selectedCell}
           onCellClick={onCellClick}
         />
-        <div className={classNames(
-          'absolute inset-0 flex items-center justify-center', {
-            'backdrop-blur-sm': loading,
-            'pointer-events-none': !loading,
-          }
-        )}>
-          <LoadingSpinner loading={loading} />
-        </div>
+        {(loading || paused) && (
+          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md">
+            <LoadingSpinner loading={loading} />
+            {paused && (
+              <FontAwesomeIcon icon={faCirclePlay}
+                                size="5x"
+                                onClick={handleUnpause}
+                                className="cursor-pointer" />
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -35,6 +43,7 @@ const SudokuGrid = ({
 
 SudokuGrid.defaultProps = {
   cellSize: DEFAULT_CELL_SIZE,
+  paused: false,
 }
 
 type SudokuGridProps = {
@@ -46,6 +55,8 @@ type SudokuGridProps = {
   loading: boolean
   onCellClick: Function | null
   cellSize: number
+  paused: boolean
+  onUnpause?: Function
 }
 
 export default SudokuGrid
