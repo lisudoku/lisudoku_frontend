@@ -82,7 +82,7 @@ const ThermoGraphics = ({ thermo, cellSize }: { thermo: Thermo, cellSize: number
   }).join(' ')
 
   return (
-    <g className="fill-gray-500 stroke-gray-500 opacity-80">
+    <g className="thermo fill-gray-500 stroke-gray-500 opacity-80">
       <circle cx={bulb.col * cellSize + 1 + half}
               cy={bulb.row * cellSize + 1 + half}
               r={bulbRadius} />
@@ -437,10 +437,75 @@ type KropkiGraphicsProps = {
   cellSize: number
 }
 
+const ExtraRegionsGraphics = ({ cellSize, extraRegions }: ExtraRegionsGraphicsProps) => (
+  <g className="extra-regions stroke-0 fill-cyan-900">
+    {extraRegions.flat().map((cell, index) => (
+      <rect x={1 + cellSize * cell.col}
+            y={1 + cellSize * cell.row}
+            width={cellSize}
+            height={cellSize}
+            key={index}
+      />
+    ))}
+  </g>
+)
+
+type ExtraRegionsGraphicsProps = {
+  cellSize: number
+  extraRegions: Region[]
+}
+
+const OddGraphics = ({ cellSize, cells }: OddGraphicsProps) => {
+  const half = cellSize / 2
+  const radius = Math.floor(half * 21 / 28)
+
+  return (
+    <g className="odd-cells fill-gray-600 stroke-gray-600">
+      {cells.map((cell, index) => (
+        <circle cx={cell.col * cellSize + 1 + half}
+                cy={cell.row * cellSize + 1 + half}
+                r={radius}
+                key={index} />
+      ))}
+    </g>
+  )
+}
+
+type OddGraphicsProps = {
+  cellSize: number
+  cells: CellPosition[]
+}
+
+const EvenGraphics = ({ cellSize, cells }: EvenGraphicsProps) => {
+  const PADDING = 7
+  const sideLength = cellSize - 2 * PADDING
+
+  return (
+    <g className="even-cells fill-gray-600 stroke-gray-600">
+      {cells.map((cell, index) => (
+        <rect x={1 + cellSize * cell.col + PADDING}
+              y={1 + cellSize * cell.row + PADDING}
+              width={sideLength}
+              height={sideLength}
+              key={index} />
+      ))}
+    </g>
+  )
+}
+
+type EvenGraphicsProps = {
+  cellSize: number
+  cells: CellPosition[]
+}
+
+
 const SudokuConstraintsGraphics = (
   { cellSize, constraints, notes, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
-  const { gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots } = constraints
+  const {
+    gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions,
+    oddCells, evenCells,
+  } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
 
@@ -450,9 +515,12 @@ const SudokuConstraintsGraphics = (
          style={{ top: 0, left: 0, stroke: 'black', strokeWidth: 2 }}
          onClick={onGridClick}
     >
+      <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
       <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
+      <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
+      <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
       <DiagonalGraphics gridSize={gridSize}
                         cellSize={cellSize}
                         primary={constraints.primaryDiagonal}

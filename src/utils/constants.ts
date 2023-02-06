@@ -10,6 +10,8 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Diagonal,
   SudokuVariant.AntiKnight,
   SudokuVariant.Irregular,
+  SudokuVariant.ExtraRegions,
+  SudokuVariant.OddEven,
   SudokuVariant.Mixed,
 ]
 
@@ -25,6 +27,8 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.TopBot]: 'Top-Bot',
   [SudokuVariant.Diagonal]: 'Diagonal',
   [SudokuVariant.AntiKnight]: 'Anti Knight',
+  [SudokuVariant.ExtraRegions]: 'Extra Regions',
+  [SudokuVariant.OddEven]: 'Odd Even',
   [SudokuVariant.Mixed]: 'Mixed',
 }
 

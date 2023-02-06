@@ -172,6 +172,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     regions.push(getColCells(col, gridSize))
   }
   regions.push(...constraints.regions)
+  regions.push(...constraints.extraRegions ?? [])
   regions.push(..._.map(constraints.killerCages, 'region'))
   if (constraints.primaryDiagonal) {
     regions.push(getPrimaryDiagonalCells(gridSize))
@@ -290,6 +291,20 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
         checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.KropkiNegative, gridErrors, noteErrors)
       })
     })
+  }
+
+  // Odd Even
+  for (const cell of constraints.oddCells ?? []) {
+    const value = valuesGrid[cell.row][cell.col]
+    if (value && value % 2 !== 1) {
+      gridErrors[cell.row][cell.col] = true
+    }
+  }
+  for (const cell of constraints.evenCells ?? []) {
+    const value = valuesGrid[cell.row][cell.col]
+    if (value && value % 2 !== 0) {
+      gridErrors[cell.row][cell.col] = true
+    }
   }
 
   return { gridErrors, noteErrors }
