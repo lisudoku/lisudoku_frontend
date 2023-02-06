@@ -66,6 +66,9 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   }
   nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
   nonEmptyCells += constraints.kropkiDots.length / 2
+  nonEmptyCells += constraints.extraRegions.length * 2
+  nonEmptyCells += constraints.oddCells.length / 2
+  nonEmptyCells += constraints.evenCells.length / 2
 
   if (nonEmptyCells >= 30) {
     return SudokuDifficultyDisplay[SudokuDifficulty.Easy9x9]
@@ -178,11 +181,14 @@ const PuzzleCommit = () => {
       variant,
       difficulty,
       solution: bruteSolution!.solution,
-      sourceCollectionId: sourceCollectionId === '' ? undefined : parseInt(sourceCollectionId),
+    }
+    if (sourceCollectionId !== '') {
+      puzzle.sourceCollectionId = parseInt(sourceCollectionId)
     }
     apiAddPuzzle(puzzle, userToken!).then(data => {
       dispatch(responseAddPuzzle(data.public_id))
-    }).catch(() => {
+    }).catch((e) => {
+      console.error(e)
       dispatch(errorAddPuzzle())
     })
   }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId])
