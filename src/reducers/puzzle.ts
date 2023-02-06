@@ -33,6 +33,7 @@ type ControlsState = {
   hintSolution: SudokuIntuitiveSolveResult | null
   lastHint: string | null
   hintLevel: HintLevel | null
+  paused: boolean
 }
 
 type PuzzleState = {
@@ -79,6 +80,7 @@ export const puzzleSlice = createSlice({
       hintSolution: null,
       lastHint: null,
       hintLevel: null,
+      paused: false,
     },
   } as PuzzleState,
   reducers: {
@@ -97,6 +99,7 @@ export const puzzleSlice = createSlice({
       state.controls.hintSolution = null
       state.controls.lastHint = null
       state.controls.hintLevel = null
+      state.controls.paused = false
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -230,6 +233,9 @@ export const puzzleSlice = createSlice({
     changeHintLevel(state, action) {
       state.controls.hintLevel = action.payload
     },
+    changePaused(state, action) {
+      state.controls.paused = action.payload
+    },
   }
 })
 
@@ -237,6 +243,7 @@ export const {
   requestedPuzzle, receivedPuzzle, clearPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
   fetchNewPuzzle, resetPuzzle, undoAction, redoAction, changeHintSolution, changeHintLevel,
+  changePaused,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer
