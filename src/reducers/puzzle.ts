@@ -6,7 +6,7 @@ import { computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { SudokuIntuitiveSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
-enum ActionType {
+export enum ActionType {
   Digit = 'digit',
   Note = 'note',
   Delete = 'delete',
@@ -23,6 +23,7 @@ type UserAction = {
   value: number
   previousDigit: number | null
   previousNotes: number[]
+  time: number
 }
 
 type ControlsState = {
@@ -140,6 +141,7 @@ export const puzzleSlice = createSlice({
         value: newValue,
         previousDigit,
         previousNotes,
+        time: state.solveTimer,
       }
       state.controls.actions.push(userAction)
       state.controls.actionIndex = state.controls.actions.length - 1
@@ -172,6 +174,7 @@ export const puzzleSlice = createSlice({
         value,
         previousDigit,
         previousNotes,
+        time: state.solveTimer,
       }
       state.controls.actions.push(userAction)
       state.controls.actionIndex = state.controls.actions.length - 1

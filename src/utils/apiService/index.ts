@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { ActionType } from 'src/reducers/puzzle'
+import { CellPosition, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
 
@@ -75,9 +76,17 @@ export const fetchPuzzleByPublicId = async (id: string, userToken: string | null
   }).then(response => response.data)
 }
 
-export const requestPuzzleCheck = async (id: string, grid: Grid) => {
+export type UserActionSlim = {
+  type: ActionType
+  cell: CellPosition
+  value: number
+  time: number
+}
+
+export const requestPuzzleCheck = async (id: string, grid: Grid, actions: UserActionSlim[]) => {
   return axios.post(`/puzzles/${id}/check`, {
     grid,
+    actions,
   }, {
     // headers: {
     //   'Authorization': `Bearer ${userToken()}`,
