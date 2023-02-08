@@ -60,9 +60,13 @@ const computeRules = (constraints: SudokuConstraints) => {
   }
   if (!_.isEmpty(constraints.kropkiDots)) {
     rules.push(<>
-      <FontAwesomeIcon icon={faCircle} size="sm"/>
+      <FontAwesomeIcon icon={faCircleSolid} size="sm" />
       {' '}
       Adjacent cells containing digits whose difference is 1 are marked with a white circle.
+    </>)
+    rules.push(<>
+      <FontAwesomeIcon icon={faCircle} size="sm"/>
+      {' '}
       Adjacent cells containing digits whose ratio is 2 are marked with a black circle.
     </>)
     if (constraints.kropkiNegative) {
