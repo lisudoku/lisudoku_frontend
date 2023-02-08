@@ -80,7 +80,9 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         {!solved && (
           <FontAwesomeIcon icon={paused ? faCirclePlay : faCirclePause}
                            onClick={handlePauseClick}
-                           className="cursor-pointer ml-2 relative top-[0.5px]" />
+                           className={classNames('cursor-pointer ml-2 relative top-[0.5px]', {
+                             'text-gray-400': !paused,
+                           })} />
         )}
       </Typography>
     </div>
