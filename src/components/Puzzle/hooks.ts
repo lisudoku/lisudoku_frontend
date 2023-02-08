@@ -113,7 +113,6 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!enabled) {
-        e.preventDefault()
         return
       }
 
