@@ -4,6 +4,7 @@ import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 's
 import { computeErrors, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
+  changePaused,
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
   fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
 } from 'src/reducers/puzzle'
@@ -79,6 +80,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     ) {
       dispatch(fetchNewPuzzle())
     }
+    setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, solved, solveTimer])
 
   return {
