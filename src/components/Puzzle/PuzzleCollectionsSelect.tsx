@@ -5,7 +5,7 @@ import { Select, Option } from '../Select'
 import { fetchAllCollections } from 'src/utils/apiService'
 import { responsePuzzleCollections } from 'src/reducers/collections'
 
-const PuzzleCollectionsSelect = ({ value, onChange }: PuzzleCollectionsSelectProps) => {
+const PuzzleCollectionsSelect = ({ value, onChange, label }: PuzzleCollectionsSelectProps) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token!)
   const puzzleCollections = useSelector(state => state.collections.collections)
@@ -26,7 +26,8 @@ const PuzzleCollectionsSelect = ({ value, onChange }: PuzzleCollectionsSelectPro
   return (
     <Select value={value}
             onChange={onChange}
-            label="Source">
+            label={label}
+            labelProps={{ className: 'transition-none' }}>
       {[ { id: '', name: 'lisudoku' }, ...puzzleCollections ].map(({ id, name }) => (
         <Option key={id} value={id.toString()}>{name}</Option>
       ))}
@@ -34,9 +35,14 @@ const PuzzleCollectionsSelect = ({ value, onChange }: PuzzleCollectionsSelectPro
   )
 }
 
+PuzzleCollectionsSelect.defaultProps = {
+  label: 'Source',
+}
+
 type PuzzleCollectionsSelectProps = {
   value: string,
   onChange: Function,
+  label: string
 }
 
 export default PuzzleCollectionsSelect

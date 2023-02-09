@@ -98,3 +98,16 @@ export const fetchPuzzleCollection = async (id: string) => {
   return axios.get(`/puzzle_collections/${id}`)
               .then(response => response.data)
 }
+
+export const fetchAllCompetitions = async () => {
+  return axios.get('/competitions').then(response => response.data)
+}
+
+export const fetchCompetitionById = async (id: string) => {
+  return axios.get(`/competitions/${id}`).then(response => response.data)
+}
+
+export const fetchActiveCompetitions = async () => {
+  return axios.get('/competitions', { params: { active: true } })
+              .then(response => response.data)
+}
