@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { ActionType } from 'src/reducers/puzzle'
+import { CellPosition, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
 
@@ -75,9 +76,17 @@ export const fetchPuzzleByPublicId = async (id: string, userToken: string | null
   }).then(response => response.data)
 }
 
-export const requestPuzzleCheck = async (id: string, grid: Grid) => {
+export type UserActionSlim = {
+  type: ActionType
+  cell: CellPosition
+  value: number
+  time: number
+}
+
+export const requestPuzzleCheck = async (id: string, grid: Grid, actions: UserActionSlim[]) => {
   return axios.post(`/puzzles/${id}/check`, {
     grid,
+    actions,
   }, {
     // headers: {
     //   'Authorization': `Bearer ${userToken()}`,
@@ -87,5 +96,18 @@ export const requestPuzzleCheck = async (id: string, grid: Grid) => {
 
 export const fetchPuzzleCollection = async (id: string) => {
   return axios.get(`/puzzle_collections/${id}`)
+              .then(response => response.data)
+}
+
+export const fetchAllCompetitions = async () => {
+  return axios.get('/competitions').then(response => response.data)
+}
+
+export const fetchCompetitionById = async (id: string) => {
+  return axios.get(`/competitions/${id}`).then(response => response.data)
+}
+
+export const fetchActiveCompetitions = async () => {
+  return axios.get('/competitions', { params: { active: true } })
               .then(response => response.data)
 }

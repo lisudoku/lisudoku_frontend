@@ -24,7 +24,7 @@
     "date-fns": "^2.29.3",
     "final-form": "^4.20.7",
     "json-case-convertor": "^1.4.0",
-    "lisudoku-solver": "0.1.8",
+    "lisudoku-solver": "0.1.10",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

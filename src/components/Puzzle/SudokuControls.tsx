@@ -6,10 +6,12 @@ import Button from '../Button'
 import IconButton from '../IconButton'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
-import { useSelector } from 'src/hooks'
+import { useDispatch, useSelector } from 'src/hooks'
 import SolveTimer from './SolveTimer'
+import { changePaused } from 'src/reducers/puzzle'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
+  const dispatch = useDispatch()
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const solved = useSelector(state => state.puzzle.solved)
   const gridSize = constraints.gridSize
@@ -29,6 +31,13 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
       onSelectedCellValueChange(value)
     }
   }, [notesActive, onSelectedCellValueChange, onSelectedCellNotesChange])
+
+  const handleReset = useCallback(() => {
+    if (window.confirm('Are you sure you want to reset?')) {
+      onReset()
+    }
+    setTimeout(() => dispatch(changePaused(false)), 1)
+  }, [dispatch, onReset])
 
   const buttonsPerRow = gridSize > 4 ? 3 : 2
 
@@ -80,7 +89,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
           <FontAwesomeIcon icon={faArrowRotateRight} />
         </IconButton>
         <Button disabled={!controlEnabled}
-                onClick={() => window.confirm('Are you sure you want to reset?') && onReset()}
+                onClick={handleReset}
         >
           <FontAwesomeIcon icon={faEraser} />
           {' Reset'}

@@ -6,7 +6,7 @@ import { computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { SudokuIntuitiveSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
-enum ActionType {
+export enum ActionType {
   Digit = 'digit',
   Note = 'note',
   Delete = 'delete',
@@ -23,6 +23,7 @@ type UserAction = {
   value: number
   previousDigit: number | null
   previousNotes: number[]
+  time: number
 }
 
 type ControlsState = {
@@ -33,6 +34,7 @@ type ControlsState = {
   hintSolution: SudokuIntuitiveSolveResult | null
   lastHint: string | null
   hintLevel: HintLevel | null
+  paused: boolean
 }
 
 type PuzzleState = {
@@ -79,6 +81,7 @@ export const puzzleSlice = createSlice({
       hintSolution: null,
       lastHint: null,
       hintLevel: null,
+      paused: false,
     },
   } as PuzzleState,
   reducers: {
@@ -97,6 +100,7 @@ export const puzzleSlice = createSlice({
       state.controls.hintSolution = null
       state.controls.lastHint = null
       state.controls.hintLevel = null
+      state.controls.paused = false
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -137,6 +141,7 @@ export const puzzleSlice = createSlice({
         value: newValue,
         previousDigit,
         previousNotes,
+        time: state.solveTimer,
       }
       state.controls.actions.push(userAction)
       state.controls.actionIndex = state.controls.actions.length - 1
@@ -169,6 +174,7 @@ export const puzzleSlice = createSlice({
         value,
         previousDigit,
         previousNotes,
+        time: state.solveTimer,
       }
       state.controls.actions.push(userAction)
       state.controls.actionIndex = state.controls.actions.length - 1
@@ -230,6 +236,9 @@ export const puzzleSlice = createSlice({
     changeHintLevel(state, action) {
       state.controls.hintLevel = action.payload
     },
+    changePaused(state, action) {
+      state.controls.paused = action.payload
+    },
   }
 })
 
@@ -237,6 +246,7 @@ export const {
   requestedPuzzle, receivedPuzzle, clearPuzzle, changeSelectedCell, changeSelectedCellValue,
   changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
   fetchNewPuzzle, resetPuzzle, undoAction, redoAction, changeHintSolution, changeHintLevel,
+  changePaused,
 } = puzzleSlice.actions
 
 export default puzzleSlice.reducer

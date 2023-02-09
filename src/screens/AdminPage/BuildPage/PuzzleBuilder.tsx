@@ -34,11 +34,9 @@ const PuzzleBuilder = () => {
   const selectedCell = useSelector(state => state.admin.selectedCell)
   const constraintType = useSelector(state => state.admin.constraintType)
   const currentThermo = useSelector(state => state.admin.currentThermo)
-  const regionsGrid = useSelector(state => state.admin.regionsGrid!)
   const notes = useSelector(state => state.admin.notes)
+  const constraintGrid = useSelector(state => state.admin.constraintGrid!)
   const killerSum = useSelector(state => state.admin.killerSum ?? '')
-  const killerGrid = useSelector(state => state.admin.killerGrid!)
-  const kropkiGrid = useSelector(state => state.admin.kropkiGrid!)
   const bruteSolution = useSelector(state => state.admin.bruteSolution?.solution)
   const intuitiveSolution = useSelector(state => state.admin.intuitiveSolution?.solution)
 
@@ -97,14 +95,8 @@ const PuzzleBuilder = () => {
   const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
 
   let usedGrid = grid
-  if (constraintType === ConstraintType.Regions) {
-    usedGrid = regionsGrid
-    constraintPreview.fixedNumbers = []
-  } else if (constraintType === ConstraintType.Killer) {
-    usedGrid = killerGrid
-    constraintPreview.fixedNumbers = []
-  } else if (constraintType === ConstraintType.Kropki) {
-    usedGrid = kropkiGrid
+  if (![ConstraintType.FixedNumber, ConstraintType.Thermo, ConstraintType.OddCells, ConstraintType.EvenCells].includes(constraintType)) {
+    usedGrid = constraintGrid
     constraintPreview.fixedNumbers = []
   }
 
@@ -123,7 +115,7 @@ const PuzzleBuilder = () => {
                   grid={usedGrid}
                   notes={usedNotes}
                   selectedCell={selectedCell!}
-                  checkErrors={![ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType)}
+                  checkErrors={constraintType === ConstraintType.FixedNumber}
                   loading={false}
                   onCellClick={onCellClick}
       />
@@ -152,6 +144,11 @@ const PuzzleBuilder = () => {
                  checked={constraintType === ConstraintType.Regions}
                  onChange={handleConstraintTypeChange} />
           <Radio name="build-item"
+                 id={ConstraintType.ExtraRegions}
+                 label="Extra Regions"
+                 checked={constraintType === ConstraintType.ExtraRegions}
+                 onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
                  id={ConstraintType.Killer}
                  label="Killer"
                  checked={constraintType === ConstraintType.Killer}
@@ -166,6 +163,16 @@ const PuzzleBuilder = () => {
               <FontAwesomeIcon icon={faCircleInfo} size="sm" />
             </Tooltip>
           </div>
+          <Radio name="build-item"
+                 id={ConstraintType.OddCells}
+                 label="Odd"
+                 checked={constraintType === ConstraintType.OddCells}
+                 onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
+                 id={ConstraintType.EvenCells}
+                 label="Even"
+                 checked={constraintType === ConstraintType.EvenCells}
+                 onChange={handleConstraintTypeChange} />
           <div className="flex flex-col w-full mt-2 gap-y-1">
             {constraintType === ConstraintType.Killer && (
               <Input label="Sum"
@@ -176,7 +183,7 @@ const PuzzleBuilder = () => {
                      onBlur={handleInputBlur}
               />
             )}
-            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki].includes(constraintType) && (
+            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki, ConstraintType.ExtraRegions].includes(constraintType) && (
               <Button onClick={handleConstraintAdd}>Add</Button>
             )}
           </div>

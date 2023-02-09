@@ -4,6 +4,7 @@ import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 's
 import { computeErrors, computeFixedNumbersGrid } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
+  changePaused,
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
   fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
 } from 'src/reducers/puzzle'
@@ -39,6 +40,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
+  const paused = useSelector(state => state.puzzle.controls.paused)
   const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
   const notesActive = useSelector(state => state.puzzle.controls.notesActive)
   const undoActive = useSelector(state => state.puzzle.controls.actionIndex >= 0)
@@ -46,7 +48,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     state.puzzle.controls.actionIndex + 1 < state.puzzle.controls.actions.length
   ))
 
-  const enabled = !solved && !isSolvedLoading
+  const enabled = !solved && !isSolvedLoading && !paused
 
   const handleSelectedCellChange = useCallback((cell: CellPosition) => {
     if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
@@ -78,6 +80,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     ) {
       dispatch(fetchNewPuzzle())
     }
+    setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, solved, solveTimer])
 
   return {
@@ -111,6 +114,10 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      if (!enabled) {
+        return
+      }
+
       if (ARROWS.includes(e.key)) {
         let nextCell
         if (selectedCell !== null) {
@@ -136,7 +143,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (!enabled || selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
+      if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
         return
       }
 

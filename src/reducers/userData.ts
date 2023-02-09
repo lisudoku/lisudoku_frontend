@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
+import { Competition } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
+const jcc = require('json-case-convertor')
 
 type SolvedPuzzle = {
   id: string
@@ -16,6 +18,7 @@ type UserDataState = {
   admin: boolean
   difficulty: SudokuDifficulty
   solvedPuzzles: SolvedPuzzle[]
+  activeCompetitions: Competition[]
 }
 
 export const userDataSlice = createSlice({
@@ -27,6 +30,7 @@ export const userDataSlice = createSlice({
     admin: false,
     difficulty: SudokuDifficulty.Easy9x9,
     solvedPuzzles: [],
+    activeCompetitions: [],
   } as UserDataState,
   reducers: {
     loginSuccess(state, action) {
@@ -43,6 +47,9 @@ export const userDataSlice = createSlice({
     },
     updateDifficulty(state, action) {
       state.difficulty = action.payload
+    },
+    receiveActiveCompetitions(state, action) {
+      state.activeCompetitions = jcc.camelCaseKeys(action.payload)
     },
   },
   extraReducers: (builder) => {
@@ -61,7 +68,7 @@ export const userDataSlice = createSlice({
 })
 
 export const {
-  loginSuccess, clearLoginData, updateDifficulty,
+  loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer

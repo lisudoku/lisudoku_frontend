@@ -30,13 +30,17 @@ const AboutPage = () => (
       </a>.
     </Typography>
     <Typography variant="paragraph">
-      Contributions are welcome!
+      The stack is
     </Typography>
     <ul className="list-disc list-inside">
       <li className="font-light">Backend - Ruby on Rails</li>
       <li className="font-light">Frontend - React</li>
       <li className="font-light">Solver - Rust</li>
     </ul>
+    <Typography variant="paragraph" className="mt-5">
+      Contributions are welcome! You can contribute by writing code, providing UI designs, or 
+      any idea that can improve lisudoku.
+    </Typography>
   </div>
 )
 

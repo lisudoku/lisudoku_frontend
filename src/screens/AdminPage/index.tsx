@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 import BuildPage from './BuildPage'
 import CollectionsEditPage from './CollectionsEditPage'
 import CollectionsPage from './CollectionsPage'
+import CompetitionEditPage from './CompetitionEditPage'
+import CompetitionsPage from './CompetitionsPage'
 import GroupCounts from './GroupCounts'
 import Overview from './Overview'
 import PuzzleEditPage from './PuzzleEditPage'
@@ -16,6 +18,8 @@ const AdminPage = () => (
     <Route path="build/*" element={<BuildPage />} />
     <Route path="collections" element={<CollectionsPage />} />
     <Route path="collections/:id/edit" element={<CollectionsEditPage />} />
+    <Route path="competitions" element={<CompetitionsPage />} />
+    <Route path="competitions/:id/edit" element={<CompetitionEditPage />} />
   </Routes>
 )
 

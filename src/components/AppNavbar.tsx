@@ -38,6 +38,10 @@ const ADMIN_ITEMS = [
     text: 'Collections',
     url: '/admin/collections',
   },
+  {
+    text: 'Competitions',
+    url: '/admin/competitions',
+  },
 ]
 
 const AppNavbar = ({ admin }: { admin: boolean }) => {

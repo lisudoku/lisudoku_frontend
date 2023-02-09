@@ -82,3 +82,50 @@ export const apiUpdatePuzzleCollection = async (id: string, puzzleCollection: Pu
     headers: { 'Authorization': `Bearer ${userToken}` },
   }).then(response => response.data)
 }
+
+export type CompetitionInput = {
+  name: string
+  url: string
+  fromDate: string
+  toDate: string
+  puzzleCollectionId: string | null
+  ibPuzzleCollectionId: string | null
+}
+
+export const createCompetition = async (competition: CompetitionInput, userToken: string) => {
+  const body = {
+    name: competition.name,
+    url: competition.url,
+    from_date: competition.fromDate,
+    to_date: competition.toDate,
+    puzzle_collection_id: competition.puzzleCollectionId ? parseInt(competition.puzzleCollectionId) : null,
+    ib_puzzle_collection_id: competition.ibPuzzleCollectionId ? parseInt(competition.ibPuzzleCollectionId) : null,
+  }
+  return axios.post('/competitions', {
+    competition: body,
+  }, {
+    headers: { 'Authorization': `Bearer ${userToken}` },
+  }).then(response => response.data)
+}
+
+export const deleteCompetition = async (id: number, userToken: string) => {
+  return axios.delete(`/competitions/${id}`, {
+    headers: { 'Authorization': `Bearer ${userToken}` },
+  }).then(response => response.data)
+}
+
+export const apiUpdateCompetition = async (id: string, competition: CompetitionInput, userToken: string) => {
+  const body = {
+    name: competition.name,
+    url: competition.url,
+    from_date: competition.fromDate,
+    to_date: competition.toDate,
+    puzzle_collection_id: competition.puzzleCollectionId ? parseInt(competition.puzzleCollectionId) : null,
+    ib_puzzle_collection_id: competition.ibPuzzleCollectionId ? parseInt(competition.ibPuzzleCollectionId) : null,
+  }
+  return axios.patch(`/competitions/${id}`, {
+    competition: body,
+  }, {
+    headers: { 'Authorization': `Bearer ${userToken}` },
+  }).then(response => response.data)
+}

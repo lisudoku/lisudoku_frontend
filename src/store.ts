@@ -11,6 +11,7 @@ import userData from './reducers/userData'
 import admin from './reducers/admin'
 import tv from './reducers/tv'
 import collections from './reducers/collections'
+import competitions from './reducers/competitions'
 import { combineReducers } from 'redux'
 
 const reducers = combineReducers({
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   admin,
   tv,
   collections,
+  competitions,
 })
 
 const persistConfig = {

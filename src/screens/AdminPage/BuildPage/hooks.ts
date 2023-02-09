@@ -3,8 +3,8 @@ import { useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition } from 'src/types/sudoku'
 import {
-  changeSelectedCell, changeSelectedCellKiller, changeSelectedCellKropki, changeSelectedCellNotes,
-  changeSelectedCellRegion, changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
+  changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellNotes,
+  changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
 } from 'src/reducers/admin'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
@@ -35,14 +35,8 @@ export const useControlCallbacks = () => {
   const handleSelectedCellNotesChange = useCallback((value: number) => {
     dispatch(changeSelectedCellNotes(value))
   }, [dispatch])
-  const handleSelectedCellRegionChange = useCallback((value: number) => {
-    dispatch(changeSelectedCellRegion(value))
-  }, [dispatch])
-  const handleSelectedCellKillerChange = useCallback((value: number) => {
-    dispatch(changeSelectedCellKiller(value))
-  }, [dispatch])
-  const handleSelectedCellKropkiChange = useCallback((value: number) => {
-    dispatch(changeSelectedCellKropki(value))
+  const handleSelectedCellConstraintChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellConstraint(value))
   }, [dispatch])
 
   // const handleUndo = useCallback(() => {
@@ -58,9 +52,7 @@ export const useControlCallbacks = () => {
     onSelectedCellNotesChange: handleSelectedCellNotesChange,
     onCellClick: handleCellClick,
     onDelete: handleDelete,
-    onSelectedCellRegionChange: handleSelectedCellRegionChange,
-    onSelectedCellKillerChange: handleSelectedCellKillerChange,
-    onSelectedCellKropkiChange: handleSelectedCellKropkiChange,
+    onSelectedCellConstraintChange: handleSelectedCellConstraintChange,
     // undoActive,
     // redoActive,
     // onUndo: handleUndo,
@@ -79,7 +71,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
   const {
     onCellClick, onDelete,
     onSelectedCellValueChange, onNotesActiveToggle, onSelectedCellNotesChange,
-    onSelectedCellRegionChange, onSelectedCellKillerChange, onSelectedCellKropkiChange,
+    onSelectedCellConstraintChange,
     // undoActive, redoActive, onUndo, onRedo,
   } = useControlCallbacks()
 
@@ -152,12 +144,8 @@ export const useKeyboardHandler = (digitsActive = true) => {
         onSelectedCellNotesChange(value)
       } else if (constraintType === ConstraintType.FixedNumber) {
         onSelectedCellValueChange(value)
-      } else if (constraintType === ConstraintType.Regions) {
-        onSelectedCellRegionChange(value)
-      } else if (constraintType === ConstraintType.Killer) {
-        onSelectedCellKillerChange(value)
-      } else if (constraintType === ConstraintType.Kropki) {
-        onSelectedCellKropkiChange(value)
+      } else {
+        onSelectedCellConstraintChange(value)
       }
     }
 
@@ -166,8 +154,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
   }, [
     gridSize, selectedCell, constraintType, notesActive, digitsActive,
     onCellClick, onSelectedCellValueChange, onDelete,
-    onNotesActiveToggle, onSelectedCellNotesChange, onSelectedCellRegionChange,
-    onSelectedCellKillerChange, onSelectedCellKropkiChange,
+    onNotesActiveToggle, onSelectedCellNotesChange, onSelectedCellConstraintChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
 }

@@ -36,8 +36,10 @@ const App = () => {
             <BrowserRouter>
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
-                  <Route path="/" element={<Layout />}>
+                  <Route path="/" element={<Layout padding={false} />}>
                     <Route path="/" element={<HomePage />} />
+                  </Route>
+                  <Route path="/" element={<Layout />}>
                     <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="logout" element={<LogoutPage />} />
