@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { format, isFuture, isPast, parseISO } from 'date-fns'
+import { format, isFuture, isPast, parseISO, subHours } from 'date-fns'
 import { useDispatch, useSelector } from 'src/hooks'
 import { receiveActiveCompetitions } from 'src/reducers/userData'
 import { Competition } from 'src/types'
@@ -34,7 +34,8 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
   const toDate = parseISO(toDateStr)
 
   const fromDay = format(fromDate, 'EEEE')
-  const toDay = format(toDate, 'EEEE')
+  // Subtract 6 hours to avoid going over midnight in some time zones
+  const toDay = format(subHours(toDate, 6), 'EEEE')
 
   const notStarted = isFuture(fromDate)
   const inProgress = isPast(fromDate) && isFuture(toDate)
