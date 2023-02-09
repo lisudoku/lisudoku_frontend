@@ -8,7 +8,7 @@ import { fetchActiveCompetitions } from 'src/utils/apiService'
 
 const ContestsAlert = () => {
   const dispatch = useDispatch()
-  const competitions = useSelector(state => state.userData.activeCompetitions)
+  const competitions = useSelector(state => state.userData.activeCompetitions ?? [])
 
   useEffect(() => {
     fetchActiveCompetitions().then(data => {
