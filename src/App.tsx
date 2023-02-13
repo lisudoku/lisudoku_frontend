@@ -16,6 +16,7 @@ import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import CollectionPage from './screens/CollectionPage'
+import LearnPage from './screens/LearnPage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -48,6 +49,7 @@ const App = () => {
                     <Route path="tv" element={<TvPage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="collections/:id" element={<CollectionPage />} />
+                    <Route path="learn" element={<LearnPage />} />
                     <Route path="*" element={<PageNotFound />} />
                   </Route>
                   <Route path="/" element={<Layout admin />}>

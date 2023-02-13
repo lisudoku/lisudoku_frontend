@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { SolutionStep, SolutionType, StepRule, SudokuIntuitiveSolveResult } from 'src/types/wasm'
@@ -64,7 +65,11 @@ const getBigStepExplanation = (step: SolutionStep) => {
 }
 
 const getStepHint = (step: SolutionStep, hintLevel: HintLevel) => {
-  let hint = <b>{StepRuleDisplay[step.rule]}</b>
+  let hint = <b>
+    <ExternalLink url={`/learn#${step.rule}`}>
+      {StepRuleDisplay[step.rule]}
+    </ExternalLink>
+  </b>
 
   if (hintLevel === HintLevel.Big) {
     return <>
