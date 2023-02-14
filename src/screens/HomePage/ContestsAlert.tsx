@@ -41,13 +41,22 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
   const inProgress = isPast(fromDate) && isFuture(toDate)
   const finished = isPast(toDate)
 
+  const externalLink = (
+    <a href={url}
+       target="_blank"
+       rel="noopener noreferrer"
+       className="underline">
+      here
+    </a>
+  )
+
   return (
     <div className="w-full bg-cyan-900 rounded-none py-1 px-4 lg:px-8">
       The <b>{name}</b> contest {' '}
 
       {finished ? (
         <>
-          ended on {toDay}. 
+          ended on {toDay}. Contest link {externalLink}.
           {puzzleCollectionId && (
             <>{' '} Solve the puzzles {' '}
               <Link to={`/collections/${puzzleCollectionId}`}
@@ -71,14 +80,7 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
             </>
           )}
 
-          {' '} and it is open until {toDay}! Participate {' '}
-          <a href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline">
-            here
-          </a>
-          .
+          {' '} and it is open until {toDay}! Participate {externalLink}.
           {ibPuzzleCollectionId && (
             <>{' '} Solve Instruction Booklet puzzles {' '}
               <Link to={`/collections/${ibPuzzleCollectionId}`}
