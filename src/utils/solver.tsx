@@ -119,21 +119,10 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
   }
 }
 
-export const computeHintMessage = (
-  solution: SudokuIntuitiveSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][]
-) => {
-  if (!solution) {
-    return ''
-  }
-  if (solution.solution_type === SolutionType.None) {
-    return "You're on the wrong track 😳 You made a mistake somewhere along the way 😞"
-  }
-
-  const steps = solution.steps!.filter(step => !isRedundantStep(step, notes));
-
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
   if (steps.length === 0) {
     // This shouldn't ever happen :D
-    return "Well, this is embarrassing... 😅 Can't figure this out either... You should contact the admins!"
+    return "Well, this is embarrassing... 😅 Can't figure this out either... You should contact the admins on Discord!"
   }
 
   const singleIndex = steps.findIndex(step => (
@@ -167,4 +156,25 @@ export const computeHintMessage = (
   </>
 
   return message
+}
+
+export const computeHintContent = (
+  solution: SudokuIntuitiveSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][]
+) => {
+  if (!solution) {
+    return [ '', false ]
+  }
+  if (solution.solution_type === SolutionType.None) {
+    return [
+      "You're on the wrong track 😳 You made a mistake somewhere along the way 😞",
+      false,
+    ]
+  }
+
+  const steps = solution.steps!.filter(step => !isRedundantStep(step, notes));
+  const filteredSteps = steps.length < solution.steps!.length - 1
+
+  const message = computeHintText(steps, hintLevel)
+
+  return [ message, filteredSteps ]
 }

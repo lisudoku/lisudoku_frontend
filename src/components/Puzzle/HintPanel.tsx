@@ -1,10 +1,12 @@
-import { Typography } from '@material-tailwind/react'
+import { Typography, Tooltip } from '@material-tailwind/react'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import Alert from '../Alert'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
 import { SolutionType, SudokuIntuitiveSolveResult } from 'src/types/wasm'
-import { computeHintMessage } from 'src/utils/solver'
+import { computeHintContent } from 'src/utils/solver'
 
 const useComputeHintElement = (solution: SudokuIntuitiveSolveResult | null, hintLevel: HintLevel | null) => {
   const dispatch = useDispatch()
@@ -15,8 +17,8 @@ const useComputeHintElement = (solution: SudokuIntuitiveSolveResult | null, hint
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
-  const message = useMemo(
-    () => computeHintMessage(solution, hintLevel!, notes),
+  const [ message, filteredSteps ] = useMemo(
+    () => computeHintContent(solution, hintLevel!, notes),
     [solution, hintLevel, notes]
   )
 
@@ -27,7 +29,14 @@ const useComputeHintElement = (solution: SudokuIntuitiveSolveResult | null, hint
   return (
     <>
       <Typography variant="h3" className="pb-2">
-        {hintLevel} hint
+        {hintLevel} hint {' '}
+        {filteredSteps && (
+          <span className="relative top-[1px]">
+            <Tooltip content="Some steps were removed assuming your pencil marks are correct" placement="bottom">
+              <FontAwesomeIcon icon={faCircleExclamation} size="xs" color="yellow" />
+            </Tooltip>
+          </span>
+        )}
       </Typography>
       <div className="antialiased font-sans text-sm font-light leading-normal">
         {message}
