@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import _ from 'lodash'
 import { useSelector, useDispatch } from 'src/hooks'
@@ -6,6 +6,7 @@ import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { AxiosError } from 'axios'
 import { updateDifficulty } from 'src/reducers/userData'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
+import PageMeta from 'src/components/PageMeta'
 import Puzzle from 'src/components/Puzzle'
 import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
@@ -20,11 +21,8 @@ const PlayPage = () => {
   const { variant: variantParam, difficulty: difficultyParam } = useParams()
   const variant = variantParam as SudokuVariant
   const difficulty = difficultyParam as SudokuDifficulty
-  useLayoutEffect(() => {
-    const variantDisplay = SudokuVariantDisplay[variant]
-    const difficultyDisplay = SudokuDifficultyDisplay[difficulty]
-    document.title = `lisudoku - ${variantDisplay} - ${difficultyDisplay}`
-  }, [variant, difficulty])
+  const variantDisplay = SudokuVariantDisplay[variant]
+  const difficultyDisplay = SudokuDifficultyDisplay[difficulty]
 
   const dispatch = useDispatch()
   const [ errorCode, setErrorCode ] = useState<number | null>(null)
@@ -87,6 +85,9 @@ const PlayPage = () => {
 
   return (
     <>
+      <PageMeta title={`lisudoku - ${variantDisplay} ${difficultyDisplay}`}
+                url={`https://lisudoku.xyz/play/${variant}/${difficulty}`}
+      />
       {errorCode === 404 ? (
         <EmptyCategory variant={variant} difficulty={difficulty} />
       ) : errorCode ? (

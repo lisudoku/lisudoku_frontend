@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import PageMeta from 'src/components/PageMeta'
 import { Typography } from '@material-tailwind/react'
 import TvPuzzleCard from './TvPuzzleCard'
 import { useTvWebsocket } from './hooks'
@@ -9,12 +9,9 @@ import { pluralize } from 'src/utils/misc'
 const TvPage = () => {
   const { tvPuzzles, viewerCount } = useTvWebsocket()
 
-  useLayoutEffect(() => {
-    document.title = `lisudoku TV (${tvPuzzles.length})`
-  }, [tvPuzzles.length])
-
   return (
     <>
+      <PageMeta title="lisudoku TV" url="https://lisudoku.xyz/tv" />
       <div className="flex justify-between">
         <Typography variant="h3">
           Live TV ({tvPuzzles.length})

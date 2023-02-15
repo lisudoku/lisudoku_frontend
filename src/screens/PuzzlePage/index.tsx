@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import PageMeta from 'src/components/PageMeta'
 import LoadingSpinner from 'src/components/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -12,9 +13,6 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzlePage = () => {
   const { id } = useParams()
-  useLayoutEffect(() => {
-    document.title = `lisudoku - Puzzle ${id}`
-  }, [id])
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -59,6 +57,7 @@ const PuzzlePage = () => {
 
   return (
     <>
+      <PageMeta title={`lisudoku - Puzzle ${id}`} url={`https://lisudoku.xyz/p/${id}`} />
       {error ? (
         <div className="w-full pt-20 text-center">
           <Typography variant="h4" className="font-normal mb-3">
