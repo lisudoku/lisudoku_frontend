@@ -19,15 +19,15 @@ export enum HintLevel {
 
 type UserAction = {
   type: ActionType
-  cell: CellPosition
+  cells: CellPosition[]
   value: number
-  previousDigit: number | null
-  previousNotes: number[]
+  previousDigits: (number | null)[]
+  previousNotes: number[][]
   time: number
 }
 
 type ControlsState = {
-  selectedCell: CellPosition | null
+  selectedCells: CellPosition[]
   notesActive: boolean
   actions: UserAction[]
   actionIndex: number
@@ -49,17 +49,16 @@ type PuzzleState = {
 }
 
 const performAction = (state: PuzzleState, action: UserAction) => {
-  const cell = state.controls.selectedCell!
-  const { row, col } = cell
-
-  switch(action.type) {
-    case ActionType.Digit: state.grid![row][col] = action.value
-                           break
-    case ActionType.Note: state.notes![row][col] = _.xor(state.notes![row][col], [action.value])
-                          break
-    case ActionType.Delete: state.grid![row][col] = null
-                            state.notes![row][col] = []
+  for (const { row, col } of action.cells) {
+    switch(action.type) {
+      case ActionType.Digit: state.grid![row][col] = action.value
+                             break
+      case ActionType.Note: state.notes![row][col] = _.xor(state.notes![row][col], [action.value])
                             break
+      case ActionType.Delete: state.grid![row][col] = null
+                              state.notes![row][col] = []
+                              break
+    }
   }
 }
 
@@ -74,7 +73,7 @@ export const puzzleSlice = createSlice({
     lastUpdate: null,
     refreshKey: 0,
     controls: {
-      selectedCell: null,
+      selectedCells: [],
       notesActive: false,
       actions: [],
       actionIndex: -1,
@@ -94,13 +93,14 @@ export const puzzleSlice = createSlice({
       state.solved = false
       state.solveTimer = 0
       state.lastUpdate = formatISO(new Date())
-      state.controls.selectedCell = null
+      state.controls.selectedCells = []
       state.controls.actions = []
       state.controls.actionIndex = -1
       state.controls.hintSolution = null
       state.controls.lastHint = null
       state.controls.hintLevel = null
       state.controls.paused = false
+      state.controls.notesActive = false
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -113,73 +113,94 @@ export const puzzleSlice = createSlice({
       state.lastUpdate = null
     },
     changeSelectedCell: (state, action) => {
-      state.controls.selectedCell = action.payload
+      const { cell, ctrl, isClick } = action.payload
+      if (ctrl) {
+        if (isClick) {
+          state.controls.selectedCells = _.xorWith(state.controls.selectedCells, [ cell ], _.isEqual)
+        } else {
+          state.controls.selectedCells = _.uniqWith([ ...state.controls.selectedCells, cell ], _.isEqual)
+        }
+      } else {
+        state.controls.selectedCells = [ cell ]
+      }
     },
     changeSelectedCellValue(state, action) {
-      if (state.controls.selectedCell === null) {
+      if (_.isEmpty(state.controls.selectedCells)) {
         return
       }
 
       const value = action.payload
-      const cell = state.controls.selectedCell
-      const { row, col } = cell
+      const actionType = value === null ? ActionType.Delete : ActionType.Digit
+      const cells = _.differenceWith(
+        state.controls.selectedCells, _.map(state.data!.constraints.fixedNumbers, 'position'), _.isEqual
+      )
 
-      const previousDigit = state.grid![row][col]
+      const allHaveValue = cells.every(
+        ({ row, col }) => state.grid![row][col] === value
+      )
+
+      let relevantCells
       let newValue
-      if (state.grid![row][col] === value) {
+      if (value === null || allHaveValue) {
+        relevantCells = cells
         newValue = null
       } else {
+        relevantCells = cells.filter(({ row, col }) => state.grid![row][col] !== value)
         newValue = value
       }
 
-      const previousNotes = state.notes![row][col]
-      const actionType = value === null ? ActionType.Delete : ActionType.Digit
-      state.controls.actions.splice(state.controls.actionIndex + 1)
       const userAction: UserAction = {
         type: actionType,
-        cell,
+        cells: relevantCells,
         value: newValue,
-        previousDigit,
-        previousNotes,
+        previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
+        previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
         time: state.solveTimer,
       }
-      state.controls.actions.push(userAction)
-      state.controls.actionIndex = state.controls.actions.length - 1
 
       performAction(state, userAction)
+
+      state.controls.actions.push(userAction)
+      state.controls.actionIndex = state.controls.actions.length - 1
 
       state.controls.hintSolution = null
       state.controls.hintLevel = null
       state.lastUpdate = formatISO(new Date())
     },
     changeSelectedCellNotes(state, action) {
-      if (state.controls.selectedCell === null) {
+      if (_.isEmpty(state.controls.selectedCells)) {
         return
       }
 
-      const value = action.payload!
-      const cell = state.controls.selectedCell
-      const { row, col } = cell
+      const value = action.payload
+      const cells = _.differenceWith(
+        state.controls.selectedCells, _.map(state.data!.constraints.fixedNumbers, 'position'), _.isEqual
+      )
 
-      if (state.grid![row][col] !== null) {
-        return
+      const allHaveValue = cells.every(
+        ({ row, col }) => state.notes![row][col].includes(value)
+      )
+
+      let relevantCells
+      if (allHaveValue) {
+        relevantCells = cells
+      } else {
+        relevantCells = cells.filter(({ row, col }) => !state.notes![row][col].includes(value))
       }
 
-      const previousDigit = state.grid![row][col]
-      const previousNotes = [ ...state.notes![row][col] ]
-      state.controls.actions.splice(state.controls.actionIndex + 1)
       const userAction: UserAction = {
         type: ActionType.Note,
-        cell,
+        cells: relevantCells,
         value,
-        previousDigit,
-        previousNotes,
+        previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
+        previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
         time: state.solveTimer,
       }
-      state.controls.actions.push(userAction)
-      state.controls.actionIndex = state.controls.actions.length - 1
 
       performAction(state, userAction)
+
+      state.controls.actions.push(userAction)
+      state.controls.actionIndex = state.controls.actions.length - 1
 
       state.lastUpdate = formatISO(new Date())
     },
@@ -210,16 +231,18 @@ export const puzzleSlice = createSlice({
     undoAction(state) {
       const actionIndex = state.controls.actionIndex
       const userAction: UserAction = state.controls.actions[actionIndex]
-      state.controls.selectedCell = userAction.cell
-      state.grid![userAction.cell.row][userAction.cell.col] = userAction.previousDigit
-      state.notes![userAction.cell.row][userAction.cell.col] = userAction.previousNotes
+      state.controls.selectedCells = userAction.cells
+      userAction.cells.forEach((cell, index) => {
+        state.grid![cell.row][cell.col] = userAction.previousDigits[index]
+        state.notes![cell.row][cell.col] = userAction.previousNotes[index]
+      })
       state.controls.actionIndex--
     },
     redoAction(state) {
       state.controls.actionIndex++
       const actionIndex = state.controls.actionIndex
       const userAction: UserAction = state.controls.actions[actionIndex]
-      state.controls.selectedCell = userAction.cell
+      state.controls.selectedCells = userAction.cells
       performAction(state, userAction)
     },
     changeHintSolution(state, action) {

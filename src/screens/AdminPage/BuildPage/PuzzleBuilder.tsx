@@ -13,12 +13,10 @@ import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
-import { Typography, Tooltip, } from '@material-tailwind/react'
+import { Typography, } from '@material-tailwind/react'
 import PuzzleCommit from './PuzzleCommit'
 import { Grid } from 'src/types/sudoku'
 import Input from 'src/components/Input'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleBuilder = () => {
   const { gridSize: paramGridSize } = useParams()
@@ -31,7 +29,7 @@ const PuzzleBuilder = () => {
 
   const inputActive = useSelector(state => state.admin.inputActive)
   const constraints = useSelector(state => state.admin.constraints)
-  const selectedCell = useSelector(state => state.admin.selectedCell)
+  const selectedCells = useSelector(state => state.admin.selectedCells)
   const constraintType = useSelector(state => state.admin.constraintType)
   const currentThermo = useSelector(state => state.admin.currentThermo)
   const notes = useSelector(state => state.admin.notes)
@@ -95,7 +93,7 @@ const PuzzleBuilder = () => {
   const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
 
   let usedGrid = grid
-  if (![ConstraintType.FixedNumber, ConstraintType.Thermo, ConstraintType.OddCells, ConstraintType.EvenCells].includes(constraintType)) {
+  if (constraintType === ConstraintType.Regions) {
     usedGrid = constraintGrid
     constraintPreview.fixedNumbers = []
   }
@@ -114,7 +112,7 @@ const PuzzleBuilder = () => {
       <SudokuGrid constraints={constraintPreview}
                   grid={usedGrid}
                   notes={usedNotes}
-                  selectedCell={selectedCell!}
+                  selectedCells={selectedCells}
                   checkErrors={constraintType === ConstraintType.FixedNumber}
                   loading={false}
                   onCellClick={onCellClick}
@@ -153,16 +151,16 @@ const PuzzleBuilder = () => {
                  label="Killer"
                  checked={constraintType === ConstraintType.Killer}
                  onChange={handleConstraintTypeChange} />
-          <div className="flex items-center gap-2">
-            <Radio name="build-item"
-                  id={ConstraintType.Kropki}
-                  label="Kropki"
-                  checked={constraintType === ConstraintType.Kropki}
-                  onChange={handleConstraintTypeChange} />
-            <Tooltip content="1 for consecutive, 2 for double">
-              <FontAwesomeIcon icon={faCircleInfo} size="sm" />
-            </Tooltip>
-          </div>
+          <Radio name="build-item"
+                id={ConstraintType.KropkiConsecutive}
+                label="Kropki Consecutive"
+                checked={constraintType === ConstraintType.KropkiConsecutive}
+                onChange={handleConstraintTypeChange} />
+          <Radio name="build-item"
+                id={ConstraintType.KropkiDouble}
+                label="Kropki Double"
+                checked={constraintType === ConstraintType.KropkiDouble}
+                onChange={handleConstraintTypeChange} />
           <Radio name="build-item"
                  id={ConstraintType.OddCells}
                  label="Odd"
@@ -183,7 +181,8 @@ const PuzzleBuilder = () => {
                      onBlur={handleInputBlur}
               />
             )}
-            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer, ConstraintType.Kropki, ConstraintType.ExtraRegions].includes(constraintType) && (
+            {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer,
+              ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble, ConstraintType.ExtraRegions].includes(constraintType) && (
               <Button onClick={handleConstraintAdd}>Add</Button>
             )}
           </div>

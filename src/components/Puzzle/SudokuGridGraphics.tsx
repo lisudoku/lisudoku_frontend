@@ -252,22 +252,23 @@ type GridGraphicsProps = {
   cellSize: number
 }
 
-const SelectedCellGraphics = ({ cellSize, selectedCell }: SelectedCellGraphicsProps) => (
+const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsProps) => (
   <>
-    {selectedCell && (
+    {selectedCells.map((selectedCell: CellPosition, index: number) => (
       <rect x={1 + cellSize * selectedCell.col}
             y={1 + cellSize * selectedCell.row}
             width={cellSize}
             height={cellSize}
             className="opacity-25 stroke-white fill-white"
+            key={index}
       />
-    )}
+    ))}
   </>
 )
 
 type SelectedCellGraphicsProps = {
   cellSize: number
-  selectedCell?: CellPosition | null
+  selectedCells: CellPosition[]
 }
 
 const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
@@ -276,7 +277,8 @@ const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
     const y = e.clientY - e.currentTarget.getBoundingClientRect().top
     const row = Math.floor(Math.max(0, y - 1) / cellSize)
     const col = Math.floor(Math.max(0, x - 1) / cellSize)
-    onCellClick?.({ row, col })
+    const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
+    onCellClick?.({ row, col }, ctrl, true)
   }, [cellSize, onCellClick])
 )
 
@@ -500,7 +502,7 @@ type EvenGraphicsProps = {
 
 
 const SudokuConstraintsGraphics = (
-  { cellSize, constraints, notes, grid, checkErrors, selectedCell, onCellClick }: SudokuConstraintsGraphicsProps
+  { cellSize, constraints, notes, grid, checkErrors, selectedCells, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
   const {
     gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions,
@@ -516,7 +518,7 @@ const SudokuConstraintsGraphics = (
          onClick={onGridClick}
     >
       <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
-      <SelectedCellGraphics cellSize={cellSize} selectedCell={selectedCell} />
+      <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
@@ -540,7 +542,7 @@ type SudokuConstraintsGraphicsProps = {
   cellSize: number
   grid?: Grid
   checkErrors: boolean
-  selectedCell?: CellPosition | null
+  selectedCells: CellPosition[]
   onCellClick: Function | null
 }
 

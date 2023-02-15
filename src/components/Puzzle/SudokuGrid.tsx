@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuGrid = ({
-  constraints, grid, notes, selectedCell, checkErrors, loading, onCellClick, cellSize,
+  constraints, grid, notes, selectedCells, checkErrors, loading, onCellClick, cellSize,
   paused, onUnpause,
 }: SudokuGridProps) => {
   const handleUnpause = useCallback(() => { onUnpause?.() }, [onUnpause])
@@ -22,7 +22,7 @@ const SudokuGrid = ({
           notes={notes}
           cellSize={cellSize}
           checkErrors={checkErrors}
-          selectedCell={selectedCell}
+          selectedCells={selectedCells}
           onCellClick={onCellClick}
         />
         {(loading || paused) && (
@@ -50,7 +50,7 @@ type SudokuGridProps = {
   constraints: SudokuConstraints
   grid?: Grid
   notes?: number[][][]
-  selectedCell?: CellPosition | null
+  selectedCells: CellPosition[]
   checkErrors: boolean
   loading: boolean
   onCellClick: Function | null

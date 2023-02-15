@@ -19,8 +19,8 @@ export const useControlCallbacks = () => {
   //   state.admin.actionIndex + 1 < state.admin.actions.length
   // ))
 
-  const handleCellClick = useCallback((cell: CellPosition) => {
-    dispatch(changeSelectedCell(cell))
+  const handleCellClick = useCallback((cell: CellPosition, ctrl: boolean, isClick: boolean) => {
+    dispatch(changeSelectedCell({ cell, ctrl, isClick }))
   }, [dispatch])
 
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
@@ -62,7 +62,7 @@ export const useControlCallbacks = () => {
 
 export const useKeyboardHandler = (digitsActive = true) => {
   const constraints = useSelector(state => state.admin.constraints)
-  const selectedCell = useSelector(state => state.admin.selectedCell)
+  const selectedCells = useSelector(state => state.admin.selectedCells)
   const constraintType = useSelector(state => state.admin.constraintType)
   const notesActive = useSelector(state => state.admin.notesActive)
 
@@ -83,11 +83,12 @@ export const useKeyboardHandler = (digitsActive = true) => {
 
       if (ARROWS.includes(e.key)) {
         let nextCell
-        if (selectedCell !== null) {
+        if (!_.isEmpty(selectedCells)) {
           const dir = ARROWS.indexOf(e.key)
+          const lastCell = _.last(selectedCells)!
           nextCell = {
-            row: (selectedCell.row + dirRow[dir] + gridSize) % gridSize,
-            col: (selectedCell.col + dirCol[dir] + gridSize) % gridSize,
+            row: (lastCell.row + dirRow[dir] + gridSize) % gridSize,
+            col: (lastCell.col + dirCol[dir] + gridSize) % gridSize,
           }
         } else {
           nextCell = {
@@ -95,12 +96,13 @@ export const useKeyboardHandler = (digitsActive = true) => {
             col: 0,
           }
         }
-        onCellClick(nextCell)
+        const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
+        onCellClick(nextCell, ctrl, false)
         e.preventDefault()
         return
       }
 
-      if (selectedCell === null) {
+      if (_.isEmpty(selectedCells)) {
         return
       }
 
@@ -117,7 +119,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
       //   e.preventDefault()
       //   return
       // }
-      // 
+      //
       // if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
       //   if (redoActive) {
       //     onRedo()
@@ -152,9 +154,10 @@ export const useKeyboardHandler = (digitsActive = true) => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    gridSize, selectedCell, constraintType, notesActive, digitsActive,
+    gridSize, selectedCells, constraintType, notesActive, digitsActive,
     onCellClick, onSelectedCellValueChange, onDelete,
-    onNotesActiveToggle, onSelectedCellNotesChange, onSelectedCellConstraintChange,
+    onNotesActiveToggle, onSelectedCellNotesChange,
+    onSelectedCellConstraintChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
 }

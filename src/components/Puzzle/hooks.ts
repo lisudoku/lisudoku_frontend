@@ -41,7 +41,6 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
   const paused = useSelector(state => state.puzzle.controls.paused)
-  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
   const notesActive = useSelector(state => state.puzzle.controls.notesActive)
   const undoActive = useSelector(state => state.puzzle.controls.actionIndex >= 0)
   const redoActive = useSelector(state => (
@@ -50,11 +49,9 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 
   const enabled = !solved && !isSolvedLoading && !paused
 
-  const handleSelectedCellChange = useCallback((cell: CellPosition) => {
-    if (selectedCell === null || cell.row !== selectedCell.row || cell.col !== selectedCell.col) {
-      dispatch(changeSelectedCell(cell))
-    }
-  }, [dispatch, selectedCell])
+  const handleSelectedCellChange = useCallback((cell: CellPosition, ctrl: boolean, isClick: boolean) => {
+    dispatch(changeSelectedCell({ cell, ctrl, isClick }))
+  }, [dispatch])
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
   }, [dispatch])
@@ -101,10 +98,9 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 
 export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   const constraints = useSelector(state => state.puzzle.data!.constraints)
-  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
+  const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
 
-  const { gridSize, fixedNumbers } = constraints
-  const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
+  const { gridSize } = constraints
 
   const {
     enabled, notesActive, undoActive, redoActive,
@@ -120,11 +116,12 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 
       if (ARROWS.includes(e.key)) {
         let nextCell
-        if (selectedCell !== null) {
+        if (!_.isEmpty(selectedCells)) {
           const dir = ARROWS.indexOf(e.key)
+          const lastCell = _.last(selectedCells)!
           nextCell = {
-            row: (selectedCell.row + dirRow[dir] + gridSize) % gridSize,
-            col: (selectedCell.col + dirCol[dir] + gridSize) % gridSize,
+            row: (lastCell.row + dirRow[dir] + gridSize) % gridSize,
+            col: (lastCell.col + dirCol[dir] + gridSize) % gridSize,
           }
         } else {
           nextCell = {
@@ -132,7 +129,8 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
             col: 0,
           }
         }
-        onSelectedCellChange(nextCell)
+        const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
+        onSelectedCellChange(nextCell, ctrl, false)
         e.preventDefault()
         return
       }
@@ -143,7 +141,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (selectedCell === null || !_.isNil(fixedNumbersGrid[selectedCell.row][selectedCell.col])) {
+      if (_.isEmpty(selectedCells)) {
         return
       }
 
@@ -188,7 +186,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    enabled, gridSize, fixedNumbersGrid, selectedCell, notesActive, redoActive, undoActive,
+    enabled, gridSize, selectedCells, notesActive, redoActive, undoActive,
     onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange,
     onSelectedCellNotesChange, onUndo, onRedo
   ])
@@ -198,7 +196,7 @@ export const useTvPlayerWebsocket = () => {
   const publicId = useSelector(state => state.puzzle.data!.publicId!)
   const grid = useSelector(state => state.puzzle.grid)
   const notes = useSelector(state => state.puzzle.notes)
-  const selectedCell = useSelector(state => state.puzzle.controls.selectedCell)
+  const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const solved = useSelector(state => state.puzzle.solved)
 
   const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true })
@@ -213,9 +211,9 @@ export const useTvPlayerWebsocket = () => {
         puzzle_id: publicId,
         grid,
         notes,
-        selected_cell: selectedCell,
+        selected_cells: selectedCells,
         solved,
       },
     })
-  }, [ready, publicId, sendMessage, grid, notes, selectedCell, solved])
+  }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved])
 }

@@ -5,6 +5,7 @@ import {
   Region, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import { assert } from 'src/utils/misc'
 import { ensureDefaultRegions } from 'src/utils/sudoku'
 const jcc = require('json-case-convertor')
 
@@ -13,7 +14,8 @@ export enum ConstraintType {
   Thermo = 'thermo',
   Regions = 'regions',
   Killer = 'killer',
-  Kropki = 'kropki',
+  KropkiConsecutive = 'kropki_consecutive',
+  KropkiDouble = 'kropki_double',
   ExtraRegions = 'extraregions',
   OddCells = 'oddcells',
   EvenCells = 'evencells',
@@ -35,7 +37,7 @@ type AdminState = {
   solverRunning: boolean
   puzzlePublicId: string | null
   puzzleAdding: boolean
-  selectedCell: CellPosition | null
+  selectedCells: CellPosition[]
   currentThermo: Thermo
   constraintGrid: Grid | null
   killerSum: number | null
@@ -131,7 +133,7 @@ export const adminSlice = createSlice({
     sourceUrl: '',
     puzzlePublicId: null,
     puzzleAdding: false,
-    selectedCell: null,
+    selectedCells: [],
     currentThermo: [],
     killerSum: null,
     constraintGrid: null,
@@ -159,32 +161,43 @@ export const adminSlice = createSlice({
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
     },
     changeSelectedCell(state, action) {
-      state.selectedCell = action.payload
-
-      const isSelectedCell = (cell: CellPosition) => _.isEqual(cell, state.selectedCell!)
-
-      switch (state.constraintType) {
-        case ConstraintType.Thermo: {
-          if (expandsThermo(state.currentThermo, action.payload)) {
-            state.currentThermo.push(action.payload)
-          }
-          break
+      const { cell, ctrl, isClick } = action.payload
+      if (ctrl) {
+        if (isClick) {
+          state.selectedCells = _.xorWith(state.selectedCells, [ cell ], _.isEqual)
+        } else {
+          state.selectedCells = _.uniqWith([ ...state.selectedCells, cell ], _.isEqual)
         }
-        case ConstraintType.OddCells: {
-          if (!state.constraints?.oddCells.find(isSelectedCell) &&
-              !state.constraints?.evenCells.find(isSelectedCell)
-          ) {
-            state.constraints!.oddCells.push(state.selectedCell!)
+      } else {
+        state.selectedCells = [ cell ]
+      }
+
+      for (const selectedCell of state.selectedCells) {
+        const isSelectedCell = (cell: CellPosition) => _.isEqual(cell, selectedCell)
+
+        switch (state.constraintType) {
+          case ConstraintType.Thermo: {
+            if (expandsThermo(state.currentThermo, cell)) {
+              state.currentThermo.push(cell)
+            }
+            break
           }
-          break
-        }
-        case ConstraintType.EvenCells: {
-          if (!state.constraints?.oddCells.find(isSelectedCell) &&
-              !state.constraints?.evenCells.find(isSelectedCell)
-          ) {
-            state.constraints!.evenCells.push(state.selectedCell!)
+          case ConstraintType.OddCells: {
+            if (!state.constraints?.oddCells.find(isSelectedCell) &&
+                !state.constraints?.evenCells.find(isSelectedCell)
+            ) {
+              state.constraints!.oddCells.push(selectedCell)
+            }
+            break
           }
-          break
+          case ConstraintType.EvenCells: {
+            if (!state.constraints?.oddCells.find(isSelectedCell) &&
+                !state.constraints?.evenCells.find(isSelectedCell)
+            ) {
+              state.constraints!.evenCells.push(selectedCell)
+            }
+            break
+          }
         }
       }
 
@@ -192,7 +205,7 @@ export const adminSlice = createSlice({
     },
     changeConstraintType(state, action) {
       state.constraintType = action.payload
-      state.selectedCell = null
+      state.selectedCells = []
       state.currentThermo = []
 
       const gridSize = state.constraints!.gridSize
@@ -210,23 +223,21 @@ export const adminSlice = createSlice({
       handleConstraintChange(state)
     },
     changeSelectedCellValue(state, action) {
-      const fixedNumber: FixedNumber = {
-        position: state.selectedCell!,
-        value: action.payload,
-      }
       switch (state.constraintType) {
         case ConstraintType.FixedNumber: {
-          const predicate = (existingFixedNumber: FixedNumber) => (
-            _.isEqual(existingFixedNumber.position, fixedNumber.position)
+          const fixedNumbers = state.selectedCells.map((selectedCell: CellPosition) => ({
+            position: selectedCell,
+            value: action.payload,
+          }))
+          const areAllExisting = _.isEmpty(_.differenceWith(
+            fixedNumbers, state.constraints!.fixedNumbers, _.isEqual
+          ))
+          const isEqualPosition = (fn1: FixedNumber, fn2: FixedNumber) => (
+            _.isEqual(fn1.position, fn2.position)
           )
-          const existingFixedNumber = state.constraints!.fixedNumbers.find(predicate)
-          if (existingFixedNumber) {
-            _.remove(state.constraints!.fixedNumbers, predicate)
-            if (existingFixedNumber.value !== fixedNumber.value) {
-              state.constraints!.fixedNumbers.push(fixedNumber)
-            }
-          } else {
-            state.constraints!.fixedNumbers.push(fixedNumber)
+          _.pullAllWith(state.constraints!.fixedNumbers, fixedNumbers, isEqualPosition)
+          if (!areAllExisting) {
+            state.constraints!.fixedNumbers.push(...fixedNumbers)
           }
           break
         }
@@ -239,10 +250,17 @@ export const adminSlice = createSlice({
 
       switch (state.constraintType) {
         case ConstraintType.Thermo: {
-          if (_.inRange(state.currentThermo.length, 2, state.constraints!.gridSize + 1)) {
-            state.constraints!.thermos!.push(state.currentThermo)
-            state.currentThermo = []
-          }
+          assert(state.currentThermo.length > 0, 'Click on a cell to start a thermo.')
+          assert(
+            state.currentThermo.length > 1,
+            'Thermo is too short. Click on other cells to expand it.'
+          )
+          assert(
+            state.currentThermo.length <= state.constraints!.gridSize,
+            'Thermo is too long. Delete it with Backspace.'
+          )
+          state.constraints!.thermos!.push(state.currentThermo)
+          state.currentThermo = []
           break
         }
         case ConstraintType.Regions: {
@@ -259,33 +277,16 @@ export const adminSlice = createSlice({
           break
         }
         case ConstraintType.ExtraRegions: {
-          const region: Region = []
-          _.times(gridSize, row => {
-            _.times(gridSize, col => {
-              const cell: CellPosition = { row, col }
-              if (state.constraintGrid![row][col]) {
-                region.push(cell)
-              }
-            })
-          })
-          if (region.length === gridSize) {
-            state.constraints!.extraRegions.push(region)
-          } else {
-            window.alert(`Extra region must be of size ${gridSize}`)
-          }
+          const region: Region = state.selectedCells
+          assert(
+            region.length === gridSize,
+            `Extra region must be of size ${gridSize}. Select multiple cells with Shift + Click.`
+          )
+          state.constraints!.extraRegions.push(region)
           break
         }
         case ConstraintType.Killer: {
-          const region: Region = []
-          _.times(gridSize, row => {
-            _.times(gridSize, col => {
-              const value = state.constraintGrid![row][col]
-              if (value) {
-                const cell: CellPosition = { row, col }
-                region.push(cell)
-              }
-            })
-          })
+          const region: Region = state.selectedCells
           const killerCage: KillerCage = {
             sum: state.killerSum!,
             region,
@@ -294,89 +295,74 @@ export const adminSlice = createSlice({
           state.killerSum = null
           break
         }
-        case ConstraintType.Kropki: {
-          const cells: CellPosition[] = []
-          let cellsValue = 0
-          _.times(gridSize, row => {
-            _.times(gridSize, col => {
-              const value = state.constraintGrid![row][col]
-              if (value) {
-                const cell: CellPosition = { row, col }
-                cells.push(cell)
-                console.assert(cellsValue === 0 || cellsValue === value, 'cell value different')
-                cellsValue = value
-              }
-            })
-          })
-          console.assert(cellsValue !== 0, 'no cell value found')
-          console.assert(cells.length === 2, 'we need exact 2 cells')
-          console.assert(
+        case ConstraintType.KropkiConsecutive:
+        case ConstraintType.KropkiDouble: {
+          const cells: CellPosition[] = state.selectedCells
+          assert(cells.length === 2, 'Select exactly 2 cells with Shift + Click.')
+          assert(
             Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
-            'cells need to be adjacent'
+            'Cells need to be adjacent'
           )
+          const dotType = state.constraintType === ConstraintType.KropkiConsecutive ? KropkiDotType.Consecutive
+                                                                                    : KropkiDotType.Double
           const kropkiDot: KropkiDot = {
-            dotType: cellsValue === 1 ? KropkiDotType.Consecutive : KropkiDotType.Double,
+            dotType,
             cell1: cells[0],
             cell2: cells[1],
           }
-          state.constraints!.kropkiDots!.push(kropkiDot)
+          const existingDot = state.constraints!.kropkiDots.find(dot => (
+            _.isEqual(dot.cell1, kropkiDot.cell1) && _.isEqual(dot.cell2, kropkiDot.cell2)
+          ))
+          if (!existingDot) {
+            state.constraints!.kropkiDots!.push(kropkiDot)
+          }
           break
         }
-      }
-
-      if (![ConstraintType.FixedNumber, ConstraintType.Thermo, ConstraintType.Regions].includes(state.constraintType)) {
-        state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       }
 
       handleConstraintChange(state)
     },
     deleteConstraint(state) {
-      const cell = state.selectedCell
-      if (!cell) {
-        return
+      for (const cell of state.selectedCells) {
+        const isSelectedCell = (areaCell: CellPosition) => _.isEqual(areaCell, cell)
+
+        // Fixed numbers
+        _.remove(
+          state.constraints!.fixedNumbers,
+          (existingFixedNumber: FixedNumber) => _.isEqual(existingFixedNumber.position, cell)
+        )
+
+        // Thermo
+        if (state.currentThermo.find(isSelectedCell)) {
+          state.currentThermo = []
+        }
+
+        const thermoIndex = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
+        if (thermoIndex !== -1) {
+          state.constraints!.thermos?.splice(thermoIndex, 1)
+        }
+
+        // Killer
+        const killerIndex = _.findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(isSelectedCell))
+        if (killerIndex !== -1) {
+          state.constraints!.killerCages?.splice(killerIndex, 1)
+        }
+
+        // Kropki
+        _.remove(state.constraints!.kropkiDots, kropkiDot => (
+          _.isEqual(kropkiDot.cell1, cell) || _.isEqual(kropkiDot.cell2, cell)
+        ))
+
+        // Extra Regions
+        const regionIndex = _.findIndex(state.constraints!.extraRegions, (extraRegion: Region) => extraRegion.some(isSelectedCell))
+        if (regionIndex !== -1) {
+          state.constraints!.extraRegions?.splice(regionIndex, 1)
+        }
+
+        // Odd Even
+        _.remove(state.constraints!.oddCells, isSelectedCell)
+        _.remove(state.constraints!.evenCells, isSelectedCell)
       }
-
-      const isSelectedCell = (areaCell: CellPosition) => _.isEqual(areaCell, cell)
-
-      // Fixed numbers
-      _.remove(
-        state.constraints!.fixedNumbers,
-        (existingFixedNumber: FixedNumber) => _.isEqual(existingFixedNumber.position, cell)
-      )
-
-      // Thermo
-      if (state.currentThermo.find(isSelectedCell)) {
-        state.currentThermo = []
-      }
-
-      const thermoIndex = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
-      if (thermoIndex !== -1) {
-        state.constraints!.thermos?.splice(thermoIndex, 1)
-      }
-
-      // Killer
-      state.constraintGrid![cell.row][cell.col] = null
-
-      const killerIndex = _.findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(isSelectedCell))
-      if (killerIndex !== -1) {
-        state.constraints!.killerCages?.splice(killerIndex, 1)
-      }
-
-      // Kropki
-      state.constraintGrid![cell.row][cell.col] = null
-      _.remove(state.constraints!.kropkiDots, kropkiDot => (
-        _.isEqual(kropkiDot.cell1, cell) || _.isEqual(kropkiDot.cell2, cell)
-      ))
-
-      // Extra Regions
-      const regionIndex = _.findIndex(state.constraints!.extraRegions, (extraRegion: Region) => extraRegion.some(isSelectedCell))
-      if (regionIndex !== -1) {
-        state.constraints!.extraRegions?.splice(regionIndex, 1)
-      }
-
-      // Odd Even
-      _.remove(state.constraints!.oddCells, isSelectedCell)
-      _.remove(state.constraints!.evenCells, isSelectedCell)
     },
     requestSolution(state) {
       state.solverRunning = true
@@ -414,22 +400,33 @@ export const adminSlice = createSlice({
       state.notesActive = !state.notesActive
     },
     changeSelectedCellNotes(state, action) {
-      if (state.selectedCell === null) {
-        return
+      const value = action.payload
+      const selectedCells: CellPosition[] = state.selectedCells
+      const areAllExisting = selectedCells.every(({ row, col }: CellPosition) => (
+        state.notes![row][col].includes(value)
+      ))
+
+      for (const { row, col } of state.selectedCells) {
+        _.pull(state.notes![row][col], value)
       }
-      const { row, col } = state.selectedCell
-      state.notes![row][col] = _.xor(state.notes![row][col], [action.payload])
+
+      if (!areAllExisting) {
+        for (const { row, col } of state.selectedCells) {
+          state.notes![row][col].push(value)
+        }
+      }
     },
     changeSelectedCellConstraint(state, action) {
-      if (state.selectedCell === null) {
+      if (_.isEmpty(state.selectedCells)) {
         return
       }
-      const { row, col } = state.selectedCell
-      const value = action.payload
-      if (state.constraintGrid![row][col] === value && state.constraintType !== ConstraintType.Regions) {
-        state.constraintGrid![row][col] = null
-      } else {
-        state.constraintGrid![row][col] = value
+      switch (state.constraintType) {
+        case ConstraintType.Regions: {
+          for (const { row, col } of state.selectedCells) {
+            const value = action.payload
+            state.constraintGrid![row][col] = value
+          }
+        }
       }
     },
     deletePuzzle(state, action) {
@@ -471,8 +468,8 @@ export const {
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,
   toggleNotesActive, changeSelectedCellNotes, deletePuzzle,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
-  changeKillerSum, changeSelectedCellConstraint, changeKropkiNegative,
-  changeInputActive, changeSourceCollectionId,
+  changeKillerSum, changeKropkiNegative,
+  changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
 } = adminSlice.actions
 
 export default adminSlice.reducer

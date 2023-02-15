@@ -41,3 +41,10 @@ export const pluralize = (count: number, word: string) => {
   }
   return word
 }
+
+export const assert = (condition: boolean, message: string) => {
+  if (!condition) {
+    alert(message)
+    throw Error(message)
+  }
+}

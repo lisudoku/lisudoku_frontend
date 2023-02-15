@@ -11,7 +11,7 @@ export type TvPuzzle = {
   difficulty: SudokuDifficulty
   grid: Grid
   notes: number[][][]
-  selectedCell: CellPosition | null
+  selectedCells: CellPosition[]
   solved: boolean
   createdAt: string
   updatedAt: string
@@ -34,6 +34,7 @@ export const tvSlice = createSlice({
         ...jcc.camelCaseKeys(tvPuzzle),
         // grid has to be handled separately because of jcc
         grid: tvPuzzle.grid,
+        selectedCells: tvPuzzle.selected_cells ?? [], // smooth transition from previous data
       }))
       state.tvPuzzles = tvPuzzles
       state.viewerCount = action.payload.viewer_count
@@ -46,7 +47,7 @@ export const tvSlice = createSlice({
 
       const tvPuzzle = jcc.camelCaseKeys(data)
       tvPuzzle.grid = grid
-      const { id, notes, selectedCell, solved, updatedAt } = tvPuzzle
+      const { id, notes, selectedCells, solved, updatedAt } = tvPuzzle
 
       const existingPuzzle = state.tvPuzzles.find((puzzle: TvPuzzle) => puzzle.id === id)
 
@@ -57,7 +58,7 @@ export const tvSlice = createSlice({
               ...tvPuzzle,
               grid,
               notes,
-              selectedCell,
+              selectedCells,
               solved,
               updatedAt,
             }

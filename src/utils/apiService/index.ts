@@ -78,7 +78,7 @@ export const fetchPuzzleByPublicId = async (id: string, userToken: string | null
 
 export type UserActionSlim = {
   type: ActionType
-  cell: CellPosition
+  cells: CellPosition[]
   value: number
   time: number
 }

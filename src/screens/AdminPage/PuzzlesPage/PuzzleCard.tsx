@@ -34,7 +34,7 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
       <SudokuGrid constraints={puzzle.constraints}
                   grid={grid}
                   notes={notes}
-                  selectedCell={null}
+                  selectedCells={[]}
                   checkErrors={false}
                   loading={false}
                   onCellClick={null}
