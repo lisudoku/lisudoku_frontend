@@ -16,6 +16,7 @@ import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { HelmetProvider } from 'react-helmet-async'
+import HoneybadgerProvider from './components/HoneybadgerProvider'
 import CollectionPage from './screens/CollectionPage'
 import LearnPage from './screens/LearnPage'
 
@@ -31,42 +32,44 @@ if (process.env.NODE_ENV === 'production') {
 
 const App = () => {
   return (
-    <HelmetProvider>
-      <ThemeProvider value={theme}>
-        <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <BrowserRouter>
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Routes>
-                    <Route path="/" element={<Layout padding={false} />}>
-                      <Route path="/" element={<HomePage />} />
-                    </Route>
-                    <Route path="/" element={<Layout />}>
-                      <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
-                      <Route path="login" element={<LoginPage />} />
-                      <Route path="logout" element={<LogoutPage />} />
-                      <Route path="register" element={<RegisterPage />} />
-                      <Route path="p/:id" element={<PuzzlePage />} />
-                      <Route path="tv" element={<TvPage />} />
-                      <Route path="about" element={<AboutPage />} />
-                      <Route path="collections/:id" element={<CollectionPage />} />
-                      <Route path="learn" element={<LearnPage />} />
-                      <Route path="*" element={<PageNotFound />} />
-                    </Route>
-                    <Route path="/" element={<Layout admin />}>
-                      <Route path="/" element={<EnsureAdmin />}>
-                        <Route path="admin/*" element={<AdminPage />} />
+    <HoneybadgerProvider>
+      <HelmetProvider>
+        <ThemeProvider value={theme}>
+          <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <BrowserRouter>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <Routes>
+                      <Route path="/" element={<Layout padding={false} />}>
+                        <Route path="/" element={<HomePage />} />
                       </Route>
-                    </Route>
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
-            </PersistGate>
-          </Provider>
-        </div>
-      </ThemeProvider>
-    </HelmetProvider>
+                      <Route path="/" element={<Layout />}>
+                        <Route path="/play/:variant/:difficulty" element={<PlayPage />} />
+                        <Route path="login" element={<LoginPage />} />
+                        <Route path="logout" element={<LogoutPage />} />
+                        <Route path="register" element={<RegisterPage />} />
+                        <Route path="p/:id" element={<PuzzlePage />} />
+                        <Route path="tv" element={<TvPage />} />
+                        <Route path="about" element={<AboutPage />} />
+                        <Route path="collections/:id" element={<CollectionPage />} />
+                        <Route path="learn" element={<LearnPage />} />
+                        <Route path="*" element={<PageNotFound />} />
+                      </Route>
+                      <Route path="/" element={<Layout admin />}>
+                        <Route path="/" element={<EnsureAdmin />}>
+                          <Route path="admin/*" element={<AdminPage />} />
+                        </Route>
+                      </Route>
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </PersistGate>
+            </Provider>
+          </div>
+        </ThemeProvider>
+      </HelmetProvider>
+    </HoneybadgerProvider>
   )
 }
 

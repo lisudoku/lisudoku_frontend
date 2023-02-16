@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import Textarea from 'src/components/Textarea'
@@ -21,6 +21,7 @@ import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { SudokuDifficultyDisplay } from 'src/utils/constants'
 import { bruteSolve, intuitiveSolve } from 'src/utils/wasm'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
 
 const groupStepsByType = (steps: SolutionStep[]) => {
   const groups: { [index: string]: number } = {}
@@ -192,6 +193,18 @@ const PuzzleCommit = () => {
       dispatch(errorAddPuzzle())
     })
   }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId])
+
+  useEffect(() => {
+    if (bruteSolution?.solution_count === 1 &&
+        intuitiveSolution &&
+        intuitiveSolution.solution_type !== SolutionType.Full) {
+      honeybadger.notify({
+        name: 'Unsolved puzzle',
+        message: `Couldn't solve ${variant} puzzle`,
+        context: constraints!,
+      })
+    }
+  }, [bruteSolution, intuitiveSolution, variant, constraints])
 
   return (
     <>
