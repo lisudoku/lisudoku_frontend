@@ -6,7 +6,7 @@ import {
 } from 'src/types/sudoku'
 import { SudokuBruteSolveResult, SudokuIntuitiveSolveResult } from 'src/types/wasm'
 import { assert } from 'src/utils/misc'
-import { ensureDefaultRegions } from 'src/utils/sudoku'
+import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
 const jcc = require('json-case-convertor')
 
 export enum ConstraintType {
@@ -160,6 +160,30 @@ export const adminSlice = createSlice({
       state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
     },
+    receivedPuzzle(state, action) {
+      const constraints: Partial<SudokuConstraints> = jcc.camelCaseKeys(action.payload)
+      const gridSize = constraints.gridSize!
+      state.constraints = {
+        gridSize,
+        fixedNumbers: [],
+        regions: ensureDefaultRegions(gridSize),
+        extraRegions: [],
+        thermos: [],
+        killerCages: [],
+        kropkiDots: [],
+        kropkiNegative: false,
+        primaryDiagonal: false,
+        secondaryDiagonal: false,
+        antiKnight: false,
+        oddCells: [],
+        evenCells: [],
+        ...constraints,
+      }
+      state.difficulty = defaultDifficulty(gridSize)
+      state.variant = detectVariant(state)
+      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+    },
     changeSelectedCell(state, action) {
       const { cell, ctrl, isClick } = action.payload
       if (ctrl) {
@@ -209,14 +233,9 @@ export const adminSlice = createSlice({
       state.currentThermo = []
 
       const gridSize = state.constraints!.gridSize
-      state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       switch (state.constraintType) {
         case ConstraintType.Regions:
-          state.constraints!.regions.forEach((region, index) => {
-            region.forEach(({ row, col }) => {
-              state.constraintGrid![row][col] = index + 1
-            })
-          })
+          state.constraintGrid = regionsToRegionGrid(gridSize, state.constraints!.regions)
           break
       }
 
@@ -264,15 +283,7 @@ export const adminSlice = createSlice({
           break
         }
         case ConstraintType.Regions: {
-          const regions: Region[] = []
-          _.times(gridSize, row => {
-            _.times(gridSize, col => {
-              const regionIndex = state.constraintGrid![row][col]! - 1
-              regions[regionIndex] ||= []
-              const cell: CellPosition = { row, col }
-              regions[regionIndex].push(cell)
-            })
-          })
+          const regions: Region[] = regionGridToRegions(gridSize, state.constraintGrid!)
           state.constraints!.regions = regions
           break
         }
@@ -462,7 +473,7 @@ export const adminSlice = createSlice({
 })
 
 export const {
-  initPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue,
+  initPuzzle, receivedPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue,
   addConstraint, deleteConstraint, requestSolution, responseBruteSolution,
   responseIntuitiveSolution, errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle, responsePuzzles,

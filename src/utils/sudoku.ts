@@ -35,6 +35,29 @@ export const ensureDefaultRegions = (gridSize: number): Region[] => {
   return defaultRegions
 }
 
+export const regionGridToRegions = (gridSize: number, regionGrid: Grid): Region[] => {
+  const regions: Region[] = []
+  _.times(gridSize, row => {
+    _.times(gridSize, col => {
+      const regionIndex = regionGrid[row][col]! - 1
+      regions[regionIndex] ||= []
+      const cell: CellPosition = { row, col }
+      regions[regionIndex].push(cell)
+    })
+  })
+  return regions
+}
+
+export const regionsToRegionGrid = (gridSize: number, regions: Region[]) => {
+  const regionGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+  regions.forEach((region, index) => {
+    for (const { row, col } of region) {
+      regionGrid[row][col] = index + 1
+    }
+  })
+  return regionGrid
+}
+
 export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => {
   const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   for (const fixedNumber of fixedNumbers) {

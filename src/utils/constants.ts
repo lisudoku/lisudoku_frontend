@@ -2,6 +2,8 @@ import _ from 'lodash'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { StepRule } from 'src/types/wasm'
 
+export const GRID_SIZES = [ 4, 6, 9 ]
+
 export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Classic,
   SudokuVariant.Killer,
