@@ -9,6 +9,7 @@ import storage from 'redux-persist/lib/storage'
 import puzzleReducer from './reducers/puzzle'
 import userData from './reducers/userData'
 import admin from './reducers/admin'
+import builder from './reducers/builder'
 import tv from './reducers/tv'
 import collections from './reducers/collections'
 import competitions from './reducers/competitions'
@@ -18,6 +19,7 @@ const reducers = combineReducers({
   puzzle: puzzleReducer,
   userData,
   admin,
+  builder,
   tv,
   collections,
   competitions,

@@ -72,9 +72,15 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
 }
 
 export const enum EStepRuleDifficulty {
-  Easy = 'Easy',
-  Medium = 'Medium',
-  Hard = 'Hard',
+  Easy,
+  Medium,
+  Hard,
+}
+
+export const StepRuleDifficultyDisplay: { [key in EStepRuleDifficulty]: string } = {
+  [EStepRuleDifficulty.Easy]: 'Easy',
+  [EStepRuleDifficulty.Medium]: 'Medium',
+  [EStepRuleDifficulty.Hard]: 'Hard',
 }
 
 export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {

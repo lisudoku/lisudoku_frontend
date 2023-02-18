@@ -19,6 +19,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import HoneybadgerProvider from './components/HoneybadgerProvider'
 import CollectionPage from './screens/CollectionPage'
 import LearnPage from './screens/LearnPage'
+import SolverPage from './screens/SolverPage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -54,6 +55,7 @@ const App = () => {
                         <Route path="about" element={<AboutPage />} />
                         <Route path="collections/:id" element={<CollectionPage />} />
                         <Route path="learn" element={<LearnPage />} />
+                        <Route path="solver" element={<SolverPage />} />
                         <Route path="*" element={<PageNotFound />} />
                       </Route>
                       <Route path="/" element={<Layout admin />}>

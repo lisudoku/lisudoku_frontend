@@ -1,15 +1,15 @@
 import { useCallback } from 'react'
 import { Option, Select } from 'src/components/Select'
 import { useDispatch, useSelector } from 'src/hooks'
-import { initPuzzle } from 'src/reducers/admin'
+import { initPuzzle } from 'src/reducers/builder'
 import { GRID_SIZES } from 'src/utils/constants'
 
 const GridSizeSelect = () => {
   const dispatch = useDispatch()
-  const gridSize = useSelector(state => state.admin.constraints!.gridSize)
+  const gridSize = useSelector(state => state.builder.constraints!.gridSize)
 
   const handleChange = useCallback((gridSizeStr: string) => {
-    dispatch(initPuzzle(gridSizeStr))
+    dispatch(initPuzzle({ gridSize: gridSizeStr }))
   }, [dispatch])
 
   return (

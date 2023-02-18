@@ -13,19 +13,33 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
         <>
           <div className="flex flex-wrap w-full md:w-3/4 text-medium justify-start">
             {ACTIVE_VARIANTS.map((variant, index) => (
-              <Link key={index} to={`/play/${variant}/${difficulty}`} className="w-full sm:w-1/3 text-center">
-                Play {SudokuVariantDisplay[variant]} Sudoku
-              </Link>
+              <div key={index} className="w-full sm:w-1/3 text-center">
+                <Link to={`/play/${variant}/${difficulty}`}>
+                  Play {SudokuVariantDisplay[variant]} Sudoku
+                </Link>
+              </div>
             ))}
           </div>
-          <div className="flex align-middle gap-3">
-            <Link to="/about">About</Link>
-            |
-            <a href="https://discord.gg/SGV8TQVSeT"
-               target="_blank"
-               rel="noopener noreferrer">
-              <FontAwesomeIcon icon={faDiscord} size="1x" color="#7d87fe" />
-            </a>
+          <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-y-3">
+            <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
+              <Link to="/learn">Learn Solving Techniques</Link>
+            </div>
+            <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
+              <Link to="/tv">Watch Live Solves</Link>
+            </div>
+            <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
+              <Link to="/solver">Sudoku Variant Solver</Link>
+            </div>
+            <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
+              <Link to="/about">About</Link>
+            </div>
+            <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
+              <a href="https://discord.gg/SGV8TQVSeT"
+                target="_blank"
+                rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faDiscord} size="1x" color="#7d87fe" />
+              </a>
+            </div>
           </div>
         </>
       )}

@@ -47,6 +47,17 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'nF4pF8Orna9Oi-0uPE-0', 'DwbYLJrG7EHbCA0jEzFj' ],
   },
   {
+    id: StepRule.Candidates,
+    akas: [ 'Pencil marks', 'Notes' ],
+    summary: 'Write all the possible values in each cell.',
+    externalResources: [
+      {
+        name: 'sudoku.com',
+        url: 'https://sudoku.com/sudoku-rules/notes-in-sudoku',
+      },
+    ],
+  },
+  {
     id: StepRule.HiddenPairs,
     akas: [ 'Last 2 Remaining Cells' ],
     summary: <>

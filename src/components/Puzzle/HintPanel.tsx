@@ -5,10 +5,10 @@ import Alert from '../Alert'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
-import { SolutionType, SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import { SolutionType, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { computeHintContent } from 'src/utils/solver'
 
-const useComputeHintElement = (solution: SudokuIntuitiveSolveResult | null, hintLevel: HintLevel | null) => {
+const useComputeHintElement = (solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel | null) => {
   const dispatch = useDispatch()
 
   const notes = useSelector(state => state.puzzle.notes!)
@@ -68,6 +68,7 @@ const HintPanel = () => {
 
   return (
     <Alert
+      className="absolute h-full"
       show={!!hintSolution}
       onClose={handleAlertClose}
     >{hintMessage}</Alert>

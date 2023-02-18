@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid } from 'src/utils/sudoku'
-import { SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import { SudokuLogicalSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
 export enum ActionType {
@@ -15,6 +15,7 @@ export enum ActionType {
 export enum HintLevel {
   Small = 'Small',
   Big = 'Big',
+  Full = 'Full',
 }
 
 type UserAction = {
@@ -31,7 +32,7 @@ type ControlsState = {
   notesActive: boolean
   actions: UserAction[]
   actionIndex: number
-  hintSolution: SudokuIntuitiveSolveResult | null
+  hintSolution: SudokuLogicalSolveResult | null
   lastHint: string | null
   hintLevel: HintLevel | null
   paused: boolean

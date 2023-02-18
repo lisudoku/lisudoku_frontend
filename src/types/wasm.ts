@@ -5,7 +5,7 @@ export type SudokuBruteSolveResult = {
   solution?: Grid
 }
 
-export type SudokuIntuitiveSolveResult = {
+export type SudokuLogicalSolveResult = {
   solution_type: SolutionType
   solution?: Grid
   steps?: SolutionStep[]

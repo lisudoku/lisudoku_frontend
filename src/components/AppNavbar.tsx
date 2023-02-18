@@ -15,6 +15,10 @@ const ITEMS: any[] = [
     text: 'TV',
     url: '/tv',
   },
+  {
+    text: 'Solver',
+    url: '/solver',
+  },
 ]
 
 const ADMIN_ITEMS = [

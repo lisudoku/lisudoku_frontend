@@ -22,7 +22,6 @@ const PuzzleComponent = () => {
 
   // Calculate the available screen width and subtract parent padding
   const width = (document.documentElement.clientWidth || window.innerWidth) - 40
-
   const cellSize = computeCellSize(constraints.gridSize, width)
 
   useTvPlayerWebsocket()

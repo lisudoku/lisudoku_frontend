@@ -6,15 +6,7 @@ https://lisudoku.xyz
 
 This is lisudoku's frontend written in React.
 
-Supported variants
-1. Classic
-2. Killer
-3. Thermo
-4. Kropki
-5. Diagonal
-6. Anti Knight
-7. Irregular
-8. Any combination of the above.
+9 supported sudoku variants.
 
 ## Contribute
 

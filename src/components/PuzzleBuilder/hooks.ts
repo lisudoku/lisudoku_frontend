@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
-import { CellPosition } from 'src/types/sudoku'
+import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
 import {
   changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellNotes,
-  changeSelectedCellValue, ConstraintType, deleteConstraint, toggleNotesActive,
-} from 'src/reducers/admin'
+  changeSelectedCellValue, ConstraintType, deleteConstraint, SolverType, toggleNotesActive,
+} from 'src/reducers/builder'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -61,10 +61,10 @@ export const useControlCallbacks = () => {
 }
 
 export const useKeyboardHandler = (digitsActive = true) => {
-  const constraints = useSelector(state => state.admin.constraints)
-  const selectedCells = useSelector(state => state.admin.selectedCells)
-  const constraintType = useSelector(state => state.admin.constraintType)
-  const notesActive = useSelector(state => state.admin.notesActive)
+  const constraints = useSelector(state => state.builder.constraints)
+  const selectedCells = useSelector(state => state.builder.selectedCells)
+  const constraintType = useSelector(state => state.builder.constraintType)
+  const notesActive = useSelector(state => state.builder.notesActive)
 
   const gridSize = constraints?.gridSize ?? 9
 
@@ -160,4 +160,25 @@ export const useKeyboardHandler = (digitsActive = true) => {
     onSelectedCellConstraintChange,
     // redoActive, undoActive, onUndo, onRedo
   ])
+}
+
+export const useSolver = (solverType: SolverType) => {
+  const worker = useMemo(
+    () => new Worker(new URL('../../workers/solver.worker', import.meta.url)),
+    []
+  )
+
+  const runSolver = useCallback((constraints: SudokuConstraints) => {
+    return new Promise(resolve => {
+      worker.onmessage = ({ data }) => {
+        resolve(data)
+      }
+      worker.postMessage({
+        solverType,
+        constraints,
+      })
+    })
+  }, [worker, solverType])
+
+  return runSolver
 }

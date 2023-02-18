@@ -2,7 +2,7 @@ import _ from 'lodash'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { SolutionStep, SolutionType, StepRule, SudokuIntuitiveSolveResult } from 'src/types/wasm'
+import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
@@ -35,7 +35,7 @@ const cellDisplay = (cell: CellPosition) => (
   `R${cell.row + 1}C${cell.col + 1}`
 )
 
-const getBigStepExplanation = (step: SolutionStep) => {
+const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
   const cells = step.cells.map(cell => cellDisplay(cell)).join(',')
   const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(',')
   const values = [...step.values].sort().join(',')
@@ -45,7 +45,13 @@ const getBigStepExplanation = (step: SolutionStep) => {
     case StepRule.NakedSingle:
     case StepRule.Thermo:
       const cell = step.cells[0]
-      return ` on cell ${cellDisplay(cell)}`
+      let text = ` on cell ${cellDisplay(cell)}`
+      if (hintLevel === HintLevel.Full) {
+        text += ` (${values})`
+      }
+      return text
+    case StepRule.Candidates:
+      return ' for all cells'
     case StepRule.HiddenPairs:
     case StepRule.HiddenTriples:
       return ` on cells ${cells} to only keep ${values}`
@@ -64,16 +70,16 @@ const getBigStepExplanation = (step: SolutionStep) => {
   }
 }
 
-const getStepHint = (step: SolutionStep, hintLevel: HintLevel) => {
+export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel) => {
   let hint = <b>
     <ExternalLink url={`/learn#${step.rule}`}>
       {StepRuleDisplay[step.rule]}
     </ExternalLink>
   </b>
 
-  if (hintLevel === HintLevel.Big) {
+  if (hintLevel !== HintLevel.Small) {
     return <>
-      {hint} {getBigStepExplanation(step)}
+      {hint} {getBigStepExplanation(step, hintLevel)}
     </>
   }
 
@@ -131,7 +137,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
 
   if (singleIndex === 0) {
     const step = steps[0]
-    return <>There is a {getStepHint(step, hintLevel)}.</>
+    return <>There is a {getStepDescription(step, hintLevel)}.</>
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)
@@ -147,19 +153,19 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
     <ul className="list-disc list-inside">
       {candidateSteps.map((step, index) => (
         <li key={index}>
-          {getStepHint(step, hintLevel)}
+          {getStepDescription(step, hintLevel)}
         </li>
       ))}
     </ul>
 
-    <p className="mt-2">Finally, you have a {getStepHint(lastStep, hintLevel)}.</p>
+    <p className="mt-2">Finally, you have a {getStepDescription(lastStep, hintLevel)}.</p>
   </>
 
   return message
 }
 
 export const computeHintContent = (
-  solution: SudokuIntuitiveSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][]
+  solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][]
 ) => {
   if (!solution) {
     return [ '', false ]

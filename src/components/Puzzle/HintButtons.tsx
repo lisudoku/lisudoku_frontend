@@ -4,7 +4,7 @@ import { differenceInMinutes, parseISO } from 'date-fns'
 import Button from "../Button"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
-import { intuitiveHint } from 'src/utils/wasm'
+import { logicalHint } from 'src/utils/wasm'
 import { combineConstraintsWithGrid } from 'src/utils/solver'
 import { changeHintSolution, changePaused } from 'src/reducers/puzzle'
 
@@ -21,7 +21,7 @@ const HintButtons = () => {
       window.alert('You should spend at least 1 minute to figure it out yourself before requesting more hints.')
     } else if (hintLevel !== null || window.confirm('Are you sure you tried to figure it out yourself?')) {
       const fullConstraints = combineConstraintsWithGrid(constraints, grid)
-      const solution = intuitiveHint(fullConstraints)
+      const solution = logicalHint(fullConstraints)
       dispatch(changeHintSolution(solution))
     }
     setTimeout(() => dispatch(changePaused(false)), 1)

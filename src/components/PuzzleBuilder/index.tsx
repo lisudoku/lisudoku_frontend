@@ -8,44 +8,47 @@ import {
   addConstraint, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   ConstraintType, initPuzzle, receivedPuzzle,
-} from 'src/reducers/admin'
+} from 'src/reducers/builder'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
 import { Typography, } from '@material-tailwind/react'
-import PuzzleCommit from './PuzzleCommit'
+import PuzzleActions from './PuzzleActions'
 import { Grid } from 'src/types/sudoku'
 import Input from 'src/components/Input'
 import { importPuzzle, ImportResult } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
+import { computeCellSize } from 'src/utils/misc'
+import { useWindowWidth } from '@react-hook/window-size'
 
-const PuzzleBuilder = () => {
+const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
   const dispatch = useDispatch()
 
   useEffect(() => {
     const gridSize = Number.parseInt(paramGridSize ?? '9')
-    dispatch(initPuzzle(gridSize))
-  }, [dispatch, paramGridSize])
+    dispatch(initPuzzle({ gridSize, setterMode: admin }))
+  }, [dispatch, paramGridSize, admin])
 
-  const inputActive = useSelector(state => state.admin.inputActive)
-  const constraints = useSelector(state => state.admin.constraints)
-  const selectedCells = useSelector(state => state.admin.selectedCells)
-  const constraintType = useSelector(state => state.admin.constraintType)
-  const currentThermo = useSelector(state => state.admin.currentThermo)
-  const notes = useSelector(state => state.admin.notes)
-  const constraintGrid = useSelector(state => state.admin.constraintGrid!)
-  const killerSum = useSelector(state => state.admin.killerSum ?? '')
-  const bruteSolution = useSelector(state => state.admin.bruteSolution?.solution)
-  const intuitiveSolution = useSelector(state => state.admin.intuitiveSolution?.solution)
+  const setterMode = useSelector(state => state.builder.setterMode)
+  const inputActive = useSelector(state => state.builder.inputActive)
+  const constraints = useSelector(state => state.builder.constraints)
+  const selectedCells = useSelector(state => state.builder.selectedCells)
+  const constraintType = useSelector(state => state.builder.constraintType)
+  const currentThermo = useSelector(state => state.builder.currentThermo)
+  const notes = useSelector(state => state.builder.notes)
+  const constraintGrid = useSelector(state => state.builder.constraintGrid!)
+  const killerSum = useSelector(state => state.builder.killerSum ?? '')
+  const bruteSolution = useSelector(state => state.builder.bruteSolution?.solution)
+  const logicalSolution = useSelector(state => state.builder.logicalSolution?.solution)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
-    if (gridSize) {
+    if (gridSize && setterMode) {
       window.history.pushState(null , '', `/admin/build/${gridSize}`)
     }
-  }, [gridSize])
+  }, [gridSize, setterMode])
 
   const { onCellClick } = useControlCallbacks()
   useKeyboardHandler(!inputActive)
@@ -103,9 +106,15 @@ const PuzzleBuilder = () => {
     }
   }, [dispatch])
 
+  // Calculate the available screen width and subtract parent paddings
+  const width = useWindowWidth()
+  const availableWidth = width - 40
+
   if (!constraints) {
     return null
   }
+
+  const cellSize = computeCellSize(gridSize!, availableWidth)
 
   let thermos = constraints?.thermos ?? []
   if (currentThermo.length > 0) {
@@ -127,7 +136,7 @@ const PuzzleBuilder = () => {
 
   // Visualize solutions while building the puzzle
   let usedNotes = notes!
-  const solution = bruteSolution || intuitiveSolution
+  const solution = bruteSolution || logicalSolution
   if (solution) {
     usedNotes = solution.map(solutionRow => (
       solutionRow.map(digit => digit === 0 ? [] : [ digit! ])
@@ -135,8 +144,9 @@ const PuzzleBuilder = () => {
   }
 
   return (
-    <div className="flex gap-10">
-      <SudokuGrid constraints={constraintPreview}
+    <div className="flex flex-wrap gap-10 w-full">
+      <SudokuGrid cellSize={cellSize}
+                  constraints={constraintPreview}
                   grid={usedGrid}
                   notes={usedNotes}
                   selectedCells={selectedCells}
@@ -144,12 +154,12 @@ const PuzzleBuilder = () => {
                   loading={false}
                   onCellClick={onCellClick}
       />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-full xl:max-w-[280px]">
         <div className="flex flex-col">
           <Typography variant="h6">
             Constraints
           </Typography>
-          <div className="flex flex-wrap w-72 gap-x-3">
+          <div className="flex flex-wrap gap-x-3">
             <Radio name="build-item"
                   id={ConstraintType.FixedNumber}
                   label="Given Digit"
@@ -239,8 +249,8 @@ const PuzzleBuilder = () => {
         <Button variant="outlined" onClick={handleImportClick}>Import</Button>
         <GridSizeSelect />
       </div>
-      <div className="flex flex-col gap-2">
-        <PuzzleCommit />
+      <div className="flex flex-col w-full xl:w-80 2xl:w-96 gap-2">
+        <PuzzleActions />
       </div>
     </div>
   )

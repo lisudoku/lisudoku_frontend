@@ -5,7 +5,7 @@ import TechniqueCard from './TechniqueCard'
 import PageMeta from 'src/components/PageMeta'
 import { TECHNIQUES_BY_DIFFICULTY } from './techniques'
 import { Technique } from './types'
-import { EStepRuleDifficulty } from 'src/utils/constants'
+import { EStepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
 
 const LearnPage = () => {
   const { hash } = useLocation()
@@ -19,7 +19,7 @@ const LearnPage = () => {
       {_.map(TECHNIQUES_BY_DIFFICULTY, (techniques: Technique[], difficulty: EStepRuleDifficulty) => (
         <div key={difficulty} className="mt-4">
           <Typography variant="h4">
-            {difficulty}
+            {StepRuleDifficultyDisplay[difficulty]}
           </Typography>
           <div className="flex flex-wrap w-full">
             {techniques.map((technique: Technique) => (
