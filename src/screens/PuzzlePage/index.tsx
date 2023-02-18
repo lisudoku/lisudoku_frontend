@@ -57,7 +57,9 @@ const PuzzlePage = () => {
 
   return (
     <>
-      <PageMeta title={`lisudoku - Puzzle ${id}`} url={`https://lisudoku.xyz/p/${id}`} />
+      <PageMeta title={`lisudoku - Puzzle ${id}`}
+                url={`https://lisudoku.xyz/p/${id}`}
+                description="Solve a specific puzzle" />
       {error ? (
         <div className="w-full pt-20 text-center">
           <Typography variant="h4" className="font-normal mb-3">

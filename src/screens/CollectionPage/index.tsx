@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'src/hooks'
 import _ from 'lodash'
+import PageMeta from 'src/components/PageMeta'
 import { Link, useParams } from 'react-router-dom'
 import { Typography } from '@material-tailwind/react'
 import LoadingSpinner from 'src/components/LoadingSpinner'
@@ -30,6 +31,10 @@ const CollectionPage = () => {
 
   return (
     <>
+      <PageMeta title="German Sudoku Championship 2023 Qualification"
+                url={`https://lisudoku.xyz/collections/${id}`}
+                description="Collections of puzzles from various sources" />
+
       <Typography variant="h3">
         {puzzleCollection.name}
       </Typography>

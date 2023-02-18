@@ -87,6 +87,7 @@ const PlayPage = () => {
     <>
       <PageMeta title={`lisudoku - ${variantDisplay} ${difficultyDisplay}`}
                 url={`https://lisudoku.xyz/play/${variant}/${difficulty}`}
+                description="Solve random puzzles from any category"
       />
       {errorCode === 404 ? (
         <EmptyCategory variant={variant} difficulty={difficulty} />

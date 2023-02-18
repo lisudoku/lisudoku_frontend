@@ -12,7 +12,9 @@ const LearnPage = () => {
 
   return (
     <div className="px-3">
-      <PageMeta title="Learn Sudoku Solving Techniques" url="https://lisudoku.xyz/learn" />
+      <PageMeta title="Learn Sudoku Solving Techniques"
+                url="https://lisudoku.xyz/learn"
+                description="The list of solving techniques necessary and sufficient for solving our puzzles" />
       <Typography variant="h3">
         <a href="/learn#">Solving techniques</a>
       </Typography>

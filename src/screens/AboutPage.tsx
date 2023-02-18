@@ -3,7 +3,9 @@ import { Typography } from '@material-tailwind/react'
 
 const AboutPage = () => (
   <>
-    <PageMeta title="About lisudoku" url="https://lisudoku.xyz/about" />
+    <PageMeta title="About lisudoku"
+              url="https://lisudoku.xyz/about"
+              description="Contact information, how to contribute" />
     <div className="p-3">
       <Typography variant="h3">
         Contact

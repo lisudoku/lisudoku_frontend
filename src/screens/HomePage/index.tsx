@@ -9,7 +9,9 @@ const HomePage = () => {
 
   return (
     <>
-      <PageMeta title="lisudoku - Free Online Sudoku" url="https://lisudoku.xyz" />
+      <PageMeta title="lisudoku - Free Online Sudoku Variants"
+                url="https://lisudoku.xyz"
+                description="Play sudoku variants for free" />
       <ContestsAlert />
       <div className="p-5">
         <div className="flex flex-wrap mx-auto w-[14.7rem] sm:w-[28.7rem] md:w-[42.8rem] lg:w-[56.8rem] xl:w-[70.7rem] p-1 bg-gray-900 border rounded border-gray-800">
