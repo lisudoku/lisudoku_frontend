@@ -11,7 +11,7 @@ const TvPage = () => {
 
   return (
     <>
-      <PageMeta title="lisudoku TV"
+      <PageMeta title="TV"
                 url="https://lisudoku.xyz/tv"
                 description="Watch people solve puzzles in real time" />
       <div className="flex justify-between">

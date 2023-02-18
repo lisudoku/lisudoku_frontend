@@ -57,7 +57,7 @@ const PuzzlePage = () => {
 
   return (
     <>
-      <PageMeta title={`lisudoku - Puzzle ${id}`}
+      <PageMeta title={`Puzzle ${id}`}
                 url={`https://lisudoku.xyz/p/${id}`}
                 description="Solve a specific puzzle" />
       {error ? (

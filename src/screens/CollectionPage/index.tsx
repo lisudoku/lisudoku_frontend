@@ -31,7 +31,7 @@ const CollectionPage = () => {
 
   return (
     <>
-      <PageMeta title="German Sudoku Championship 2023 Qualification"
+      <PageMeta title={puzzleCollection.name}
                 url={`https://lisudoku.xyz/collections/${id}`}
                 description="Collections of puzzles from various sources" />
 

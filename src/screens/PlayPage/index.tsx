@@ -85,7 +85,7 @@ const PlayPage = () => {
 
   return (
     <>
-      <PageMeta title={`lisudoku - ${variantDisplay} ${difficultyDisplay}`}
+      <PageMeta title={`Puzzles - ${variantDisplay} ${difficultyDisplay}`}
                 url={`https://lisudoku.xyz/play/${variant}/${difficulty}`}
                 description="Solve random puzzles from any category"
       />
