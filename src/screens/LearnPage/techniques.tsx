@@ -24,6 +24,10 @@ const TECHNIQUES: Technique[] = [
         url: 'https://sudoku.com/sudoku-rules/hidden-singles',
       },
       {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Getting_Started',
+      },
+      {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Hidden_Single',
       },
@@ -42,6 +46,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Naked_Single',
+      },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Naked_Candidates',
       },
     ],
     practicePuzzleIds: [ 'nF4pF8Orna9Oi-0uPE-0', 'DwbYLJrG7EHbCA0jEzFj' ],
@@ -73,6 +81,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Hidden_Pair',
       },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Hidden_Candidates',
+      },
     ],
     practicePuzzleIds: [ 'GxTywFE7fBXPGskVg7D5', 'bHjg-8DIkr4IqljiFeQ5' ],
   },
@@ -92,6 +104,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Naked_Pair',
       },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Naked_Candidates',
+      },
     ],
     practicePuzzleIds: [ '4_zKMu9oIek4v4BYDaYK', '0ia3B_nKWJnnFXm-6Tfg' ],
   },
@@ -108,6 +124,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudoku.com',
         url: 'https://sudoku.com/sudoku-rules/pointing-pairs',
+      },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Intersection_Removal',
       },
       {
         name: 'sudopedia.org',
@@ -132,6 +152,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Hidden_Triple',
       },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Hidden_Candidates',
+      },
     ],
     practicePuzzleIds: [ 'r1fjs-dBjm8ZPXbE7fPg' ],
   },
@@ -151,6 +175,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Naked_Triple',
       },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Naked_Candidates',
+      },
     ],
     practicePuzzleIds: [ 'tduyFLYnpdgGN1JD-9hE', 'V_uw0INLBbl8erdXXoaz' ],
   },
@@ -168,6 +196,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudoku.com',
         url: 'https://sudoku.com/sudoku-rules/pointing-triples',
+      },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Intersection_Removal',
       },
       {
         name: 'sudopedia.org',
@@ -210,6 +242,10 @@ const TECHNIQUES: Technique[] = [
         url: 'https://sudoku.com/sudoku-rules/h-wing',
       },
       {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/X_Wing_Strategy',
+      },
+      {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/X-Wing',
       },
@@ -227,6 +263,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/XY-Wing',
+      },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Y_Wing_Strategy',
       },
     ],
     practicePuzzleIds: [ 'DuujC8eA4PiPKDYTn5hX' ]
