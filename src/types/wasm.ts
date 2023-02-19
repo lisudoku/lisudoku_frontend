@@ -50,4 +50,5 @@ export enum StepRule {
   XYWing = 'XYWing',
   Swordfish = 'Swordfish',
   CommonPeerElimination = 'CommonPeerElimination',
+  TurbotFish = 'TurbotFish',
 }

@@ -327,6 +327,25 @@ const TECHNIQUES: Technique[] = [
     ],
     practicePuzzleIds: [ 'rkwWa3AEg_lMValqbdDp' ],
   },
+  {
+    id: StepRule.TurbotFish,
+    summary: <>
+      For a digit X there are 2 strong links (A-B, C-D) and one of their ends see each other
+      (let's assume they are A and B).
+      You can remove X as a candidate from all cells that see both C and D.
+      <br/>
+      There are 3 subtypes of Turbot Fish: Skyscrapers, 2-String Kites and Empty Rectangles.
+      <br/>
+      A Turbot Fish in a particular type of X-Cycle.
+    </>,
+    externalResources: [
+      {
+        name: 'sudopedia.org',
+        url: 'https://www.sudopedia.org/wiki/Turbot_Fish',
+      },
+    ],
+    practicePuzzleIds: [ '_Zm0aj0rpHD8tCYTCdZU' ],
+  },
 ]
 
 export const TECHNIQUES_BY_DIFFICULTY = _.groupBy(

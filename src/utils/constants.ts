@@ -69,6 +69,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.XYWing]: 'XY-Wing',
   [StepRule.Swordfish]: 'Swordfish',
   [StepRule.CommonPeerElimination]: 'Common Peer Elimination',
+  [StepRule.TurbotFish]: 'Turbot Fish',
 }
 
 export const enum EStepRuleDifficulty {
@@ -105,4 +106,5 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.XYWing]: EStepRuleDifficulty.Hard,
   [StepRule.Swordfish]: EStepRuleDifficulty.Hard,
   [StepRule.CommonPeerElimination]: EStepRuleDifficulty.Hard,
+  [StepRule.TurbotFish]: EStepRuleDifficulty.Hard,
 }

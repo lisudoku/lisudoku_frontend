@@ -36,7 +36,8 @@ const cellDisplay = (cell: CellPosition) => (
 )
 
 const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
-  const cells = step.cells.map(cell => cellDisplay(cell)).join(',')
+  const cellDisplays = step.cells.map(cell => cellDisplay(cell))
+  const cells = cellDisplays.join(',')
   const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(',')
   const values = [...step.values].sort().join(',')
 
@@ -64,6 +65,11 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
     case StepRule.CommonPeerEliminationKropki:
       return ` to remove kropki chain combination ${values} from ${affectedCells} because it ` +
         `would eliminate all candidates from ${cells}`
+    case StepRule.TurbotFish:
+      return ` on strong links ${cellDisplays[0]}-${cellDisplays[1]} and ` +
+        `${cellDisplays[2]}-${cellDisplays[3]}. Because ${cellDisplays[0]} and ${cellDisplays[2]} ` +
+        `see each other, at least one of ${cellDisplays[1]} and ${cellDisplays[3]} will be ${values}, so remove ` +
+        `${values} from cells ${affectedCells}.`
     default:
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
       return `${cellsMessage} to remove ${values} from ${affectedCells}`
