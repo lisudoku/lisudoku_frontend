@@ -1,20 +1,11 @@
 import axios from 'axios'
+import axiosThrottle from 'axios-request-throttle'
 import { ActionType } from 'src/reducers/puzzle'
 import { CellPosition, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
 
 export * from './admin'
-
-const generateHeader = (userToken: string | null) => {
-  if (!userToken) {
-    return undefined
-  }
-
-  return {
-    'Authorization': `Bearer ${userToken}`,
-  }
-}
 
 axios.interceptors.response.use(
   response => {
@@ -27,6 +18,18 @@ axios.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+axiosThrottle.use(axios, { requestsPerSecond: 2 })
+
+const generateHeader = (userToken: string | null) => {
+  if (!userToken) {
+    return undefined
+  }
+
+  return {
+    'Authorization': `Bearer ${userToken}`,
+  }
+}
 
 export type LoginData = {
   username: string
