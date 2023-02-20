@@ -10,6 +10,8 @@ This is lisudoku's frontend written in React that connects to the Rails [backend
 
 ## Contribute
 
+Contributions are welcome! You can contribute by writing code, providing UI designs, or any idea that can improve lisudoku.
+
 Join the [discord server](https://discord.gg/SGV8TQVSeT).
 
 ## Setup
