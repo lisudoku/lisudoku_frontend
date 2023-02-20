@@ -47,6 +47,7 @@ type BuilderState = {
   currentThermo: Thermo
   constraintGrid: Grid | null
   killerSum: number | null
+  manualChange: boolean
 }
 
 const defaultDifficulty = (gridSize: number) => {
@@ -83,6 +84,7 @@ const handleConstraintChange = (state: BuilderState) => {
   state.variant = detectVariant(state)
   state.bruteSolution = null
   state.logicalSolution = null
+  state.manualChange = true
 }
 
 const detectVariant = (state: BuilderState) => {
@@ -144,6 +146,7 @@ export const builderSlice = createSlice({
     currentThermo: [],
     killerSum: null,
     constraintGrid: null,
+    manualChange: false,
   } as BuilderState,
   reducers: {
     initPuzzle(state, action) {
@@ -171,6 +174,7 @@ export const builderSlice = createSlice({
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
+      state.manualChange = false
     },
     receivedPuzzle(state, action) {
       const constraints: Partial<SudokuConstraints> = jcc.camelCaseKeys(action.payload)
@@ -197,6 +201,7 @@ export const builderSlice = createSlice({
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
+      state.manualChange = false
     },
     changeSelectedCell(state, action) {
       const { cell, ctrl, isClick } = action.payload

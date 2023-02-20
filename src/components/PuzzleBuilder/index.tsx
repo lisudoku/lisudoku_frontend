@@ -15,12 +15,13 @@ import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
 import { Typography, } from '@material-tailwind/react'
 import PuzzleActions from './PuzzleActions'
-import { Grid } from 'src/types/sudoku'
+import { Grid, Puzzle, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import Input from 'src/components/Input'
 import { importPuzzle, ImportResult } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { computeCellSize } from 'src/utils/misc'
 import { useWindowWidth } from '@react-hook/window-size'
+import { fetchRandomPuzzle } from 'src/utils/apiService'
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
@@ -42,6 +43,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
   const bruteSolution = useSelector(state => state.builder.bruteSolution?.solution)
   const logicalSolution = useSelector(state => state.builder.logicalSolution?.solution)
+  const manualChange = useSelector(state => state.builder.manualChange)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
@@ -105,6 +107,14 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       })
     }
   }, [dispatch])
+
+  const handleRandomClick = useCallback(() => {
+    if (!manualChange || window.confirm('Are you sure you want to import a random puzzle?')) {
+      fetchRandomPuzzle(SudokuVariant.Classic, SudokuDifficulty.Easy9x9, [], null).then((puzzle: Puzzle) => {
+        dispatch(receivedPuzzle(puzzle.constraints))
+      })
+    }
+  }, [dispatch, manualChange])
 
   // Calculate the available screen width and subtract parent paddings
   const width = useWindowWidth()
@@ -247,6 +257,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         </div>
         <hr />
         <Button variant="outlined" onClick={handleImportClick}>Import</Button>
+        <Button variant="outlined" onClick={handleRandomClick}>Random</Button>
         <GridSizeSelect />
       </div>
       <div className="flex flex-col w-full xl:w-80 2xl:w-96 gap-2">
