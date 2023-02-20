@@ -4,11 +4,12 @@ import style from './style.module.css'
 
 const EXTRA_CLASSES = `z-10 overflow-y-auto bg-gray-600 ${style.alert}`
 
-const Alert = ({ children, className, onClose, ...props }: AlertProps) => {
+const Alert = ({ children, className, onClose, closeButton, ...props }: AlertProps) => {
   const newProps = { ...props }
   if (onClose) {
     newProps.dismissible = {
       onClose,
+      action: closeButton,
     }
   }
 
@@ -25,6 +26,7 @@ type AlertProps = {
   show: boolean
   dismissible?: any
   onClose?: Function
+  closeButton?: ReactNode
 }
 
 export default Alert

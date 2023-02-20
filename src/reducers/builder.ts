@@ -210,9 +210,11 @@ export const builderSlice = createSlice({
         state.selectedCells = [ cell ]
       }
 
+      let anyConstraintsChanged = false
       for (const selectedCell of state.selectedCells) {
         const isSelectedCell = (cell: CellPosition) => _.isEqual(cell, selectedCell)
 
+        let constraintChanged = true
         switch (state.constraintType) {
           case ConstraintType.Thermo: {
             if (expandsThermo(state.currentThermo, cell)) {
@@ -236,10 +238,16 @@ export const builderSlice = createSlice({
             }
             break
           }
+          default:
+            constraintChanged = false
         }
+
+        anyConstraintsChanged ||= constraintChanged
       }
 
-      handleConstraintChange(state)
+      if (anyConstraintsChanged) {
+        handleConstraintChange(state)
+      }
     },
     changeConstraintType(state, action) {
       state.constraintType = action.payload
@@ -488,6 +496,12 @@ export const builderSlice = createSlice({
     changeInputActive(state, action) {
       state.inputActive = action.payload
     },
+    clearBruteSolution(state) {
+      state.bruteSolution = null
+    },
+    clearLogicalSolution(state) {
+      state.logicalSolution = null
+    },
   },
 })
 
@@ -500,6 +514,7 @@ export const {
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
   changeKillerSum, changeKropkiNegative,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
+  clearBruteSolution, clearLogicalSolution,
 } = builderSlice.actions
 
 export default builderSlice.reducer

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { Typography } from '@material-tailwind/react'
-import Alert from '../Alert'
+import SolutionPanel from './SolutionPanel'
 import { HintLevel } from 'src/reducers/puzzle'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
@@ -63,7 +63,7 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
   return StepRuleDifficultyDisplay[maxDifficulty!]
 }
 
-const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMode }: LogicalSolutionPanelProps) => {
+const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMode }: LogicalSolutionPanelContentProps) => {
   if (running) {
     return <Typography variant="paragraph">Running...</Typography>
   }
@@ -114,14 +114,21 @@ const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMod
   )
 }
 
-const LogicalSolutionPanel = ({ solution, constraints, running, setterMode }: LogicalSolutionPanelProps) => {
+type LogicalSolutionPanelContentProps = {
+  solution: SudokuLogicalSolveResult | null
+  constraints: SudokuConstraints
+  running: boolean
+  setterMode: boolean
+}
+
+const LogicalSolutionPanel = ({ solution, constraints, running, setterMode, onClear }: LogicalSolutionPanelProps) => {
   return (
-    <Alert show className="rounded py-2 max-h-96">
+    <SolutionPanel className="max-h-96" onClear={solution !== null ? onClear : undefined}>
       <LogicalSolutionPanelContent solution={solution}
                                    constraints={constraints}
                                    running={running}
                                    setterMode={setterMode} />
-    </Alert>
+    </SolutionPanel>
   )
 }
 
@@ -130,6 +137,7 @@ type LogicalSolutionPanelProps = {
   constraints: SudokuConstraints
   running: boolean
   setterMode: boolean
+  onClear: Function
 }
 
 export default LogicalSolutionPanel

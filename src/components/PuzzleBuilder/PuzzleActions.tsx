@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import {
-  changeDifficulty, changeSourceCollectionId, errorAddPuzzle,
+  changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution, errorAddPuzzle,
   errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
   responseSolution,
   SolverType,
@@ -54,6 +54,9 @@ const PuzzleActions = () => {
       throw e
     }
   }, [dispatch, constraints, bruteSolve])
+  const handleBruteSolutionClear = useCallback(() => {
+    dispatch(clearBruteSolution())
+  }, [dispatch])
 
   const handleLogicalSolveClick = useCallback(() => {
     dispatch(requestSolution(SolverType.Logical))
@@ -61,6 +64,9 @@ const PuzzleActions = () => {
       dispatch(responseSolution({ type: SolverType.Logical, solution }))
     })
   }, [dispatch, constraints, logicalSolve])
+  const handleLogicalSolutionClear = useCallback(() => {
+    dispatch(clearLogicalSolution())
+  }, [dispatch])
 
   const handleDifficultyChange = useCallback((difficulty: SudokuDifficulty) => {
     dispatch(changeDifficulty(difficulty))
@@ -109,7 +115,9 @@ const PuzzleActions = () => {
       >
         Brute Force Solve
       </Button>
-      <BruteSolutionPanel running={bruteSolverRunning} solution={bruteSolution} />
+      <BruteSolutionPanel running={bruteSolverRunning}
+                          solution={bruteSolution}
+                          onClear={handleBruteSolutionClear} />
       <Button onClick={handleLogicalSolveClick}
               disabled={logicalSolverRunning}
       >
@@ -118,7 +126,8 @@ const PuzzleActions = () => {
       <LogicalSolutionPanel solution={logicalSolution}
                             constraints={constraints!}
                             running={logicalSolverRunning}
-                            setterMode={setterMode} />
+                            setterMode={setterMode}
+                            onClear={handleLogicalSolutionClear} />
 
       {setterMode && (
         <>
