@@ -4,6 +4,8 @@ import { ACTIVE_VARIANTS, SudokuVariantDisplay } from 'src/utils/constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
+export const DISCORD_INVITE_URL = 'https://discord.gg/SGV8TQVSeT'
+
 const AppFooter = ({ admin }: { admin: boolean }) => {
   const difficulty = useSelector(state => state.userData.difficulty)
 
@@ -34,7 +36,7 @@ const AppFooter = ({ admin }: { admin: boolean }) => {
               <Link to="/about">About</Link>
             </div>
             <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
-              <a href="https://discord.gg/SGV8TQVSeT"
+              <a href={DISCORD_INVITE_URL}
                 target="_blank"
                 rel="noopener noreferrer">
                 <FontAwesomeIcon icon={faDiscord} size="1x" color="#7d87fe" />

@@ -6,6 +6,8 @@ import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from '
 import { StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { DISCORD_INVITE_URL } from 'src/components/AppFooter'
 
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
   const { gridSize, fixedNumbers } = constraints
@@ -134,7 +136,13 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
 const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
   if (steps.length === 0) {
     // This shouldn't ever happen :D
-    return "Well, this is embarrassing... 😅 Can't figure this out either... You should contact the admins on Discord!"
+    honeybadger.notify({ name: 'No hint' })
+    return <>
+      Well, this is embarrassing... 😅 Can't figure this out either...
+      You should contact the admins on {' '}
+      <ExternalLink url={DISCORD_INVITE_URL}>Discord</ExternalLink>
+      !
+    </>
   }
 
   const singleIndex = steps.findIndex(step => (
