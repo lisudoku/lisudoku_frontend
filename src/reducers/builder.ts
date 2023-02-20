@@ -349,6 +349,8 @@ export const builderSlice = createSlice({
     },
     deleteConstraint(state) {
       for (const cell of state.selectedCells) {
+        state.notes![cell.row][cell.col] = []
+
         const isSelectedCell = (areaCell: CellPosition) => _.isEqual(areaCell, cell)
 
         // Fixed numbers
