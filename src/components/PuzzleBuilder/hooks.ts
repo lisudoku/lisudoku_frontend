@@ -102,12 +102,13 @@ export const useKeyboardHandler = (digitsActive = true) => {
         return
       }
 
-      if (_.isEmpty(selectedCells)) {
+      if (e.key === ' ') {
+        onNotesActiveToggle()
+        e.preventDefault()
         return
       }
 
-      if (e.key === ' ') {
-        onNotesActiveToggle()
+      if (_.isEmpty(selectedCells)) {
         return
       }
 
@@ -130,6 +131,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
 
       if (e.key === 'Backspace') {
         onDelete()
+        e.preventDefault()
         return
       }
 
