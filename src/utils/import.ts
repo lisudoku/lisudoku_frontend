@@ -2,9 +2,11 @@ import _ from 'lodash'
 import { AxiosError } from 'axios'
 import { FixedNumber, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints } from 'src/types/sudoku'
 import { fetchPuzzleByPublicId } from './apiService'
-import { decompressFromBase64 } from 'lz-string'
+import { decompressFromBase64, compressToBase64 } from 'lz-string'
 import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from './sudoku'
 import { GRID_SIZES } from './constants'
+import { defaultConstraints } from 'src/reducers/builder'
+const jcc = require('json-case-convertor')
 
 const FPUZZLES_UNIMPLEMENTED_CONSTRAINTS = [
   'antiking', 'disjointgroups', 'arrow', 'littlekillersum', 'minimum', 'maximum',
@@ -14,7 +16,8 @@ const FPUZZLES_UNIMPLEMENTED_CONSTRAINTS = [
 ]
 
 enum SourceType {
-  Lisudoku = 'lisudoku',
+  LisudokuUrl = 'lisudoku-url',
+  LisudokuInline = 'lisudoku-inline',
   Fpuzzles = 'f-puzzles',
 }
 
@@ -22,7 +25,7 @@ export type ImportResult = {
   error: boolean
   alert?: boolean
   message: string
-  constraints?: object
+  constraints?: SudokuConstraints
 }
 
 const LISUDOKU_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/p\/(.+)/
@@ -30,15 +33,21 @@ const FPUZZLES_REGEX = /https:\/\/(?:www\.)?f-puzzles\.com\/\?load=(.+)/
 
 const detectSource = (url: string) => {
   if (LISUDOKU_REGEX.test(url)) {
-    return SourceType.Lisudoku
+    return SourceType.LisudokuUrl
   } else if (FPUZZLES_REGEX.test(url)) {
     return SourceType.Fpuzzles
+  } else if (isInlineData(url)) {
+    return SourceType.LisudokuInline
   } else {
     return null
   }
 }
 
-export const importPuzzle = async (url: string) => {
+const isInlineData = (data: string) => (
+  !_.isEmpty(decompressFromBase64(data))
+)
+
+export const importPuzzle = async (url: string): Promise<ImportResult> => {
   const source = detectSource(url)
 
   if (source === null) {
@@ -49,12 +58,13 @@ export const importPuzzle = async (url: string) => {
   }
 
   switch (source) {
-    case SourceType.Lisudoku: return importLisudokuPuzzle(url)
+    case SourceType.LisudokuUrl: return importLisudokuPuzzle(url)
+    case SourceType.LisudokuInline: return importLisudokuInline(url)
     case SourceType.Fpuzzles: return importFpuzzlesPuzzle(url)
   }
 }
 
-const importLisudokuPuzzle = async (url: string) => {
+const importLisudokuPuzzle = async (url: string): Promise<ImportResult> => {
   const match = url.match(LISUDOKU_REGEX)
   if (!match) {
     return {
@@ -68,13 +78,13 @@ const importLisudokuPuzzle = async (url: string) => {
   let status
   await (fetchPuzzleByPublicId(id, null)
     .then((data: Puzzle) => {
-      puzzle = data
+      puzzle = jcc.camelCaseKeys(data)
     })
     .catch((e: AxiosError) => {
       status = e.response?.status
     }))
 
-  if (!puzzle) {
+  if (puzzle === undefined) {
     let message
     if (status === 404) {
       message = `[lisudoku] Puzzle with id ${id} not found.`
@@ -95,7 +105,29 @@ const importLisudokuPuzzle = async (url: string) => {
   }
 }
 
-const importFpuzzlesPuzzle = async (url: string) => {
+const importLisudokuInline = (encodedData: string): ImportResult => {
+  const constraintsStr = decompressFromBase64(encodedData)
+  if (constraintsStr === null) {
+    return {
+      error: true,
+      message: '[lisudoku] Error while parsing inline data',
+    }
+  }
+  const filteredConstraints = JSON.parse(constraintsStr!)
+  const constraints = {
+    ...defaultConstraints(filteredConstraints.gridSize),
+    ...filteredConstraints,
+  }
+
+  return {
+    error: false,
+    alert: false,
+    message: 'Puzzle imported successfully',
+    constraints,
+  }
+}
+
+const importFpuzzlesPuzzle = (url: string): ImportResult => {
   const match = url.match(FPUZZLES_REGEX)
   if (!match) {
     return {
@@ -225,3 +257,16 @@ const cellStringToObject = (cell: string) => ({
 const mapCellStringArray = (cells: string[]) => (
   cells.map((cell: string) => cellStringToObject(cell))
 )
+
+export const exportToLisudoku = (constraints: SudokuConstraints) => {
+  const filteredConstraints = _.omitBy(
+    constraints,
+    key => !_.isNumber(key) && (key === false || _.isEmpty(key))
+  )
+  if (_.isEqual(filteredConstraints.regions, ensureDefaultRegions(constraints.gridSize))) {
+    delete filteredConstraints.regions
+  }
+  const constraintsStr = JSON.stringify(filteredConstraints)
+  const encodedData = compressToBase64(constraintsStr)
+  return encodedData
+}

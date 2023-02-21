@@ -1,8 +1,8 @@
+/* eslint-disable no-restricted-globals */
 import { wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
 import { SolverType } from 'src/reducers/builder'
 import { computeWasmConstraints } from 'src/utils/wasm'
 
-// eslint-disable-next-line no-restricted-globals
 self.onmessage = function(e: any) {
   const { constraints, solverType } = e.data
   const wasmConstraints = computeWasmConstraints(constraints)
@@ -13,8 +13,12 @@ self.onmessage = function(e: any) {
   } else {
     solution = wasm_logical_solve(wasmConstraints)
   }
-  // eslint-disable-next-line no-restricted-globals
   self.postMessage(solution)
 }
 
+// Send initial message to let parent know the initialization is done.
+// Documentation says the incoming messages are queued, but it only worked by waiting
+self.postMessage('init')
+
 export {}
+/* eslint-enable no-restricted-globals */

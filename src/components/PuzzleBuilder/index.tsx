@@ -1,36 +1,68 @@
 import { useCallback, useEffect, ChangeEvent } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
-import { useControlCallbacks, useKeyboardHandler } from './hooks'
+import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
   addConstraint, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
-  ConstraintType, initPuzzle, receivedPuzzle,
+  ConstraintType, initPuzzle, receivedPuzzle, SolverType,
 } from 'src/reducers/builder'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/components/Button'
 import Checkbox from 'src/components/Checkbox'
 import { Typography, } from '@material-tailwind/react'
+import CopyToClipboard from '../CopyToClipboard'
 import PuzzleActions from './PuzzleActions'
-import { Grid, Puzzle, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import Input from 'src/components/Input'
-import { importPuzzle, ImportResult } from 'src/utils/import'
+import { exportToLisudoku, importPuzzle, ImportResult } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { computeCellSize } from 'src/utils/misc'
 import { useWindowWidth } from '@react-hook/window-size'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLink } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
   const dispatch = useDispatch()
 
+  const { search } = useLocation()
+  const importParam = new URLSearchParams(search).get('import')
+  // Dirty hack for f-puzzles
+  const importData = importParam?.replaceAll(' ', '+')
+
+  const runBruteSolver = useSolver(SolverType.Brute)
+  const runLogicalSolver = useSolver(SolverType.Logical)
+
+  const runImport = useCallback(async (url: string): Promise<SudokuConstraints | undefined> => {
+    const result: ImportResult = await importPuzzle(url)
+    if (result.error) {
+      alert(result.message)
+    } else {
+      dispatch(receivedPuzzle(result.constraints!))
+      if (result.alert) {
+        alert(result.message)
+      }
+      return result.constraints!
+    }
+  }, [dispatch])
+
   useEffect(() => {
-    const gridSize = Number.parseInt(paramGridSize ?? '9')
-    dispatch(initPuzzle({ gridSize, setterMode: admin }))
-  }, [dispatch, paramGridSize, admin])
+    if (importData) {
+      runImport(importData).then((constraints) => {
+        if (constraints !== undefined) {
+          runLogicalSolver(constraints)
+        }
+      })
+    } else {
+      const gridSize = Number.parseInt(paramGridSize ?? '9')
+      dispatch(initPuzzle({ gridSize, setterMode: admin }))
+    }
+  }, [dispatch, paramGridSize, admin, importData, runImport, runLogicalSolver])
 
   const setterMode = useSelector(state => state.builder.setterMode)
   const inputActive = useSelector(state => state.builder.inputActive)
@@ -95,18 +127,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     const FPUZZLES_EXAMPLE = 'https://www.f-puzzles.com/?load=N4IgzglgXgpiB...(long url)'
     const url = window.prompt(`Enter puzzle URL. Examples:\n${LISUDOKU_EXAMPLE}\n${FPUZZLES_EXAMPLE}`)
     if (url != null) {
-      importPuzzle(url).then((result: ImportResult) => {
-        if (result.error) {
-          alert(result.message)
-        } else {
-          dispatch(receivedPuzzle(result.constraints!))
-          if (result.alert) {
-            alert(result.message)
-          }
-        }
-      })
+      runImport(url)
     }
-  }, [dispatch])
+  }, [runImport])
 
   const handleRandomClick = useCallback(() => {
     if (!manualChange || window.confirm('Are you sure you want to import a random puzzle?')) {
@@ -115,6 +138,13 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       })
     }
   }, [dispatch, manualChange])
+
+  const computeShareSolutionURL = useCallback(() => {
+    const encodedConstraints = exportToLisudoku(constraints!)
+    const params = new URLSearchParams()
+    params.append('import', encodedConstraints)
+    return `${window.location.origin}/solver?${params.toString()}`
+  }, [constraints])
 
   // Calculate the available screen width and subtract parent paddings
   const width = useWindowWidth()
@@ -256,12 +286,22 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     onChange={handleKropkiNegativeChange} />
         </div>
         <hr />
-        <Button variant="outlined" onClick={handleImportClick}>Import</Button>
-        <Button variant="outlined" onClick={handleRandomClick}>Random</Button>
+        <div className="flex w-full gap-x-1">
+          <Button className="grow" variant="outlined" onClick={handleImportClick}>Import</Button>
+          <Button className="grow" variant="outlined" onClick={handleRandomClick}>Random</Button>
+        </div>
+        <div className="flex w-full gap-x-1">
+          <CopyToClipboard text={computeShareSolutionURL}>
+            <Button className="grow" variant="outlined">
+              <FontAwesomeIcon icon={faLink} />
+              {' Share Solution'}
+            </Button>
+          </CopyToClipboard>
+        </div>
         <GridSizeSelect />
       </div>
       <div className="flex flex-col w-full xl:w-80 2xl:w-96 gap-2">
-        <PuzzleActions />
+        <PuzzleActions runBruteSolver={runBruteSolver} runLogicalSolver={runLogicalSolver} />
       </div>
     </div>
   )

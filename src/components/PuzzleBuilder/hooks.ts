@@ -1,10 +1,11 @@
 import _ from 'lodash'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
 import {
   changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellNotes,
-  changeSelectedCellValue, ConstraintType, deleteConstraint, SolverType, toggleNotesActive,
+  changeSelectedCellValue, ConstraintType, deleteConstraint,
+  errorSolution, requestSolution, responseSolution, SolverType, toggleNotesActive,
 } from 'src/reducers/builder'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
@@ -165,13 +166,35 @@ export const useKeyboardHandler = (digitsActive = true) => {
 }
 
 export const useSolver = (solverType: SolverType) => {
-  const worker = useMemo(
-    () => new Worker(new URL('../../workers/solver.worker', import.meta.url)),
+  const onWorkerInitializedResolve = useRef<Function>()
+
+  const [ worker, onWorkerInitialized ] = useMemo(
+    () => {
+      const _onWorkerInitialized = new Promise((resolve) => {
+        onWorkerInitializedResolve.current = resolve
+      })
+
+      const _worker = new Worker(new URL('../../workers/solver.worker', import.meta.url))
+
+      // Wait for 'init' message and then mark worker as initialized
+      _worker.addEventListener('message', (e) => {
+        onWorkerInitializedResolve.current!()
+      }, { once: true })
+
+      return [ _worker, _onWorkerInitialized ]
+    },
     []
   )
 
-  const runSolver = useCallback((constraints: SudokuConstraints) => {
+  const callSolverWorker = useCallback(async (constraints: SudokuConstraints, solverType: SolverType) => {
+    // Wait for worker to initialize
+    await onWorkerInitialized
+
+    // Send constraints and wait for the solution
     return new Promise(resolve => {
+      worker.onerror = (e) => {
+        console.error(e)
+      }
       worker.onmessage = ({ data }) => {
         resolve(data)
       }
@@ -180,7 +203,24 @@ export const useSolver = (solverType: SolverType) => {
         constraints,
       })
     })
-  }, [worker, solverType])
+  }, [worker, onWorkerInitialized])
+
+  const dispatch = useDispatch()
+
+  const runSolver = useCallback((constraints: SudokuConstraints | null) => {
+    if (constraints === null) {
+      return
+    }
+    dispatch(requestSolution(solverType))
+    try {
+      callSolverWorker(constraints, solverType).then(solution => {
+        dispatch(responseSolution({ type: solverType, solution }))
+      })
+    } catch (e: any) {
+      dispatch(errorSolution(solverType))
+      throw e
+    }
+  }, [dispatch, solverType, callSolverWorker])
 
   return runSolver
 }

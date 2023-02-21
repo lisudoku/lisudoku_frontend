@@ -3,10 +3,8 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import {
-  changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution, errorAddPuzzle,
-  errorSolution, requestAddPuzzle, requestSolution, responseAddPuzzle,
-  responseSolution,
-  SolverType,
+  changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution,
+  errorAddPuzzle, requestAddPuzzle, responseAddPuzzle,
 } from 'src/reducers/builder'
 import { SolutionType } from 'src/types/wasm'
 import { Puzzle, SudokuDifficulty } from 'src/types/sudoku'
@@ -18,9 +16,8 @@ import BruteSolutionPanel from './BruteSolutionPanel'
 import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { useSolver } from './hooks'
 
-const PuzzleActions = () => {
+const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
   const setterMode = useSelector(state => state.builder.setterMode)
@@ -40,30 +37,18 @@ const PuzzleActions = () => {
     bruteSolution?.solution_count === 1
   )
 
-  const bruteSolve = useSolver(SolverType.Brute)
-  const logicalSolve = useSolver(SolverType.Logical)
-
   const handleBruteSolveClick = useCallback(() => {
-    dispatch(requestSolution(SolverType.Brute))
-    try {
-      bruteSolve(constraints!).then(solution => {
-        dispatch(responseSolution({ type: SolverType.Brute, solution }))
-      })
-    } catch (e: any) {
-      dispatch(errorSolution(SolverType.Brute))
-      throw e
-    }
-  }, [dispatch, constraints, bruteSolve])
+    runBruteSolver(constraints)
+  }, [constraints, runBruteSolver])
+
+  const handleLogicalSolveClick = useCallback(() => {
+    runLogicalSolver(constraints)
+  }, [constraints, runLogicalSolver])
+
   const handleBruteSolutionClear = useCallback(() => {
     dispatch(clearBruteSolution())
   }, [dispatch])
 
-  const handleLogicalSolveClick = useCallback(() => {
-    dispatch(requestSolution(SolverType.Logical))
-    logicalSolve(constraints!).then(solution => {
-      dispatch(responseSolution({ type: SolverType.Logical, solution }))
-    })
-  }, [dispatch, constraints, logicalSolve])
   const handleLogicalSolutionClear = useCallback(() => {
     dispatch(clearLogicalSolution())
   }, [dispatch])
@@ -111,7 +96,7 @@ const PuzzleActions = () => {
   return (
     <>
       <Button onClick={handleBruteSolveClick}
-              disabled={bruteSolverRunning}
+              disabled={bruteSolverRunning  || bruteSolution !== null}
       >
         Brute Force Solve
       </Button>
@@ -119,7 +104,7 @@ const PuzzleActions = () => {
                           solution={bruteSolution}
                           onClear={handleBruteSolutionClear} />
       <Button onClick={handleLogicalSolveClick}
-              disabled={logicalSolverRunning}
+              disabled={logicalSolverRunning || logicalSolution !== null}
       >
         Logical Solve
       </Button>
@@ -152,6 +137,11 @@ const PuzzleActions = () => {
       )}
     </>
   )
+}
+
+type PuzzleActionsProps = {
+  runBruteSolver: Function
+  runLogicalSolver: Function
 }
 
 export default PuzzleActions

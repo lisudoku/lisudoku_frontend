@@ -122,6 +122,22 @@ const detectVariant = (state: BuilderState) => {
   }
 }
 
+export const defaultConstraints = (gridSize: number) => ({
+  gridSize,
+  fixedNumbers: [],
+  regions: ensureDefaultRegions(gridSize),
+  extraRegions: [],
+  thermos: [],
+  killerCages: [],
+  kropkiDots: [],
+  kropkiNegative: false,
+  primaryDiagonal: false,
+  secondaryDiagonal: false,
+  antiKnight: false,
+  oddCells: [],
+  evenCells: [],
+})
+
 export const builderSlice = createSlice({
   name: 'builder',
   initialState: {
@@ -151,21 +167,7 @@ export const builderSlice = createSlice({
   reducers: {
     initPuzzle(state, action) {
       const gridSize = Number.parseInt(action.payload.gridSize)
-      state.constraints = {
-        gridSize,
-        fixedNumbers: [],
-        regions: ensureDefaultRegions(gridSize),
-        extraRegions: [],
-        thermos: [],
-        killerCages: [],
-        kropkiDots: [],
-        kropkiNegative: false,
-        primaryDiagonal: false,
-        secondaryDiagonal: false,
-        antiKnight: false,
-        oddCells: [],
-        evenCells: [],
-      }
+      state.constraints = defaultConstraints(gridSize)
       if (action.payload.setterMode !== undefined) {
         state.setterMode = action.payload.setterMode
       }
