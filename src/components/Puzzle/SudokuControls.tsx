@@ -12,6 +12,7 @@ import { changePaused } from 'src/reducers/puzzle'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()
+  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const solved = useSelector(state => state.puzzle.solved)
   const gridSize = constraints.gridSize
@@ -98,17 +99,19 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
       <div className="w-full flex flex-col gap-2">
         <SolveTimer isSolvedLoading={isSolvedLoading}
                     onIsSolvedLoadingChange={onIsSolvedLoadingChange} />
-        <Button color={solved ? 'green' : 'gray'} onClick={onNewPuzzle}>
-          New puzzle
-        </Button>
+        {!isExternal && (
+          <Button color={solved ? 'green' : 'gray'} onClick={onNewPuzzle}>
+            New puzzle
+          </Button>
+        )}
       </div>
     </div>
   )
 }
 
 type SudokuControlsProps = {
-  isSolvedLoading: boolean,
-  onIsSolvedLoadingChange: Function,
+  isSolvedLoading: boolean
+  onIsSolvedLoadingChange: Function
 }
 
 export default SudokuControls

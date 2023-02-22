@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import _ from 'lodash'
 import { AxiosError } from 'axios'
 import { FixedNumber, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints } from 'src/types/sudoku'
@@ -137,7 +138,16 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
   }
   const encodedString = match[1]
   const decodedString = decompressFromBase64(encodedString)
-  const data = JSON.parse(decodedString!)
+
+  let data: any
+  try {
+    data = JSON.parse(decodedString!)
+  } catch (e) {
+    return {
+      error: true,
+      message: `[f-puzzles] Invalid data.`,
+    }
+  }
 
   const ignoredConstraints = []
 
@@ -269,4 +279,13 @@ export const exportToLisudoku = (constraints: SudokuConstraints) => {
   const constraintsStr = JSON.stringify(filteredConstraints)
   const encodedData = compressToBase64(constraintsStr)
   return encodedData
+}
+
+export const useImportParam = (paramName: string = 'import') => {
+  const { search } = useLocation()
+  const importParam = new URLSearchParams(search).get(paramName)
+  // Dirty hack for f-puzzles
+  const importData = importParam?.replaceAll(' ', '+')
+
+  return importData
 }

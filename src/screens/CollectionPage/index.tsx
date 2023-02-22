@@ -68,8 +68,8 @@ const CollectionPage = () => {
                   <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
                 )}
               </td>
-              <td className="p-2">{SudokuVariantDisplay[puzzle.variant]}</td>
-              <td className="p-2">{SudokuDifficultyDisplay[puzzle.difficulty]}</td>
+              <td className="p-2">{SudokuVariantDisplay[puzzle.variant!]}</td>
+              <td className="p-2">{SudokuDifficultyDisplay[puzzle.difficulty!]}</td>
               <td className="p-2">
                 <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
                   Play

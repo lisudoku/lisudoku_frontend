@@ -9,7 +9,7 @@ export type WebsocketMessage = {
   data: any
 }
 
-export const useWebsocket = (channelName: string, onMessage: Function | null, extraOptions: object = {}) => {
+export const useWebsocket = (channelName: string, onMessage: Function | null, extraOptions: object = {}, isExternal = false) => {
   const [ channel, setChannel ] = useState<Subscription>()
   const [ connected, setConnected ] = useState(false)
   const [ wsUserId, setWsUserId ] = useState<string>()
@@ -17,6 +17,11 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   const extraOptionsRef = useRef(extraOptions)
 
   useEffect(() => {
+    if (isExternal) {
+      // Don't show external puzzles on TV
+      return
+    }
+
     const _channel = consumer.subscriptions.create({ ...extraOptionsRef.current, channel: channelName }, {
       received(message: WebsocketMessage) {
         console.info('[ws] Received', message)
@@ -59,7 +64,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
       setChannel(undefined)
       console.info('Unsubscribing')
     }
-  }, [channelName, onMessage])
+  }, [channelName, onMessage, isExternal])
 
   const sendMessage = useCallback((message: WebsocketMessage) => {
     if (!channel) {

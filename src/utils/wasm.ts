@@ -19,7 +19,7 @@ export const computeWasmConstraints = (constraints: SudokuConstraints) => {
   return wasmConstraints
 }
 
-export const checkSolved = (constraints: SudokuConstraints, grid: Grid) => {
+export const checkSolved = (constraints: SudokuConstraints, grid: Grid): boolean => {
   const wasmConstraints = computeWasmConstraints(constraints)
   const wasmGrid = {
     values: grid,

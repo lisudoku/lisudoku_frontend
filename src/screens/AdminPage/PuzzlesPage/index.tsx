@@ -26,7 +26,7 @@ const PuzzlesPage = () => {
   const puzzleGroups = useMemo(() => (
     _.chain(puzzles)
      .sortBy(puzzle => (
-       SudokuVariantRank[puzzle.variant] * 100 + SudokuDifficultyRank[puzzle.difficulty]
+       SudokuVariantRank[puzzle.variant!] * 100 + SudokuDifficultyRank[puzzle.difficulty!]
      ))
      .groupBy('variant')
      .mapValues(variantPuzzles => (

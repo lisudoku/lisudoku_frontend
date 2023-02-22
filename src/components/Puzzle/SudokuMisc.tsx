@@ -13,6 +13,7 @@ import HintPanel from './HintPanel'
 const SudokuMisc = () => {
   const navigate = useNavigate()
 
+  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
   const publicId = useSelector(state => state.puzzle.data!.publicId!)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const variant = useSelector(state => state.puzzle.data!.variant)
@@ -30,16 +31,20 @@ const SudokuMisc = () => {
   return (
     <div className="relative flex flex-col max-w-lg md:max-w-xs mt-3 md:mt-0">
       <HintPanel />
-      <div>
+      <div className="mb-5">
         <SudokuRules constraints={constraints} />
       </div>
-      <div className="mt-5 w-full md:ml-6 md:w-fit">
-        <VariantSelect value={variant} onChange={onVariantChange} />
-      </div>
-      <div className="mt-2 w-full md:ml-6 md:w-fit">
-        <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
-      </div>
-      <PermalinkButton publicId={publicId} />
+      {!isExternal && (
+        <>
+          <div className="w-full md:ml-6 md:w-fit">
+            <VariantSelect value={variant!} onChange={onVariantChange} />
+          </div>
+          <div className="mt-2 w-full md:ml-6 md:w-fit">
+            <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
+          </div>
+          <PermalinkButton publicId={publicId} />
+        </>
+      )}
       <ShortcutsButton />
       <HintButtons />
       {sourceCollectionId && (

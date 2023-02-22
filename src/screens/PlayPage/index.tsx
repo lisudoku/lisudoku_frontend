@@ -37,6 +37,7 @@ const PlayPage = () => {
   const puzzleData = useSelector(state => state.puzzle.data)
   const persistedVariant = puzzleData?.variant
   const persistedDifficulty = puzzleData?.difficulty
+  const persistedIsExternal = puzzleData?.isExternal
 
   const idBlacklist = useMemo(() => _.map(solvedPuzzles, 'id'), [solvedPuzzles])
 
@@ -55,7 +56,8 @@ const PlayPage = () => {
     if (puzzleLoading || errorCode) {
       return
     }
-    if ((variant !== persistedVariant && persistedVariant !== undefined) ||
+    if (persistedIsExternal ||
+        (variant !== persistedVariant && persistedVariant !== undefined) ||
         (difficulty !== persistedDifficulty && persistedVariant !== undefined) ||
         lastUpdate === null ||
         refreshKey !== previousRefreshKey.current ||
@@ -80,7 +82,7 @@ const PlayPage = () => {
   }, [
     dispatch, puzzleLoading, errorCode, userToken,
     variant, persistedVariant, difficulty, persistedDifficulty, idBlacklist, lastUpdate, solved,
-    refreshKey,
+    persistedIsExternal, refreshKey,
   ])
 
   return (

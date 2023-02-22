@@ -14,6 +14,7 @@ import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProps) => {
   const dispatch = useDispatch()
 
+  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
   const id = useSelector(state => state.puzzle.data!.publicId!)
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
@@ -27,6 +28,12 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   useEffect(() => {
     if (!solved && grid && gridIsFull(grid)) {
       if (checkSolved(constraints, grid)) {
+        if (isExternal) {
+          dispatch(responseSolved({
+            solved: true,
+          }))
+          return
+        }
         dispatch(requestSolved())
         onIsSolvedLoadingChange(true)
         const processedActions = actions.map(action => _.omit(action, ['previousDigits', 'previousNotes']))
@@ -41,7 +48,10 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         })
       }
     }
-  }, [dispatch, id, variant, difficulty, constraints, grid, solved, onIsSolvedLoadingChange, actions])
+  }, [
+    dispatch, id, variant, difficulty, constraints, grid,
+    solved, onIsSolvedLoadingChange, actions, isExternal,
+  ])
 
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(!paused))

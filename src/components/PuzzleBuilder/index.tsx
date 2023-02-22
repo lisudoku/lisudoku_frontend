@@ -1,5 +1,5 @@
 import { useCallback, useEffect, ChangeEvent } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -18,22 +18,19 @@ import CopyToClipboard from '../CopyToClipboard'
 import PuzzleActions from './PuzzleActions'
 import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import Input from 'src/components/Input'
-import { exportToLisudoku, importPuzzle, ImportResult } from 'src/utils/import'
+import { exportToLisudoku, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { computeCellSize } from 'src/utils/misc'
 import { useWindowWidth } from '@react-hook/window-size'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLink } from '@fortawesome/free-solid-svg-icons'
+import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
   const dispatch = useDispatch()
 
-  const { search } = useLocation()
-  const importParam = new URLSearchParams(search).get('import')
-  // Dirty hack for f-puzzles
-  const importData = importParam?.replaceAll(' ', '+')
+  const importData = useImportParam()
 
   const runBruteSolver = useSolver(SolverType.Brute)
   const runLogicalSolver = useSolver(SolverType.Logical)
@@ -141,9 +138,14 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const computeShareSolutionURL = useCallback(() => {
     const encodedConstraints = exportToLisudoku(constraints!)
-    const params = new URLSearchParams()
-    params.append('import', encodedConstraints)
-    return `${window.location.origin}/solver?${params.toString()}`
+    const params = new URLSearchParams({ import: encodedConstraints }).toString()
+    return `${window.location.origin}/solver?${params}`
+  }, [constraints])
+
+  const computeSharePuzzleURL = useCallback(() => {
+    const encodedConstraints = exportToLisudoku(constraints!)
+    const params = new URLSearchParams({ import: encodedConstraints }).toString()
+    return `${window.location.origin}/e?${params}`
   }, [constraints])
 
   // Calculate the available screen width and subtract parent paddings
@@ -194,7 +196,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   loading={false}
                   onCellClick={onCellClick}
       />
-      <div className="flex flex-col gap-2 w-full xl:max-w-[280px]">
+      <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
         <div className="flex flex-col">
           <Typography variant="h6">
             Constraints
@@ -287,12 +289,24 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         </div>
         <hr />
         <div className="flex w-full gap-x-1">
-          <Button className="grow" variant="outlined" onClick={handleImportClick}>Import</Button>
-          <Button className="grow" variant="outlined" onClick={handleRandomClick}>Random</Button>
+          <Button className="w-1/2" variant="outlined" onClick={handleImportClick}>
+            <FontAwesomeIcon icon={faUpload} />
+            {' Import'}
+          </Button>
+          <Button className="w-1/2" variant="outlined" onClick={handleRandomClick}>
+            <FontAwesomeIcon icon={faDice} />
+            {' Random'}
+          </Button>
         </div>
         <div className="flex w-full gap-x-1">
+          <CopyToClipboard text={computeSharePuzzleURL}>
+            <Button className="w-1/2" variant="outlined">
+              <FontAwesomeIcon icon={faLink} />
+              {' Share Puzzle'}
+            </Button>
+          </CopyToClipboard>
           <CopyToClipboard text={computeShareSolutionURL}>
-            <Button className="grow" variant="outlined">
+            <Button className="w-1/2" variant="outlined">
               <FontAwesomeIcon icon={faLink} />
               {' Share Solution'}
             </Button>
@@ -300,7 +314,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         </div>
         <GridSizeSelect />
       </div>
-      <div className="flex flex-col w-full xl:w-80 2xl:w-96 gap-2">
+      <div className="flex flex-col gap-2 grow">
         <PuzzleActions runBruteSolver={runBruteSolver} runLogicalSolver={runLogicalSolver} />
       </div>
     </div>

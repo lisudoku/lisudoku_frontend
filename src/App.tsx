@@ -20,6 +20,7 @@ import HoneybadgerProvider from './components/HoneybadgerProvider'
 import CollectionPage from './screens/CollectionPage'
 import LearnPage from './screens/LearnPage'
 import SolverPage from './screens/SolverPage'
+import ExternalPuzzlePage from './screens/ExternalPuzzlePage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -51,6 +52,7 @@ const App = () => {
                         <Route path="logout" element={<LogoutPage />} />
                         <Route path="register" element={<RegisterPage />} />
                         <Route path="p/:id" element={<PuzzlePage />} />
+                        <Route path="e" element={<ExternalPuzzlePage />} />
                         <Route path="tv" element={<TvPage />} />
                         <Route path="about" element={<AboutPage />} />
                         <Route path="collections/:id" element={<CollectionPage />} />

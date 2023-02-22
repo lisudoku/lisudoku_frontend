@@ -193,16 +193,21 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 }
 
 export const useTvPlayerWebsocket = () => {
-  const publicId = useSelector(state => state.puzzle.data!.publicId!)
+  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
+  const publicId = useSelector(state => state.puzzle.data!.publicId)
   const grid = useSelector(state => state.puzzle.grid)
   const notes = useSelector(state => state.puzzle.notes)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const solved = useSelector(state => state.puzzle.solved)
 
-  const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true })
+  const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true }, isExternal)
 
   useEffect(() => {
     if (!ready) {
+      return
+    }
+    if (isExternal) {
+      // Don't show external puzzles on TV
       return
     }
     sendMessage({
@@ -215,5 +220,5 @@ export const useTvPlayerWebsocket = () => {
         solved,
       },
     })
-  }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved])
+  }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved, isExternal])
 }

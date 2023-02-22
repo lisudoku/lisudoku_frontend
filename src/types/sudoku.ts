@@ -74,11 +74,13 @@ export enum KropkiDotType {
 
 export type Puzzle = {
   id?: string
-  variant: SudokuVariant
-  difficulty: SudokuDifficulty
+  variant?: SudokuVariant
+  difficulty?: SudokuDifficulty
   constraints: SudokuConstraints
   publicId?: string
   solution?: Grid
   sourceCollectionId?: number
   sourceCollectionName?: string
+  isExternal?: boolean
+  externalData?: string
 }

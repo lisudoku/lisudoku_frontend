@@ -133,25 +133,39 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
   }
 }
 
-const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
-  if (steps.length === 0) {
-    // This shouldn't ever happen :D
-    honeybadger.notify({ name: 'No hint' })
-    return <>
-      Well, this is embarrassing... 😅 Can't figure this out either...
-      You should contact the admins on {' '}
-      <ExternalLink url={DISCORD_INVITE_URL}>Discord</ExternalLink>
-      !
-    </>
-  }
-
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal: boolean) => {
   const singleIndex = steps.findIndex(step => (
     [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo].includes(step.rule))
   )
 
+  if (singleIndex === -1) {
+    honeybadger.notify({
+      name: 'No hint',
+      message: `external = ${isExternal}`,
+    })
+    let message
+    if (isExternal) {
+      message = <>
+        No solution found. This is a user-generated puzzle, so either there is no
+        unique solution or the solver isn't good enough. You can contact the admins on {' '}
+        <ExternalLink url={DISCORD_INVITE_URL}>Discord</ExternalLink>
+        .
+      </>
+    } else {
+      // This shouldn't ever happen :D
+      message = <>
+        Well, this is embarrassing... 😅 Can't figure this out either...
+        You should contact the admins on {' '}
+        <ExternalLink url={DISCORD_INVITE_URL}>Discord</ExternalLink>
+        !
+      </>
+    }
+    return [ message, true ]
+  }
+
   if (singleIndex === 0) {
     const step = steps[0]
-    return <>There is a {getStepDescription(step, hintLevel)}.</>
+    return [ <>There is a {getStepDescription(step, hintLevel)}.</>, false ]
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)
@@ -172,14 +186,15 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel) => {
       ))}
     </ul>
 
-    <p className="mt-2">Finally, you have a {getStepDescription(lastStep, hintLevel)}.</p>
+    <p className="mt-2">Finally, there is a {getStepDescription(lastStep, hintLevel)}.</p>
   </>
 
-  return message
+  return [ message, false ]
 }
 
 export const computeHintContent = (
-  solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][]
+  solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][],
+  isExternal: boolean
 ) => {
   if (!solution) {
     return [ '', false ]
@@ -194,7 +209,7 @@ export const computeHintContent = (
   const steps = solution.steps!.filter(step => !isRedundantStep(step, notes));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
-  const message = computeHintText(steps, hintLevel)
+  const [ message, error ] = computeHintText(steps, hintLevel, isExternal)
 
-  return [ message, filteredSteps ]
+  return [ message, filteredSteps, error ]
 }

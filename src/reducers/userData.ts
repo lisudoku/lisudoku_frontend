@@ -55,14 +55,21 @@ export const userDataSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
       const { id, variant, difficulty } = action.payload
-      if (action.payload.solved && !_.some(state.solvedPuzzles, [ 'id', id ])) {
-        const solvedPuzzle: SolvedPuzzle = {
-          id,
-          variant,
-          difficulty,
-        }
-        state.solvedPuzzles.push(solvedPuzzle)
+      if (!id) {
+        // External puzzle
+        return
       }
+
+      if (!action.payload.solved || _.some(state.solvedPuzzles, [ 'id', id ])) {
+        return
+      }
+
+      const solvedPuzzle: SolvedPuzzle = {
+        id,
+        variant,
+        difficulty,
+      }
+      state.solvedPuzzles.push(solvedPuzzle)
     })
   }
 })
