@@ -405,6 +405,8 @@ export const builderSlice = createSlice({
         _.remove(state.constraints!.oddCells, isSelectedCell)
         _.remove(state.constraints!.evenCells, isSelectedCell)
       }
+
+      handleConstraintChange(state)
     },
     requestSolution(state, action) {
       if (action.payload === SolverType.Brute) {
