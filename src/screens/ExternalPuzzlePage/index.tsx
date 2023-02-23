@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
+import { parseISO, differenceInSeconds } from 'date-fns'
 import PageMeta from 'src/components/PageMeta'
 import ErrorPage from 'src/components/ErrorPage'
 import LoadingSpinner from 'src/components/LoadingSpinner'
@@ -17,6 +18,8 @@ const ExternalPuzzlePage = () => {
 
   const isExternal = useSelector(state => state.puzzle.data?.isExternal)
   const externalData = useSelector(state => state.puzzle.data?.externalData)
+  const solved = useSelector(state => state.puzzle.solved)
+  const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
 
   useEffect(() => {
     if (puzzleLoading || error) {
@@ -27,7 +30,9 @@ const ExternalPuzzlePage = () => {
       return
     }
 
-    if (!isExternal || importData !== externalData) {
+    if (!isExternal ||
+        (solved && differenceInSeconds(new Date(), parseISO(lastUpdate!)) >= 1) ||
+        importData !== externalData) {
       setPuzzleLoading(true)
       importPuzzle(importData).then((result: ImportResult) => {
         if (result.error) {
@@ -46,7 +51,7 @@ const ExternalPuzzlePage = () => {
         }
       })
     }
-  }, [dispatch, puzzleLoading, error, importData, isExternal, externalData])
+  }, [dispatch, puzzleLoading, error, importData, isExternal, externalData, solved, lastUpdate])
 
   return (
     <>
