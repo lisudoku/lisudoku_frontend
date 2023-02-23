@@ -317,7 +317,7 @@ export const builderSlice = createSlice({
           break
         }
         case ConstraintType.ExtraRegions: {
-          const region: Region = state.selectedCells
+          const region: Region = _.sortBy(state.selectedCells, [ 'row', 'col' ])
           assert(
             region.length === gridSize,
             `Extra region must be of size ${gridSize}. Select multiple cells with Shift + Click.`
@@ -326,7 +326,7 @@ export const builderSlice = createSlice({
           break
         }
         case ConstraintType.Killer: {
-          const region: Region = state.selectedCells
+          const region: Region = _.sortBy(state.selectedCells, [ 'row', 'col' ])
           const killerCage: KillerCage = {
             sum: state.killerSum!,
             region,
@@ -337,7 +337,7 @@ export const builderSlice = createSlice({
         }
         case ConstraintType.KropkiConsecutive:
         case ConstraintType.KropkiDouble: {
-          const cells: CellPosition[] = state.selectedCells
+          const cells: CellPosition[] = _.sortBy(state.selectedCells, [ 'row', 'col' ])
           assert(cells.length === 2, 'Select exactly 2 cells with Shift + Click.')
           assert(
             Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
