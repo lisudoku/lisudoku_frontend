@@ -23,12 +23,14 @@ const PuzzleCollectionsSelect = ({ value, onChange, label }: PuzzleCollectionsSe
     return <LoadingSpinner size={20} />
   }
 
+  const sortedCollections = [ ...puzzleCollections ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
   return (
     <Select value={value}
             onChange={onChange}
             label={label}
             labelProps={{ className: 'transition-none' }}>
-      {[ { id: '', name: 'lisudoku' }, ...puzzleCollections ].map(({ id, name }) => (
+      {[ { id: '', name: 'lisudoku' }, ...sortedCollections ].map(({ id, name }) => (
         <Option key={id} value={id.toString()}>{name}</Option>
       ))}
     </Select>
