@@ -186,7 +186,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-10 w-full">
+    <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
       <SudokuGrid cellSize={cellSize}
                   constraints={constraintPreview}
                   grid={usedGrid}
