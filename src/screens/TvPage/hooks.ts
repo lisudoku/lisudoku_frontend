@@ -16,7 +16,7 @@ type TvMessage = {
   data: any
 }
 
-export const useTvWebsocket = () => {
+export const useTvViewerWebsocket = () => {
   const dispatch = useDispatch()
 
   const handleMessage = useCallback((message: TvMessage) => {
@@ -37,7 +37,7 @@ export const useTvWebsocket = () => {
       }
     }
   }, [dispatch])
-  useWebsocket('TvChannel', handleMessage)
+  const { error } = useWebsocket('TvChannel', handleMessage)
 
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)
   const viewerCount = useSelector(state => state.tv.viewerCount)
@@ -55,5 +55,6 @@ export const useTvWebsocket = () => {
   return {
     tvPuzzles: sortedTvPuzzles,
     viewerCount,
+    error,
   }
 }

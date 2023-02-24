@@ -13,6 +13,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   const [ channel, setChannel ] = useState<Subscription>()
   const [ connected, setConnected ] = useState(false)
   const [ wsUserId, setWsUserId ] = useState<string>()
+  const [ error, setError ] = useState(false)
 
   const extraOptionsRef = useRef(extraOptions)
 
@@ -36,39 +37,40 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
       },
 
       initialized() {
-        console.info('Channel initialized')
+        console.info('[ws] Channel initialized')
       },
 
       // Called when the subscription is ready for use on the server.
       connected() {
-        console.info('Websocket connected')
+        console.info('[ws] Websocket connected')
         setConnected(true)
       },
 
       // Called when the Websocket connection is closed.
       disconnected() {
-        console.info('Websocket disconnected')
+        console.info('[ws] Websocket disconnected')
       },
 
       // Called when the subscription is rejected by the server.
       rejected() {
-        console.error('Connection rejected')
+        console.error('[ws] Connection rejected')
+        setError(true)
       },
     })
 
     setChannel(_channel)
-    console.info('Created subscription')
+    console.info('[ws] Created subscription')
 
     return () => {
       (consumer.subscriptions as any).remove(_channel)
       setChannel(undefined)
-      console.info('Unsubscribing')
+      console.info('[ws] Unsubscribing')
     }
   }, [channelName, onMessage, isExternal])
 
   const sendMessage = useCallback((message: WebsocketMessage) => {
     if (!channel) {
-      console.warn("Didn't send message because channel not initialized")
+      console.warn("[ws] Didn't send message because channel not initialized")
       return
     }
     console.info('[ws] Sending', message)
@@ -78,5 +80,6 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   return {
     ready: !!(connected && wsUserId),
     sendMessage,
+    error,
   }
 }
