@@ -43,8 +43,8 @@ const AboutPage = () => (
         <li className="font-light">Solver - Rust</li>
       </ul>
       <Typography variant="paragraph" className="mt-5">
-        Contributions are welcome! You can contribute by writing code, providing UI designs, or 
-        any idea that can improve lisudoku.
+        Contributions are welcome! You can contribute by reporting bugs, writing code,
+        providing UI designs, or any idea that can improve lisudoku.
       </Typography>
     </div>
   </>
