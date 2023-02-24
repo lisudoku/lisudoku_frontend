@@ -7,8 +7,8 @@ import { Puzzle } from 'src/types/sudoku'
 import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleCheck, faChessKnight } from '@fortawesome/free-solid-svg-icons'
-import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import PuzzleCardIcons from './PuzzleCardIcons'
 
 const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
   const dispatch = useDispatch()
@@ -44,12 +44,7 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
       </div>
       <div className="flex gap-3 w-fit text-sm">
         <div>
-          {puzzle.constraints.antiKnight && (
-            <FontAwesomeIcon icon={faChessKnight} size="sm" />
-          )}
-          {puzzle.constraints.kropkiNegative && (
-            <FontAwesomeIcon icon={faCircleXmark} size="sm" />
-          )}
+          <PuzzleCardIcons constraints={puzzle.constraints} />
         </div>
         <Link to={getPuzzleRelativeUrl(puzzle.publicId!)} target="_blank">
           Play

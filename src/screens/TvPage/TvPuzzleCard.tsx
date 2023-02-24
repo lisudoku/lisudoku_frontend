@@ -1,9 +1,10 @@
+import { useState } from 'react'
+import useInterval from 'react-useinterval'
+import classNames from 'classnames'
+import PuzzleCardIcons from '../AdminPage/PuzzlesPage/PuzzleCardIcons'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import { computeCellSize, getDurationShort } from 'src/utils/misc'
-import useInterval from 'react-useinterval'
-import { useState } from 'react'
-import classNames from 'classnames'
 import { differenceInSeconds, parseISO } from 'date-fns'
 import { useWindowWidth } from '@react-hook/window-size'
 import { TvPuzzle } from 'src/reducers/tv'
@@ -17,7 +18,12 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
 
   return (
     <div className="flex flex-col items-center mt-1 w-fit text-sm">
-      <div>{SudokuVariantDisplay[puzzle.variant]} - {SudokuDifficultyDisplay[puzzle.difficulty]}</div>
+      <div className="flex gap-x-2">
+        <div>{SudokuVariantDisplay[puzzle.variant]} - {SudokuDifficultyDisplay[puzzle.difficulty]}</div>
+        <div>
+          <PuzzleCardIcons constraints={puzzle.constraints} />
+        </div>
+      </div>
       {puzzle.solved ? (
         <div>
           Solved!
