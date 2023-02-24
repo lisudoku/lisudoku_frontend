@@ -271,7 +271,8 @@ const mapCellStringArray = (cells: string[]) => (
 export const exportToLisudoku = (constraints: SudokuConstraints) => {
   const filteredConstraints = _.omitBy(
     constraints,
-    key => !_.isNumber(key) && (key === false || _.isEmpty(key))
+    value => !_.isNumber(value) &&
+             (value === false || !_.isBoolean(value) && _.isEmpty(value))
   )
   if (_.isEqual(filteredConstraints.regions, ensureDefaultRegions(constraints.gridSize))) {
     delete filteredConstraints.regions
