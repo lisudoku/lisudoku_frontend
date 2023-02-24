@@ -5,7 +5,8 @@ const SolverPage = () => (
   <>
     <PageMeta title="Sudoku Solver"
               url="https://lisudoku.xyz/solver"
-              description="Run the solver on any puzzle" />
+              description="Build and run the solver on any puzzle.
+                A tool that can be used by sudoku puzzle setters and solvers alike." />
     <PuzzleBuilder admin={false} />
   </>
 )
