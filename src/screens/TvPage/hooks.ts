@@ -37,7 +37,7 @@ export const useTvViewerWebsocket = () => {
       }
     }
   }, [dispatch])
-  const { error } = useWebsocket('TvChannel', handleMessage)
+  const { error, ready } = useWebsocket('TvChannel', handleMessage)
 
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)
   const viewerCount = useSelector(state => state.tv.viewerCount)
@@ -56,5 +56,6 @@ export const useTvViewerWebsocket = () => {
     tvPuzzles: sortedTvPuzzles,
     viewerCount,
     error,
+    loading: !ready && !error,
   }
 }

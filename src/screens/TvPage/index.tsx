@@ -1,6 +1,7 @@
 import PageMeta from 'src/components/PageMeta'
 import { Typography } from '@material-tailwind/react'
 import ErrorPage from 'src/components/ErrorPage'
+import LoadingSpinner from 'src/components/LoadingSpinner'
 import TvPuzzleCard from './TvPuzzleCard'
 import { useTvViewerWebsocket } from './hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -8,7 +9,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons'
 import { pluralize } from 'src/utils/misc'
 
 const TvPage = () => {
-  const { tvPuzzles, viewerCount, error } = useTvViewerWebsocket()
+  const { tvPuzzles, viewerCount, error, loading } = useTvViewerWebsocket()
 
   return (
     <>
@@ -17,6 +18,8 @@ const TvPage = () => {
                 description="Watch people solve puzzles in real time" />
       {error ? (
         <ErrorPage text="Dang it! The TV is too busy right now, check back later." />
+      ) : loading ? (
+        <LoadingSpinner fullPage />
       ) : (
         <>
           <div className="flex justify-between">
