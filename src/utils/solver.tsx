@@ -37,33 +37,64 @@ const cellDisplay = (cell: CellPosition) => (
   `R${cell.row + 1}C${cell.col + 1}`
 )
 
+const areaDisplay = (area: any) => {
+  if (area.Row !== undefined) {
+    return `row ${area.Row + 1}`
+  } else if (area.Column !== undefined) {
+    return `column ${area.Column + 1}`
+  } else if (area.Region !== undefined) {
+    return `box ${area.Region + 1}`
+  } else if (area.Thermo !== undefined) {
+    return 'a thermometer'
+  } else if (area.KillerCage !== undefined) {
+    return 'a killer cage'
+  } else if (area.KropkiDot !== undefined) {
+    return 'a kropki dot pair'
+  } else if (area === 'PrimaryDiagonal') {
+    return 'the negative diagonal'
+  } else if (area === 'SecondaryDiagonal') {
+    return 'the positive diagonal'
+  } else {
+    throw new Error(`unknown area ${JSON.stringify(area)}`)
+  }
+}
+
 const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
-  const cells = cellDisplays.join(',')
-  const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(',')
-  const values = [...step.values].sort().join(',')
+  const cells = cellDisplays.join(', ')
+  const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(', ')
+  const values = [...step.values].sort().join(', ')
+
+  const applyGridStepHint = (text: string) => {
+    if (hintLevel === HintLevel.Full) {
+      text += ` (${values})`
+    }
+    return text
+  }
 
   switch (step.rule) {
-    case StepRule.HiddenSingle:
+    case StepRule.HiddenSingle: {
+      const areaMessage = areaDisplay(step.areas[0])
+      return applyGridStepHint(` in ${areaMessage} on cell ${cellDisplay(step.cells[0])}`)
+    }
     case StepRule.NakedSingle:
     case StepRule.Thermo:
-      const cell = step.cells[0]
-      let text = ` on cell ${cellDisplay(cell)}`
-      if (hintLevel === HintLevel.Full) {
-        text += ` (${values})`
-      }
-      return text
+      return applyGridStepHint(` on cell ${cellDisplay(step.cells[0])}`)
     case StepRule.Candidates:
       return ' for all cells'
     case StepRule.HiddenPairs:
-    case StepRule.HiddenTriples:
-      return ` on cells ${cells} to only keep ${values}`
+    case StepRule.HiddenTriples: {
+      const areaMessage = areaDisplay(step.areas[0])
+      return ` in ${areaMessage} on cells ${cells} to only keep ${values}`
+    }
     case StepRule.XYWing:
       const zValue = step.values[2]
       return ` on cells ${cells} to remove ${zValue} from ${affectedCells}`
-    case StepRule.CommonPeerElimination:
+    case StepRule.CommonPeerElimination: {
+      const areaMessage = areaDisplay(step.areas[0])
       return ` to remove value ${values} from ${affectedCells} because it ` +
-        `would eliminate it as candidate from cells ${cells}`
+        `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
+    }
     case StepRule.CommonPeerEliminationKropki:
       return ` to remove kropki chain combination ${values} from ${affectedCells} because it ` +
         `would eliminate all candidates from ${cells}`
@@ -73,8 +104,13 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
         `see each other, at least one of ${cellDisplays[1]} and ${cellDisplays[3]} will be ${values}, so remove ` +
         `${values} from cells ${affectedCells}.`
     default:
+      // Some techniques don't have areas (e.g. XY-Wing)
+      const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0])}` : ''
+
+      // Some techniques don't have cells (e.g. killer cage, kropki chains)
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
-      return `${cellsMessage} to remove ${values} from ${affectedCells}`
+
+      return `${areaMessage}${cellsMessage} to remove ${values} from ${affectedCells}`
   }
 }
 
