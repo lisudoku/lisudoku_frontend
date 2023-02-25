@@ -278,7 +278,8 @@ const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
     const row = Math.floor(Math.max(0, y - 1) / cellSize)
     const col = Math.floor(Math.max(0, x - 1) / cellSize)
     const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
-    onCellClick?.({ row, col }, ctrl, true)
+    const doubleClick = e.detail === 2
+    onCellClick?.({ row, col }, ctrl, true, doubleClick)
   }, [cellSize, onCellClick])
 )
 
