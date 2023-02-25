@@ -31,6 +31,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Hidden_Single',
       },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_singles.php#h1',
+      },
     ],
     practicePuzzleIds: [ 'EieojFK9AdYIi-a6rgDc', 'vmZ4ApDalmLPZWeAF46n' ],
   },
@@ -50,6 +54,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Naked_Candidates',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_singles.php#n1',
       },
     ],
     practicePuzzleIds: [ 'nF4pF8Orna9Oi-0uPE-0', 'DwbYLJrG7EHbCA0jEzFj' ],
@@ -85,6 +93,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Hidden_Candidates',
       },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_hidden.php#h2',
+      },
     ],
     practicePuzzleIds: [ 'GxTywFE7fBXPGskVg7D5', 'bHjg-8DIkr4IqljiFeQ5' ],
   },
@@ -107,6 +119,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Naked_Candidates',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_naked.php#n2',
       },
     ],
     practicePuzzleIds: [ '4_zKMu9oIek4v4BYDaYK', '0ia3B_nKWJnnFXm-6Tfg' ],
@@ -133,6 +149,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Locked_Candidates',
       },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_naked.php#n2',
+      },
     ],
     practicePuzzleIds: [ '9glG1HW6b_anCo2nNKS7', '0km-feHHbCzUtT7cgJI4', '0kncvSKSbAFIUWCWfDF5', 'QwA-W4OAZBU3NF6VnKzX' ],
   },
@@ -156,6 +176,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Hidden_Candidates',
       },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_hidden.php#h3',
+      },
     ],
     practicePuzzleIds: [ 'r1fjs-dBjm8ZPXbE7fPg' ],
   },
@@ -178,6 +202,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Naked_Candidates',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_naked.php#n3',
       },
     ],
     practicePuzzleIds: [ 'tduyFLYnpdgGN1JD-9hE', 'V_uw0INLBbl8erdXXoaz' ],
@@ -204,6 +232,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Locked_Candidates',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_naked.php#n3',
       },
     ],
     practicePuzzleIds: [ 'o2vQ_rNgcAq55N8S4btx' ],
@@ -249,6 +281,10 @@ const TECHNIQUES: Technique[] = [
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/X-Wing',
       },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_fishb.php#bf2',
+      },
     ],
     practicePuzzleIds: [ 'yIqroHNVqFVQIxvihKYa', 'p2sm-XRlR1M-tNxEfYT1' ],
   },
@@ -267,6 +303,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudokuwiki.org',
         url: 'https://www.sudokuwiki.org/Y_Wing_Strategy',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_wings.php#xy',
       },
     ],
     practicePuzzleIds: [ 'DuujC8eA4PiPKDYTn5hX' ]
@@ -382,6 +422,10 @@ const TECHNIQUES: Technique[] = [
       {
         name: 'sudopedia.org',
         url: 'https://www.sudopedia.org/wiki/Turbot_Fish',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_sdp.php#tf',
       },
     ],
     practicePuzzleIds: [ '_Zm0aj0rpHD8tCYTCdZU' ],
