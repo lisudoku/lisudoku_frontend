@@ -272,7 +272,7 @@ export const exportToLisudoku = (constraints: SudokuConstraints) => {
   const filteredConstraints = _.omitBy(
     constraints,
     value => !_.isNumber(value) &&
-             (value === false || !_.isBoolean(value) && _.isEmpty(value))
+             (value === false || (!_.isBoolean(value) && _.isEmpty(value)))
   )
   if (_.isEqual(filteredConstraints.regions, ensureDefaultRegions(constraints.gridSize))) {
     delete filteredConstraints.regions
