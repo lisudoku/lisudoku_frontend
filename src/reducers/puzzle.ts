@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
-import { computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { computeFixedNumbersGrid, getAllCells } from 'src/utils/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
 const jcc = require('json-case-convertor')
 
@@ -114,12 +114,22 @@ export const puzzleSlice = createSlice({
       state.lastUpdate = null
     },
     changeSelectedCell: (state, action) => {
-      const { cell, ctrl, isClick } = action.payload
+      const { cell, ctrl, isClick, doubleClick } = action.payload
       if (ctrl) {
         if (isClick) {
           state.controls.selectedCells = _.xorWith(state.controls.selectedCells, [ cell ], _.isEqual)
         } else {
           state.controls.selectedCells = _.uniqWith([ ...state.controls.selectedCells, cell ], _.isEqual)
+        }
+      } else if (doubleClick) {
+        const value = state.grid![cell.row][cell.col]
+        // Note: the single-click is fired before, so if the there is no digit there
+        // it will be selected
+        if (value !== null) {
+          const cellsWithValue = getAllCells(state.data!.constraints.gridSize).filter(c => (
+            state.grid![c.row][c.col] === value
+          ))
+          state.controls.selectedCells = cellsWithValue
         }
       } else {
         state.controls.selectedCells = [ cell ]

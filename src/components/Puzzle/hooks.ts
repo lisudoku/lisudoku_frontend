@@ -49,8 +49,8 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 
   const enabled = !solved && !isSolvedLoading && !paused
 
-  const handleSelectedCellChange = useCallback((cell: CellPosition, ctrl: boolean, isClick: boolean) => {
-    dispatch(changeSelectedCell({ cell, ctrl, isClick }))
+  const handleSelectedCellChange = useCallback((cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => {
+    dispatch(changeSelectedCell({ cell, ctrl, isClick, doubleClick }))
   }, [dispatch])
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
@@ -130,7 +130,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
           }
         }
         const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
-        onSelectedCellChange(nextCell, ctrl, false)
+        onSelectedCellChange(nextCell, ctrl, false, false)
         e.preventDefault()
         return
       }
