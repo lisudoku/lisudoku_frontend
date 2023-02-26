@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -50,12 +50,29 @@ const ADMIN_ITEMS = [
 
 const AppNavbar = ({ admin }: { admin: boolean }) => {
   const [openNav, setOpenNav] = useState(false)
+  const location = useLocation()
+  const AppNavbarRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleResize = () => window.innerWidth >= 960 && setOpenNav(false)
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (openNav && AppNavbarRef.current && !AppNavbarRef.current.contains(e.target as Node)) {
+        setOpenNav(false)
+      }
+    }
+    window.addEventListener("click", handleClickOutside)
+    return () => window.removeEventListener("click", handleClickOutside)
+  }, [openNav])
+
+  useEffect(() => {
+    setOpenNav(false)
+  }, [location])
+
 
   const items = admin ? ADMIN_ITEMS : ITEMS
 
@@ -122,7 +139,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   return (
-    <Navbar className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 bg-gradient-to-b from-gray-700 to-gray-900 border-none uppercase">
+    <Navbar ref={AppNavbarRef} className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 bg-gradient-to-b from-gray-700 to-gray-900 border-none uppercase">
       <div className="h-full flex items-center justify-between text-white">
         <Typography
           variant="h3"
