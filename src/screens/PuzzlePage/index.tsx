@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { parseISO, differenceInSeconds } from 'date-fns'
 import PageMeta from 'src/components/PageMeta'
 import LoadingSpinner from 'src/components/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
@@ -22,6 +23,8 @@ const PuzzlePage = () => {
   const userToken = useSelector(state => state.userData.token)
   const puzzleData = useSelector(state => state.puzzle.data)
   const refreshKey = useSelector(state => state.puzzle.refreshKey)
+  const solved = useSelector(state => state.puzzle.solved)
+  const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const persistedId = puzzleData?.publicId
   const persistedVariant = puzzleData?.variant
   const persistedDifficulty = puzzleData?.difficulty
@@ -31,7 +34,8 @@ const PuzzlePage = () => {
       return
     }
     // Note: external puzzles will have an undefined id, so no issues
-    if (id !== persistedId) {
+    if (id !== persistedId ||
+        (solved && differenceInSeconds(new Date(), parseISO(lastUpdate!)) >= 1)) {
       setPuzzleLoading(true)
       dispatch(requestedPuzzle())
       fetchPuzzleByPublicId(id!, userToken).then(data => {
@@ -44,7 +48,7 @@ const PuzzlePage = () => {
       })
     }
     setPageLoading(false)
-  }, [dispatch, userToken, id, persistedId, puzzleLoading, error])
+  }, [dispatch, userToken, id, persistedId, puzzleLoading, error, solved, lastUpdate])
 
   const previousRefreshKey = useRef(refreshKey)
   useEffect(() => {
