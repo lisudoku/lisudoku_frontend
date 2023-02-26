@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faThermometer4, faXmark, faChessKnight, faSquare, faCircle as faCircleSolid,
+  faThermometer4, faXmark, faChessKnight, faSquare, faCircle as faCircleSolid, faBolt,
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
@@ -89,6 +89,15 @@ const computeRules = (constraints: SudokuConstraints) => {
       <FontAwesomeIcon icon={faSquare} size="sm" color="lightgray" />
       {' '}
       Cells with shaded squares contain even digits.
+    </>)
+  }
+  if (constraints.topBottom) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faBolt} size="sm" color="lightgray" />
+      {' '}
+      There are two sequences of numbers: from digit 1 in top row to digit {constraints.gridSize}
+      {' '} in bottom row and from digit 1 in bottom row to digit {constraints.gridSize} in top row.
+      A sequence has to have consecutive numbers touching by side or corner.
     </>)
   }
   return rules

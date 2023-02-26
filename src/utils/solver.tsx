@@ -87,6 +87,11 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
       const areaMessage = areaDisplay(step.areas[0])
       return ` in ${areaMessage} on cells ${cells} to only keep ${values}`
     }
+    case StepRule.XWing: {
+      const areaDisplays = step.areas.map(area => areaDisplay(area))
+      return ` on cells ${cells} (${areaDisplays[0]} and ${areaDisplays[1]}) ` +
+        `to remove ${values} from ${affectedCells} (${areaDisplays[2]} and ${areaDisplays[3]})`
+    }
     case StepRule.XYWing:
       const zValue = step.values[2]
       return ` on cells ${cells} to remove ${zValue} from ${affectedCells}`
@@ -103,6 +108,13 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
         `${cellDisplays[2]}-${cellDisplays[3]}. Because ${cellDisplays[0]} and ${cellDisplays[2]} ` +
         `see each other, at least one of ${cellDisplays[1]} and ${cellDisplays[3]} will be ${values}, so remove ` +
         `${values} from cells ${affectedCells}.`
+    case StepRule.TopBottomCandidates: {
+      const ascending = step.areas[0].Row + 1 === step.values[0]
+      const otherValue = (ascending === (step.areas[0].Row < step.areas[1].Row)) ? step.values[0] + 1 : step.values[0] - 1
+      return ` in ${areaDisplay(step.areas[0])} to remove ${values} from ${affectedCells} because ` +
+        `${step.affected_cells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
+        `on ${areaDisplay(step.areas[1])}`
+    }
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
       const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0])}` : ''

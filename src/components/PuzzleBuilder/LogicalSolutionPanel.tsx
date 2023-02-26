@@ -46,6 +46,9 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   nonEmptyCells += constraints.extraRegions.length * 2
   nonEmptyCells += constraints.oddCells.length / 2
   nonEmptyCells += constraints.evenCells.length / 2
+  if (constraints.topBottom) {
+    nonEmptyCells += constraints.gridSize
+  }
 
   if (nonEmptyCells >= 30) {
     return StepRuleDifficultyDisplay[EStepRuleDifficulty.Easy]

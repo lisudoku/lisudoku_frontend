@@ -240,6 +240,7 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
     kropkiNegative: !_.isEmpty(data.negative) && data.nonconsecutive,
     oddCells: (data.odd ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
     evenCells: (data.even ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
+    topBottom: false,
   }
 
   let message = 'Puzzle imported'

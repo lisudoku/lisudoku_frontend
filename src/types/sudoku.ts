@@ -14,7 +14,7 @@ export enum SudokuVariant {
   Arrow = 'arrow',
   Irregular = 'irregular',
   Kropki = 'kropki',
-  TopBot = 'topbot',
+  TopBottom = 'topbot',
   Diagonal = 'diagonal',
   Mixed = 'mixed',
   AntiKnight = 'antiknight',
@@ -45,6 +45,7 @@ export type SudokuConstraints = {
   kropkiNegative: boolean
   oddCells: CellPosition[]
   evenCells: CellPosition[]
+  topBottom: boolean
 }
 
 export type FixedNumber = {
