@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import useInterval from 'react-useinterval'
@@ -25,31 +25,40 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   const paused = useSelector(state => state.puzzle.controls.paused)
   const actions = useSelector(state => state.puzzle.controls.actions)
 
+  const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
+
   useEffect(() => {
-    if (!solved && grid && gridIsFull(grid)) {
-      if (checkSolved(constraints, grid)) {
-        if (isExternal) {
-          dispatch(responseSolved({
-            solved: true,
-          }))
-          return
-        }
-        dispatch(requestSolved())
-        onIsSolvedLoadingChange(true)
-        const processedActions = actions.map(action => _.omit(action, ['previousDigits', 'previousNotes']))
-        requestPuzzleCheck(id, grid, processedActions).then(result => {
-          dispatch(responseSolved({
-            id,
-            variant,
-            difficulty,
-            solved: result.correct,
-          }))
-          onIsSolvedLoadingChange(false)
-        })
-      }
+    if (solved || !grid || !gridFull) {
+      return
     }
+
+    // Check locally if it's correct first
+    if (!checkSolved(constraints, grid)) {
+      return
+    }
+
+    // If external (custom) puzzle, no need to check with server
+    if (isExternal) {
+      dispatch(responseSolved({
+        solved: true,
+      }))
+      return
+    }
+
+    dispatch(requestSolved())
+    onIsSolvedLoadingChange(true)
+    const processedActions = actions.map(action => _.omit(action, ['previousDigits', 'previousNotes']))
+    requestPuzzleCheck(id, grid, processedActions).then(result => {
+      dispatch(responseSolved({
+        id,
+        variant,
+        difficulty,
+        solved: result.correct,
+      }))
+      onIsSolvedLoadingChange(false)
+    })
   }, [
-    dispatch, id, variant, difficulty, constraints, grid,
+    dispatch, id, variant, difficulty, constraints, grid, gridFull,
     solved, onIsSolvedLoadingChange, actions, isExternal,
   ])
 
@@ -75,8 +84,9 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   return (
     <div className={classNames(
       'w-full rounded border border-gray-400 px-3 py-1 flex justify-center select-none', {
-        'border-yellow-600': isSolvedLoading,
-        'border-green-600': solved && !isSolvedLoading,
+        'border-yellow-600': gridFull && isSolvedLoading,
+        'border-green-600': gridFull && !isSolvedLoading && solved,
+        'border-red-600': gridFull && !isSolvedLoading && !solved,
       }
     )}>
       <Typography variant="h6">
