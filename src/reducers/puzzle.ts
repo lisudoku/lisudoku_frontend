@@ -201,19 +201,21 @@ export const puzzleSlice = createSlice({
         relevantCells = cells.filter(({ row, col }) => !state.notes![row][col].includes(value))
       }
 
-      const userAction: UserAction = {
-        type: ActionType.Note,
-        cells: relevantCells,
-        value,
-        previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
-        previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
-        time: state.solveTimer,
+      if (!_.isEmpty(relevantCells)) {
+        const userAction: UserAction = {
+          type: ActionType.Note,
+          cells: relevantCells,
+          value,
+          previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
+          previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
+          time: state.solveTimer,
+        }
+
+        performAction(state, userAction)
+
+        state.controls.actions.push(userAction)
+        state.controls.actionIndex = state.controls.actions.length - 1
       }
-
-      performAction(state, userAction)
-
-      state.controls.actions.push(userAction)
-      state.controls.actionIndex = state.controls.actions.length - 1
 
       state.lastUpdate = formatISO(new Date())
     },
