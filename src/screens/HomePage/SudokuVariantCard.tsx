@@ -65,7 +65,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
               <polyline points="10,88 10,65" />
             </g>
           )}
-          {variant === SudokuVariant.TopBot && (
+          {variant === SudokuVariant.TopBottom && (
             <polyline points="75,0 75,15 62,30 62,45 53,53 53,70 40,85 40,100" className="opacity-60" />
           )}
           {variant === SudokuVariant.Classic && (

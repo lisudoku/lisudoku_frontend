@@ -7,6 +7,7 @@ import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
   addConstraint, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
+  changeTopBottom,
   ConstraintType, initPuzzle, receivedPuzzle, SolverType,
 } from 'src/reducers/builder'
 import Radio from 'src/components/Radio'
@@ -117,6 +118,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const handleKropkiNegativeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
     dispatch(changeKropkiNegative(e.target.checked))
+  ), [dispatch])
+
+  const handleTopBottomChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changeTopBottom(e.target.checked))
   ), [dispatch])
 
   const handleImportClick = useCallback(() => {
@@ -286,6 +291,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     label="Kropki Negative"
                     checked={constraints.kropkiNegative}
                     onChange={handleKropkiNegativeChange} />
+          <Checkbox id="top-bottom"
+                    label="Top-Bottom"
+                    checked={constraints.topBottom}
+                    onChange={handleTopBottomChange} />
         </div>
         <hr />
         <div className="flex w-full gap-x-1">

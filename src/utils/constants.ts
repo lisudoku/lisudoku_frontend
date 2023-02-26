@@ -14,6 +14,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Irregular,
   SudokuVariant.ExtraRegions,
   SudokuVariant.OddEven,
+  SudokuVariant.TopBottom,
   SudokuVariant.Mixed,
 ]
 
@@ -26,7 +27,7 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.Arrow]: 'Arrow',
   [SudokuVariant.Irregular]: 'Irregular',
   [SudokuVariant.Kropki]: 'Kropki',
-  [SudokuVariant.TopBot]: 'Top-Bot',
+  [SudokuVariant.TopBottom]: 'Top-Bottom',
   [SudokuVariant.Diagonal]: 'Diagonal',
   [SudokuVariant.AntiKnight]: 'Anti Knight',
   [SudokuVariant.ExtraRegions]: 'Extra Regions',
@@ -57,6 +58,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.Killer45]: 'Killer Sum Rule',
   [StepRule.Kropki]: 'Kropki Dot Pair Logic',
   [StepRule.KropkiChainCandidates]: 'Kropki Dot Chain Logic',
+  [StepRule.TopBottomCandidates]: 'Top-Bottom Candidates',
   [StepRule.LockedCandidatesPairs]: 'Locked Candidate Pairs',
   [StepRule.NakedPairs]: 'Naked Pairs',
   [StepRule.HiddenPairs]: 'Hidden Pairs',
@@ -94,6 +96,7 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.Killer45]: EStepRuleDifficulty.Medium,
   [StepRule.Kropki]: EStepRuleDifficulty.Medium,
   [StepRule.KropkiChainCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.TopBottomCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.LockedCandidatesPairs]: EStepRuleDifficulty.Medium,
   [StepRule.NakedPairs]: EStepRuleDifficulty.Medium,
   [StepRule.HiddenPairs]: EStepRuleDifficulty.Medium,

@@ -1,6 +1,6 @@
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChessKnight } from '@fortawesome/free-solid-svg-icons'
+import { faChessKnight, faBolt } from '@fortawesome/free-solid-svg-icons'
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
 const PuzzleCardIcons = ({ constraints }: { constraints: SudokuConstraints }) => (
@@ -10,6 +10,9 @@ const PuzzleCardIcons = ({ constraints }: { constraints: SudokuConstraints }) =>
     )}
     {constraints.kropkiNegative && (
       <div><FontAwesomeIcon icon={faCircleXmark} size="sm" title="Kropki Negative" /></div>
+    )}
+    {constraints.topBottom && (
+      <div><FontAwesomeIcon icon={faBolt} size="sm" title="Top-Bottom" /></div>
     )}
   </div>
 )

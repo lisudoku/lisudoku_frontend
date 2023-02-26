@@ -430,6 +430,13 @@ const TECHNIQUES: Technique[] = [
     ],
     practicePuzzleIds: [ '_Zm0aj0rpHD8tCYTCdZU' ],
   },
+  {
+    id: StepRule.TopBottomCandidates,
+    summary: <>
+      For each row X we track the cells with candidate X where the sequence 1 to X can arrive on.
+      For the decreasing sequence on row X we track digit 10-X.
+    </>,
+  },
 ]
 
 export const TECHNIQUES_BY_DIFFICULTY = _.groupBy(

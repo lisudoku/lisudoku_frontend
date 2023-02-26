@@ -113,6 +113,9 @@ const detectVariant = (state: BuilderState) => {
   if (!_.isEmpty(state.constraints?.oddCells) || !_.isEmpty(state.constraints?.evenCells)) {
     variants.push(SudokuVariant.OddEven)
   }
+  if (state.constraints?.topBottom) {
+    variants.push(SudokuVariant.TopBottom)
+  }
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
@@ -136,6 +139,7 @@ export const defaultConstraints = (gridSize: number) => ({
   antiKnight: false,
   oddCells: [],
   evenCells: [],
+  topBottom: false,
 })
 
 export const builderSlice = createSlice({
@@ -182,19 +186,7 @@ export const builderSlice = createSlice({
       const constraints: Partial<SudokuConstraints> = jcc.camelCaseKeys(action.payload)
       const gridSize = constraints.gridSize!
       state.constraints = {
-        gridSize,
-        fixedNumbers: [],
-        regions: ensureDefaultRegions(gridSize),
-        extraRegions: [],
-        thermos: [],
-        killerCages: [],
-        kropkiDots: [],
-        kropkiNegative: false,
-        primaryDiagonal: false,
-        secondaryDiagonal: false,
-        antiKnight: false,
-        oddCells: [],
-        evenCells: [],
+        ...defaultConstraints(gridSize),
         ...constraints,
       }
       state.difficulty = defaultDifficulty(gridSize)
@@ -499,6 +491,10 @@ export const builderSlice = createSlice({
       state.constraints!.kropkiNegative = action.payload
       handleConstraintChange(state)
     },
+    changeTopBottom(state, action) {
+      state.constraints!.topBottom = action.payload
+      handleConstraintChange(state)
+    },
     changeSourceCollectionId(state, action) {
       state.sourceCollectionId = action.payload
     },
@@ -521,7 +517,7 @@ export const {
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
   toggleNotesActive, changeSelectedCellNotes,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
-  changeKillerSum, changeKropkiNegative,
+  changeKillerSum, changeKropkiNegative, changeTopBottom,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
   clearBruteSolution, clearLogicalSolution,
 } = builderSlice.actions

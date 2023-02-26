@@ -37,6 +37,7 @@ export enum StepRule {
   Killer45 = 'Killer45',
   Kropki = 'Kropki',
   KropkiChainCandidates = 'KropkiChainCandidates',
+  TopBottomCandidates = 'TopBottomCandidates',
   LockedCandidatesPairs = 'LockedCandidatesPairs',
   NakedPairs = 'NakedPairs',
   HiddenPairs = 'HiddenPairs',
