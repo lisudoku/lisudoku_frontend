@@ -8,7 +8,7 @@ const LABEL_PROPS = {
 }
 
 const CONTAINER_PROPS = {
-  className: 'p-2'
+  className: 'px-1 py-2'
 }
 
 const Checkbox = forwardRef((props: any, ref) => (

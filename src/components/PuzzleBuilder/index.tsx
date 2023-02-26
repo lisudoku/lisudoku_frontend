@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
-  addConstraint, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
+  addConstraint, changeAntiKing, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   changeTopBottom,
   ConstraintType, initPuzzle, receivedPuzzle, SolverType,
@@ -110,6 +110,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const handleAntiKnightChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
     dispatch(changeAntiKnight(e.target.checked))
+  ), [dispatch])
+
+  const handleAntiKingChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
+    dispatch(changeAntiKing(e.target.checked))
   ), [dispatch])
 
   const handleKillerSumChange = useCallback((sum: number | null) => {
@@ -274,7 +278,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           </div>
         </div>
         <hr />
-        <div className="flex flex-col">
+        <div className="flex flex-wrap gap-x-3">
           <Checkbox id="primary-diagonal"
                     label="Primary Diagonal"
                     checked={constraints.primaryDiagonal}
@@ -287,6 +291,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     label="Anti Knight"
                     checked={constraints.antiKnight}
                     onChange={handleAntiKnightChange} />
+          <Checkbox id="anti-king"
+                    label="Anti King"
+                    checked={constraints.antiKing}
+                    onChange={handleAntiKingChange} />
           <Checkbox id="kropki-negative"
                     label="Kropki Negative"
                     checked={constraints.kropkiNegative}

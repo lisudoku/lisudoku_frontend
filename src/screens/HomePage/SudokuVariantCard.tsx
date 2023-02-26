@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { SudokuVariantDisplay } from 'src/utils/constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChessKnight } from '@fortawesome/free-solid-svg-icons'
+import { faChessKnight, faChessKing } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
   <div className="w-[14rem] p-1.5">
@@ -18,6 +18,12 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
             <>
               <FontAwesomeIcon icon={faChessKnight} size="sm" className="absolute top-5 left-5" />
               <FontAwesomeIcon icon={faChessKnight} size="sm" className="absolute bottom-5 right-5" />
+            </>
+          )}
+          {variant === SudokuVariant.AntiKing && (
+            <>
+              <FontAwesomeIcon icon={faChessKing} size="sm" className="absolute top-5 left-5" />
+              <FontAwesomeIcon icon={faChessKing} size="sm" className="absolute bottom-5 right-5" />
             </>
           )}
         </div>

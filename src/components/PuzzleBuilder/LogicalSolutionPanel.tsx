@@ -41,6 +41,9 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   if (constraints.antiKnight) {
     nonEmptyCells += constraints.gridSize
   }
+  if (constraints.antiKing) {
+    nonEmptyCells += constraints.gridSize * 3 / 2
+  }
   nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
   nonEmptyCells += constraints.kropkiDots.length / 2
   nonEmptyCells += constraints.extraRegions.length * 2

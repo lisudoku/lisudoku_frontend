@@ -6,7 +6,7 @@ https://lisudoku.xyz
 
 This is lisudoku's frontend written in React that connects to the Rails [backend](https://github.com/lisudoku/lisudoku_backend).
 
-10 supported sudoku variants.
+11 supported sudoku variants.
 
 ## Contribute
 

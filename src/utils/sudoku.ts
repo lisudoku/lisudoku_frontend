@@ -269,6 +269,22 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     })
   }
 
+  if (constraints.antiKing) {
+    const cells = getAllCells(gridSize)
+    cells.forEach(cell => {
+      if (isCompletelyEmpty(cell, valuesGrid, notes)) {
+        return
+      }
+      const peers = getKingPeers(cell, gridSize)
+      peers.forEach(peer => {
+        if (isCompletelyEmpty(peer, valuesGrid, notes)) {
+          return
+        }
+        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.Equal, gridErrors, noteErrors)
+      })
+    })
+  }
+
   // Killer cages (region restriction is handled above)
   for (const killerCage of constraints.killerCages) {
     if (!killerCage.sum) {
@@ -355,6 +371,23 @@ const getKnightPeers = (cell: CellPosition, gridSize: number) => {
     const peer = {
       row: cell.row + KNIGHT_ROW_DELTA[dir],
       col: cell.col + KNIGHT_COL_DELTA[dir],
+    }
+    if (peer.row < 0 || peer.row >= gridSize || peer.col < 0 || peer.col >= gridSize) {
+      return
+    }
+    peers.push(peer)
+  })
+  return peers
+}
+
+const KING_ROW_DELTA = [ -1, -1, -1, 0, 0, 1, 1, 1 ]
+const KING_COL_DELTA = [ -1, 0, 1, -1, 1, -1, 0, 1 ]
+const getKingPeers = (cell: CellPosition, gridSize: number) => {
+  const peers: CellPosition[] = []
+  _.times(8, dir => {
+    const peer = {
+      row: cell.row + KING_ROW_DELTA[dir],
+      col: cell.col + KING_COL_DELTA[dir],
     }
     if (peer.row < 0 || peer.row >= gridSize || peer.col < 0 || peer.col >= gridSize) {
       return

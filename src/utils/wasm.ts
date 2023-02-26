@@ -16,6 +16,7 @@ export const computeWasmConstraints = (constraints: SudokuConstraints) => {
   wasmConstraints.primary_diagonal ||= false
   wasmConstraints.secondary_diagonal ||= false
   wasmConstraints.anti_knight ||= false
+  wasmConstraints.anti_king ||= false
   wasmConstraints.top_bottom ||= false
   return wasmConstraints
 }

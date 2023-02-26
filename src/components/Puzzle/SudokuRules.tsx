@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faThermometer4, faXmark, faChessKnight, faSquare, faCircle as faCircleSolid, faBolt,
+  faThermometer4, faXmark, faChessKnight, faChessKing, faSquare, faCircle as faCircleSolid, faBolt,
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
@@ -46,6 +46,13 @@ const computeRules = (constraints: SudokuConstraints) => {
       <FontAwesomeIcon icon={faChessKnight} size="sm"/>
       {' '}
       Cells a knight move away must not contain the same digit.
+    </>)
+  }
+  if (constraints.antiKing) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faChessKing} size="sm"/>
+      {' '}
+      Cells a king move away must not contain the same digit.
     </>)
   }
   if (!_.isEmpty(constraints.killerCages)) {

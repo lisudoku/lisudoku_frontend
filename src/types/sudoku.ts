@@ -18,6 +18,7 @@ export enum SudokuVariant {
   Diagonal = 'diagonal',
   Mixed = 'mixed',
   AntiKnight = 'antiknight',
+  AntiKing = 'antiking',
   ExtraRegions = 'extraregions',
   OddEven = 'oddeven',
 }
@@ -40,6 +41,7 @@ export type SudokuConstraints = {
   primaryDiagonal: boolean
   secondaryDiagonal: boolean
   antiKnight: boolean
+  antiKing: boolean
   killerCages: KillerCage[]
   kropkiDots: KropkiDot[]
   kropkiNegative: boolean

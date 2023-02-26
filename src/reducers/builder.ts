@@ -98,6 +98,9 @@ const detectVariant = (state: BuilderState) => {
   if (state.constraints?.antiKnight) {
     variants.push(SudokuVariant.AntiKnight)
   }
+  if (state.constraints?.antiKing) {
+    variants.push(SudokuVariant.AntiKing)
+  }
   if (!_.isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
     variants.push(SudokuVariant.Irregular)
   }
@@ -137,6 +140,7 @@ export const defaultConstraints = (gridSize: number) => ({
   primaryDiagonal: false,
   secondaryDiagonal: false,
   antiKnight: false,
+  antiKing: false,
   oddCells: [],
   evenCells: [],
   topBottom: false,
@@ -483,6 +487,10 @@ export const builderSlice = createSlice({
       state.constraints!.antiKnight = action.payload
       handleConstraintChange(state)
     },
+    changeAntiKing(state, action) {
+      state.constraints!.antiKing = action.payload
+      handleConstraintChange(state)
+    },
     changeKillerSum(state, action) {
       state.killerSum = action.payload
       handleConstraintChange(state)
@@ -516,7 +524,7 @@ export const {
   errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
   toggleNotesActive, changeSelectedCellNotes,
-  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight,
+  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeAntiKing,
   changeKillerSum, changeKropkiNegative, changeTopBottom,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
   clearBruteSolution, clearLogicalSolution,
