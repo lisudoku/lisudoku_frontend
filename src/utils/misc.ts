@@ -1,3 +1,4 @@
+import { useWindowSize } from '@react-hook/window-size'
 import { intervalToDuration, parseISO } from 'date-fns'
 import { DEFAULT_CELL_SIZE } from './constants'
 
@@ -24,15 +25,28 @@ export const getDurationShort = (date: string) => {
   return str
 }
 
-export const computeCellSize = (gridSize: number, width: number, ratio: number = 1.0) => {
-  if (width >= 720) { // md
-    return DEFAULT_CELL_SIZE * ratio
+export const useCellSize = (gridSize?: number, scale: number = 1, widthPadding: number = 40, heightPadding: number = 50 + 40) => {
+  const [ width, height ] = useWindowSize()
+
+  if (gridSize === undefined) {
+    return DEFAULT_CELL_SIZE
   }
 
-  width = Math.min(width, 506)
+  // Calculate the available screen width and subtract parent paddings
+  const size = Math.min(width - widthPadding, height - heightPadding)
 
   // Should be synced with the formula in SudokuConstraintGraphics width={gridSize * cellSize + 2}
-  return (width - 2) / gridSize
+  let cellSize = (size - 2) / gridSize
+
+  // For >= md screen sizes apply some adjustments (otherwise use the entire screen)
+  if (width >= 768) {
+    // Invers scaling with the grid size (4x4 will be smaller than 9x9, but not as much)
+    cellSize *= gridSize / 9
+    // Apply a downscale if provided
+    cellSize *= scale
+  }
+
+  return  cellSize
 }
 
 export const pluralize = (count: number, word: string) => {

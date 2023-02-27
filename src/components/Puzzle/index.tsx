@@ -4,7 +4,7 @@ import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useTvPlayerWebsocket } from './hooks'
-import { computeCellSize } from 'src/utils/misc'
+import { useCellSize } from 'src/utils/misc'
 import { changePaused } from 'src/reducers/puzzle'
 
 // A puzzle that you are actively solving
@@ -20,9 +20,7 @@ const PuzzleComponent = () => {
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
-  // Calculate the available screen width and subtract parent padding
-  const width = (document.documentElement.clientWidth || window.innerWidth) - 40
-  const cellSize = computeCellSize(constraints.gridSize, width)
+  const cellSize = useCellSize(constraints.gridSize)
 
   useTvPlayerWebsocket()
 

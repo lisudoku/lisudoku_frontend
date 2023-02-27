@@ -4,9 +4,8 @@ import classNames from 'classnames'
 import PuzzleCardIcons from '../AdminPage/PuzzlesPage/PuzzleCardIcons'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
-import { computeCellSize, getDurationShort } from 'src/utils/misc'
+import { getDurationShort, useCellSize } from 'src/utils/misc'
 import { differenceInSeconds, parseISO } from 'date-fns'
-import { useWindowWidth } from '@react-hook/window-size'
 import { TvPuzzle } from 'src/reducers/tv'
 
 const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
@@ -48,11 +47,8 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
 const TvPuzzleCard = ({ puzzle }: { puzzle: TvPuzzle }) => {
   const gridSize = puzzle.constraints.gridSize
 
-  // Calculate the available screen width and subtract parent paddings
-  const width = useWindowWidth()
-  const availableWidth = width - 40 - 24
-
-  const cellSize = computeCellSize(gridSize, availableWidth, 0.6)
+  // 40 = page padding; 24 = card padding
+  const cellSize = useCellSize(gridSize, 0.62, 40 + 24)
 
   return (
     <div className="flex flex-col items-center w-fit p-3 pb-1 bg-gray-900 rounded border border-gray-800">

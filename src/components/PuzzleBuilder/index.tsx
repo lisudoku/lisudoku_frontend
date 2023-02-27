@@ -21,8 +21,7 @@ import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from
 import Input from 'src/components/Input'
 import { exportToLisudoku, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
-import { computeCellSize } from 'src/utils/misc'
-import { useWindowWidth } from '@react-hook/window-size'
+import { useCellSize } from 'src/utils/misc'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
@@ -157,15 +156,11 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     return `${window.location.origin}/e?${params}`
   }, [constraints])
 
-  // Calculate the available screen width and subtract parent paddings
-  const width = useWindowWidth()
-  const availableWidth = width - 40
+  const cellSize = useCellSize(constraints?.gridSize)
 
   if (!constraints) {
     return null
   }
-
-  const cellSize = computeCellSize(gridSize!, availableWidth)
 
   let thermos = constraints?.thermos ?? []
   if (currentThermo.length > 0) {
