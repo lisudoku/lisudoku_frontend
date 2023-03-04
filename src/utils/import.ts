@@ -114,7 +114,7 @@ const importLisudokuInline = (encodedData: string): ImportResult => {
       message: '[lisudoku] Error while parsing inline data',
     }
   }
-  const filteredConstraints = JSON.parse(constraintsStr!)
+  const filteredConstraints = jcc.camelCaseKeys(JSON.parse(constraintsStr!))
   const constraints = {
     ...defaultConstraints(filteredConstraints.gridSize),
     ...filteredConstraints,
