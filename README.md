@@ -2,11 +2,19 @@
 
 https://lisudoku.xyz
 
-<img width="1082" alt="Screenshot 2023-01-24 at 00 05 37" src="https://user-images.githubusercontent.com/6545554/214160491-e2b6b810-21ca-457b-a0cd-bba67bd2c5b7.png">
+<img width="846" alt="Screenshot 2023-03-07 at 15 25 02" src="https://user-images.githubusercontent.com/6545554/223435209-8877f41c-322e-4134-a415-20a3763f7c7f.png">
 
 This is lisudoku's frontend written in React that connects to the Rails [backend](https://github.com/lisudoku/lisudoku_backend).
 
-11 supported sudoku variants.
+Main features
+1. 11 supported sudoku variants
+2. Multiple grid sizes (4x4, 6x6, 9x9)
+3. Watch other solvers play live
+4. Get hints when you're stuck
+5. Build puzzles and run the solver on any puzzle
+6. Share the puzzle you built and others can solve it
+7. Solve or run the solver on puzzles imported from f-puzzles
+8. No account required
 
 ## Contribute
 
