@@ -52,4 +52,5 @@ export enum StepRule {
   Swordfish = 'Swordfish',
   CommonPeerElimination = 'CommonPeerElimination',
   TurbotFish = 'TurbotFish',
+  EmptyRectangles = 'EmptyRectangles',
 }

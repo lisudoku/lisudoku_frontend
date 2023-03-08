@@ -115,6 +115,9 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
         `${step.affected_cells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
         `on ${areaDisplay(step.areas[1])}`
     }
+    case StepRule.EmptyRectangles:
+      return ` in ${areaDisplay(step.areas[0])} that sees strong link ` +
+        `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
       const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0])}` : ''

@@ -437,6 +437,26 @@ const TECHNIQUES: Technique[] = [
       For the decreasing sequence on row X we track digit 10-X.
     </>,
   },
+  {
+    id: StepRule.EmptyRectangles,
+    summary: <>
+      In a box, each of digit X's candidate cells are either on row R or col C.
+    </>,
+    externalResources: [
+      {
+        name: 'sudopedia.org',
+        url: 'https://www.sudopedia.org/wiki/Empty_Rectangle',
+      },
+      {
+        name: 'HoDoKu',
+        url: 'https://hodoku.sourceforge.net/en/tech_sdp.php#er',
+      },
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Empty_Rectangles',
+      },
+    ],
+  },
 ]
 
 export const TECHNIQUES_BY_DIFFICULTY = _.groupBy(
