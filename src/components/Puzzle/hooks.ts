@@ -79,6 +79,9 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     }
     setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, solved, solveTimer])
+  const handlePause = useCallback(() => {
+    dispatch(changePaused(true))
+  }, [dispatch]);
 
   return {
     enabled,
@@ -93,6 +96,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     onReset: handleReset,
     onUndo: handleUndo,
     onRedo: handleRedo,
+    onPause: handlePause,
   }
 }
 
@@ -105,7 +109,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   const {
     enabled, notesActive, undoActive, redoActive,
     onSelectedCellChange, onNotesActiveToggle, onUndo, onRedo,
-    onSelectedCellValueChange, onSelectedCellNotesChange,
+    onSelectedCellValueChange, onSelectedCellNotesChange, onPause,
   } = useControlCallbacks(isSolvedLoading)
 
   useEffect(() => {
@@ -135,9 +139,14 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (e.key.toLowerCase() === ' ') {
+      if (e.key === ' ' || e.key === 'Tab') {
         onNotesActiveToggle()
         e.preventDefault()
+        return
+      }
+
+      if (e.key.toLowerCase() === 'p') {
+        onPause();
         return
       }
 
@@ -188,7 +197,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   }, [
     enabled, gridSize, selectedCells, notesActive, redoActive, undoActive,
     onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange,
-    onSelectedCellNotesChange, onUndo, onRedo
+    onSelectedCellNotesChange, onUndo, onRedo, onPause,
   ])
 }
 
