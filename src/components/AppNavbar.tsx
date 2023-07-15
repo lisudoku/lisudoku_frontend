@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -90,7 +90,12 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           className="font-normal"
           key={url}
         >
-          <Link to={url}>{text}</Link>
+          <NavLink
+            to={url}
+            className={({ isActive }) => isActive ? 'underline' : ''}
+          >
+            {text}
+          </NavLink>
         </Typography>
       ))}
     </ul>
