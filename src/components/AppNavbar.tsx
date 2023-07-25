@@ -4,7 +4,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faBars } from '@fortawesome/free-solid-svg-icons'
+import { faXmark, faBars, faTrophy, faFire, faCircle } from '@fortawesome/free-solid-svg-icons'
 
 const ITEMS: any[] = [
   {
@@ -110,6 +110,19 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
         className="font-normal"
       >
         Solved: {solveCount}
+        {solveCount >= 2 && (
+          <>
+            {' '}
+            {solveCount >= 5 ? (
+              <FontAwesomeIcon icon={faTrophy} color={solveCount >= 15 ? 'gold' : solveCount >= 10 ? 'silver' : '#cd7f32'} />
+            ) : (
+              <span className="fa-layers fa-fw">
+                <FontAwesomeIcon icon={faCircle} color="yellow" size="sm" />
+                <FontAwesomeIcon icon={faFire} color="red" size="lg" />
+              </span>
+            )}
+          </>
+        )}
       </Typography>
       {username ? (
         <>
