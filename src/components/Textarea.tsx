@@ -1,13 +1,15 @@
 import { forwardRef } from 'react'
-import { Textarea as MuiTextArea } from '@material-tailwind/react'
+import { Textarea as MuiTextArea, TextareaProps } from '@material-tailwind/react'
 
-const EXTRA_CLASSNAME = 'rounded disabled:!border-gray-600 disabled:!border-2 disabled:!text-white !bg-black'
+const EXTRA_CLASSNAME = 'rounded disabled:!border-gray-600 disabled:!border-2 disabled:!text-white !bg-black !text-white'
 
 const LABEL_PROPS = {
-  className: '!text-black'
+  className: '!text-white'
 }
 
-const Textarea = forwardRef((props: any, ref) => (
+interface TextAreaProps extends TextareaProps {}
+
+const Textarea = forwardRef((props: TextAreaProps, ref: React.ForwardedRef<HTMLDivElement | null>) => (
   <MuiTextArea {...props}
                ref={ref}
                className={`${EXTRA_CLASSNAME} ${props.className}`}

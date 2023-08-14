@@ -19,6 +19,10 @@ const ITEMS: any[] = [
     text: 'Solver',
     url: '/solver',
   },
+  {
+    text: 'Feedback?',
+    url: '/feedback',
+  },
 ]
 
 const ADMIN_ITEMS = [

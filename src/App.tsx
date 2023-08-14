@@ -21,6 +21,7 @@ import CollectionPage from './screens/CollectionPage'
 import LearnPage from './screens/LearnPage'
 import SolverPage from './screens/SolverPage'
 import ExternalPuzzlePage from './screens/ExternalPuzzlePage'
+import FeedbackPage from './screens/FeedbackPage'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 
@@ -58,6 +59,7 @@ const App = () => {
                         <Route path="collections/:id" element={<CollectionPage />} />
                         <Route path="learn" element={<LearnPage />} />
                         <Route path="solver" element={<SolverPage />} />
+                        <Route path="feedback" element={<FeedbackPage />} />
                         <Route path="*" element={<PageNotFound />} />
                       </Route>
                       <Route path="/" element={<Layout admin />}>
