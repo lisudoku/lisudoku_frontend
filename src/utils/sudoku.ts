@@ -172,6 +172,7 @@ const checkErrorsBetween = (
   }
 }
 
+// TODO: deduplicate code by returning offending cells from the wasm checker
 export const computeErrors = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]) => {
   const { gridSize, fixedNumbers } = constraints
   const gridErrors: boolean[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
@@ -249,6 +250,25 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       if (value) {
         prevValue = value!
         prevCell = cell
+      }
+    }
+  }
+
+  // Arrows
+  for (const arrow of constraints.arrows ?? []) {
+    if (arrow.circleCells.some(cell => !valuesGrid[cell.row][cell.col])) {
+      continue
+    }
+    let circleValue = 0
+    for (const cell of _.sortBy(arrow.circleCells, ['row', 'col'])) {
+      const value = valuesGrid[cell.row][cell.col]!
+      circleValue = 10 * circleValue + value
+    }
+    const arrowSum = _.sumBy(arrow.arrowCells, cell => valuesGrid[cell.row][cell.col] ?? 0)
+    const arrowFull = arrow.arrowCells.every(cell => valuesGrid[cell.row][cell.col])
+    if (arrowSum > circleValue || (arrowFull && arrowSum !== circleValue)) {
+      for (const { row, col } of [...arrow.circleCells, ...arrow.arrowCells]) {
+        gridErrors[row][col] = true
       }
     }
   }

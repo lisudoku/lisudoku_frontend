@@ -77,7 +77,7 @@ const TECHNIQUES: Technique[] = [
     id: StepRule.HiddenPairs,
     akas: [ 'Last 2 Remaining Cells' ],
     summary: <>
-      In a row/column/box (or any {HOUSE}) you can only put digits X and Y in two of the cells, 
+      In a row/column/box (or any {HOUSE}) you can only put digits X and Y in two of the cells,
       so remove every other candidate from those two cells.
     </>,
     externalResources: [
@@ -160,7 +160,7 @@ const TECHNIQUES: Technique[] = [
     id: StepRule.HiddenTriples,
     akas: [ 'Last 3 Remaining Cells' ],
     summary: <>
-      In a row/column/box (or any {HOUSE}) you can only put digits X, Y and Z in three of the cells, 
+      In a row/column/box (or any {HOUSE}) you can only put digits X, Y and Z in three of the cells,
       so remove every other candidate from those three cells.
     </>,
     externalResources: [
@@ -187,7 +187,7 @@ const TECHNIQUES: Technique[] = [
     id: StepRule.NakedTriples,
     akas: [ 'Obvious Triples' ],
     summary: <>
-      In a row/column/box (or any {HOUSE}) three cells can only contain digits X, Y and Z, so you can 
+      In a row/column/box (or any {HOUSE}) three cells can only contain digits X, Y and Z, so you can
       remove them as candidates from every other cell in the same house.
     </>,
     externalResources: [
@@ -243,12 +243,12 @@ const TECHNIQUES: Technique[] = [
   {
     id: StepRule.CommonPeerElimination,
     summary: <>
-      Putting digit X in a cell eliminates X as a candidate from another {HOUSE}, 
+      Putting digit X in a cell eliminates X as a candidate from another {HOUSE},
       so it's not a valid candidate for that cell.
       <br />
       This technique is the general version of <LinkToTechnique id={StepRule.LockedCandidatesPairs} />.
 
-      It is more common in variants like Anti Knight and Diagonal 
+      It is more common in variants like Anti Knight and Diagonal
       because Classic has more specialized techniques.
     </>,
     externalResources: [
@@ -262,7 +262,7 @@ const TECHNIQUES: Technique[] = [
   {
     id: StepRule.XWing,
     summary: <>
-      Find rows where digit X is a candidate in only two cells. If there is a pair of rows 
+      Find rows where digit X is a candidate in only two cells. If there is a pair of rows
       where the cells are in the same two columns, remove X as a candidate from all other
       cells in those columns.
       <br />
@@ -292,7 +292,7 @@ const TECHNIQUES: Technique[] = [
     id: StepRule.XYWing,
     akas: [ 'Y-Wing', 'Bent Triples' ],
     summary: <>
-      Cell with candidates XY sees two cells with candidates XZ and YZ. 
+      Cell with candidates XY sees two cells with candidates XZ and YZ.
       Remove Z as a candidate from every cell that sees both cells XZ and YZ.
     </>,
     externalResources: [
@@ -316,7 +316,7 @@ const TECHNIQUES: Technique[] = [
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
-      For a thermometer, starting from the bulb and going to the ending cell, 
+      For a thermometer, starting from the bulb and going to the ending cell,
       find the smallest digit that can be a candidate in each cell.
       <br/>
       Do the same thing starting at the end and going towards the bulb and find the highest digits.
@@ -330,7 +330,7 @@ const TECHNIQUES: Technique[] = [
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
-      Same as <LinkToTechnique id={StepRule.Thermo} />, but we use it to remove candidates. You can 
+      Same as <LinkToTechnique id={StepRule.Thermo} />, but we use it to remove candidates. You can
       remove any candidates from a cell that are not between the lowest and the highest valid candidate.
       <br />
       Example: The bulb cell has candidates 2,3. The next cell has candidates 2,3,5 and you can remove 2.
@@ -342,7 +342,7 @@ const TECHNIQUES: Technique[] = [
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
-      For a kropki dot, find all valid digit combinations in the corresponding pair of cells. 
+      For a kropki dot, find all valid digit combinations in the corresponding pair of cells.
       Remove all candidate digits that do not appear in any combination.
     </>,
     practicePuzzleIds: [ 'LlBlSN4rx4NZ1mfruv4n' ],
@@ -352,22 +352,31 @@ const TECHNIQUES: Technique[] = [
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
-      Same as <LinkToTechnique id={StepRule.Kropki} />, but apply for a chain of cells 
+      Same as <LinkToTechnique id={StepRule.Kropki} />, but apply for a chain of cells
       linked by dots in the same {HOUSE}.
     </>,
     practicePuzzleIds: [ 'rGhrOQVXJS7LiV4VpRm2' ],
   },
   {
-    id: StepRule.CommonPeerEliminationKropki,
+    id: StepRule.KropkiAdvancedCandidates,
     summary: <>
-      Only applies to Kropki puzzles. 
-      It is a combination of <LinkToTechnique id={StepRule.CommonPeerElimination} /> and 
-      {' '}<LinkToTechnique id={StepRule.KropkiChainCandidates} />.
+      Only applies to Kropki puzzles.
+      It is a variation of <LinkToTechnique id={StepRule.KropkiChainCandidates} /> where we look deeper
+      into the consequences.
       <br/>
-      If one chain combination eliminates all candidates from a cell that the entire chain sees, 
-      remove the combination as a candidate.
+      If one chain combination eliminates all candidates from a cell, remove the combination as a candidate.
     </>,
     practicePuzzleIds: [ 'F2mvNvtEFlNrEkGK-5fG', '4rWU4qvNQNH02XsKFrPY' ],
+  },
+  {
+    id: StepRule.CommonPeerEliminationKropki,
+    summary: <>
+      Only applies to Kropki puzzles.
+      It is a combination of <LinkToTechnique id={StepRule.CommonPeerElimination} /> and
+      {' '}<LinkToTechnique id={StepRule.KropkiChainCandidates} />.
+      <br/>
+      If all chain combinations eliminate X from cell Y then eliminate it.
+    </>,
   },
   {
     id: StepRule.KillerCandidates,
@@ -375,7 +384,7 @@ const TECHNIQUES: Technique[] = [
     summary: <>
       Only applies to Killer puzzles.
       <br/>
-      For a killer cage, find all digit combinations that satisfy the sum. 
+      For a killer cage, find all digit combinations that satisfy the sum.
       Remove all candidate digits that do not appear in any combination.
     </>,
     externalResources: [
@@ -394,7 +403,7 @@ const TECHNIQUES: Technique[] = [
       <br/>
       The sum of digits in a 9 cell {HOUSE} is 1+2+...+9 = 45.
       <br/>
-      Starting with 45, you can subtract all of the cage sums that are fully within the same house and 
+      Starting with 45, you can subtract all of the cage sums that are fully within the same house and
       you get the sum of the rest of the cells. If there is only one cell left, you found the value of that cell.
       <br/>
       For other house sizes use a different 1+2+...+n.
@@ -406,6 +415,35 @@ const TECHNIQUES: Technique[] = [
       },
     ],
     practicePuzzleIds: [ 'rkwWa3AEg_lMValqbdDp' ],
+  },
+  {
+    id: StepRule.ArrowCandidates,
+    summary: <>
+      Only applies to Arrow puzzles.
+      <br/>
+      For an arrow, find all digit combinations that satisfy the sum.
+      Remove all candidate digits that do not appear in any combination.
+    </>,
+  },
+  {
+    id: StepRule.ArrowAdvancedCandidates,
+    summary: <>
+      Only applies to Arrow puzzles.
+      It is a variation of <LinkToTechnique id={StepRule.ArrowCandidates} /> where we look deeper
+      into the consequences.
+      <br/>
+      If one arrow combination eliminates all candidates from a cell, remove the combination as a candidate.
+    </>,
+  },
+  {
+    id: StepRule.CommonPeerEliminationArrow,
+    summary: <>
+      Only applies to Arrow puzzles.
+      It is a combination of <LinkToTechnique id={StepRule.CommonPeerElimination} /> and
+      {' '}<LinkToTechnique id={StepRule.ArrowCandidates} />.
+      <br/>
+      If all arrow combinations eliminate X from cell Y then eliminate it.
+    </>,
   },
   {
     id: StepRule.TurbotFish,

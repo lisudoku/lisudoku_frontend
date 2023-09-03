@@ -54,6 +54,8 @@ const areaDisplay = (area: any) => {
     return 'the negative diagonal'
   } else if (area === 'SecondaryDiagonal') {
     return 'the positive diagonal'
+  } else if (area.Arrow !== undefined) {
+    return 'an arrow'
   } else {
     throw new Error(`unknown area ${JSON.stringify(area)}`)
   }
@@ -100,9 +102,12 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
       return ` to remove value ${values} from ${affectedCells} because it ` +
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
+    // TODO: KropkiAdvancedCandidates + because it would eliminate all candidates from ${cells}
     case StepRule.CommonPeerEliminationKropki:
-      return ` to remove kropki chain combination ${values} from ${affectedCells} because it ` +
-        `would eliminate all candidates from ${cells}`
+      return ` to remove ${values} from ${affectedCells} because all chain combinations in ${step.areas[0]} would eliminate them`
+    // TODO: ArrowAdvancedCandidates + because it would eliminate all candidates from ${cells}
+    case StepRule.CommonPeerEliminationArrow:
+      return ` to remove ${values} from ${affectedCells} because all arrow combinations in ${step.areas[0]} would eliminate them`
     case StepRule.TurbotFish:
       return ` on strong links ${cellDisplays[0]}-${cellDisplays[1]} and ` +
         `${cellDisplays[2]}-${cellDisplays[3]}. Because ${cellDisplays[0]} and ${cellDisplays[2]} ` +
@@ -178,6 +183,7 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
       const zValue = step.values[2]
       return cellsDoNotContainCandidates(step.affected_cells, [ zValue ], notes)
     case StepRule.CommonPeerEliminationKropki:
+    case StepRule.CommonPeerEliminationArrow:
       return cellsDoNotContainSet(step.affected_cells, step.values, notes)
     default:
       return cellsDoNotContainCandidates(step.affected_cells, step.values, notes)

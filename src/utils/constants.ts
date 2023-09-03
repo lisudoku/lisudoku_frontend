@@ -6,7 +6,7 @@ export const GRID_SIZES = [ 4, 6, 9 ]
 
 export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.Classic,
-  SudokuVariant.Killer,
+  SudokuVariant.Arrow,
   SudokuVariant.Thermo,
   SudokuVariant.Kropki,
   SudokuVariant.Diagonal,
@@ -16,6 +16,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.ExtraRegions,
   SudokuVariant.OddEven,
   SudokuVariant.TopBottom,
+  SudokuVariant.Killer,
   SudokuVariant.Mixed,
 ]
 
@@ -57,6 +58,9 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.Candidates]: 'Candidates',
   [StepRule.ThermoCandidates]: 'Thermo Candidates',
   [StepRule.KillerCandidates]: 'Killer Cage Candidates',
+  [StepRule.ArrowCandidates]: 'Arrow Candidates',
+  [StepRule.ArrowAdvancedCandidates]: 'Arrow Advanced Candidates',
+  [StepRule.KropkiAdvancedCandidates]: 'Kropki Dot Chain Advanced Logic',
   [StepRule.Killer45]: 'Killer Sum Rule',
   [StepRule.Kropki]: 'Kropki Dot Pair Logic',
   [StepRule.KropkiChainCandidates]: 'Kropki Dot Chain Logic',
@@ -65,6 +69,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.NakedPairs]: 'Naked Pairs',
   [StepRule.HiddenPairs]: 'Hidden Pairs',
   [StepRule.CommonPeerEliminationKropki]: 'Common Peer Elimination (Kropki)',
+  [StepRule.CommonPeerEliminationArrow]: 'Common Peer Elimination (Arrow)',
   [StepRule.LockedCandidatesTriples]: 'Locked Candidate Triples',
   [StepRule.NakedTriples]: 'Naked Triples',
   [StepRule.HiddenTriples]: 'Hidden Triples',
@@ -93,17 +98,23 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.HiddenSingle]: EStepRuleDifficulty.Easy,
   [StepRule.NakedSingle]: EStepRuleDifficulty.Easy,
   [StepRule.Thermo]: EStepRuleDifficulty.Easy,
+
   [StepRule.Candidates]: EStepRuleDifficulty.Medium,
   [StepRule.ThermoCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.KillerCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.ArrowCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.ArrowAdvancedCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.Killer45]: EStepRuleDifficulty.Medium,
   [StepRule.Kropki]: EStepRuleDifficulty.Medium,
   [StepRule.KropkiChainCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.KropkiAdvancedCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.TopBottomCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.LockedCandidatesPairs]: EStepRuleDifficulty.Medium,
   [StepRule.NakedPairs]: EStepRuleDifficulty.Medium,
   [StepRule.HiddenPairs]: EStepRuleDifficulty.Medium,
+
   [StepRule.CommonPeerEliminationKropki]: EStepRuleDifficulty.Hard,
+  [StepRule.CommonPeerEliminationArrow]: EStepRuleDifficulty.Hard,
   [StepRule.LockedCandidatesTriples]: EStepRuleDifficulty.Hard,
   [StepRule.NakedTriples]: EStepRuleDifficulty.Hard,
   [StepRule.HiddenTriples]: EStepRuleDifficulty.Hard,

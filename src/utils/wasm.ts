@@ -7,6 +7,7 @@ export const computeWasmConstraints = (constraints: SudokuConstraints) => {
   const wasmConstraints = jcc.snakeCaseKeys(constraints)
   // Some puzzles may not have some fields because they didn't exist yet
   wasmConstraints.thermos ||= []
+  wasmConstraints.arrows ||= []
   wasmConstraints.kropki_dots ||= []
   wasmConstraints.killer_cages ||= []
   wasmConstraints.extra_regions ||= []

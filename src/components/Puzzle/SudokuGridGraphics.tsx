@@ -1,7 +1,7 @@
-import { ReactElement, MouseEvent, useCallback } from 'react'
+import { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
-import { CellNotes, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { Arrow, CellNotes, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid, useNoteErrors } from './hooks'
 
@@ -102,6 +102,125 @@ const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: n
   <>
     {thermos.map((thermo, index) => (
       <ThermoGraphics key={index} thermo={thermo} cellSize={cellSize} />
+    ))}
+  </>
+)
+
+const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) => {
+  const half = cellSize / 2
+  const strokeWidth = cellSize / 15
+  const margin = strokeWidth / 2
+
+  let circleRect: SVGProps<SVGRectElement> | undefined
+  if (arrow.circleCells.length > 0) {
+    const circleMinRow = _.minBy(arrow.circleCells, 'row')!.row
+    const circleMaxRow = _.maxBy(arrow.circleCells, 'row')!.row
+    const circleMinCol = _.minBy(arrow.circleCells, 'col')!.col
+    const circleMaxCol = _.maxBy(arrow.circleCells, 'col')!.col
+    circleRect = {
+      x: circleMinCol * cellSize + 1 + strokeWidth / 2 + margin,
+      y: circleMinRow * cellSize + 1 + strokeWidth / 2 + margin,
+      width: (circleMaxCol - circleMinCol + 1) * cellSize - strokeWidth - 2 * margin,
+      height: (circleMaxRow - circleMinRow + 1) * cellSize - strokeWidth - 2 * margin,
+      rx: cellSize / 2,
+      ry: cellSize / 2,
+    }
+  }
+
+  const firstCell = arrow.arrowCells[0]
+  let closestCircleCell
+  if (firstCell) {
+    closestCircleCell = _.minBy(arrow.circleCells, cell => (
+      (firstCell.row - cell.row) ** 2 + (firstCell.col - cell.col) ** 2
+    ))
+  }
+
+  const lineCells: CellPosition[] = []
+  if (closestCircleCell) {
+    lineCells.push(closestCircleCell)
+  }
+  lineCells.push(...arrow.arrowCells)
+
+  const points = lineCells.map((cell, index) => {
+    let x: number = cell.col * cellSize + half + 1
+    let y: number = cell.row * cellSize + half + 1
+    if (index === 0 && index < lineCells.length - 1) {
+      const nextCell = lineCells[index + 1]
+      const dirX = Math.sign(nextCell.col - cell.col)
+      const dirY = Math.sign(nextCell.row - cell.row)
+      x += dirX * (half - margin)
+      y += dirY * (half - margin)
+      // Diagonal arrow starts need to be longer to be connected to the circle
+      if (dirX !== 0 && dirY !== 0) {
+        x -= dirX * cellSize / 6
+        y -= dirY * cellSize / 6
+      }
+    } else if (index > 0 && index === lineCells.length - 1) {
+      const prevCell = lineCells[index - 1]
+      const dirX = Math.sign(cell.col - prevCell.col)
+      const dirY = Math.sign(cell.row - prevCell.row)
+      x += dirX * half * 1 / 2
+      y += dirY * half * 1 / 2
+    }
+    return {
+      x,
+      y,
+    }
+  })
+
+  // Arrow shape
+  let arrowShapeSvgPoints = ''
+  if (points.length >= 2) {
+    const lastPoint = points.at(-1)!
+    const prevPoint = points.at(-2)!
+    const dy = prevPoint.y - lastPoint.y
+    const dx = prevPoint.x - lastPoint.x
+    // -dy because y axis is inverted
+    const angle = Math.atan2(-dy, dx)
+    const arrowLength = half * 3 / 4
+    const angleDelta = Math.PI / 5
+    const leftAngle = angle - angleDelta
+    const leftX = lastPoint.x + Math.cos(leftAngle) * arrowLength
+    const leftY = lastPoint.y - Math.sin(leftAngle) * arrowLength
+    const rightAngle = angle + angleDelta
+    const rightX = lastPoint.x + Math.cos(rightAngle) * arrowLength
+    const rightY = lastPoint.y - Math.sin(rightAngle) * arrowLength
+
+    const arrowShapePoints = [
+      {
+        x: leftX,
+        y: leftY,
+      },
+      lastPoint,
+      {
+        x: rightX,
+        y: rightY,
+      }
+    ]
+    arrowShapeSvgPoints = arrowShapePoints.map(({ x, y }) => `${x},${y}`).join(' ')
+  }
+
+  const svgPoints = points.map(({ x, y }) => `${x},${y}`).join(' ')
+
+  return (
+    <g className="arrow fill-none stroke-gray-500 opacity-80" style={{
+      strokeWidth,
+    }}>
+      {circleRect && (
+        <rect {...circleRect} />
+      )}
+      <polyline points={svgPoints} />
+      {arrowShapeSvgPoints.length > 0 && (
+        <polyline points={arrowShapeSvgPoints} />
+      )}
+    </g>
+  )
+}
+
+const ArrowsGraphics = ({ arrows, cellSize }: { arrows: Arrow[], cellSize: number }) => (
+  <>
+    {arrows.map((arrow, index) => (
+      <ArrowGraphics key={index} arrow={arrow} cellSize={cellSize} />
     ))}
   </>
 )
@@ -506,7 +625,7 @@ const SudokuConstraintsGraphics = (
   { cellSize, constraints, notes, grid, checkErrors, selectedCells, onCellClick }: SudokuConstraintsGraphicsProps
 ) => {
   const {
-    gridSize, fixedNumbers, regions, thermos, killerCages, kropkiDots, extraRegions,
+    gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
     oddCells, evenCells,
   } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
@@ -522,6 +641,7 @@ const SudokuConstraintsGraphics = (
       <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
+      <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
       <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
       <DiagonalGraphics gridSize={gridSize}

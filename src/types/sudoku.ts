@@ -38,6 +38,7 @@ export type SudokuConstraints = {
   regions: Region[]
   extraRegions: Region[]
   thermos?: Thermo[]
+  arrows?: Arrow[]
   primaryDiagonal: boolean
   secondaryDiagonal: boolean
   antiKnight: boolean
@@ -58,6 +59,11 @@ export type FixedNumber = {
 export type Region = CellPosition[]
 
 export type Thermo = CellPosition[]
+
+export type Arrow = {
+  circleCells: CellPosition[]
+  arrowCells: CellPosition[]
+}
 
 export type KillerCage = {
   sum: number | null

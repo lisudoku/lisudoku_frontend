@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faThermometer4, faXmark, faChessKnight, faChessKing, faSquare, faCircle as faCircleSolid, faBolt,
+  faThermometer4, faXmark, faChessKnight, faChessKing, faSquare, faCircle as faCircleSolid, faBolt, faUpLong,
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
@@ -25,6 +25,14 @@ const computeRules = (constraints: SudokuConstraints) => {
       <FontAwesomeIcon icon={faThermometer4} size="sm"/>
       {' '}
       Each thermometer contains digits in increasing order from the bulb to the end.
+    </>)
+  }
+  if (!_.isEmpty(constraints.arrows)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faUpLong} size="sm"/>
+      {' '}
+      The number placed in the arrow circle or oval must be the sum of digits placed
+      in the cells that the arrow passes through. Digits may repeat on arrows.
     </>)
   }
   if (constraints.primaryDiagonal || constraints.secondaryDiagonal) {
