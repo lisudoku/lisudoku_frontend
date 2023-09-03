@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChessKnight, faChessKing } from '@fortawesome/free-solid-svg-icons'
 
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
-  <div className="w-[14rem] p-1.5">
+  <div className="w-full sm:w-[14rem] p-1.5">
     <Link to={`/play/${variant}/${difficulty}`}>
       <div className="relative h-48 border rounded border-gray-700 cursor-pointer text-3xl bg-gray-800 hover:bg-cyan-900 hover:text-gray-300 hover:shadow-sm hover:shadow-gray-700">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
