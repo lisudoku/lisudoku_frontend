@@ -10,7 +10,7 @@ import { defaultConstraints } from 'src/reducers/builder'
 const jcc = require('json-case-convertor')
 
 const FPUZZLES_UNIMPLEMENTED_CONSTRAINTS = [
-  'disjointgroups', 'arrow', 'littlekillersum', 'minimum', 'maximum',
+  'disjointgroups', 'littlekillersum', 'minimum', 'maximum',
   'rowindexer', 'columnindexer', 'boxindexer', 'palindrome', 'renban', 'whispers', 'regionsumline',
   'xv', 'clone', 'quadruple', 'betweenline', 'sandwichsum', 'xsum', 'skyscraper', 'entropicline',
   'disabledlogic', 'truecandidatesoptions', 'cage', 'text',
@@ -229,6 +229,11 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
     thermos: _.flatMap((data.thermometer ?? []), ({ lines }: { lines: string[][] }) => (
       lines.map((cells: string[]) => mapCellStringArray(cells))
     )),
+    arrows: (data.arrow ?? []).map(({ cells, lines }: { cells: string[], lines: string[][] }) => ({
+      circleCells: cells.map(cellStringToObject),
+      // TODO: multiple lines not implemented
+      arrowCells: lines[0].slice(1).map(cellStringToObject),
+    })),
     primaryDiagonal: !!data['diagonal-'],
     secondaryDiagonal: !!data['diagonal+'],
     antiKnight: !!data.antiknight,

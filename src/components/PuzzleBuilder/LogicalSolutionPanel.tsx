@@ -32,6 +32,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
 
   let nonEmptyCells = constraints.fixedNumbers.length
   nonEmptyCells += _.sumBy(constraints.thermos, 'length') / 3
+  nonEmptyCells += _.sumBy(constraints.arrows, 'length') / 3
   if (constraints.primaryDiagonal) {
     nonEmptyCells += 3
   }
@@ -65,7 +66,13 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
 }
 
 const estimateDifficultyByRules = (steps: SolutionStep[]) => {
-  const maxDifficulty = _.max(steps.map(step => StepRuleDifficulty[step.rule]))
+  const maxDifficulty = _.max(steps.map(step => {
+    const difficulty = StepRuleDifficulty[step.rule]
+    if (difficulty === undefined) {
+      throw Error(`No difficulty found for rule ${step.rule}`)
+    }
+    return difficulty
+  }))
   return StepRuleDifficultyDisplay[maxDifficulty!]
 }
 

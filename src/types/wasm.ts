@@ -34,6 +34,9 @@ export enum StepRule {
   Candidates = 'Candidates',
   ThermoCandidates = 'ThermoCandidates',
   KillerCandidates = 'KillerCandidates',
+  ArrowCandidates = 'ArrowCandidates',
+  ArrowAdvancedCandidates = 'ArrowAdvancedCandidates',
+  KropkiAdvancedCandidates = 'KropkiAdvancedCandidates',
   Killer45 = 'Killer45',
   Kropki = 'Kropki',
   KropkiChainCandidates = 'KropkiChainCandidates',
@@ -41,7 +44,6 @@ export enum StepRule {
   LockedCandidatesPairs = 'LockedCandidatesPairs',
   NakedPairs = 'NakedPairs',
   HiddenPairs = 'HiddenPairs',
-  CommonPeerEliminationKropki = 'CommonPeerEliminationKropki',
   // Hard
   LockedCandidatesTriples = 'LockedCandidatesTriples',
   HiddenTriples = 'HiddenTriples',
@@ -51,6 +53,8 @@ export enum StepRule {
   XYWing = 'XYWing',
   Swordfish = 'Swordfish',
   CommonPeerElimination = 'CommonPeerElimination',
+  CommonPeerEliminationKropki = 'CommonPeerEliminationKropki',
+  CommonPeerEliminationArrow = 'CommonPeerEliminationArrow',
   TurbotFish = 'TurbotFish',
   EmptyRectangles = 'EmptyRectangles',
 }

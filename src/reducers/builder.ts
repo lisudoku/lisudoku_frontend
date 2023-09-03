@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import {
+  Arrow,
   CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
   Region, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
@@ -12,6 +13,7 @@ const jcc = require('json-case-convertor')
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
   Thermo = 'thermo',
+  Arrow = 'arrow',
   Regions = 'regions',
   Killer = 'killer',
   KropkiConsecutive = 'kropki_consecutive',
@@ -19,6 +21,11 @@ export enum ConstraintType {
   ExtraRegions = 'extraregions',
   OddCells = 'oddcells',
   EvenCells = 'evencells',
+}
+
+export enum ArrowConstraintType {
+  Circle = 'arrow-circle',
+  Arrow = 'arrow-arrow',
 }
 
 export enum SolverType {
@@ -34,6 +41,7 @@ type BuilderState = {
   variant: SudokuVariant
   difficulty: SudokuDifficulty
   constraintType: ConstraintType
+  arrowConstraintType: ArrowConstraintType
   notesActive: boolean
   notes: number[][][] | null
   bruteSolution: SudokuBruteSolveResult | null
@@ -45,6 +53,7 @@ type BuilderState = {
   puzzleAdding: boolean
   selectedCells: CellPosition[]
   currentThermo: Thermo
+  currentArrow: Arrow
   constraintGrid: Grid | null
   killerSum: number | null
   manualChange: boolean
@@ -58,27 +67,47 @@ const defaultDifficulty = (gridSize: number) => {
   }
 }
 
-const areAdjacent = (cell1: CellPosition, cell2: CellPosition) => {
+const areAdjacent8 = (cell1: CellPosition, cell2: CellPosition) => {
   return Math.abs(cell1.row - cell2.row) <= 1 &&
          Math.abs(cell1.col - cell2.col) <= 1
 }
 
-const isCellInThermo = (thermo: Thermo, cell: CellPosition) => (
+const areAdjacent4 = (cell1: CellPosition, cell2: CellPosition) => {
+  return Math.abs(cell1.row - cell2.row) + Math.abs(cell1.col - cell2.col) === 1
+}
+
+const isCellInPath = (thermo: Thermo, cell: CellPosition) => (
   thermo.find(thermoCell => _.isEqual(thermoCell, cell))
 )
 
-const expandsThermo = (thermo: Thermo, cell: CellPosition) => {
-  if (thermo.length === 0) {
+const expandsPath = (path: CellPosition[], cell: CellPosition) => {
+  if (path.length === 0) {
     return true
   }
 
-  if (isCellInThermo(thermo, cell)) {
+  if (isCellInPath(path, cell)) {
     return false
   }
 
-  const lastCell = thermo[thermo.length - 1]
-  return areAdjacent(lastCell, cell)
+  const lastCell = path[path.length - 1]
+  return areAdjacent8(lastCell, cell)
 }
+
+const expandsArea = (area: CellPosition[], cell: CellPosition, areAdjacent: (c1: CellPosition, c2: CellPosition) => boolean) => {
+  if (area.length === 0) {
+    return true
+  }
+
+  if (isCellInPath(area, cell)) {
+    return false
+  }
+
+  return area.some(areaCell => areAdjacent(areaCell, cell))
+}
+
+const expandsArea4 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent4)
+
+const expandsArea8 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent8)
 
 const handleConstraintChange = (state: BuilderState) => {
   state.variant = detectVariant(state)
@@ -91,6 +120,9 @@ const detectVariant = (state: BuilderState) => {
   const variants = []
   if (!_.isEmpty(state.constraints?.thermos)) {
     variants.push(SudokuVariant.Thermo)
+  }
+  if (!_.isEmpty(state.constraints?.arrows)) {
+    variants.push(SudokuVariant.Arrow)
   }
   if (state.constraints?.primaryDiagonal || state.constraints?.secondaryDiagonal) {
     variants.push(SudokuVariant.Diagonal)
@@ -134,6 +166,7 @@ export const defaultConstraints = (gridSize: number) => ({
   regions: ensureDefaultRegions(gridSize),
   extraRegions: [],
   thermos: [],
+  arrows: [],
   killerCages: [],
   kropkiDots: [],
   kropkiNegative: false,
@@ -155,6 +188,7 @@ export const builderSlice = createSlice({
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
     constraintType: ConstraintType.FixedNumber,
+    arrowConstraintType: ArrowConstraintType.Circle,
     notesActive: false,
     notes: null,
     bruteSolution: null,
@@ -168,6 +202,10 @@ export const builderSlice = createSlice({
     puzzleAdding: false,
     selectedCells: [],
     currentThermo: [],
+    currentArrow: {
+      circleCells: [],
+      arrowCells: [],
+    },
     killerSum: null,
     constraintGrid: null,
     manualChange: false,
@@ -220,8 +258,33 @@ export const builderSlice = createSlice({
         let constraintChanged = true
         switch (state.constraintType) {
           case ConstraintType.Thermo: {
-            if (expandsThermo(state.currentThermo, cell)) {
+            if (expandsPath(state.currentThermo, cell)) {
               state.currentThermo.push(cell)
+            }
+            break
+          }
+          case ConstraintType.Arrow: {
+            if (state.arrowConstraintType === ArrowConstraintType.Circle) {
+              if (expandsArea4(state.currentArrow.circleCells, cell) && !_.find(state.currentArrow.arrowCells, cell)) {
+                state.currentArrow.circleCells.push(cell)
+              }
+            } else {
+              if (
+                state.currentArrow.circleCells.length > 0 &&
+                !_.find(state.currentArrow.circleCells, cell) &&
+                (
+                  (
+                    state.currentArrow.arrowCells.length > 0 &&
+                    expandsPath(state.currentArrow.arrowCells, cell)
+                  ) ||
+                  (
+                    state.currentArrow.arrowCells.length === 0 &&
+                    expandsArea8(state.currentArrow.circleCells, cell)
+                  )
+                )
+              ) {
+                state.currentArrow.arrowCells.push(cell)
+              }
             }
             break
           }
@@ -256,15 +319,25 @@ export const builderSlice = createSlice({
       state.constraintType = action.payload
       state.selectedCells = []
       state.currentThermo = []
+      state.currentArrow = {
+        circleCells: [],
+        arrowCells: [],
+      }
 
       const gridSize = state.constraints!.gridSize
       switch (state.constraintType) {
         case ConstraintType.Regions:
           state.constraintGrid = regionsToRegionGrid(gridSize, state.constraints!.regions)
           break
+        case ConstraintType.Arrow:
+          state.arrowConstraintType = ArrowConstraintType.Circle
+          break
       }
 
       handleConstraintChange(state)
+    },
+    changeArrowConstraintType(state, action) {
+      state.arrowConstraintType = action.payload
     },
     changeSelectedCellValue(state, action) {
       switch (state.constraintType) {
@@ -305,6 +378,22 @@ export const builderSlice = createSlice({
           )
           state.constraints!.thermos!.push(state.currentThermo)
           state.currentThermo = []
+          break
+        }
+        case ConstraintType.Arrow: {
+          assert(
+            state.currentArrow.circleCells.length > 0,
+            'Arrow element has no circle part. Click on any cell to create it.'
+          )
+          assert(
+            state.currentArrow.arrowCells.length > 0,
+            'Arrow element has no arrow part. Click on any cell next to the circle to start it.'
+          )
+          state.constraints!.arrows!.push(state.currentArrow)
+          state.currentArrow = {
+            circleCells: [],
+            arrowCells: [],
+          }
           break
         }
         case ConstraintType.Regions: {
@@ -378,6 +467,21 @@ export const builderSlice = createSlice({
         const thermoIndex = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
         if (thermoIndex !== -1) {
           state.constraints!.thermos?.splice(thermoIndex, 1)
+        }
+
+        // Arrow
+        if (state.currentArrow.circleCells.find(isSelectedCell) || state.currentArrow.arrowCells.find(isSelectedCell)) {
+          state.currentArrow = {
+            circleCells: [],
+            arrowCells: [],
+          }
+        }
+
+        const arrowIndex = _.findIndex(state.constraints!.arrows, (arrow: Arrow) => (
+          arrow.circleCells.some(isSelectedCell) || arrow.arrowCells.some(isSelectedCell)
+        ))
+        if (arrowIndex !== -1) {
+          state.constraints!.arrows?.splice(arrowIndex, 1)
         }
 
         // Killer
@@ -519,7 +623,7 @@ export const builderSlice = createSlice({
 })
 
 export const {
-  initPuzzle, receivedPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue,
+  initPuzzle, receivedPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue, changeArrowConstraintType,
   addConstraint, deleteConstraint, requestSolution, responseSolution,
   errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,

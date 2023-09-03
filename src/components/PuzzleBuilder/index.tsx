@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
-  addConstraint, changeAntiKing, changeAntiKnight, changeConstraintType, changeInputActive, changeKillerSum,
+  addConstraint, ArrowConstraintType, changeAntiKing, changeAntiKnight, changeArrowConstraintType, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   changeTopBottom,
   ConstraintType, initPuzzle, receivedPuzzle, SolverType,
@@ -66,7 +66,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const constraints = useSelector(state => state.builder.constraints)
   const selectedCells = useSelector(state => state.builder.selectedCells)
   const constraintType = useSelector(state => state.builder.constraintType)
+  const arrowConstraintType = useSelector(state => state.builder.arrowConstraintType)
   const currentThermo = useSelector(state => state.builder.currentThermo)
+  const currentArrow = useSelector(state => state.builder.currentArrow)
   const notes = useSelector(state => state.builder.notes)
   const constraintGrid = useSelector(state => state.builder.constraintGrid!)
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
@@ -93,6 +95,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const handleConstraintTypeChange = useCallback((id: string) => {
     dispatch(changeConstraintType(id))
+  }, [dispatch])
+
+  const handleArrowConstraintTypeChange = useCallback((id: string) => {
+    dispatch(changeArrowConstraintType(id))
   }, [dispatch])
 
   const handleConstraintAdd = useCallback(() => {
@@ -166,9 +172,14 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   if (currentThermo.length > 0) {
     thermos = [ ...thermos, currentThermo ]
   }
+  let arrows = constraints?.arrows ?? []
+  if (currentArrow.arrowCells.length > 0 || currentArrow.circleCells.length > 0) {
+    arrows = [ ...arrows, currentArrow ]
+  }
   const constraintPreview = {
     ...constraints,
     thermos,
+    arrows,
   }
 
   // Not really used, but SudokuGrid needs them... there are better solutions
@@ -221,6 +232,15 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   })}}
                   onChange={handleConstraintTypeChange} />
             <Radio name="build-item"
+                  id={ConstraintType.Arrow}
+                  label="Arrow"
+                  checked={constraintType === ConstraintType.Arrow}
+                  labelProps={{ className: classNames('text-white', {
+                    'text-red-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length === 0,
+                    'text-green-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length > 0,
+                  })}}
+                  onChange={handleConstraintTypeChange} />
+            <Radio name="build-item"
                   id={ConstraintType.Regions}
                   label="Regions"
                   checked={constraintType === ConstraintType.Regions}
@@ -265,8 +285,32 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                       onBlur={handleInputBlur}
                 />
               )}
+              {constraintType === ConstraintType.Arrow && (
+                <>
+                  <Typography variant="h6">
+                    Arrow constraint
+                  </Typography>
+                  <div className="flex gap-2">
+                    <Radio
+                      name="arrow-build-item"
+                      id={ArrowConstraintType.Circle}
+                      label="Circle"
+                      checked={arrowConstraintType === ArrowConstraintType.Circle}
+                      onChange={handleArrowConstraintTypeChange}
+                    />
+                    <Radio
+                      name="arrow-build-item"
+                      id={ArrowConstraintType.Arrow}
+                      label="Arrow"
+                      checked={arrowConstraintType === ArrowConstraintType.Arrow}
+                      onChange={handleArrowConstraintTypeChange}
+                    />
+                  </div>
+                </>
+              )}
               {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer,
-                ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble, ConstraintType.ExtraRegions].includes(constraintType) && (
+                ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble,
+                ConstraintType.ExtraRegions, ConstraintType.Arrow].includes(constraintType) && (
                 <Button onClick={handleConstraintAdd}>Add</Button>
               )}
             </div>
