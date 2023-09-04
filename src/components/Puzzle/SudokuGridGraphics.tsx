@@ -171,8 +171,8 @@ const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) 
   // Arrow shape
   let arrowShapeSvgPoints = ''
   if (points.length >= 2) {
-    const lastPoint = points.at(-1)!
-    const prevPoint = points.at(-2)!
+    const lastPoint = points[points.length - 1]
+    const prevPoint = points[points.length - 2]
     const dy = prevPoint.y - lastPoint.y
     const dx = prevPoint.x - lastPoint.x
     // -dy because y axis is inverted
