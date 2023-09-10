@@ -12,7 +12,8 @@ axios.interceptors.response.use(
     return response
   },
   error => {
-    if (error.response.status === 401 && window.location.pathname !== '/login') {
+    console.error(error)
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
       (window.location as any) = '/logout'
     }
     return Promise.reject(error)

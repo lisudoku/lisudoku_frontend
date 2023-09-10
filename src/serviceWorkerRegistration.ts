@@ -21,6 +21,7 @@ const isLocalhost = Boolean(
 type Config = {
   onSuccess?: (registration: ServiceWorkerRegistration) => void;
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
+  onRegister?: (registration: ServiceWorkerRegistration) => void;
 };
 
 export function register(config?: Config) {

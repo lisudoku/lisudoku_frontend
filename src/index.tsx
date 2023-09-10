@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import axios from 'axios'
 import './index.css'
 import App from './App'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
@@ -18,6 +19,9 @@ root.render(
 // // unregister() to register() below. Note this comes with some pitfalls.
 // // Learn more about service workers: https://cra.link/PWA
 serviceWorkerRegistration.register()
+
+// Should always hit the cache except when the cache expires
+axios.post('/puzzles/download')
 
 // // If you want to start measuring performance in your app, pass a function
 // // to log results (for example: reportWebVitals(console.log))
