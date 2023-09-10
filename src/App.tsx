@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { HelmetProvider } from 'react-helmet-async'
 import HoneybadgerProvider from './components/HoneybadgerProvider'
+import OnlineStatusMonitor from './components/OnlineStatusMonitor'
 import AppRoutes from './AppRoutes'
 
 const theme = {}
@@ -16,26 +17,26 @@ if (process.env.NODE_ENV === 'production') {
   console.info = () => {}
 }
 
-const App = () => {
-  return (
-    <HoneybadgerProvider>
-      <HelmetProvider>
-        <ThemeProvider value={theme}>
-          <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
+const App = () => (
+  <HoneybadgerProvider>
+    <HelmetProvider>
+      <ThemeProvider value={theme}>
+        <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <OnlineStatusMonitor>
                 <BrowserRouter>
                   <Suspense fallback={<div>Loading...</div>}>
                     <AppRoutes />
                   </Suspense>
                 </BrowserRouter>
-              </PersistGate>
-            </Provider>
-          </div>
-        </ThemeProvider>
-      </HelmetProvider>
-    </HoneybadgerProvider>
-  )
-}
+              </OnlineStatusMonitor>
+            </PersistGate>
+          </Provider>
+        </div>
+      </ThemeProvider>
+    </HelmetProvider>
+  </HoneybadgerProvider>
+)
 
 export default App

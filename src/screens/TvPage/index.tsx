@@ -9,7 +9,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons'
 import { pluralize } from 'src/utils/misc'
 
 const TvPage = () => {
-  const { tvPuzzles, viewerCount, error, loading } = useTvViewerWebsocket()
+  const { tvPuzzles, viewerCount, loading, error, errorMessage } = useTvViewerWebsocket()
 
   return (
     <>
@@ -17,7 +17,7 @@ const TvPage = () => {
                 url="https://lisudoku.xyz/tv"
                 description="Watch people solve puzzles in real time" />
       {error ? (
-        <ErrorPage text="Dang it! The TV is too busy right now, check back later." />
+        <ErrorPage text={errorMessage} />
       ) : loading ? (
         <LoadingSpinner fullPage />
       ) : (

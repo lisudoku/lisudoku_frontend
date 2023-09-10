@@ -1,5 +1,6 @@
-import { createConsumer, Subscription } from '@rails/actioncable'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createConsumer, Subscription } from '@rails/actioncable'
+import { useSelector } from 'src/hooks'
 
 const CABLE_URL = `${process.env.REACT_APP_API_BASE_URL}/cable`
 const consumer = createConsumer(CABLE_URL)
@@ -14,8 +15,8 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   const [ connected, setConnected ] = useState(false)
   const [ wsUserId, setWsUserId ] = useState<string>()
   const [ error, setError ] = useState(false)
-
   const extraOptionsRef = useRef(extraOptions)
+  const isOnline = useSelector(state => state.misc.isOnline)
 
   useEffect(() => {
     if (isExternal) {
@@ -49,6 +50,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
       // Called when the Websocket connection is closed.
       disconnected() {
         console.info('[ws] Websocket disconnected')
+        setConnected(false)
       },
 
       // Called when the subscription is rejected by the server.
@@ -80,6 +82,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   return {
     ready: !!(connected && wsUserId),
     sendMessage,
-    error,
+    error: error || !isOnline,
+    errorReason: error ? 'rejected' : !isOnline ? 'offline' : null,
   }
 }
