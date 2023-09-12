@@ -13,6 +13,7 @@ import AboutPage from './screens/AboutPage'
 import CollectionPage from './screens/CollectionPage'
 import LearnPage from './screens/LearnPage'
 import SolverPage from './screens/SolverPage'
+import OfflinePage from './screens/OfflinePage'
 import FeedbackPage from './screens/FeedbackPage'
 import PageNotFound from './screens/PageNotFound'
 import EnsureAdmin from './components/EnsureAdmin'
@@ -36,6 +37,7 @@ const AppRoutes = () => (
       <Route path="collections/:id" element={<CollectionPage />} />
       <Route path="learn" element={<LearnPage />} />
       <Route path="solver" element={<SolverPage />} />
+      <Route path="offline" element={<OfflinePage/>} />
       <Route path="feedback" element={<FeedbackPage />} />
       <Route path="*" element={<PageNotFound />} />
     </Route>
