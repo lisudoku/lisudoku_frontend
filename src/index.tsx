@@ -21,6 +21,8 @@ root.render(
 serviceWorkerRegistration.register()
 
 // Should always hit the cache except when the cache expires
+// Might be better with background operations, but whatever
+// https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Offline_and_background_operation
 axios.post('/puzzles/download')
 
 // // If you want to start measuring performance in your app, pass a function
