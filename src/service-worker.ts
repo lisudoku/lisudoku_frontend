@@ -60,6 +60,13 @@ console.log(routes)
 // Saved data to runtime cache
 precache(routes)
 
+const clearDownloadCache = async () => {
+  console.log('[DOWNLOAD] Cleaning download data')
+  const cache = await caches.open(CACHE_NAME)
+  await cache.delete(DOWNLOAD_PATH)
+  console.log('[DOWNLOAD] Deleted download data')
+}
+
 const handleDownloadPath = async (request: Request) => {
   const cache = await caches.open(CACHE_NAME)
   const cachedEntry = await cache.match(DOWNLOAD_PATH)
@@ -240,6 +247,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   console.log('Activate steps')
   e.waitUntil((async () => {
+    await clearDownloadCache()
     const request = new Request(SERVER_URL + DOWNLOAD_PATH, { method: 'POST' })
     handleDownloadPath(request)
   })())
