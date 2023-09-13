@@ -232,9 +232,13 @@ registerRoute(
   new NetworkFirst(),
 )
 
-// Download offline puzzle data on install
 self.addEventListener('install', (e) => {
-  console.log('Custom install steps')
+  console.log('Extra install steps')
+})
+
+// Download offline puzzle data on activation
+self.addEventListener('activate', (e) => {
+  console.log('Activate steps')
   e.waitUntil((async () => {
     const request = new Request(SERVER_URL + DOWNLOAD_PATH, { method: 'POST' })
     handleDownloadPath(request)
