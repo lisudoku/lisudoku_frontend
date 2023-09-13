@@ -6,6 +6,12 @@ import App from './App'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import reportWebVitals from './reportWebVitals'
 
+if (process.env.NODE_ENV === 'production') {
+  console.debug = () => {}
+  console.log = () => {}
+  console.info = () => {}
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 )

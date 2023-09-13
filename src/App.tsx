@@ -11,12 +11,6 @@ import AppRoutes from './AppRoutes'
 
 const theme = {}
 
-if (process.env.NODE_ENV === 'production') {
-  console.debug = () => {}
-  console.log = () => {}
-  console.info = () => {}
-}
-
 const App = () => (
   <HoneybadgerProvider>
     <HelmetProvider>
