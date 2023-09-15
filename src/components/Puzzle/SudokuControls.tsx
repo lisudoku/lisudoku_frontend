@@ -100,7 +100,11 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
         <SolveTimer isSolvedLoading={isSolvedLoading}
                     onIsSolvedLoadingChange={onIsSolvedLoadingChange} />
         {!isExternal && (
-          <Button color={solved ? 'green' : 'gray'} onClick={onNewPuzzle}>
+          <Button
+            color={solved ? 'green' : 'gray'}
+            variant={solved ? 'filled' : 'text'}
+            onClick={onNewPuzzle}
+          >
             New puzzle
           </Button>
         )}
