@@ -260,6 +260,7 @@ export const computeHintContent = (
     return [
       "You're on the wrong track 😳 You made a mistake somewhere along the way 😞",
       false,
+      true,
     ]
   }
 
