@@ -37,7 +37,7 @@ export const useTvViewerWebsocket = () => {
       }
     }
   }, [dispatch])
-  const { error, ready } = useWebsocket('TvChannel', handleMessage)
+  const { ready, error, errorReason } = useWebsocket('TvChannel', handleMessage)
 
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)
   const viewerCount = useSelector(state => state.tv.viewerCount)
@@ -52,10 +52,20 @@ export const useTvViewerWebsocket = () => {
     )
   ), [tvPuzzles])
 
+  let errorMessage
+  if (error) {
+    if (errorReason === 'rejected') {
+      errorMessage = 'Dang it! The TV is too busy right now, check back later.'
+    } else {
+      errorMessage = 'The TV is not available while offline.'
+    }
+  }
+
   return {
     tvPuzzles: sortedTvPuzzles,
     viewerCount,
     error,
+    errorMessage,
     loading: !ready && !error,
   }
 }
