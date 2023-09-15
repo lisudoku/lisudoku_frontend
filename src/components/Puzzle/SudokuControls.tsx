@@ -55,7 +55,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
                })}
           >
             <Button fullWidth
-                    className="h-full text-xl p-0"
+                    className="h-full text-4xl font-normal p-0"
                     disabled={!controlEnabled}
                     onClick={() => handleDigitClick(value + 1)}
             >
