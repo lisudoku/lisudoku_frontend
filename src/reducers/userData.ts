@@ -11,6 +11,16 @@ type SolvedPuzzle = {
   difficulty: SudokuDifficulty
 }
 
+type UserSettings = {
+  showTimer: boolean
+  checkErrors: boolean
+}
+
+const DEFAULT_USER_SETTINGS = {
+  showTimer: true,
+  checkErrors: true,
+}
+
 type UserDataState = {
   username: string | null
   email: string | null
@@ -19,6 +29,7 @@ type UserDataState = {
   difficulty: SudokuDifficulty
   solvedPuzzles: SolvedPuzzle[]
   activeCompetitions: Competition[]
+  settings?: UserSettings
 }
 
 export const userDataSlice = createSlice({
@@ -51,6 +62,18 @@ export const userDataSlice = createSlice({
     receiveActiveCompetitions(state, action) {
       state.activeCompetitions = jcc.camelCaseKeys(action.payload)
     },
+    updateShowTimer(state, action) {
+      if (state.settings === undefined) {
+        state.settings = DEFAULT_USER_SETTINGS
+      }
+      state.settings.showTimer = action.payload
+    },
+    updateCheckErrors(state, action) {
+      if (state.settings === undefined) {
+        state.settings = DEFAULT_USER_SETTINGS
+      }
+      state.settings.checkErrors = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
@@ -76,6 +99,7 @@ export const userDataSlice = createSlice({
 
 export const {
   loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
+  updateShowTimer, updateCheckErrors,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer

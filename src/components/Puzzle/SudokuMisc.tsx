@@ -8,6 +8,8 @@ import PermalinkButton from './PermalinkButton'
 import VariantSelect from './VariantSelect'
 import DifficultySelect from './DifficultySelect'
 import HintPanel from './HintPanel'
+import ShowTimerToggle from './ShowTimerToggle'
+import CheckErrorsToggle from './CheckErrorsToggle'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
@@ -46,6 +48,12 @@ const SudokuMisc = () => {
           </>
         )}
         <ShortcutsButton />
+        <div className="mt-2">
+          <ShowTimerToggle />
+        </div>
+        <div className="mt-1">
+          <CheckErrorsToggle />
+        </div>
         {sourceCollectionId && (
           <div className="flex flex-col mt-2 w-full md:ml-4 md:w-fit">
             <div className="text-gray-400 text-sm">

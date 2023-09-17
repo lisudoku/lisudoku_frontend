@@ -24,6 +24,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   const solved = useSelector(state => state.puzzle.solved)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const actions = useSelector(state => state.puzzle.controls.actions)
+  const showTimer = useSelector(state => state.userData.settings?.showTimer ?? true)
 
   const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
 
@@ -80,6 +81,10 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
       dispatch(updateTimer())
     }
   }, 1000)
+
+  if (!showTimer && !solved && !isSolvedLoading) {
+    return null
+  }
 
   return (
     <div className={classNames(

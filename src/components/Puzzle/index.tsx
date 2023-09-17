@@ -17,6 +17,7 @@ const PuzzleComponent = () => {
   const notes = useSelector(state => state.puzzle.notes)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
+  const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
@@ -38,7 +39,7 @@ const PuzzleComponent = () => {
                     grid={grid!}
                     notes={notes!}
                     selectedCells={selectedCells}
-                    checkErrors
+                    checkErrors={checkErrors}
                     loading={isSolvedLoading}
                     onCellClick={onSelectedCellChange}
                     cellSize={cellSize}
