@@ -8,7 +8,6 @@ import PermalinkButton from './PermalinkButton'
 import VariantSelect from './VariantSelect'
 import DifficultySelect from './DifficultySelect'
 import HintPanel from './HintPanel'
-import HintButton from './HintButton'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
