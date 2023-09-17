@@ -13,6 +13,7 @@ import builder from './reducers/builder'
 import tv from './reducers/tv'
 import collections from './reducers/collections'
 import competitions from './reducers/competitions'
+import misc from './reducers/misc'
 import { combineReducers } from 'redux'
 
 const reducers = combineReducers({
@@ -23,6 +24,7 @@ const reducers = combineReducers({
   tv,
   collections,
   competitions,
+  misc,
 })
 
 const persistConfig = {

@@ -20,6 +20,11 @@ const ITEMS: any[] = [
     url: '/solver',
   },
   {
+    text: 'Offline',
+    url: '/offline',
+    isNew: true,
+  },
+  {
     text: 'Feedback?',
     url: '/feedback',
   },
@@ -86,7 +91,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
 
   const navList = (
     <ul className="flex flex-col gap-2 mb-2 mt-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-end lg:gap-6">
-      {items.map(({ text, url }) => (
+      {items.map(({ text, url, isNew }) => (
         <Typography
           as="li"
           variant="small"
@@ -100,6 +105,9 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           >
             {text}
           </NavLink>
+          {isNew && (
+            <span className="align-super bg-red-600 text-black text-[10px] font-bold ml-1">NEW</span>
+          )}
         </Typography>
       ))}
     </ul>
