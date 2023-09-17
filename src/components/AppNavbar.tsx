@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
-import { Navbar, MobileNav, Typography, IconButton } from '@material-tailwind/react'
+import { Navbar, Collapse, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars, faTrophy, faFire, faCircle } from '@fortawesome/free-solid-svg-icons'
 
@@ -180,10 +180,10 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           <FontAwesomeIcon icon={openNav ? faXmark : faBars} size="2x" />
         </IconButton>
       </div>
-      <MobileNav open={openNav}>
+      <Collapse open={openNav}>
         {navList}
         {rightButtons}
-      </MobileNav>
+      </Collapse>
     </Navbar>
   )
 }

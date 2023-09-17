@@ -6,10 +6,10 @@ const CloseButton = () => (
 )
 
 const SolutionPanel = ({ children, className, onClear }: SolutionPanelProps) => (
-  <Alert show
+  <Alert open
          className={`rounded py-2 ${className ?? ''}`}
          onClose={onClear}
-         closeButton={<CloseButton />}>
+         action={<CloseButton />}>
     {children}
   </Alert>
 )
@@ -17,7 +17,7 @@ const SolutionPanel = ({ children, className, onClear }: SolutionPanelProps) => 
 type SolutionPanelProps = {
   children: ReactElement | string
   className?: string
-  onClear?: Function
+  onClear?: () => void
 }
 
 export default SolutionPanel

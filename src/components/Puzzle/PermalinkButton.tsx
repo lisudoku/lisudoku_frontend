@@ -6,9 +6,9 @@ import { getPuzzleFullUrl } from 'src/utils/misc'
 
 const PermalinkButton = ({ publicId }: { publicId: string }) => (
   <CopyToClipboard text={getPuzzleFullUrl(publicId)}>
-    <Button variant="text" color="gray" className="w-full md:w-fit mt-2 md:mt-1">
+    <Button variant="filled" color="gray" className="w-full mt-2 md:mt-1">
       <FontAwesomeIcon icon={faLink} />
-      {' Copy puzzle permalink'}
+      {' Copy permalink'}
     </Button>
   </CopyToClipboard>
 )

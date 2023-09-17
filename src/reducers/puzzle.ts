@@ -33,7 +33,7 @@ type ControlsState = {
   actions: UserAction[]
   actionIndex: number
   hintSolution: SudokuLogicalSolveResult | null
-  lastHint: string | null
+  lastHintTimer: number | null
   hintLevel: HintLevel | null
   paused: boolean
 }
@@ -45,6 +45,7 @@ type PuzzleState = {
   solveTimer: number
   solved: boolean
   lastUpdate: string | null
+  lastUpdateTimer: number | null
   refreshKey: number
   controls: ControlsState
 }
@@ -63,6 +64,16 @@ const performAction = (state: PuzzleState, action: UserAction) => {
   }
 }
 
+const markUpdate = (state: PuzzleState) => {
+  state.lastUpdate = formatISO(new Date())
+  state.lastUpdateTimer = state.solveTimer
+}
+
+const clearUpdate = (state: PuzzleState) => {
+  state.lastUpdate = null
+  state.lastUpdateTimer = null
+}
+
 export const puzzleSlice = createSlice({
   name: 'puzzle',
   initialState: {
@@ -72,6 +83,7 @@ export const puzzleSlice = createSlice({
     solveTimer: 0,
     solved: false,
     lastUpdate: null,
+    lastUpdateTimer: null,
     refreshKey: 0,
     controls: {
       selectedCells: [],
@@ -79,7 +91,7 @@ export const puzzleSlice = createSlice({
       actions: [],
       actionIndex: -1,
       hintSolution: null,
-      lastHint: null,
+      lastHintTimer: null,
       hintLevel: null,
       paused: false,
     },
@@ -93,12 +105,12 @@ export const puzzleSlice = createSlice({
       state.data = puzzleData
       state.solved = false
       state.solveTimer = 0
-      state.lastUpdate = formatISO(new Date())
+      markUpdate(state)
       state.controls.selectedCells = []
       state.controls.actions = []
       state.controls.actionIndex = -1
       state.controls.hintSolution = null
-      state.controls.lastHint = null
+      state.controls.lastHintTimer = null
       state.controls.hintLevel = null
       state.controls.paused = false
       state.controls.notesActive = false
@@ -111,7 +123,7 @@ export const puzzleSlice = createSlice({
     },
     clearPuzzle(state) {
       state.data = null
-      state.lastUpdate = null
+      clearUpdate(state)
     },
     changeSelectedCell: (state, action) => {
       const { cell, ctrl, isClick, doubleClick } = action.payload
@@ -178,7 +190,7 @@ export const puzzleSlice = createSlice({
 
       state.controls.hintSolution = null
       state.controls.hintLevel = null
-      state.lastUpdate = formatISO(new Date())
+      markUpdate(state)
     },
     changeSelectedCellNotes(state, action) {
       if (_.isEmpty(state.controls.selectedCells)) {
@@ -217,7 +229,7 @@ export const puzzleSlice = createSlice({
         state.controls.actionIndex = state.controls.actions.length - 1
       }
 
-      state.lastUpdate = formatISO(new Date())
+      markUpdate(state)
     },
     toggleNotesActive(state) {
       state.controls.notesActive = !state.controls.notesActive
@@ -228,12 +240,12 @@ export const puzzleSlice = createSlice({
     requestSolved() {},
     responseSolved(state, action) {
       state.solved = action.payload.solved
-      state.lastUpdate = formatISO(new Date())
+      markUpdate(state)
     },
     fetchNewPuzzle(state) {
       // This will trigger refetching the puzzle
       state.refreshKey += 1
-      state.lastUpdate = null
+      clearUpdate(state)
     },
     resetPuzzle(state) {
       const { gridSize, fixedNumbers } = state.data!.constraints
@@ -262,7 +274,7 @@ export const puzzleSlice = createSlice({
     },
     changeHintSolution(state, action) {
       state.controls.hintSolution = action.payload
-      state.controls.lastHint = formatISO(new Date())
+      state.controls.lastHintTimer = state.solveTimer
       if (state.controls.hintSolution) {
         if (state.controls.hintLevel === null) {
           state.controls.hintLevel = HintLevel.Small

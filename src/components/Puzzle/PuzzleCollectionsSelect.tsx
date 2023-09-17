@@ -20,7 +20,7 @@ const PuzzleCollectionsSelect = ({ value, onChange, label }: PuzzleCollectionsSe
   }, [dispatch, userToken, puzzleCollections])
 
   if (puzzleCollections === undefined) {
-    return <LoadingSpinner size={20} />
+    return <LoadingSpinner size="sm" />
   }
 
   return (

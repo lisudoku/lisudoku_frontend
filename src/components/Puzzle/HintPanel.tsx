@@ -75,7 +75,7 @@ const HintPanel = () => {
   return (
     <Alert
       className="absolute h-full"
-      show={!!hintSolution}
+      open={!!hintSolution}
       onClose={handleAlertClose}
     >{hintMessage}</Alert>
   )

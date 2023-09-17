@@ -150,7 +150,7 @@ type LogicalSolutionPanelProps = {
   constraints: SudokuConstraints
   running: boolean
   setterMode: boolean
-  onClear: Function
+  onClear: () => void
 }
 
 export default LogicalSolutionPanel

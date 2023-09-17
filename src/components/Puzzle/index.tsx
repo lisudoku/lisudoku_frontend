@@ -30,7 +30,10 @@ const PuzzleComponent = () => {
 
   return (
     <div className="w-fit flex flex-col md:flex-row mx-auto">
-      <div className="w-full md:w-fit">
+      <div className="order-3 md:order-1 w-full md:w-fit md:pr-5">
+        <SudokuMisc />
+      </div>
+      <div className="order-1 md:order-2 w-full md:w-fit">
         <SudokuGrid constraints={constraints}
                     grid={grid!}
                     notes={notes!}
@@ -43,12 +46,9 @@ const PuzzleComponent = () => {
                     onUnpause={handlePauseClick}
         />
       </div>
-      <div className="w-full md:w-fit md:pl-5">
+      <div className="order-2 md:order-3 w-full md:w-fit md:pl-5">
         <SudokuControls isSolvedLoading={isSolvedLoading}
                         onIsSolvedLoadingChange={setIsSolvedLoading} />
-      </div>
-      <div className="w-full md:w-fit md:pl-5">
-        <SudokuMisc />
       </div>
     </div>
   )

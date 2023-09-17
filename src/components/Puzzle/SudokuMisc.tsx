@@ -7,8 +7,8 @@ import ShortcutsButton from './ShortcutsButton'
 import PermalinkButton from './PermalinkButton'
 import VariantSelect from './VariantSelect'
 import DifficultySelect from './DifficultySelect'
-import HintButtons from './HintButtons'
 import HintPanel from './HintPanel'
+import HintButton from './HintButton'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
@@ -29,37 +29,38 @@ const SudokuMisc = () => {
   }, [navigate, variant])
 
   return (
-    <div className="relative flex flex-col max-w-lg md:max-w-xs mt-3 md:mt-0">
+    <div className="relative flex flex-col md:max-w-xs mt-3 md:mt-0">
       <HintPanel />
-      <div className="mb-5">
+      <div className="mb-3">
         <SudokuRules constraints={constraints} />
       </div>
-      {!isExternal && (
-        <>
-          <div className="w-full md:ml-6 md:w-fit">
-            <VariantSelect value={variant!} onChange={onVariantChange} />
+      <div className="bg-gray-900 py-3 px-4">
+        {!isExternal && (
+          <>
+            <div className="w-full md:ml-1">
+              <VariantSelect value={variant!} onChange={onVariantChange} />
+            </div>
+            <div className="w-full md:ml-1 mt-2">
+              <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
+            </div>
+            <PermalinkButton publicId={publicId} />
+          </>
+        )}
+        <ShortcutsButton />
+        {sourceCollectionId && (
+          <div className="flex flex-col mt-2 w-full md:ml-4 md:w-fit">
+            <div className="text-gray-400 text-sm">
+              Source
+            </div>
+            <Link to={`/collections/${sourceCollectionId}`}
+                  target="_blank"
+                  className="text-gray-300 font-bold"
+            >
+              {sourceCollectionName}
+            </Link>
           </div>
-          <div className="mt-2 w-full md:ml-6 md:w-fit">
-            <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
-          </div>
-          <PermalinkButton publicId={publicId} />
-        </>
-      )}
-      <ShortcutsButton />
-      <HintButtons />
-      {sourceCollectionId && (
-        <div className="flex flex-col mt-2 w-full md:ml-6 md:w-fit">
-          <div className="text-gray-400 text-sm">
-            Source
-          </div>
-          <Link to={`/collections/${sourceCollectionId}`}
-                target="_blank"
-                className="text-gray-300 font-bold"
-          >
-            {sourceCollectionName}
-          </Link>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

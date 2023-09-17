@@ -9,6 +9,7 @@ import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import SolveTimer from './SolveTimer'
 import { changePaused } from 'src/reducers/puzzle'
+import HintButton from './HintButton'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()
@@ -100,13 +101,16 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
         <SolveTimer isSolvedLoading={isSolvedLoading}
                     onIsSolvedLoadingChange={onIsSolvedLoadingChange} />
         {!isExternal && (
-          <Button
-            color={solved ? 'green' : 'gray'}
-            variant={solved ? 'filled' : 'text'}
-            onClick={onNewPuzzle}
-          >
-            New puzzle
-          </Button>
+          <>
+            <HintButton />
+            <Button
+              color={solved ? 'green' : 'gray'}
+              variant={solved ? 'filled' : 'text'}
+              onClick={onNewPuzzle}
+            >
+              New puzzle
+            </Button>
+          </>
         )}
       </div>
     </div>

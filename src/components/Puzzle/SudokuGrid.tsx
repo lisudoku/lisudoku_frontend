@@ -27,7 +27,7 @@ const SudokuGrid = ({
         />
         {(loading || paused) && (
           <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md">
-            <LoadingSpinner loading={loading} />
+            {loading && <LoadingSpinner />}
             {paused && (
               <FontAwesomeIcon icon={faCirclePlay}
                                 size="5x"

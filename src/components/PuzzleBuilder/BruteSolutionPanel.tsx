@@ -20,7 +20,7 @@ const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelPr
 type BruteSolutionPanelProps = {
   running: boolean
   solution: SudokuBruteSolveResult | null
-  onClear: Function
+  onClear: () => void
 }
 
 export default BruteSolutionPanel

@@ -1,14 +1,18 @@
 import {
-  Button, Popover, PopoverHandler, PopoverContent,
+  Popover, PopoverHandler, PopoverContent,
 } from '@material-tailwind/react'
+import Button from '../Button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faKeyboard } from '@fortawesome/free-solid-svg-icons'
 
-const CTRL_KEY_NAME = navigator.platform.indexOf('Mac') > -1 ? 'Cmd' : 'Ctrl'
+const CTRL_KEY_NAME = navigator.userAgent.includes('Macintosh') ? 'Cmd' : 'Ctrl'
 
 const ShortcutsButton = () => (
   <Popover placement="bottom">
     <PopoverHandler>
-      <Button variant="text" color="gray" className="hidden md:block w-full md:w-fit">
-        Shortcuts
+      <Button variant="filled" color="gray" className="hidden md:block w-full mt-2 md:mt-1">
+        <FontAwesomeIcon icon={faKeyboard} />
+        {' Shortcuts'}
       </Button>
     </PopoverHandler>
     <PopoverContent>
