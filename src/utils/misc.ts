@@ -1,6 +1,7 @@
 import { useWindowSize } from '@react-hook/window-size'
 import { intervalToDuration, parseISO } from 'date-fns'
 import { DEFAULT_CELL_SIZE } from './constants'
+import { MAIN_PADDING } from 'src/components/Layout'
 
 export const getPuzzleFullUrl = (publicId: string) => (
   `${window.location.origin}/p/${publicId}`
@@ -25,12 +26,15 @@ export const getDurationShort = (date: string) => {
   return str
 }
 
-export const useCellSize = (gridSize?: number, scale: number = 1, widthPadding: number = 40, heightPadding: number = 50 + 40) => {
+export const useCellSize = (gridSize?: number, scale: number = 1, widthExtraPadding: number = 0, heightExtraPadding: number = 0) => {
   const [ width, height ] = useWindowSize()
 
   if (gridSize === undefined) {
     return DEFAULT_CELL_SIZE
   }
+
+  const widthPadding = 2 * MAIN_PADDING + widthExtraPadding
+  const heightPadding = 50 + 2 * MAIN_PADDING + heightExtraPadding
 
   // Calculate the available screen width and subtract parent paddings
   const size = Math.min(width - widthPadding, height - heightPadding)

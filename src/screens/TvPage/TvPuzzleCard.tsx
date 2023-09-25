@@ -47,8 +47,8 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
 const TvPuzzleCard = ({ puzzle }: { puzzle: TvPuzzle }) => {
   const gridSize = puzzle.constraints.gridSize
 
-  // 40 = page padding; 24 = card padding
-  const cellSize = useCellSize(gridSize, 0.62, 40 + 24)
+  // 24 = card padding
+  const cellSize = useCellSize(gridSize, 0.62, 24)
 
   return (
     <div className="flex flex-col items-center w-fit p-3 pb-1 bg-gray-900 rounded border border-gray-800">
