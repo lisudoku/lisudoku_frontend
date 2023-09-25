@@ -70,7 +70,14 @@ const HintPanel = () => {
   const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
 
   const hintMessage = useComputeHintElement()
-  const handleAlertClose = useCallback(() => dispatch(changeHintSolution(null)), [dispatch])
+  const handleAlertClose = useCallback(() => {
+    dispatch(changeHintSolution(null))
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    })
+  }, [dispatch])
 
   return (
     <Alert
