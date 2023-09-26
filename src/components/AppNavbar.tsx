@@ -113,6 +113,25 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
     </ul>
   )
 
+  const solvedElement = (
+    <span>
+      Solved: {solveCount}
+      {solveCount >= 2 && (
+        <>
+          {' '}
+          {solveCount >= 5 ? (
+            <FontAwesomeIcon icon={faTrophy} color={solveCount >= 15 ? 'gold' : solveCount >= 10 ? 'silver' : '#cd7f32'} />
+          ) : (
+            <span className="fa-layers fa-fw">
+              <FontAwesomeIcon icon={faCircle} color="yellow" size="sm" />
+              <FontAwesomeIcon icon={faFire} color="red" size="lg" />
+            </span>
+          )}
+        </>
+      )}
+    </span>
+  )
+
   const rightButtons = (
     <ul className="flex flex-row gap-5 pb-2 lg:pb-0">
       <Typography
@@ -121,20 +140,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
         color="white"
         className="font-normal"
       >
-        Solved: {solveCount}
-        {solveCount >= 2 && (
-          <>
-            {' '}
-            {solveCount >= 5 ? (
-              <FontAwesomeIcon icon={faTrophy} color={solveCount >= 15 ? 'gold' : solveCount >= 10 ? 'silver' : '#cd7f32'} />
-            ) : (
-              <span className="fa-layers fa-fw">
-                <FontAwesomeIcon icon={faCircle} color="yellow" size="sm" />
-                <FontAwesomeIcon icon={faFire} color="red" size="lg" />
-              </span>
-            )}
-          </>
-        )}
+        {solvedElement}
       </Typography>
       {username ? (
         <>
@@ -179,6 +185,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
         </Typography>
         <div className="hidden lg:block grow">{navList}</div>
         <div className="hidden lg:inline-block">{rightButtons}</div>
+        <div className="inline-block lg:hidden w-full text-right pr-5">{solvedElement}</div>
         <IconButton
           variant="text"
           className="ml-auto text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
