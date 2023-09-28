@@ -10,6 +10,19 @@ import { formatTimer, gridIsFull } from 'src/utils/sudoku'
 import { Typography } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
+import { SudokuDifficulty } from 'src/types/sudoku'
+
+const getSolvedEmoji = (difficulty: SudokuDifficulty, solveTime: number) => {
+  switch (difficulty) {
+    case SudokuDifficulty.Easy4x4: return solveTime <= 30 ? '😱' : '🎉'
+    case SudokuDifficulty.Easy6x6:
+    case SudokuDifficulty.Hard6x6: return solveTime <= 90 ? '😱' : '🎉'
+    case SudokuDifficulty.Easy9x9: return solveTime <= 10 * 60 ? '😱' : '🎉'
+    case SudokuDifficulty.Medium9x9:
+    case SudokuDifficulty.Hard9x9: return solveTime <= 15 * 60 ? '😱' : '🎉'
+    default: return '🎉'
+  }
+}
 
 const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProps) => {
   const dispatch = useDispatch()
@@ -99,7 +112,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         {formatTimer(solveTimer)}
         {solved && (
           <span className="ml-1 absolute animate-expand">
-            🎉
+            {getSolvedEmoji(difficulty!, solveTimer)}
           </span>
         )}
         {!solved && (
