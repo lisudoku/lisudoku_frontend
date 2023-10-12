@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import _ from 'lodash'
 import { useSelector, useDispatch } from 'src/hooks'
-import { parseISO, differenceInMinutes, differenceInSeconds } from 'date-fns'
+import { parseISO, differenceInHours, differenceInSeconds } from 'date-fns/esm'
 import { AxiosError } from 'axios'
 import { updateDifficulty } from 'src/reducers/userData'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
@@ -14,6 +14,8 @@ import { clearPuzzle, receivedPuzzle, requestedPuzzle } from '../../reducers/puz
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import LoadingSpinner from 'src/components/LoadingSpinner'
 import ErrorPage from 'src/components/ErrorPage'
+
+const MAX_PUZZLE_PAUSE_HOURS = 48
 
 const PlayPage = () => {
   const { variant: variantParam, difficulty: difficultyParam } = useParams()
@@ -59,7 +61,7 @@ const PlayPage = () => {
         (difficulty !== persistedDifficulty && persistedVariant !== undefined) ||
         lastUpdate === null ||
         refreshKey !== previousRefreshKey.current ||
-        differenceInMinutes(new Date(), parseISO(lastUpdate)) >= 10 ||
+        differenceInHours(new Date(), parseISO(lastUpdate)) >= MAX_PUZZLE_PAUSE_HOURS ||
         (solved && differenceInSeconds(new Date(), parseISO(lastUpdate)) >= 1)
     ) {
       previousRefreshKey.current = refreshKey
