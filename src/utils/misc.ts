@@ -66,3 +66,11 @@ export const assert = (condition: boolean, message: string) => {
     throw Error(message)
   }
 }
+
+export const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  })
+}

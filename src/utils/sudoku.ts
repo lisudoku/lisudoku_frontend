@@ -58,12 +58,57 @@ export const regionsToRegionGrid = (gridSize: number, regions: Region[]) => {
   return regionGrid
 }
 
-export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => {
+export const computeFixedNumbersGrid = (gridSize: number, fixedNumbers?: FixedNumber[]) => {
   const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
-  for (const fixedNumber of fixedNumbers) {
+  for (const fixedNumber of fixedNumbers ?? []) {
     grid[fixedNumber.position.row][fixedNumber.position.col] = fixedNumber.value
   }
   return grid
+}
+
+export const gridToFixedNumbers: (grid: Grid) => FixedNumber[] = (grid: Grid) => {
+  const fixedNumbers: FixedNumber[] = []
+  grid.forEach((row, rowIndex) => {
+    row.forEach((cell, colIndex) => {
+      if (cell !== null) {
+        fixedNumbers.push({
+          position: {
+            row: rowIndex,
+            col: colIndex,
+          },
+          value: cell,
+        })
+      }
+    })
+  })
+  return fixedNumbers
+}
+
+export const gridSizeFromString: (gridString: string) => number = (gridString: string) => (
+  Math.sqrt(gridString.length)
+)
+
+export const createGridOfSize: (gridSize: number) => Grid = (gridSize: number) => (
+  Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+)
+
+export const gridStringToGrid: (gridString: string) => Grid = (gridString: string) => {
+  const gridSize = gridSizeFromString(gridString)
+  const grid = createGridOfSize(gridSize)
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      const index = row * gridSize + col
+      if (gridString[index] !== '0') {
+        grid[row][col] = parseInt(gridString[index])
+      }
+    }
+  }
+  return grid
+}
+
+export const gridStringToFixedNumbers: (gridString: string) => FixedNumber[] = (gridString: string) => {
+  const grid = gridStringToGrid(gridString)
+  return gridToFixedNumbers(grid)
 }
 
 export const gridIsFull = (grid: Grid | null) => (
@@ -306,7 +351,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   }
 
   // Killer cages (region restriction is handled above)
-  for (const killerCage of constraints.killerCages) {
+  for (const killerCage of constraints.killerCages ?? []) {
     if (!killerCage.sum) {
       continue
     }

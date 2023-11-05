@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { TrainerTechnique } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { StepRule } from 'src/types/wasm'
 
@@ -125,4 +126,10 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.CommonPeerElimination]: EStepRuleDifficulty.Hard,
   [StepRule.TurbotFish]: EStepRuleDifficulty.Hard,
   [StepRule.EmptyRectangles]: EStepRuleDifficulty.Hard,
+}
+
+export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {
+  [TrainerTechnique.HiddenSingle]: 'Hidden Single',
+  [TrainerTechnique.NakedSingle]: 'Naked Single',
+  [TrainerTechnique.Singles]: 'Hidden Single or Naked Single',
 }

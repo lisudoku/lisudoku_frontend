@@ -34,21 +34,21 @@ export enum SudokuDifficulty {
 
 export type SudokuConstraints = {
   gridSize: number
-  fixedNumbers: FixedNumber[]
   regions: Region[]
-  extraRegions: Region[]
+  fixedNumbers?: FixedNumber[]
+  extraRegions?: Region[]
   thermos?: Thermo[]
   arrows?: Arrow[]
-  primaryDiagonal: boolean
-  secondaryDiagonal: boolean
-  antiKnight: boolean
-  antiKing: boolean
-  killerCages: KillerCage[]
-  kropkiDots: KropkiDot[]
-  kropkiNegative: boolean
-  oddCells: CellPosition[]
-  evenCells: CellPosition[]
-  topBottom: boolean
+  primaryDiagonal?: boolean
+  secondaryDiagonal?: boolean
+  antiKnight?: boolean
+  antiKing?: boolean
+  killerCages?: KillerCage[]
+  kropkiDots?: KropkiDot[]
+  kropkiNegative?: boolean
+  oddCells?: CellPosition[]
+  evenCells?: CellPosition[]
+  topBottom?: boolean
 }
 
 export type FixedNumber = {

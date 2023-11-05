@@ -4,7 +4,6 @@ import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useTvPlayerWebsocket } from './hooks'
-import { useCellSize } from 'src/utils/misc'
 import { changePaused } from 'src/reducers/puzzle'
 
 // A puzzle that you are actively solving
@@ -21,8 +20,6 @@ const PuzzleComponent = () => {
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
-  const cellSize = useCellSize(constraints.gridSize)
-
   useTvPlayerWebsocket()
 
   const handlePauseClick = useCallback(() => {
@@ -35,16 +32,16 @@ const PuzzleComponent = () => {
         <SudokuMisc />
       </div>
       <div className="order-1 md:order-2 w-full md:w-fit">
-        <SudokuGrid constraints={constraints}
-                    grid={grid!}
-                    notes={notes!}
-                    selectedCells={selectedCells}
-                    checkErrors={checkErrors}
-                    loading={isSolvedLoading}
-                    onCellClick={onSelectedCellChange}
-                    cellSize={cellSize}
-                    paused={paused}
-                    onUnpause={handlePauseClick}
+        <SudokuGrid
+          constraints={constraints}
+          grid={grid!}
+          notes={notes!}
+          selectedCells={selectedCells}
+          checkErrors={checkErrors}
+          loading={isSolvedLoading}
+          onCellClick={onSelectedCellChange}
+          paused={paused}
+          onUnpause={handlePauseClick}
         />
       </div>
       <div className="order-2 md:order-3 w-full md:w-fit md:pl-5">

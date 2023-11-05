@@ -30,7 +30,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
     return StepRuleDifficultyDisplay[EStepRuleDifficulty.Easy]
   }
 
-  let nonEmptyCells = constraints.fixedNumbers.length
+  let nonEmptyCells = constraints.fixedNumbers?.length ?? 0
   nonEmptyCells += _.sumBy(constraints.thermos, 'length') / 3
   nonEmptyCells += _.sumBy(constraints.arrows, 'length') / 3
   if (constraints.primaryDiagonal) {
@@ -46,10 +46,10 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
     nonEmptyCells += constraints.gridSize * 3 / 2
   }
   nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
-  nonEmptyCells += constraints.kropkiDots.length / 2
-  nonEmptyCells += constraints.extraRegions.length * 2
-  nonEmptyCells += constraints.oddCells.length / 2
-  nonEmptyCells += constraints.evenCells.length / 2
+  nonEmptyCells += constraints.kropkiDots?.length ?? 0 / 2
+  nonEmptyCells += constraints.extraRegions?.length ?? 0 * 2
+  nonEmptyCells += constraints.oddCells?.length ?? 0 / 2
+  nonEmptyCells += constraints.evenCells?.length ?? 0 / 2
   if (constraints.topBottom) {
     nonEmptyCells += constraints.gridSize
   }

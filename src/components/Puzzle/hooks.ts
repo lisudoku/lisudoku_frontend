@@ -15,7 +15,7 @@ const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
 const dirCol = [ 0, 0, -1, 1 ]
 
-export const useFixedNumbersGrid = (gridSize: number, fixedNumbers: FixedNumber[]) => (
+export const useFixedNumbersGrid = (gridSize: number, fixedNumbers?: FixedNumber[]) => (
   useMemo(() => computeFixedNumbersGrid(gridSize, fixedNumbers), [gridSize, fixedNumbers])
 )
 

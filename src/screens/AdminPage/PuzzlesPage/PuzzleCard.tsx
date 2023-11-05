@@ -31,14 +31,12 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <SudokuGrid constraints={puzzle.constraints}
-                  grid={grid}
-                  notes={notes}
-                  selectedCells={[]}
-                  checkErrors={false}
-                  loading={false}
-                  onCellClick={null}
-                  cellSize={cellSize} />
+      <SudokuGrid
+        constraints={puzzle.constraints}
+        grid={grid}
+        notes={notes}
+        cellSize={cellSize}
+      />
       <div className="flex gap-3 w-fit text-sm text-gray-300">
         {puzzle.publicId!}
       </div>

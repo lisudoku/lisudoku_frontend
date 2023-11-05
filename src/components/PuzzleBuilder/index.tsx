@@ -21,7 +21,6 @@ import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from
 import Input from 'src/components/Input'
 import { exportToLisudoku, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
-import { useCellSize } from 'src/utils/misc'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
@@ -162,8 +161,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     return `${window.location.origin}/e?${params}`
   }, [constraints])
 
-  const cellSize = useCellSize(constraints?.gridSize)
-
   if (!constraints) {
     return null
   }
@@ -202,14 +199,13 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   return (
     <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
-      <SudokuGrid cellSize={cellSize}
-                  constraints={constraintPreview}
-                  grid={usedGrid}
-                  notes={usedNotes}
-                  selectedCells={selectedCells}
-                  checkErrors={constraintType === ConstraintType.FixedNumber}
-                  loading={false}
-                  onCellClick={onCellClick}
+      <SudokuGrid
+        constraints={constraintPreview}
+        grid={usedGrid}
+        notes={usedNotes}
+        selectedCells={selectedCells}
+        checkErrors={constraintType === ConstraintType.FixedNumber}
+        onCellClick={onCellClick}
       />
       <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
         <div className="flex flex-col">

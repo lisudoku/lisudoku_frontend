@@ -8,6 +8,11 @@ import { faXmark, faBars, faTrophy, faFire, faCircle } from '@fortawesome/free-s
 
 const ITEMS: any[] = [
   {
+    text: 'Trainer',
+    url: '/trainer',
+    isNew: true,
+  },
+  {
     text: 'Learn',
     url: '/learn',
   },
