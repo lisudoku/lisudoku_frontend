@@ -1,16 +1,20 @@
 import { useCallback } from 'react'
-import SudokuConstraintsGraphics from './SudokuGridGraphics'
+import SudokuConstraintsGraphics, { CellHighlight } from './SudokuGridGraphics'
 import LoadingSpinner from '../LoadingSpinner'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
-import { DEFAULT_CELL_SIZE } from 'src/utils/constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
+import { useCellSize } from 'src/utils/misc'
 
 const SudokuGrid = ({
-  constraints, grid, notes, selectedCells, checkErrors, loading, onCellClick, cellSize,
+  constraints, grid, notes, selectedCells, checkErrors = false, loading, onCellClick,
+  cellSize: propsCellSize, highlightedCells,
   paused, onUnpause,
 }: SudokuGridProps) => {
+  const computedCellSize = useCellSize(constraints.gridSize)
+  const cellSize = propsCellSize ?? computedCellSize
+
   const handleUnpause = useCallback(() => { onUnpause?.() }, [onUnpause])
 
   return (
@@ -24,6 +28,7 @@ const SudokuGrid = ({
           checkErrors={checkErrors}
           selectedCells={selectedCells}
           onCellClick={onCellClick}
+          highlightedCells={highlightedCells}
         />
         {(loading || paused) && (
           <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md">
@@ -42,7 +47,6 @@ const SudokuGrid = ({
 }
 
 SudokuGrid.defaultProps = {
-  cellSize: DEFAULT_CELL_SIZE,
   paused: false,
 }
 
@@ -50,13 +54,14 @@ type SudokuGridProps = {
   constraints: SudokuConstraints
   grid?: Grid
   notes?: number[][][]
-  selectedCells: CellPosition[]
-  checkErrors: boolean
-  loading: boolean
-  onCellClick: Function | null
-  cellSize: number
-  paused: boolean
+  selectedCells?: CellPosition[]
+  checkErrors?: boolean
+  loading?: boolean
+  onCellClick?: Function
+  cellSize?: number
+  paused?: boolean
   onUnpause?: Function
+  highlightedCells?: CellHighlight[]
 }
 
 export default SudokuGrid

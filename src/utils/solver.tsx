@@ -27,7 +27,7 @@ export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid:
   return {
     ...constraints,
     fixedNumbers: [
-      ...constraints.fixedNumbers,
+      ...constraints.fixedNumbers ?? [],
       ...extraFixedNumbers,
     ]
   }

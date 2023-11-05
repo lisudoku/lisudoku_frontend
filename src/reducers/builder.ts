@@ -289,18 +289,18 @@ export const builderSlice = createSlice({
             break
           }
           case ConstraintType.OddCells: {
-            if (!state.constraints?.oddCells.find(isSelectedCell) &&
-                !state.constraints?.evenCells.find(isSelectedCell)
+            if (!state.constraints?.oddCells?.find(isSelectedCell) &&
+                !state.constraints?.evenCells?.find(isSelectedCell)
             ) {
-              state.constraints!.oddCells.push(selectedCell)
+              state.constraints!.oddCells?.push(selectedCell)
             }
             break
           }
           case ConstraintType.EvenCells: {
-            if (!state.constraints?.oddCells.find(isSelectedCell) &&
-                !state.constraints?.evenCells.find(isSelectedCell)
+            if (!state.constraints?.oddCells?.find(isSelectedCell) &&
+                !state.constraints?.evenCells?.find(isSelectedCell)
             ) {
-              state.constraints!.evenCells.push(selectedCell)
+              state.constraints!.evenCells?.push(selectedCell)
             }
             break
           }
@@ -347,14 +347,14 @@ export const builderSlice = createSlice({
             value: action.payload,
           }))
           const areAllExisting = _.isEmpty(_.differenceWith(
-            fixedNumbers, state.constraints!.fixedNumbers, _.isEqual
+            fixedNumbers, state.constraints!.fixedNumbers ?? [], _.isEqual
           ))
           const isEqualPosition = (fn1: FixedNumber, fn2: FixedNumber) => (
             _.isEqual(fn1.position, fn2.position)
           )
-          _.pullAllWith(state.constraints!.fixedNumbers, fixedNumbers, isEqualPosition)
+          _.pullAllWith(state.constraints!.fixedNumbers ?? [], fixedNumbers, isEqualPosition)
           if (!areAllExisting) {
-            state.constraints!.fixedNumbers.push(...fixedNumbers)
+            state.constraints!.fixedNumbers?.push(...fixedNumbers)
           }
           break
         }
@@ -407,7 +407,7 @@ export const builderSlice = createSlice({
             region.length === gridSize,
             `Extra region must be of size ${gridSize}. Select multiple cells with Shift + Click.`
           )
-          state.constraints!.extraRegions.push(region)
+          state.constraints!.extraRegions?.push(region)
           break
         }
         case ConstraintType.Killer: {
@@ -435,7 +435,7 @@ export const builderSlice = createSlice({
             cell1: cells[0],
             cell2: cells[1],
           }
-          const existingDot = state.constraints!.kropkiDots.find(dot => (
+          const existingDot = state.constraints!.kropkiDots?.find(dot => (
             _.isEqual(dot.cell1, kropkiDot.cell1) && _.isEqual(dot.cell2, kropkiDot.cell2)
           ))
           if (!existingDot) {
@@ -455,7 +455,7 @@ export const builderSlice = createSlice({
 
         // Fixed numbers
         _.remove(
-          state.constraints!.fixedNumbers,
+          state.constraints!.fixedNumbers ?? [],
           (existingFixedNumber: FixedNumber) => _.isEqual(existingFixedNumber.position, cell)
         )
 
@@ -491,7 +491,7 @@ export const builderSlice = createSlice({
         }
 
         // Kropki
-        _.remove(state.constraints!.kropkiDots, kropkiDot => (
+        _.remove(state.constraints!.kropkiDots ?? [], kropkiDot => (
           _.isEqual(kropkiDot.cell1, cell) || _.isEqual(kropkiDot.cell2, cell)
         ))
 
@@ -502,8 +502,8 @@ export const builderSlice = createSlice({
         }
 
         // Odd Even
-        _.remove(state.constraints!.oddCells, isSelectedCell)
-        _.remove(state.constraints!.evenCells, isSelectedCell)
+        _.remove(state.constraints!.oddCells ?? [], isSelectedCell)
+        _.remove(state.constraints!.evenCells ?? [], isSelectedCell)
       }
 
       handleConstraintChange(state)

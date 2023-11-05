@@ -52,14 +52,13 @@ const TvPuzzleCard = ({ puzzle }: { puzzle: TvPuzzle }) => {
 
   return (
     <div className="flex flex-col items-center w-fit p-3 pb-1 bg-gray-900 rounded border border-gray-800">
-      <SudokuGrid constraints={puzzle.constraints}
-                  grid={puzzle.grid}
-                  notes={puzzle.notes}
-                  selectedCells={puzzle.selectedCells}
-                  checkErrors={false}
-                  loading={false}
-                  onCellClick={null}
-                  cellSize={cellSize} />
+      <SudokuGrid
+        constraints={puzzle.constraints}
+        grid={puzzle.grid}
+        notes={puzzle.notes}
+        selectedCells={puzzle.selectedCells}
+        cellSize={cellSize}
+      />
       <TvPuzzleCardDescription puzzle={puzzle} />
     </div>
   )

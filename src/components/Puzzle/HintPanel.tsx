@@ -7,6 +7,7 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
 import { SolutionType } from 'src/types/wasm'
 import { computeHintContent } from 'src/utils/solver'
+import { scrollToTop } from 'src/utils/misc'
 
 const useComputeHintElement = () => {
   const dispatch = useDispatch()
@@ -72,11 +73,7 @@ const HintPanel = () => {
   const hintMessage = useComputeHintElement()
   const handleAlertClose = useCallback(() => {
     dispatch(changeHintSolution(null))
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    })
+    scrollToTop()
   }, [dispatch])
 
   return (

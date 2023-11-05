@@ -1,9 +1,15 @@
-import { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
+import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 import { Arrow, CellNotes, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid, useNoteErrors } from './hooks'
+
+export type CellHighlight = {
+  position: CellPosition
+  value: number
+  color: string
+}
 
 type Border = {
   x1: number
@@ -225,21 +231,63 @@ const ArrowsGraphics = ({ arrows, cellSize }: { arrows: Arrow[], cellSize: numbe
   </>
 )
 
-const NotesGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, killerActive, checkErrors }: NotesGraphicsProps) => {
-  const noteErrors: Set<number>[][] = useNoteErrors(checkErrors, constraints, grid, notes)
+const computeNotesFontSize = (cellSize: number) => (
+  cellSize * 3 / 14
+)
 
-  if (!notes) {
-    return null
-  }
-
+const CellNotesGraphics = ({ row, col, cellNotes, noteErrors, cellSize, killerActive, cellClassName, cellStyle }: CellNotesGraphicsProps) => {
   const notesPaddingX = cellSize / 14 + (killerActive ? 3 : 0)
   const notesPaddingY = cellSize / 14 + (killerActive ? 10 : 0)
-  const notesFontSize = cellSize * 3 / 14
+  const notesFontSize = computeNotesFontSize(cellSize)
   const notesFontWidth = notesFontSize * 2 / 3
   const notesWidth = cellSize - notesPaddingX * 2
   const notesHeight = cellSize - notesPaddingY * 2
   const notesColumnWidth = notesWidth / 3
   const notesColumnHeight = notesHeight / 3
+
+  return (
+    <>
+      {cellNotes.map(value => {
+        const hasError = noteErrors?.has(value) ?? false
+        const noteRow = Math.floor((value - 1) / 3)
+        const noteCol = (value - 1) % 3
+        const x = col * cellSize + 1 + noteCol * notesColumnWidth + notesPaddingX + notesColumnWidth / 2 - notesFontWidth / 2
+        const y = row * cellSize + 1 + noteRow * notesColumnHeight + notesPaddingY + notesFontSize
+
+        return (
+          <text
+            x={x}
+            y={y}
+            className={classNames(cellClassName, {'fill-red-600': hasError })}
+            style={cellStyle}
+            key={value}
+          >
+            {value}
+          </text>
+        )
+      })}
+    </>
+  )
+}
+
+type CellNotesGraphicsProps = {
+  row: number
+  col: number
+  cellNotes: CellNotes
+  noteErrors?: Set<number>
+  cellSize: number
+  killerActive: boolean
+  cellClassName?: string
+  cellStyle?: React.CSSProperties
+}
+
+const NotesGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, killerActive, checkErrors }: NotesGraphicsProps) => {
+  const noteErrors: Set<number>[][] = useNoteErrors(checkErrors, constraints, grid, notes)
+  const notesFontSize = computeNotesFontSize(cellSize)
+
+  if (!notes) {
+    return null
+  }
 
   const noteElements: ReactElement[] = []
   notes.forEach((rowNotes, row) => {
@@ -248,23 +296,17 @@ const NotesGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, k
       if (value) {
         return
       }
-      cellNotes.forEach(value => {
-        const hasError = checkErrors && noteErrors[row][col].has(value)
-        const noteRow = Math.floor((value - 1) / 3)
-        const noteCol = (value - 1) % 3
-        const x = col * cellSize + 1 + noteCol * notesColumnWidth + notesPaddingX + notesColumnWidth / 2 - notesFontWidth / 2
-        const y = row * cellSize + 1 + noteRow * notesColumnHeight + notesPaddingY + notesFontSize
-        const key = value + 10 * (col + row * rowNotes.length)
-
-        noteElements.push((
-          <text x={x}
-                y={y}
-                key={key}
-                className={classNames({'fill-red-600': hasError })}>
-            {value}
-          </text>
-        ))
-      })
+      noteElements.push(
+        <CellNotesGraphics
+          row={row}
+          col={col}
+          cellNotes={cellNotes}
+          noteErrors={checkErrors ? noteErrors[row][col] : undefined}
+          killerActive={killerActive}
+          cellSize={cellSize}
+          key={col + row * rowNotes.length}
+        />
+      )
     })
   })
 
@@ -371,15 +413,32 @@ type GridGraphicsProps = {
   cellSize: number
 }
 
+const HighlightedCell = ({ cellSize, cell, className, style }: HighlightedCellProps) => (
+  <rect
+    x={1 + cellSize * cell.col}
+    y={1 + cellSize * cell.row}
+    width={cellSize}
+    height={cellSize}
+    className={className}
+    style={style}
+  />
+)
+
+type HighlightedCellProps = {
+  cell: CellPosition
+  cellSize: number
+  className?: string
+  style?: React.CSSProperties
+}
+
 const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsProps) => (
   <>
-    {selectedCells.map((selectedCell: CellPosition, index: number) => (
-      <rect x={1 + cellSize * selectedCell.col}
-            y={1 + cellSize * selectedCell.row}
-            width={cellSize}
-            height={cellSize}
-            className="opacity-25 stroke-white fill-white"
-            key={index}
+    {selectedCells?.map((selectedCell: CellPosition, index: number) => (
+      <HighlightedCell
+        cell={selectedCell}
+        cellSize={cellSize}
+        className="opacity-25 stroke-white fill-white"
+        key={index}
       />
     ))}
   </>
@@ -387,10 +446,10 @@ const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsP
 
 type SelectedCellGraphicsProps = {
   cellSize: number
-  selectedCells: CellPosition[]
+  selectedCells?: CellPosition[]
 }
 
-const useOnGridClick = (cellSize: number, onCellClick: Function | null) => (
+const useOnGridClick = (cellSize: number, onCellClick?: Function) => (
   useCallback((e: MouseEvent) => {
     const x = e.clientX - e.currentTarget.getBoundingClientRect().left
     const y = e.clientY - e.currentTarget.getBoundingClientRect().top
@@ -416,8 +475,8 @@ const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGr
 type DiagonalGraphicsProps = {
   gridSize: number
   cellSize: number
-  primary: boolean
-  secondary: boolean
+  primary?: boolean
+  secondary?: boolean
 }
 
 type KillerSum = {
@@ -620,9 +679,37 @@ type EvenGraphicsProps = {
   cells: CellPosition[]
 }
 
+const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) => (
+  <g className="cell-highlights font-bold" style={{ fontSize: computeNotesFontSize(cellSize) }}>
+    {cells.map((cell, index) => (
+      <React.Fragment key={index}>
+        <HighlightedCell
+          cell={cell.position}
+          cellSize={cellSize}
+          className="opacity-40"
+          style={{ fill: cell.color, stroke: cell.color }}
+        />
+        <CellNotesGraphics
+          row={cell.position.row}
+          col={cell.position.col}
+          cellNotes={[cell.value]}
+          killerActive={killerActive}
+          cellSize={cellSize}
+          cellClassName="fill-white stroke-none"
+        />
+      </React.Fragment>
+    ))}
+  </g>
+)
+
+type CellHighlightsProps = {
+  cellSize: number
+  cells: CellHighlight[]
+  killerActive: boolean
+}
 
 const SudokuConstraintsGraphics = (
-  { cellSize, constraints, notes, grid, checkErrors, selectedCells, onCellClick }: SudokuConstraintsGraphicsProps
+  { cellSize, constraints, notes, grid, checkErrors, selectedCells, onCellClick, highlightedCells }: SudokuConstraintsGraphicsProps
 ) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
@@ -630,6 +717,7 @@ const SudokuConstraintsGraphics = (
   } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
+  const killerActive = !_.isEmpty(killerCages)
 
   return (
     <svg height={gridSize * cellSize + 2}
@@ -644,15 +732,18 @@ const SudokuConstraintsGraphics = (
       <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
       <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
-      <DiagonalGraphics gridSize={gridSize}
-                        cellSize={cellSize}
-                        primary={constraints.primaryDiagonal}
-                        secondary={constraints.secondaryDiagonal} />
+      <DiagonalGraphics
+        gridSize={gridSize}
+        cellSize={cellSize}
+        primary={constraints.primaryDiagonal}
+        secondary={constraints.secondaryDiagonal}
+      />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
-      <NotesGraphics cellSize={cellSize} constraints={constraints} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={!_.isEmpty(killerCages)} checkErrors={checkErrors} />
+      <NotesGraphics cellSize={cellSize} constraints={constraints} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
       <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
+      <CellHighlights cells={highlightedCells || []} cellSize={cellSize} killerActive={killerActive} />
     </svg>
   )
 }
@@ -663,8 +754,9 @@ type SudokuConstraintsGraphicsProps = {
   cellSize: number
   grid?: Grid
   checkErrors: boolean
-  selectedCells: CellPosition[]
-  onCellClick: Function | null
+  selectedCells?: CellPosition[]
+  onCellClick?: Function
+  highlightedCells?: CellHighlight[]
 }
 
 export default SudokuConstraintsGraphics

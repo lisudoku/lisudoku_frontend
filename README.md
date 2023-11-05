@@ -11,10 +11,12 @@ Main features
 2. Multiple grid sizes (4x4, 6x6, 9x9)
 3. Watch other solvers play live
 4. Get hints when you're stuck
-5. Build puzzles and run the solver on any puzzle
-6. Share the puzzle you built and others can solve it
-7. Solve or run the solver on puzzles imported from f-puzzles
-8. No account required
+5. Use the Trainer to improve your technique
+6. Build puzzles and run the solver on any puzzle
+7. Share the puzzle you built and others can solve it
+8. Solve or run the solver on puzzles imported from f-puzzles
+9. No account required
+10. Also works offline!
 
 ## Contribute
 

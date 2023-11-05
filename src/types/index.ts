@@ -1,4 +1,19 @@
-import { Puzzle } from './sudoku'
+import { FixedNumber, Puzzle, SudokuVariant } from './sudoku'
+
+export enum TrainerTechnique {
+  HiddenSingle = 'HiddenSingle',
+  NakedSingle = 'NakedSingle',
+  Singles = 'singles',
+}
+
+export type TrainerPuzzle = {
+  id: number
+  variant: SudokuVariant
+  technique: TrainerTechnique
+  grid: string
+  solutions: FixedNumber[]
+  puzzlePublicId: string
+}
 
 export type PuzzleCollection = {
   id: number

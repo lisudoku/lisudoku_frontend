@@ -1,7 +1,8 @@
 import axios from 'axios'
 import axiosThrottle from 'axios-request-throttle'
 import { ActionType } from 'src/reducers/puzzle'
-import { CellPosition, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { TrainerTechnique } from 'src/types'
+import { CellPosition, FixedNumber, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
 
@@ -95,6 +96,29 @@ export const requestPuzzleCheck = async (id: string, grid: Grid, actions: UserAc
     // headers: {
     //   'Authorization': `Bearer ${userToken()}`,
     // },
+  }).then(response => response.data)
+}
+
+export const fetchRandomTrainerPuzzle = async (
+  variant: SudokuVariant, technique: TrainerTechnique, idBlacklist: number[],
+  userToken: string | null
+) => {
+  return axios.post(
+    '/trainer_puzzles/random',
+    {
+      variant,
+      technique,
+      id_blacklist: idBlacklist,
+    },
+    {
+      headers: generateHeader(userToken),
+    }
+  ).then(response => response.data)
+}
+
+export const requestTrainerPuzzleCheck = async (id: number, cell: FixedNumber) => {
+  return axios.post(`/trainer_puzzles/${id}/check`, {
+    cell,
   }).then(response => response.data)
 }
 
