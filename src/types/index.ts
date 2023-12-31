@@ -1,5 +1,9 @@
 import { FixedNumber, Puzzle, SudokuVariant } from './sudoku'
 
+export type ExtendedPuzzle = Puzzle & {
+  solved: boolean;
+}
+
 export enum TrainerTechnique {
   HiddenSingle = 'HiddenSingle',
   NakedSingle = 'NakedSingle',

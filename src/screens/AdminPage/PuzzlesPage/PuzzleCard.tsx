@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'src/hooks'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { deletePuzzle } from 'src/reducers/admin'
-import { Puzzle } from 'src/types/sudoku'
+import { ExtendedPuzzle } from 'src/types'
 import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import PuzzleCardIcons from './PuzzleCardIcons'
 
-const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
+const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
   const solvedPuzzleIds = useSelector(state => state.userData.solvedPuzzles.map(puzzle => puzzle.id))
@@ -54,8 +54,13 @@ const PuzzleCard = ({ puzzle }: { puzzle: Puzzle }) => {
           Delete
         </button>
         <div>
+          {puzzle.solved && (
+            <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" title="Solved by someone" />
+          )}
+        </div>
+        <div>
           {solvedPuzzleIds.includes(puzzle.publicId!) && (
-            <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
+            <FontAwesomeIcon icon={faCircleCheck} size="sm" color="white" title="Solved by me" />
           )}
         </div>
       </div>

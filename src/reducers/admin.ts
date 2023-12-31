@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { Puzzle } from 'src/types/sudoku'
+import { ExtendedPuzzle } from 'src/types'
 const jcc = require('json-case-convertor')
 
 type AdminState = {
-  puzzles: Puzzle[]
+  puzzles: ExtendedPuzzle[]
 }
 
 export const adminSlice = createSlice({
@@ -13,7 +13,7 @@ export const adminSlice = createSlice({
   } as AdminState,
   reducers: {
     responsePuzzles(state, action) {
-      state.puzzles = action.payload.map((puzzle: Puzzle) => jcc.camelCaseKeys(puzzle))
+      state.puzzles = action.payload.map((puzzle: ExtendedPuzzle) => jcc.camelCaseKeys(puzzle))
     },
     deletePuzzle(state, action) {
       state.puzzles = state.puzzles.filter(puzzle => puzzle.id !== action.payload)
