@@ -37,6 +37,7 @@ export enum SolverType {
 type BuilderState = {
   inputActive: boolean
   sourceCollectionId: string
+  author: string
   constraints: SudokuConstraints | null
   variant: SudokuVariant
   difficulty: SudokuDifficulty
@@ -184,6 +185,7 @@ export const builderSlice = createSlice({
   initialState: {
     inputActive: false,
     sourceCollectionId: '',
+    author: '',
     constraints: null,
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
@@ -619,6 +621,9 @@ export const builderSlice = createSlice({
     clearLogicalSolution(state) {
       state.logicalSolution = null
     },
+    changeAuthor(state, action) {
+      state.author = action.payload
+    },
   },
 })
 
@@ -631,7 +636,7 @@ export const {
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeAntiKing,
   changeKillerSum, changeKropkiNegative, changeTopBottom,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
-  clearBruteSolution, clearLogicalSolution,
+  clearBruteSolution, clearLogicalSolution, changeAuthor,
 } = builderSlice.actions
 
 export default builderSlice.reducer

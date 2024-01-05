@@ -367,7 +367,12 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         <GridSizeSelect />
       </div>
       <div className="flex flex-col gap-2 grow">
-        <PuzzleActions runBruteSolver={runBruteSolver} runLogicalSolver={runLogicalSolver} />
+        <PuzzleActions
+          runBruteSolver={runBruteSolver}
+          runLogicalSolver={runLogicalSolver}
+          onInputFocus={handleInputFocus}
+          onInputBlur={handleInputBlur}
+        />
       </div>
     </div>
   )

@@ -2,7 +2,9 @@ import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/components/Button'
+import Input from 'src/components/Input'
 import {
+  changeAuthor,
   changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution,
   errorAddPuzzle, requestAddPuzzle, responseAddPuzzle,
 } from 'src/reducers/builder'
@@ -17,7 +19,7 @@ import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 
-const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps) => {
+const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
   const setterMode = useSelector(state => state.builder.setterMode)
@@ -31,6 +33,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps)
   const puzzlePublicId = useSelector(state => state.builder.puzzlePublicId)
   const puzzleAdding = useSelector(state => state.builder.puzzleAdding)
   const sourceCollectionId = useSelector(state => state.builder.sourceCollectionId)
+  const author = useSelector(state => state.builder.author)
 
   const addPuzzleEnabled = (
     logicalSolution?.solution_type === SolutionType.Full &&
@@ -61,6 +64,10 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps)
     dispatch(changeSourceCollectionId(id))
   }, [dispatch])
 
+  const handleAuthorChange = useCallback((value: string) => {
+    dispatch(changeAuthor(value))
+  }, [dispatch])
+
   const handleAddPuzzleClick = useCallback(() => {
     dispatch(requestAddPuzzle())
     const puzzle: Puzzle = {
@@ -72,13 +79,16 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps)
     if (sourceCollectionId !== '') {
       puzzle.sourceCollectionId = parseInt(sourceCollectionId)
     }
+    if (author !== '') {
+      puzzle.author = author
+    }
     apiAddPuzzle(puzzle, userToken!).then(data => {
       dispatch(responseAddPuzzle(data.public_id))
     }).catch((e) => {
       console.error(e)
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId])
+  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId, author])
 
   useEffect(() => {
     if (bruteSolution?.solution_count === 1 &&
@@ -122,6 +132,13 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps)
             value={sourceCollectionId}
             onChange={handleSourceCollectionChange}
           />
+          <Input
+            label="Author"
+            value={author}
+            onChange={handleAuthorChange}
+            onFocus={onInputFocus}
+            onBlur={onInputBlur}
+          />
 
           <Button onClick={handleAddPuzzleClick}
                   disabled={!addPuzzleEnabled || puzzleAdding}
@@ -142,6 +159,8 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver }: PuzzleActionsProps)
 type PuzzleActionsProps = {
   runBruteSolver: Function
   runLogicalSolver: Function
+  onInputFocus: Function
+  onInputBlur: Function
 }
 
 export default PuzzleActions

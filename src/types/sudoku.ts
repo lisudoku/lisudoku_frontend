@@ -90,6 +90,7 @@ export type Puzzle = {
   solution?: Grid
   sourceCollectionId?: number
   sourceCollectionName?: string
+  author?: string
   isExternal?: boolean
   externalData?: string
 }

@@ -21,6 +21,7 @@ const SudokuMisc = () => {
   const difficulty = useSelector(state => state.userData.difficulty)
   const sourceCollectionId = useSelector(state => state.puzzle.data!.sourceCollectionId)
   const sourceCollectionName = useSelector(state => state.puzzle.data!.sourceCollectionName)
+  const author = useSelector(state => state.puzzle.data!.author)
 
   const onVariantChange = useCallback((variant: SudokuVariant) => {
     navigate(`/play/${variant}/${difficulty}`)
@@ -65,6 +66,16 @@ const SudokuMisc = () => {
             >
               {sourceCollectionName}
             </Link>
+          </div>
+        )}
+        {author && (
+          <div className="flex flex-col mt-2 w-full md:w-fit">
+            <div className="text-gray-400 text-sm">
+              Author
+            </div>
+            <div className="text-gray-300 font-bold">
+              {author}
+            </div>
           </div>
         )}
       </div>
