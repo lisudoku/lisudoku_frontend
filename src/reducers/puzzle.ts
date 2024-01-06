@@ -275,7 +275,7 @@ export const puzzleSlice = createSlice({
     changeHintSolution(state, action) {
       state.controls.hintSolution = action.payload
       state.controls.lastHintTimer = state.solveTimer
-      if (state.controls.hintSolution) {
+      if (state.controls.hintSolution && state.controls.hintSolution.solution_type !== 'None') {
         if (state.controls.hintLevel === null) {
           state.controls.hintLevel = HintLevel.Small
         } else if (state.controls.hintLevel === HintLevel.Small) {
