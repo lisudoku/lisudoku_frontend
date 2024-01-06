@@ -6,7 +6,7 @@ import useInterval from 'react-useinterval'
 import Button from 'src/components/Button'
 import SudokuDigitInput from 'src/components/Puzzle/SudokuDigitInput'
 import { useDispatch, useSelector } from 'src/hooks'
-import { fetchNewPuzzle, showSolutions, updateTimer } from 'src/reducers/trainer'
+import { fetchNewPuzzle, updateTimer } from 'src/reducers/trainer'
 import { TrainerTechniqueDisplay } from 'src/utils/constants'
 import { formatTimer } from 'src/utils/sudoku'
 import { useTrainerControls } from './hooks'
@@ -35,15 +35,11 @@ const TrainerControls = () => {
     }
   }, 1000)
 
-  const handleViewSolutions = useCallback(() => {
-    dispatch(showSolutions())
-  }, [dispatch])
-
   const handleNextPuzzleClick = useCallback(() => {
     dispatch(fetchNewPuzzle())
   }, [dispatch])
 
-  const { onSelectedCellValueChange } = useTrainerControls()
+  const { onSelectedCellValueChange, onViewSolutions } = useTrainerControls()
 
   if (!gridSize || !onSelectedCellValueChange) {
     return null
@@ -67,7 +63,7 @@ const TrainerControls = () => {
               <Typography variant="small">
                 {TrainerTechniqueDisplay[technique]}
               </Typography>
-              <Button variant="text" color="gray" className="w-fit mt-4 p-0" onClick={handleViewSolutions}>
+              <Button variant="text" color="gray" className="w-fit mt-4 p-0" onClick={onViewSolutions}>
                 View solutions
               </Button>
             </>

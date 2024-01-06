@@ -14,6 +14,7 @@ export interface SudokuEventCallbacks {
   onSelectedCellChange?: (cell: CellPosition, ctrl: boolean, isClick: boolean, isDoubleClick: boolean) => void
   onSelectedCellValueChange?: (value: number | null) => void
   onSelectedCellNotesChange?: (value: number) => void
+  onViewSolutions?: () => void
 }
 
 interface KeyboardHandlerSettings {

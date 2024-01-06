@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
-import { changeSelectedCell, changeSelectedCellValue } from 'src/reducers/trainer';
+import { changeSelectedCell, changeSelectedCellValue, showSolutions } from 'src/reducers/trainer';
 import { CellPosition } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';
@@ -24,9 +24,15 @@ export const useTrainerControls: () => SudokuEventCallbacks = () => {
     }
   }, [dispatch, trainerPuzzleId, selectedCell])
 
+  const handleViewSolutions = useCallback(() => {
+    dispatch(showSolutions())
+    requestTrainerPuzzleCheck(trainerPuzzleId)
+  }, [dispatch, trainerPuzzleId])
+
   return {
     onSelectedCellChange: handleSelectedCellChange,
     onSelectedCellValueChange: handleSelectedCellValueChange,
+    onViewSolutions: handleViewSolutions,
   }
 }
 

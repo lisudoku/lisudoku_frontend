@@ -116,7 +116,7 @@ export const fetchRandomTrainerPuzzle = async (
   ).then(response => response.data)
 }
 
-export const requestTrainerPuzzleCheck = async (id: number, cell: FixedNumber) => {
+export const requestTrainerPuzzleCheck = async (id: number, cell?: FixedNumber) => {
   return axios.post(`/trainer_puzzles/${id}/check`, {
     cell,
   }).then(response => response.data)
