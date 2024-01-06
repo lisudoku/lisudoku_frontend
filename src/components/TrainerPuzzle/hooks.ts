@@ -1,14 +1,19 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
-import { changeSelectedCell, changeSelectedCellValue, showSolutions } from 'src/reducers/trainer';
+import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';
 import { CellPosition } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';
 
-export const useTrainerControls: () => SudokuEventCallbacks = () => {
+interface TrainerControlCallbacks extends SudokuEventCallbacks {
+  onNextPuzzle: () => void
+}
+
+export const useTrainerControls: () => TrainerControlCallbacks = () => {
   const dispatch = useDispatch()
   const trainerPuzzleId = useSelector(state => state.trainer.data!.id)
   const selectedCell = useSelector(state => state.trainer.selectedCell)
+  const finished = useSelector(state => state.trainer.finished)
 
   const handleSelectedCellChange = useCallback((cell: CellPosition) => {
     dispatch(changeSelectedCell(cell))
@@ -29,10 +34,19 @@ export const useTrainerControls: () => SudokuEventCallbacks = () => {
     requestTrainerPuzzleCheck(trainerPuzzleId)
   }, [dispatch, trainerPuzzleId])
 
+  const handleNextPuzzle = useCallback(() => {
+    if (finished || window.confirm('Are you sure you want to abort the current puzzle?')) {
+      dispatch(fetchNewPuzzle())
+    }
+  }, [dispatch, finished])
+
   return {
     onSelectedCellChange: handleSelectedCellChange,
     onSelectedCellValueChange: handleSelectedCellValueChange,
     onViewSolutions: handleViewSolutions,
+    onNextPuzzle: handleNextPuzzle,
+    // TODO: Horrible hack, should have mapping between keys and actions, please fix :(
+    onNotesActiveToggle: handleNextPuzzle,
   }
 }
 

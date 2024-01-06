@@ -35,11 +35,7 @@ const TrainerControls = () => {
     }
   }, 1000)
 
-  const handleNextPuzzleClick = useCallback(() => {
-    dispatch(fetchNewPuzzle())
-  }, [dispatch])
-
-  const { onSelectedCellValueChange, onViewSolutions } = useTrainerControls()
+  const { onSelectedCellValueChange, onViewSolutions, onNextPuzzle } = useTrainerControls()
 
   if (!gridSize || !onSelectedCellValueChange) {
     return null
@@ -112,7 +108,7 @@ const TrainerControls = () => {
         <Button
           color={finished ? 'green' : 'gray'}
           variant="filled"
-          onClick={handleNextPuzzleClick}
+          onClick={onNextPuzzle}
           className="w-full"
         >
           Next puzzle
