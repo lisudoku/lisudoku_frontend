@@ -10,7 +10,6 @@ const ITEMS: any[] = [
   {
     text: 'Trainer',
     url: '/trainer',
-    isNew: true,
   },
   {
     text: 'Learn',
@@ -27,7 +26,6 @@ const ITEMS: any[] = [
   {
     text: 'Offline',
     url: '/offline',
-    isNew: true,
   },
   {
     text: 'Feedback?',
