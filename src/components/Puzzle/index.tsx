@@ -3,7 +3,7 @@ import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
 import { useDispatch, useSelector } from 'src/hooks'
-import { useControlCallbacks, useTvPlayerWebsocket } from './hooks'
+import { useCellHighlights, useControlCallbacks, useTvPlayerWebsocket } from './hooks'
 import { changePaused } from 'src/reducers/puzzle'
 
 // A puzzle that you are actively solving
@@ -17,10 +17,14 @@ const PuzzleComponent = () => {
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
+  const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
+  const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
   useTvPlayerWebsocket()
+
+  const cellHighlights = useCellHighlights(hintLevel, hintSolution, constraints)
 
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(false))
@@ -42,6 +46,7 @@ const PuzzleComponent = () => {
           onCellClick={onSelectedCellChange}
           paused={paused}
           onUnpause={handlePauseClick}
+          highlightedCells={cellHighlights}
         />
       </div>
       <div className="order-2 md:order-3 w-full md:w-fit md:pl-5">

@@ -478,3 +478,21 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
   })
   return peers
 }
+
+// TODO: this is also a duplicate between wasm and js
+export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
+  if (area.Row !== undefined) {
+    return _.times(constraints.gridSize, col => ({
+      row: area.Row,
+      col,
+    }))
+  } else if (area.Column !== undefined) {
+    return _.times(constraints.gridSize, row => ({
+      row,
+      col: area.Column,
+    }))
+  } else if (area.Region !== undefined) {
+    return constraints.regions[area.Region]
+  }
+  return []
+}

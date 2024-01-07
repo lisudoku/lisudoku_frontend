@@ -1,15 +1,18 @@
 import _ from 'lodash'
 import { useEffect, useCallback, useMemo } from 'react'
 import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { computeErrors, computeFixedNumbersGrid } from 'src/utils/sudoku'
+import { computeErrors, computeFixedNumbersGrid, getAreaCells } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
+  HintLevel,
   changePaused,
   changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
   fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
 } from 'src/reducers/puzzle'
 import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
+import { CellHighlight } from './SudokuGridGraphics'
+import { StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -230,4 +233,57 @@ export const useTvPlayerWebsocket = () => {
       },
     })
   }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved, isExternal])
+}
+
+const CELL_COLOR = 'lightgreen'
+const AREA_COLOR = 'lightgrey'
+const OTHER_CELLS_COLOR = 'red'
+
+export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: SudokuLogicalSolveResult | null, constraints: SudokuConstraints) => {
+  const cellHighlights = useMemo(() => {
+    if (hintLevel !== HintLevel.Big || hintSolution === null) {
+      return []
+    }
+
+    let cellHighlights: CellHighlight[] = []
+    const step = hintSolution.steps!.at(-1)
+    if (!step) {
+      return []
+    }
+
+    const cell = step.cells[0]
+    const area = step.areas[0]
+    const otherCells = step.cells.slice(1)
+
+    switch (step?.rule) {
+      case StepRule.NakedSingle: {
+        cellHighlights.push({
+          position: cell,
+          color: CELL_COLOR,
+        })
+        break
+      }
+      case StepRule.HiddenSingle: {
+        cellHighlights = getAreaCells(area, constraints).map((areaCell: CellPosition) => ({
+          position: areaCell,
+          color: AREA_COLOR,
+        }))
+        otherCells.forEach(otherCell => {
+          cellHighlights.push({
+            position: otherCell,
+            color: OTHER_CELLS_COLOR,
+          })
+        })
+        cellHighlights.push({
+          position: cell,
+          color: CELL_COLOR,
+        })
+        break
+      }
+    }
+
+    return cellHighlights
+  }, [hintLevel, hintSolution, constraints])
+
+  return cellHighlights
 }

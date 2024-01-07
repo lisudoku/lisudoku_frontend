@@ -7,7 +7,7 @@ import { useGridErrors, useFixedNumbersGrid, useNoteErrors } from './hooks'
 
 export type CellHighlight = {
   position: CellPosition
-  value: number
+  value?: number
   color: string
 }
 
@@ -415,10 +415,10 @@ type GridGraphicsProps = {
 
 const HighlightedCell = ({ cellSize, cell, className, style }: HighlightedCellProps) => (
   <rect
-    x={1 + cellSize * cell.col}
-    y={1 + cellSize * cell.row}
-    width={cellSize}
-    height={cellSize}
+    x={3 + cellSize * cell.col}
+    y={3 + cellSize * cell.row}
+    width={cellSize - 4}
+    height={cellSize - 4}
     className={className}
     style={style}
   />
@@ -692,7 +692,7 @@ const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) 
         <CellNotesGraphics
           row={cell.position.row}
           col={cell.position.col}
-          cellNotes={[cell.value]}
+          cellNotes={_.compact([cell.value])}
           killerActive={killerActive}
           cellSize={cellSize}
           cellClassName="fill-white stroke-none"
