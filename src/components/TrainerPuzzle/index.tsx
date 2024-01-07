@@ -1,10 +1,8 @@
-import _ from 'lodash'
 import { useSelector } from 'src/hooks'
 import SudokuGrid from '../Puzzle/SudokuGrid'
 import TrainerControls from './TrainerControls'
 import TrainerMisc from './TrainerMisc'
-import { useTrainerControls, useTrainerKeyboardHandler } from './hooks'
-import { CellHighlight } from '../Puzzle/SudokuGridGraphics'
+import { useCellHighlights, useTrainerControls, useTrainerKeyboardHandler } from './hooks'
 
 const TrainerPuzzleComponent = () => {
   const constraints = useSelector(state => state.trainer.data!.constraints)
@@ -14,18 +12,8 @@ const TrainerPuzzleComponent = () => {
   const finished = useSelector(state => state.trainer.finished)
   const success = useSelector(state => state.trainer.success)
   const solutions = useSelector(state => state.trainer.data!.solutions)
-  const showSolutions = finished && !success
 
-  let cellHighlights: CellHighlight[] | undefined
-  if (showSolutions) {
-    cellHighlights = _
-      .uniqWith(solutions, (a, b) => _.isEqual(a.position, b.position))
-      .map(fixedNumber => ({
-        position: fixedNumber.position,
-        color: 'lightgreen',
-        value: fixedNumber.value,
-      }))
-  }
+  const cellHighlights = useCellHighlights(finished, success, solutions, grid)
 
   const { onSelectedCellChange } = useTrainerControls()
   useTrainerKeyboardHandler()

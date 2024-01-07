@@ -10,12 +10,12 @@ import { TrainerTechniqueDisplay } from 'src/utils/constants'
 import { formatTimer } from 'src/utils/sudoku'
 import { useTrainerControls } from './hooks'
 
-const ShowingSolutions = () => (
+const ShowingSolutions = ({ success }: { success?: boolean }) => (
   <Typography variant="h6" className="mt-2">
     <FontAwesomeIcon icon={faArrowLeft} className="hidden md:inline-block" />
     <FontAwesomeIcon icon={faArrowUp} className="inline-block md:hidden" />
     {' '}
-    Showing solutions
+    Showing {success ? 'other' : ''} solutions
   </Typography>
 )
 
@@ -27,6 +27,7 @@ const TrainerControls = () => {
   const success = useSelector(state => state.trainer.success)
   const abandoned = useSelector(state => state.trainer.abandoned)
   const solveTimer = useSelector(state => state.trainer.solveTimer)
+  const solutions = useSelector(state => state.trainer.data?.solutions)
 
   useInterval(() => {
     if (!finished) {
@@ -87,6 +88,9 @@ const TrainerControls = () => {
                   {solveTimer <= 5 ? '😱' : solveTimer <= 15 ? '🚀' : '🎉'}
                 </span>
               </div>
+              {solutions!.length > 1 && (
+                <ShowingSolutions success />
+              )}
             </>
           ) : (
             <>

@@ -1,7 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
+import _ from 'lodash';
 import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';
-import { CellPosition } from 'src/types/sudoku';
+import { CellPosition, FixedNumber, Grid } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';
 
@@ -56,4 +57,21 @@ export const useTrainerKeyboardHandler: () => void = () => {
   const selectedCell = useSelector(state => state.trainer.selectedCell)
   const selectedCells = selectedCell ? [selectedCell] : []
   useKeyboardHandler({ constraints, selectedCells, callbacks })
+}
+
+export const useCellHighlights = (finished: boolean, success: boolean, solutions: FixedNumber[], grid: Grid | undefined) => {
+  const cellHighlights = useMemo(() => {
+    if (!finished) {
+      return []
+    }
+    return _
+      .uniqWith(solutions, (a, b) => _.isEqual(a.position, b.position))
+      .filter(({ position: { row, col }}) => !success || !grid![row][col])
+      .map(fixedNumber => ({
+        position: fixedNumber.position,
+        color: success ? 'lightgreen' : 'red',
+        value: fixedNumber.value,
+      }))
+  }, [finished, success, solutions, grid])
+  return cellHighlights
 }
