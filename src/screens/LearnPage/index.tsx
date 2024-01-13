@@ -16,7 +16,7 @@ const LearnPage = () => {
                 url="https://lisudoku.xyz/learn"
                 description="The list of solving techniques necessary and sufficient for solving our puzzles" />
       <Typography variant="h3">
-        <a href="/learn#">Solving techniques</a>
+        <a href="/learn#">Solving Techniques</a>
       </Typography>
       {_.map(TECHNIQUES_BY_DIFFICULTY, (techniques: Technique[], difficulty: EStepRuleDifficulty) => (
         <div key={difficulty} className="mt-4">

@@ -3,7 +3,7 @@ import { Switch as MuiSwitch } from '@material-tailwind/react'
 import classNames from 'classnames'
 
 const EXTRA_CLASSES = 'outline-0'
-const LABEL_CLASSES = 'text-gray-500'
+const LABEL_CLASSES = 'text-primary'
 
 const Switch = forwardRef((props: any, ref) => {
   const onChange = props.onChange

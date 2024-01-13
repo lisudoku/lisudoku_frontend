@@ -51,7 +51,7 @@ const TvPuzzleCard = ({ puzzle }: { puzzle: TvPuzzle }) => {
   const cellSize = useCellSize(gridSize, 0.62, 24)
 
   return (
-    <div className="flex flex-col items-center w-fit p-3 pb-1 bg-gray-900 rounded border border-gray-800">
+    <div className="flex flex-col items-center w-fit p-3 pb-1 bg-secondary rounded border border-secondary">
       <SudokuGrid
         constraints={puzzle.constraints}
         grid={puzzle.grid}

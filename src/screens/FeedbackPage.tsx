@@ -29,7 +29,7 @@ const FeedbackPage = () => {
   }, [feedback])
 
   return (
-    <>
+    <div className="px-4 py-3">
       <PageMeta title="Feedback"
                 url="https://lisudoku.xyz/feedback"
                 description="Send any feedback :)" />
@@ -51,7 +51,7 @@ const FeedbackPage = () => {
       ) : (
         <ErrorPage text="You can't submit feedback while offline" />
       )}
-    </>
+    </div>
   )
 }
 

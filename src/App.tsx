@@ -1,6 +1,5 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider } from '@material-tailwind/react'
 import { store, persistor } from './store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -9,13 +8,16 @@ import HoneybadgerProvider from './components/HoneybadgerProvider'
 import OnlineStatusMonitor from './components/OnlineStatusMonitor'
 import AppRoutes from './AppRoutes'
 
-const theme = {}
+const App = () => {
+  useEffect(() => {
+    document.body.classList.add('dark-theme')
+    return () => document.body.classList.remove('dark-theme')
+  }, [])
 
-const App = () => (
-  <HoneybadgerProvider>
-    <HelmetProvider>
-      <ThemeProvider value={theme}>
-        <div className="min-h-screen md:min-w-fit flex flex-col text-white bg-black">
+  return (
+    <HoneybadgerProvider>
+      <HelmetProvider>
+        <div className="min-h-screen md:min-w-fit flex flex-col text-primary bg-primary">
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <OnlineStatusMonitor>
@@ -28,9 +30,9 @@ const App = () => (
             </PersistGate>
           </Provider>
         </div>
-      </ThemeProvider>
-    </HelmetProvider>
-  </HoneybadgerProvider>
-)
+      </HelmetProvider>
+    </HoneybadgerProvider>
+  )
+}
 
 export default App

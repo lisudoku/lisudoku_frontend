@@ -46,9 +46,9 @@ const useComputeHintElement = () => {
         {message}
         {!error && (
           <>
-            <p className="mt-3 text-xs"><em>Click on each technique to learn how to apply them.</em></p>
+            <p className="mt-3 pb-2 text-xs"><em>Click on each technique to learn how to apply them.</em></p>
             {hintLevel === HintLevel.Small && solution.solution_type !== SolutionType.None && (
-              <p className="mt-1 text-xs">
+              <p className="text-xs">
                 <em>
                   Still confused? Check out the
                   {' '}

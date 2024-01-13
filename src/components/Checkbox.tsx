@@ -1,10 +1,10 @@
 import { forwardRef } from 'react'
 import { Checkbox as MuiCheckbox } from '@material-tailwind/react'
 
-const EXTRA_CLASSNAME = ''
+const EXTRA_CLASSNAME = 'checked:bg-highlight'
 
 const LABEL_PROPS = {
-  className: 'text-white'
+  className: 'text-primary'
 }
 
 const CONTAINER_PROPS = {

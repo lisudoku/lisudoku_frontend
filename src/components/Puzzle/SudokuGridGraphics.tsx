@@ -50,7 +50,7 @@ const BordersGraphics = ({ gridSize, regions, cellSize }: BordersGraphicsProps) 
   })
 
   return (
-    <g className="regions stroke-white">
+    <g className="regions stroke-cell-border-strong">
       <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
       <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
       <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
@@ -88,7 +88,7 @@ const ThermoGraphics = ({ thermo, cellSize }: { thermo: Thermo, cellSize: number
   }).join(' ')
 
   return (
-    <g className="thermo fill-gray-500 stroke-gray-500 opacity-80">
+    <g className="thermo fill-thermo stroke-thermo opacity-80">
       <circle cx={bulb.col * cellSize + 1 + half}
               cy={bulb.row * cellSize + 1 + half}
               r={bulbRadius} />
@@ -209,7 +209,7 @@ const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) 
   const svgPoints = points.map(({ x, y }) => `${x},${y}`).join(' ')
 
   return (
-    <g className="arrow fill-none stroke-gray-500 opacity-80" style={{
+    <g className="arrow fill-none stroke-arrow opacity-80" style={{
       strokeWidth,
     }}>
       {circleRect && (
@@ -258,7 +258,7 @@ const CellNotesGraphics = ({ row, col, cellNotes, noteErrors, cellSize, killerAc
           <text
             x={x}
             y={y}
-            className={classNames(cellClassName, {'fill-red-600': hasError })}
+            className={classNames(cellClassName, {'fill-digit-error': hasError })}
             style={cellStyle}
             key={value}
           >
@@ -311,7 +311,7 @@ const NotesGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, k
   })
 
   return (
-    <g className="notes fill-blue-200 font-bold" style={{ stroke: 'none', fontSize: notesFontSize }}>
+    <g className="notes fill-digit-pencil stroke-none font-bold" style={{ fontSize: notesFontSize }}>
       {noteElements}
     </g>
   )
@@ -354,9 +354,9 @@ const DigitGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, c
             key={key}
             textAnchor="middle"
             className={classNames({
-              'fill-white': !hasError && !isFixed,
-              'fill-gray-400': !hasError && isFixed,
-              'fill-red-600': hasError,
+              'fill-digit-unfixed': !hasError && !isFixed,
+              'fill-digit-fixed': !hasError && isFixed,
+              'fill-digit-error': hasError,
             })}>
         {value}
       </text>
@@ -400,7 +400,7 @@ const GridGraphics = ({ gridSize, cellSize }: GridGraphicsProps) => {
   }
 
   return (
-    <g className="grid-lines stroke-gray-700">
+    <g className="grid-lines stroke-cell-border-weak">
       {gridLines.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
@@ -437,7 +437,7 @@ const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsP
       <HighlightedCell
         cell={selectedCell}
         cellSize={cellSize}
-        className="opacity-25 stroke-white fill-white"
+        className="opacity-25 stroke-cell-selected fill-cell-selected"
         key={index}
       />
     ))}
@@ -462,7 +462,7 @@ const useOnGridClick = (cellSize: number, onCellClick?: Function) => (
 )
 
 const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGraphicsProps) => (
-  <g className="diagonals stroke-purple-400 stroke-[3px]">
+  <g className="diagonals stroke-diagonal stroke-[3px]">
     {primary && (
       <line x1={1} y1={1} x2={1 + cellSize * gridSize} y2={1 + cellSize * gridSize} />
     )}
@@ -564,12 +564,12 @@ const KillerGraphics = ({ gridSize, cellSize, killerCages }: KillerGraphicsProps
 
   return (
     <>
-    <g className="killer-cage-borders stroke-white stroke-2" style={{ strokeDasharray: cellSize / 10 }}>
+    <g className="killer-cage-borders stroke-killer stroke-2" style={{ strokeDasharray: cellSize / 10 }}>
       {borders.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
     </g>
-    <g className="killer-cage-sums stroke-0 fill-white font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
+    <g className="killer-cage-sums stroke-none fill-digit-unfixed font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
       {killerSums.map(({ sum, x, y }, index) => (
         <text key={index} x={x} y={y} dominantBaseline="text-before-edge">{sum}</text>
       ))}
@@ -619,7 +619,7 @@ type KropkiGraphicsProps = {
 }
 
 const ExtraRegionsGraphics = ({ cellSize, extraRegions }: ExtraRegionsGraphicsProps) => (
-  <g className="extra-regions stroke-0 fill-cyan-900">
+  <g className="extra-regions stroke-none fill-extraregion">
     {extraRegions.flat().map((cell, index) => (
       <rect x={1 + cellSize * cell.col}
             y={1 + cellSize * cell.row}
@@ -641,7 +641,7 @@ const OddGraphics = ({ cellSize, cells }: OddGraphicsProps) => {
   const radius = Math.floor(half * 21 / 28)
 
   return (
-    <g className="odd-cells fill-gray-600 stroke-gray-600">
+    <g className="odd-cells fill-oddeven stroke-none">
       {cells.map((cell, index) => (
         <circle cx={cell.col * cellSize + 1 + half}
                 cy={cell.row * cellSize + 1 + half}
@@ -662,7 +662,7 @@ const EvenGraphics = ({ cellSize, cells }: EvenGraphicsProps) => {
   const sideLength = cellSize - 2 * PADDING
 
   return (
-    <g className="even-cells fill-gray-600 stroke-gray-600">
+    <g className="even-cells fill-oddeven stroke-none">
       {cells.map((cell, index) => (
         <rect x={1 + cellSize * cell.col + PADDING}
               y={1 + cellSize * cell.row + PADDING}
@@ -695,7 +695,7 @@ const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) 
           cellNotes={_.compact([cell.value])}
           killerActive={killerActive}
           cellSize={cellSize}
-          cellClassName="fill-white stroke-none"
+          cellClassName="fill-digit-unfixed stroke-none"
         />
       </React.Fragment>
     ))}

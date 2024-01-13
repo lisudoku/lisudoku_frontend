@@ -10,8 +10,8 @@ const Button = forwardRef((props: ButtonProps, ref: React.ForwardedRef<HTMLButto
              size={props.size}
              color={props.color}
              className={classNames(EXTRA_CLASSNAME, props.className, {
-               'text-gray-500': props.color === 'gray',
-               'bg-gray-800': props.color === 'gray' && props.variant === 'filled',
+               'text-primary': props.color === 'gray',
+               'bg-tertiary': props.color === 'gray' && props.variant === 'filled',
                'text-inherit': props.color !== 'gray',
              })}>
     {props.children}

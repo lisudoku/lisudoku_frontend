@@ -2,7 +2,7 @@ import PageMeta from 'src/components/PageMeta'
 import { Typography } from '@material-tailwind/react'
 
 const OfflinePage = () => (
-  <>
+  <div className="px-4 py-3">
     <PageMeta title="Offline"
               url="https://lisudoku.xyz/offline"
               description="Instructions for offline use of the app" />
@@ -64,7 +64,7 @@ const OfflinePage = () => (
       </a>
       .
     </Typography>
-  </>
+  </div>
 )
 
 export default OfflinePage

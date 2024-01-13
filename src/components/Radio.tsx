@@ -1,10 +1,10 @@
 import { forwardRef, useCallback } from 'react'
 import { Radio as MuiRadio } from '@material-tailwind/react'
 
-const EXTRA_CLASSNAME = ''
+const EXTRA_CLASSNAME = 'text-highlight checked:border-highlight'
 
 const LABEL_PROPS = {
-  className: 'text-white'
+  className: 'text-primary'
 }
 
 const CONTAINER_PROPS = {

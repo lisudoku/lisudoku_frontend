@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { createdCompetition } from 'src/reducers/competitions'
 import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { CompetitionInput, createCompetition } from 'src/utils/apiService'
+import Input from 'src/components/Input'
 
 const AddCompetitionForm = () => {
   const dispatch = useDispatch()
@@ -36,24 +37,20 @@ const AddCompetitionForm = () => {
       render={({ handleSubmit, submitError, submitting, values }) => (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-4">
           <div className="w-full flex gap-2">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="name" className="font-medium">Name</label>
-              <Field
-                id="name"
-                name="name"
-                component="input"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="name">
+                {props => (
+                  <Input {...props.input} label="Name" className="w-96" />
+                )}
+              </Field>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="url" className="font-medium">URL</label>
-              <Field
-                id="url"
-                name="url"
-                component="input"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="url">
+                {props => (
+                  <Input {...props.input} label="URL" className="w-96" />
+                )}
+              </Field>
             </div>
           </div>
 

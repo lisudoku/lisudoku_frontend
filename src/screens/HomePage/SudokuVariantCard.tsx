@@ -8,7 +8,7 @@ import { faChessKnight, faChessKing } from '@fortawesome/free-solid-svg-icons'
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
   <div className="w-full sm:w-[14rem] p-1.5">
     <Link to={`/play/${variant}/${difficulty}`}>
-      <div className="relative h-48 border rounded border-gray-700 cursor-pointer text-3xl bg-gray-800 hover:bg-cyan-900 hover:text-gray-300 hover:shadow-sm hover:shadow-gray-700">
+      <div className="relative h-48 border rounded border-secondary cursor-pointer text-3xl bg-tertiary hover:bg-cyan-900 hover:text-primary hover:shadow-sm hover:shadow-gray-700">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
           <span className={classNames('z-10', { 'pr-10': variant === SudokuVariant.Irregular })}>{SudokuVariantDisplay[variant]}</span>
           <span className={classNames('z-10', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
@@ -97,20 +97,20 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
             </g>
           )}
           {variant === SudokuVariant.Mixed && (
-            <g className="fill-gray-500 stroke-0">
+            <g className="fill-thermo stroke-none">
               <text x="15" y="25" rotate={-15}>?</text>
               <text x="80" y="30" rotate={20}>?</text>
               <text x="60" y="90" rotate={15}>?</text>
             </g>
           )}
           {variant === SudokuVariant.ExtraRegions && (
-            <g className="fill-gray-700 stroke-0">
+            <g className="fill-oddeven stroke-0">
               <rect x="7" y="30" width="33" height="18" />
               <rect x="42" y="30" width="51" height="18" />
             </g>
           )}
           {variant === SudokuVariant.OddEven && (
-            <g className="fill-gray-700 stroke-0">
+            <g className="fill-oddeven stroke-0">
               <ellipse cx="34" cy="39" rx="14" ry="12" />
               <rect x="50" y="30" width="30" height="18" />
             </g>

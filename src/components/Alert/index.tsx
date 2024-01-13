@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import style from './style.module.css'
 import { onClose } from '@material-tailwind/react/types/components/alert'
 
-const EXTRA_CLASSES = `z-10 overflow-y-auto bg-gray-600 justify-between ${style.alert}`
+const EXTRA_CLASSES = `z-10 overflow-y-auto bg-tertiary justify-between ${style.alert}`
 
 const Alert = ({ children, className, ...props }: AlertProps) => (
   <MuiAlert className={`${EXTRA_CLASSES} ${className}`} {...props}>

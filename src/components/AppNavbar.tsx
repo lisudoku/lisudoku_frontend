@@ -98,8 +98,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
         <Typography
           as="li"
           variant="small"
-          color="white"
-          className="font-normal"
+          className="font-normal hover:text-primary-hover"
           key={url}
         >
           <NavLink
@@ -140,7 +139,6 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
       <Typography
         as="li"
         variant="small"
-        color="white"
         className="font-normal"
       >
         {solvedElement}
@@ -150,16 +148,14 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           <Typography
             as="li"
             variant="small"
-            color="white"
-            className="font-normal"
+            className="font-normal hover:text-primary-hover"
           >
             <Link to={userIsAdmin ? '/admin' : '#'}>{username}</Link>
           </Typography>
           <Typography
             as="li"
             variant="small"
-            color="white"
-            className="font-normal"
+            className="font-normal hover:text-primary-hover"
           >
             <Link to="/logout">Sign Out</Link>
           </Typography>
@@ -168,8 +164,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
         <Typography
           as="li"
           variant="small"
-          color="white"
-          className={classNames('font-normal', { 'hidden': !admin })}
+          className={classNames('font-normal hover:text-primary-hover', { 'hidden': !admin })}
         >
           <Link to="/login">Sign In</Link>
         </Typography>
@@ -178,11 +173,11 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   return (
-    <Navbar ref={AppNavbarRef} className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 bg-gradient-to-b from-gray-700 to-gray-900 border-none uppercase">
-      <div className="h-full flex items-center justify-between text-white">
+    <Navbar ref={AppNavbarRef} className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 border-none uppercase bg-primary">
+      <div className="h-full flex items-center justify-between text-primary">
         <Typography
           variant="h3"
-          className="mr-6 cursor-pointer font-normal lowercase relative"
+          className="mr-6 cursor-pointer font-normal lowercase relative hover:text-primary-hover"
         >
           <Link to={admin ? '/admin' : '/'}>lisudoku</Link>
         </Typography>

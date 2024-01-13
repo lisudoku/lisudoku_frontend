@@ -1,4 +1,5 @@
-import { Card, CardBody, Typography } from '@material-tailwind/react'
+import { CardBody, Typography } from '@material-tailwind/react'
+import Card from '../Card'
 import TrainerTechniqueSelect from './TrainerTechniqueSelect'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useCallback } from 'react'
@@ -15,7 +16,7 @@ const TrainerMisc = () => {
 
   return (
     <div className="relative flex flex-col md:max-w-xs w-full md:w-72 mt-3 md:mt-0">
-      <Card className="rounded w-full bg-gray-900 text-white">
+      <Card className="w-full">
         <CardBody>
           <Typography variant="h5">
             Trainer

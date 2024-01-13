@@ -1,5 +1,6 @@
-import { Card, CardBody, Typography } from '@material-tailwind/react'
 import _ from 'lodash'
+import { CardBody, Typography } from '@material-tailwind/react'
+import Card from '../Card'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -120,7 +121,7 @@ const computeRules = (constraints: SudokuConstraints) => {
 
 const SudokuRules = ({ constraints }: { constraints: SudokuConstraints }) => (
   <>
-    <Card className="rounded w-full bg-gray-900 text-white">
+    <Card className="w-full">
       <CardBody>
         <Typography variant="h6">
           Rules

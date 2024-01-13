@@ -1,5 +1,7 @@
 import { useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { CardBody } from '@material-tailwind/react'
+import Card from '../Card'
 import { useSelector } from 'src/hooks'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import SudokuRules from './SudokuRules'
@@ -36,49 +38,51 @@ const SudokuMisc = () => {
       <div className="mb-3">
         <SudokuRules constraints={constraints} />
       </div>
-      <div className="bg-gray-900 py-3 px-4">
-        {!isExternal && (
-          <>
-            <div className="w-full md:ml-1">
-              <VariantSelect value={variant!} onChange={onVariantChange} />
-            </div>
-            <div className="w-full md:ml-1 mt-2">
-              <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
-            </div>
-            <PermalinkButton publicId={publicId} />
-          </>
-        )}
-        <ShortcutsButton />
-        <div className="mt-2">
-          <ShowTimerToggle />
-        </div>
-        <div className="mt-1">
-          <CheckErrorsToggle />
-        </div>
-        {sourceCollectionId && (
-          <div className="flex flex-col mt-2 w-full md:w-fit">
-            <div className="text-gray-400 text-sm">
-              Source
-            </div>
-            <Link to={`/collections/${sourceCollectionId}`}
-                  target="_blank"
-                  className="text-gray-300 font-bold"
-            >
-              {sourceCollectionName}
-            </Link>
+      <Card className="w-full">
+        <CardBody>
+          {!isExternal && (
+            <>
+              <div className="w-full md:ml-1">
+                <VariantSelect value={variant!} onChange={onVariantChange} />
+              </div>
+              <div className="w-full md:ml-1 mt-2">
+                <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
+              </div>
+              <PermalinkButton publicId={publicId} />
+            </>
+          )}
+          <ShortcutsButton />
+          <div className="mt-2">
+            <ShowTimerToggle />
           </div>
-        )}
-        {author && (
-          <div className="flex flex-col mt-2 w-full md:w-fit">
-            <div className="text-gray-400 text-sm">
-              Author
-            </div>
-            <div className="text-gray-300 font-bold">
-              {author}
-            </div>
+          <div className="mt-1">
+            <CheckErrorsToggle />
           </div>
-        )}
-      </div>
+          {sourceCollectionId && (
+            <div className="flex flex-col mt-2 w-full md:w-fit">
+              <div className="text-secondary text-sm">
+                Source
+              </div>
+              <Link to={`/collections/${sourceCollectionId}`}
+                    target="_blank"
+                    className="text-primary font-bold"
+              >
+                {sourceCollectionName}
+              </Link>
+            </div>
+          )}
+          {author && (
+            <div className="flex flex-col mt-2 w-full md:w-fit">
+              <div className="text-gray-400 text-sm">
+                Author
+              </div>
+              <div className="text-gray-300 font-bold">
+                {author}
+              </div>
+            </div>
+          )}
+        </CardBody>
+      </Card>
     </div>
   )
 }

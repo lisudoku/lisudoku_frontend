@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { useEffect, useRef } from 'react'
-import { Card, CardBody, Typography } from '@material-tailwind/react'
+import { CardBody, Typography } from '@material-tailwind/react'
+import Card from 'src/components/Card'
 import ExternalLink from 'src/components/ExternalLink'
 import { StepRuleDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl, pluralize } from 'src/utils/misc'
@@ -18,7 +19,7 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
 
   return (
     <div ref={ref} className="w-full lg:w-1/2 p-1 flex">
-      <Card className="rounded bg-gray-600 text-white flex-grow">
+      <Card className="bg-tertiary flex-grow">
         <CardBody>
           <Typography variant="h5">
             <a href={`#${id}`}>{StepRuleDisplay[id]}</a>

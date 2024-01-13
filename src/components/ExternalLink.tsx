@@ -4,7 +4,7 @@ const ExternalLink = ({ url, children }: ExternalLinkProps) => (
   <a href={url}
      target="_blank"
      rel="noopener noreferrer"
-     className="text-white font-bold"
+     className="text-primary font-bold"
   >
     {children}
   </a>

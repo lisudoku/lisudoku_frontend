@@ -101,7 +101,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
 
   return (
     <div className={classNames(
-      'w-full rounded border border-gray-400 px-3 py-1 flex justify-center select-none', {
+      'w-full rounded border border-primary px-3 py-1 flex justify-center select-none', {
         'border-yellow-600': gridFull && isSolvedLoading,
         'border-green-600': gridFull && !isSolvedLoading && solved,
         'border-red-600': gridFull && !isSolvedLoading && !solved,
@@ -119,7 +119,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
           <FontAwesomeIcon icon={paused ? faCirclePlay : faCirclePause}
                            onClick={handlePauseClick}
                            className={classNames('cursor-pointer ml-2 relative top-[0.5px]', {
-                             'text-gray-400': !paused,
+                             'text-primary': !paused,
                            })} />
         )}
       </Typography>

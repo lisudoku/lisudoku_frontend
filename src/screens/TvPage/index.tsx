@@ -42,7 +42,7 @@ const TvPage = () => {
 }
 
 const ViewerCount = ({ count }: { count: number }) => (
-  <Typography variant="paragraph" className="font-thin">
+  <Typography variant="paragraph" className="font-thin pr-5">
     <FontAwesomeIcon icon={faCircle} size="2xs" color="lightgreen" />
     <span> {count} {pluralize(count, 'viewer')}</span>
   </Typography>

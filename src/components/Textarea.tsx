@@ -1,10 +1,10 @@
 import { forwardRef } from 'react'
 import { Textarea as MuiTextArea, TextareaProps } from '@material-tailwind/react'
 
-const EXTRA_CLASSNAME = 'rounded disabled:!border-gray-600 disabled:!border-2 disabled:!text-white !bg-black !text-white'
+const EXTRA_CLASSNAME = 'rounded !bg-none !text-primary border-primary focus:border-primary'
 
 const LABEL_PROPS = {
-  className: '!text-white'
+  className: '!text-primary before:border-primary peer-focus:before:!border-primary after:border-primary peer-focus:after:!border-primary'
 }
 
 interface TextAreaProps extends TextareaProps {}

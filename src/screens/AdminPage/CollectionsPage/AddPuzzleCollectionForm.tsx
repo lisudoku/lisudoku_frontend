@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { Form, Field } from 'react-final-form'
 import { FormApi } from 'final-form'
 import Button from 'src/components/Button'
+import Input from 'src/components/Input'
 import { useDispatch, useSelector } from 'src/hooks'
 import { createdPuzzleCollection } from 'src/reducers/collections'
 import { createPuzzleCollection, PuzzleCollectionInput } from 'src/utils/apiService'
@@ -30,24 +31,20 @@ const AddPuzzleCollectionForm = () => {
       onSubmit={onSubmit}
       render={({ handleSubmit, submitError, submitting, values }) => (
         <form onSubmit={handleSubmit} className="flex gap-2 p-4">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="name" className="font-medium">Name</label>
-            <Field
-              id="name"
-              name="name"
-              component="input"
-              className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-            />
+          <div>
+            <Field name="name">
+              {props => (
+                <Input {...props.input} label="Name" className="w-96" />
+              )}
+            </Field>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="url" className="font-medium">URL</label>
-            <Field
-              id="url"
-              name="url"
-              component="input"
-              className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-            />
+          <div>
+            <Field name="url">
+              {props => (
+                <Input {...props.input} label="URL" className="w-96" />
+              )}
+            </Field>
           </div>
 
           <div>
@@ -56,7 +53,7 @@ const AddPuzzleCollectionForm = () => {
               <Button
                 type="submit"
                 disabled={submitting || values.name === undefined || values.url === undefined}
-                className="h-9 py-1 px-8 bg-gray-800 text-white rounded text-lg shadow-none hover:shadow-sm"
+                className="h-10 py-1 px-8 text-lg"
               >
                 Add
               </Button>

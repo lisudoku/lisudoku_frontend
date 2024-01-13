@@ -15,7 +15,7 @@ const ShortcutsButton = () => (
         {' Shortcuts'}
       </Button>
     </PopoverHandler>
-    <PopoverContent>
+    <PopoverContent className="bg-tertiary text-primary border-secondary">
       <div><b>Move selected cell</b> - Arrows</div>
       <div><b>Toggle notes</b> - Space or Tab</div>
       <div><b>Undo</b> - {CTRL_KEY_NAME} + Z</div>

@@ -1,6 +1,7 @@
 import { faXmark, faArrowLeft, faCheck, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Card, CardBody, Typography } from '@material-tailwind/react'
+import { CardBody, Typography } from '@material-tailwind/react'
+import Card from '../Card'
 import useInterval from 'react-useinterval'
 import Button from 'src/components/Button'
 import SudokuDigitInput from 'src/components/Puzzle/SudokuDigitInput'
@@ -49,7 +50,7 @@ const TrainerControls = () => {
           onClick={onSelectedCellValueChange}
         />
       </div>
-      <Card className="rounded w-full bg-gray-900 text-white">
+      <Card className="w-full">
         <CardBody>
           {!finished ? (
             <>
