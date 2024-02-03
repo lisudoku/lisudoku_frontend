@@ -1,7 +1,7 @@
 import { Input as MuiInput } from '@material-tailwind/react'
 import { useCallback } from 'react'
 
-const EXTRA_CLASSES  = '!text-white'
+const EXTRA_CLASSES  = '!text-primary'
 const CONTAINER_CLASSES = 'min-w-0'
 
 const Input = (props: any) => {

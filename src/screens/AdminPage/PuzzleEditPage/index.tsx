@@ -59,19 +59,18 @@ const PuzzleEditPage = () => {
       initialValues={formData}
       render={({ handleSubmit, submitError, submitting, pristine }) => (
         <form onSubmit={handleSubmit} className="flex gap-2 p-4">
-          <div className="flex flex-col w-24 gap-3">
+          <div className="flex flex-col w-64 gap-3">
             <Field
               id="difficulty"
               name="difficulty"
               component={({ input, ...rest }) => <DifficultySelect {...input} {...rest} />}
-              className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
             />
 
             <Field
               id="sourceCollectionId"
               name="sourceCollectionId"
               component={({ input, ...rest }) => <PuzzleCollectionsSelect  {...input} {...rest} />}
-              className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
+              className="w-full"
             />
 
             <div>

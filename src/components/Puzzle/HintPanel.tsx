@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import Alert from '../Alert'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
 import { SolutionType } from 'src/types/wasm'
 import { computeHintContent } from 'src/utils/solver'
@@ -16,14 +16,15 @@ const useComputeHintElement = () => {
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
   const notes = useSelector(state => state.puzzle.notes!)
   const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
+  const gridSize = useSelector(state => state.puzzle.data!.constraints.gridSize)
 
   const handleBigHintClick = useCallback(() => {
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
   const [ message, filteredSteps, error ] = useMemo(
-    () => computeHintContent(solution, hintLevel!, notes, isExternal),
-    [solution, hintLevel, notes, isExternal]
+    () => computeHintContent(solution, hintLevel!, notes, isExternal, gridSize),
+    [solution, hintLevel, notes, isExternal, gridSize]
   )
 
   if (solution === null) {
@@ -32,7 +33,7 @@ const useComputeHintElement = () => {
 
   return (
     <>
-      <Typography variant="h3" className="pb-2">
+      <Typography variant="h3" className="pb-2 text-primary">
         {hintLevel} hint {' '}
         {filteredSteps && !error && (
           <span className="relative top-[1px]">
@@ -42,7 +43,7 @@ const useComputeHintElement = () => {
           </span>
         )}
       </Typography>
-      <div className="antialiased font-sans text-sm font-light leading-normal">
+      <div className="antialiased font-sans text-sm font-light leading-normal text-primary">
         {message}
         {!error && (
           <>
@@ -66,6 +67,12 @@ const useComputeHintElement = () => {
   )
 }
 
+const CloseButton = ({ onClick }: { onClick?: () => void }) => (
+  <div onClick={onClick} className="w-1">
+    <FontAwesomeIcon icon={faXmark} size="lg" className="absolute transform -translate-x-3 cursor-pointer text-primary" />
+  </div>
+)
+
 const HintPanel = () => {
   const dispatch = useDispatch()
   const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
@@ -81,6 +88,7 @@ const HintPanel = () => {
       className="absolute h-full"
       open={!!hintSolution}
       onClose={handleAlertClose}
+      action={<CloseButton onClick={handleAlertClose} />}
     >{hintMessage}</Alert>
   )
 }

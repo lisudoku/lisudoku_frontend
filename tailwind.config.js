@@ -36,7 +36,8 @@ module.exports = withMT({
               primary: theme('colors.gray.900'),
               secondary: theme('colors.gray.850'),
               tertiary: theme('colors.gray.750'),
-              highlight: theme('colors.cyan.500'),
+              highlight: theme('colors.cyan.600'),
+              softhighlight: theme('colors.cyan.900'),
             }),
             textColor: ({ theme }) => ({
               primary: {
@@ -68,7 +69,7 @@ module.exports = withMT({
             }),
             stroke: ({ theme }) => ({
               cell: {
-                selected: `theme('fill.cell.selected')`, // Hacks...
+                selected: `theme('fill.cell.selected')`, // Hacks to use values from other property
                 border: {
                   strong: theme('colors.white'),
                   weak: theme('colors.gray.700'),
@@ -81,34 +82,60 @@ module.exports = withMT({
             }),
           },
         },
-        // {
-        //   name: 'light-theme',
-        //   extend: {
-        //     backgroundColor: ({ theme }) => ({
-        //       primary: theme('colors.red.600'),
-        //       secondary: theme('colors.red.600'),// ???
-        //       tertiary: theme('colors.red.600'),
-        //     }),
-        //     textColor: ({ theme }) => ({
-        //       primary: {
-        //         DEFAULT: theme('colors.red.600'),
-        //         hover: theme('colors.red.600'),
-        //       },
-        //       secondary: theme('colors.red.600'),
-        //     }),
-        //     borderColor: ({ theme }) => ({
-        //       primary: theme('colors.red.600'),
-        //     }),
-        //     fill: ({ theme }) => ({
-        //       digit: {
-        //         unfixed: theme('colors.white'),
-        //         fixed: theme('colors.gray.400'),
-        //         error: theme('colors.red.600'),
-        //       },
-        //       thermo: theme('colors.gray.500'),
-        //     }),
-        //   },
-        // },
+        {
+          name: 'light-theme',
+          extend: {
+            backgroundColor: ({ theme }) => ({
+              primary: theme('colors.gray.300'),
+              secondary: theme('colors.gray.200'),
+              tertiary: theme('colors.gray.100'),
+              highlight: theme('colors.cyan.600'),
+              softhighlight: theme('colors.cyan.100'),
+            }),
+            textColor: ({ theme }) => ({
+              primary: {
+                DEFAULT: theme('colors.gray.700'),
+                hover: theme('colors.gray.500'),
+              },
+              secondary: theme('colors.gray.600'),
+              tertiary: theme('colors.gray.500'),
+              highlight: theme('colors.cyan.400'),
+            }),
+            borderColor: ({ theme }) => ({
+              primary: theme('colors.gray.500'),
+              secondary: theme('colors.gray.400'),
+              highlight: theme('colors.cyan.500'),
+            }),
+            fill: ({ theme }) => ({
+              digit: {
+                unfixed: theme('colors.blue.900'),
+                fixed: theme('colors.black'),
+                error: theme('colors.red.600'),
+                pencil: theme('colors.blue.600'),
+              },
+              cell: {
+                selected: theme('colors.blue.300'),
+              },
+              thermo: theme('colors.gray.500'),
+              arrow: theme('colors.gray.500'),
+              extraregion: theme('colors.cyan.200'),
+              oddeven: theme('colors.gray.400'),
+            }),
+            stroke: ({ theme }) => ({
+              cell: {
+                selected: `theme('fill.cell.selected')`, // Hacks to use values from other property
+                border: {
+                  strong: theme('colors.black'),
+                  weak: theme('colors.gray.500'),
+                },
+              },
+              arrow: `theme('fill.arrow')`,
+              thermo: `theme('fill.thermo')`,
+              diagonal: theme('colors.purple.200'),
+              killer: theme('colors.black'),
+            }),
+          },
+        },
       ]
     })
   ],

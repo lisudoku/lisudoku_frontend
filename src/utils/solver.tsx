@@ -37,13 +37,17 @@ const cellDisplay = (cell: CellPosition) => (
   `R${cell.row + 1}C${cell.col + 1}`
 )
 
-const areaDisplay = (area: any) => {
+const areaDisplay = (area: any, gridSize: number) => {
   if (area.Row !== undefined) {
     return `row ${area.Row + 1}`
   } else if (area.Column !== undefined) {
     return `column ${area.Column + 1}`
   } else if (area.Region !== undefined) {
-    return `box ${area.Region + 1}`
+    if (area.Region >= gridSize) {
+      return `extra region ${area.Region - gridSize + 1}`
+    } else {
+      return `box ${area.Region + 1}`
+    }
   } else if (area.Thermo !== undefined) {
     return 'a thermometer'
   } else if (area.KillerCage !== undefined) {
@@ -61,7 +65,7 @@ const areaDisplay = (area: any) => {
   }
 }
 
-const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
+const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number) => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
   const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(', ')
@@ -76,7 +80,7 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
 
   switch (step.rule) {
     case StepRule.HiddenSingle: {
-      const areaMessage = areaDisplay(step.areas[0])
+      const areaMessage = areaDisplay(step.areas[0], gridSize)
       return applyGridStepHint(` in ${areaMessage} on cell ${cellDisplay(step.cells[0])}`)
     }
     case StepRule.NakedSingle:
@@ -86,11 +90,11 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
       return ' for all cells'
     case StepRule.HiddenPairs:
     case StepRule.HiddenTriples: {
-      const areaMessage = areaDisplay(step.areas[0])
+      const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` in ${areaMessage} on cells ${cells} to only keep ${values}`
     }
     case StepRule.XWing: {
-      const areaDisplays = step.areas.map(area => areaDisplay(area))
+      const areaDisplays = step.areas.map(area => areaDisplay(area, gridSize))
       return ` on cells ${cells} (${areaDisplays[0]} and ${areaDisplays[1]}) ` +
         `to remove ${values} from ${affectedCells} (${areaDisplays[2]} and ${areaDisplays[3]})`
     }
@@ -98,7 +102,7 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
       const zValue = step.values[2]
       return ` on cells ${cells} to remove ${zValue} from ${affectedCells}`
     case StepRule.CommonPeerElimination: {
-      const areaMessage = areaDisplay(step.areas[0])
+      const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` to remove value ${values} from ${affectedCells} because it ` +
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
@@ -116,16 +120,16 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
     case StepRule.TopBottomCandidates: {
       const ascending = step.areas[0].Row + 1 === step.values[0]
       const otherValue = (ascending === (step.areas[0].Row < step.areas[1].Row)) ? step.values[0] + 1 : step.values[0] - 1
-      return ` in ${areaDisplay(step.areas[0])} to remove ${values} from ${affectedCells} because ` +
+      return ` in ${areaDisplay(step.areas[0], gridSize)} to remove ${values} from ${affectedCells} because ` +
         `${step.affected_cells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
-        `on ${areaDisplay(step.areas[1])}`
+        `on ${areaDisplay(step.areas[1], gridSize)}`
     }
     case StepRule.EmptyRectangles:
-      return ` in ${areaDisplay(step.areas[0])} that sees strong link ` +
+      return ` in ${areaDisplay(step.areas[0], gridSize)} that sees strong link ` +
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
-      const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0])}` : ''
+      const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], gridSize)}` : ''
 
       // Some techniques don't have cells (e.g. killer cage, kropki chains)
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
@@ -134,7 +138,7 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel) => {
   }
 }
 
-export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel) => {
+export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel, gridSize: number) => {
   let hint = <b>
     <ExternalLink url={`/learn#${step.rule}`}>
       {StepRuleDisplay[step.rule]}
@@ -143,7 +147,7 @@ export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel) => 
 
   if (hintLevel !== HintLevel.Small) {
     return <>
-      {hint} {getBigStepExplanation(step, hintLevel)}
+      {hint} {getBigStepExplanation(step, hintLevel, gridSize)}
     </>
   }
 
@@ -190,7 +194,7 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
   }
 }
 
-const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal: boolean) => {
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal: boolean, gridSize: number) => {
   const singleIndex = steps.findIndex(step => (
     [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo].includes(step.rule))
   )
@@ -222,7 +226,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
 
   if (singleIndex === 0) {
     const step = steps[0]
-    return [ <>There is a {getStepDescription(step, hintLevel)}.</>, false ]
+    return [ <>There is a {getStepDescription(step, hintLevel, gridSize)}.</>, false ]
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)
@@ -238,12 +242,12 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
     <ul className="list-disc list-inside">
       {candidateSteps.map((step, index) => (
         <li key={index}>
-          {getStepDescription(step, hintLevel)}
+          {getStepDescription(step, hintLevel, gridSize)}
         </li>
       ))}
     </ul>
 
-    <p className="mt-2">Finally, there is a {getStepDescription(lastStep, hintLevel)}.</p>
+    <p className="mt-2">Finally, there is a {getStepDescription(lastStep, hintLevel, gridSize)}.</p>
   </>
 
   return [ message, false ]
@@ -251,7 +255,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
 
 export const computeHintContent = (
   solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][],
-  isExternal: boolean
+  isExternal: boolean, gridSize: number,
 ) => {
   if (!solution) {
     return [ '', false ]
@@ -267,7 +271,7 @@ export const computeHintContent = (
   const steps = solution.steps!.filter(step => !isRedundantStep(step, notes));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
-  const [ message, error ] = computeHintText(steps, hintLevel, isExternal)
+  const [ message, error ] = computeHintText(steps, hintLevel, isExternal, gridSize)
 
   return [ message, filteredSteps, error ]
 }

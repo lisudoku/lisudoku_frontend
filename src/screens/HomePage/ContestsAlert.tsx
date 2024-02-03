@@ -51,7 +51,7 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
   )
 
   return (
-    <div className="w-full bg-cyan-900 rounded-none py-1 px-4 lg:px-8">
+    <div className="w-full bg-softhighlight text-primary rounded-none py-1 px-4 lg:px-8">
       The <b>{name}</b> contest {' '}
 
       {finished ? (

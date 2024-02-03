@@ -116,7 +116,7 @@ const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMod
             <ol className="list-decimal list-inside">
               {solution.steps!.map((step: SolutionStep, index: number) => (
                 <li key={index}>
-                  {getStepDescription(step, HintLevel.Full)}
+                  {getStepDescription(step, HintLevel.Full, constraints.gridSize)}
                 </li>
               ))}
             </ol>

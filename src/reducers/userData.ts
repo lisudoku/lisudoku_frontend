@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { Competition } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
+import { ThemeOption } from 'src/components/ThemeProvider'
 const jcc = require('json-case-convertor')
 
 type SolvedPuzzle = {
@@ -14,11 +15,13 @@ type SolvedPuzzle = {
 type UserSettings = {
   showTimer: boolean
   checkErrors: boolean
+  theme: ThemeOption
 }
 
 const DEFAULT_USER_SETTINGS = {
   showTimer: true,
   checkErrors: true,
+  theme: ThemeOption.System,
 }
 
 type UserDataState = {
@@ -74,6 +77,13 @@ export const userDataSlice = createSlice({
       }
       state.settings.checkErrors = action.payload
     },
+    updateTheme(state, action) {
+      // TODO: remove this duplication
+      if (state.settings === undefined) {
+        state.settings = DEFAULT_USER_SETTINGS
+      }
+      state.settings.theme = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
@@ -99,7 +109,7 @@ export const userDataSlice = createSlice({
 
 export const {
   loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
-  updateShowTimer, updateCheckErrors,
+  updateShowTimer, updateCheckErrors, updateTheme,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer

@@ -30,14 +30,14 @@ const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   }, [dispatch, id, userToken])
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center text-primary">
       <SudokuGrid
         constraints={puzzle.constraints}
         grid={grid}
         notes={notes}
         cellSize={cellSize}
       />
-      <div className="flex gap-3 w-fit text-sm text-gray-300">
+      <div className="flex gap-3 w-fit text-sm">
         {puzzle.publicId!}
       </div>
       <div className="flex gap-3 w-fit text-sm">

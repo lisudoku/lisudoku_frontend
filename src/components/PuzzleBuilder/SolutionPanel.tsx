@@ -7,7 +7,7 @@ const CloseButton = ({ onClick }: { onClick?: () => void }) => (
 
 const SolutionPanel = ({ children, className, onClear }: SolutionPanelProps) => (
   <Alert open
-         className={`rounded py-2 ${className ?? ''}`}
+         className={`rounded py-2 text-primary ${className ?? ''}`}
          action={onClear && <CloseButton onClick={onClear} />}>
     {children}
   </Alert>

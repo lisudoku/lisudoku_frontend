@@ -73,10 +73,10 @@ const SudokuMisc = () => {
           )}
           {author && (
             <div className="flex flex-col mt-2 w-full md:w-fit">
-              <div className="text-gray-400 text-sm">
+              <div className="text-secondary text-sm">
                 Author
               </div>
-              <div className="text-gray-300 font-bold">
+              <div className="text-primary font-bold">
                 {author}
               </div>
             </div>

@@ -5,6 +5,7 @@ import { Form, Field } from 'react-final-form'
 import { FORM_ERROR } from 'final-form'
 import Button from 'src/components/Button'
 import LoadingSpinner from 'src/components/LoadingSpinner'
+import Input from 'src/components/Input'
 import { PuzzleCollection } from 'src/types'
 import {
   apiUpdatePuzzleCollection, fetchPuzzleCollection, PuzzleCollectionInput,
@@ -48,24 +49,20 @@ const CollectionsEditPage = () => {
       render={({ handleSubmit, submitError, submitting, pristine }) => (
         <form onSubmit={handleSubmit} className="flex gap-2 p-4">
           <div className="flex flex-col w-96 gap-3">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="name" className="text-lg font-medium">Name</label>
-              <Field
-                id="name"
-                name="name"
-                component="input"
-                className="w-full bg-gray-700 border border-gray-500 p-2 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="name">
+                {props => (
+                  <Input {...props.input} label="Name" className="w-full" />
+                )}
+              </Field>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="url" className="text-lg font-medium">URL</label>
-              <Field
-                id="url"
-                name="url"
-                component="input"
-                className="w-full bg-gray-700 border border-gray-500 p-2 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="url">
+                {props => (
+                  <Input {...props.input} label="URL" className="w-full" />
+                )}
+              </Field>
             </div>
 
             <div>

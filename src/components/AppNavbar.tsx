@@ -5,6 +5,7 @@ import { useSelector } from 'src/hooks'
 import { Navbar, Collapse, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars, faTrophy, faFire, faCircle } from '@fortawesome/free-solid-svg-icons'
+import { ThemeSelect } from './ThemeSelect'
 
 const ITEMS: any[] = [
   {
@@ -135,7 +136,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   const rightButtons = (
-    <ul className="flex flex-row gap-5 pb-2 lg:pb-0">
+    <ul className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-5 pb-2 lg:pb-0">
       <Typography
         as="li"
         variant="small"
@@ -143,6 +144,9 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
       >
         {solvedElement}
       </Typography>
+      <li className="w-20">
+        <ThemeSelect />
+      </li>
       {username ? (
         <>
           <Typography
@@ -173,8 +177,8 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   return (
-    <Navbar ref={AppNavbarRef} className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 border-none uppercase bg-primary">
-      <div className="h-full flex items-center justify-between text-primary">
+    <Navbar ref={AppNavbarRef} className="h-13 rounded-none max-w-none py-1 px-4 lg:px-8 border-none uppercase bg-primary text-primary z-50">
+      <div className="h-full flex items-center justify-between">
         <Typography
           variant="h3"
           className="mr-6 cursor-pointer font-normal lowercase relative hover:text-primary-hover"

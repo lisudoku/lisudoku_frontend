@@ -8,12 +8,12 @@ import { faChessKnight, faChessKing } from '@fortawesome/free-solid-svg-icons'
 const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => (
   <div className="w-full sm:w-[14rem] p-1.5">
     <Link to={`/play/${variant}/${difficulty}`}>
-      <div className="relative h-48 border rounded border-secondary cursor-pointer text-3xl bg-tertiary hover:bg-cyan-900 hover:text-primary hover:shadow-sm hover:shadow-gray-700">
+      <div className="relative h-48 border rounded border-secondary cursor-pointer text-3xl bg-tertiary text-primary hover:bg-softhighlight hover:text-secondary hover:shadow-sm hover:shadow-gray-700">
         <div className="w-full h-full flex flex-col items-center justify-center pb-2">
-          <span className={classNames('z-10', { 'pr-10': variant === SudokuVariant.Irregular })}>{SudokuVariantDisplay[variant]}</span>
-          <span className={classNames('z-10', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
+          <span className={classNames('z-20', { 'pr-10': variant === SudokuVariant.Irregular })}>{SudokuVariantDisplay[variant]}</span>
+          <span className={classNames('z-20', { 'pl-10': variant === SudokuVariant.Irregular })}>Sudoku</span>
         </div>
-        <div className="absolute z-0 w-full h-full top-0 left-0">
+        <div className="absolute z-10 w-full h-full top-0 left-0">
           {variant === SudokuVariant.AntiKnight && (
             <>
               <FontAwesomeIcon icon={faChessKnight} size="sm" className="absolute top-5 left-5" />
@@ -27,7 +27,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
             </>
           )}
         </div>
-        <svg className="absolute text-lg z-0 w-full h-full top-0 left-0"
+        <svg className="absolute text-lg z-10 w-full h-full top-0 left-0"
             style={{ fill: 'none', stroke: 'grey', strokeWidth: 1, strokeLinecap: 'square' }}
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
@@ -49,7 +49,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
           {variant === SudokuVariant.Killer && (
             <g>
               <polyline points="15,15 85,15 85,85 15,85 15,15" style={{ strokeDasharray: 3 }} />
-              <text x="16" y="20" style={{ fill: 'white', stroke: 'none', fontSize: 4 }}>45</text>
+              <text x="16" y="20" className="fill-digit-fixed stroke-none" style={{ fontSize: 4 }}>45</text>
             </g>
           )}
           {variant === SudokuVariant.Irregular && (
@@ -88,7 +88,7 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
               <line x1="0" y1="66" x2="27" y2="66" stroke="grey" />
               <line x1="73" y1="66" x2="100" y2="66" stroke="grey" />
 
-              <g style={{ fill: 'white', stroke: 'none', fontSize: 6 }}>
+              <g className="fill-digit-fixed stroke-none" style={{ fontSize: 6 }}>
                 <text x="15" y="18">7</text>
                 <text x="93" y="8">3</text>
                 <text x="82" y="75">2</text>

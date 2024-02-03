@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { store, persistor } from './store'
 import { Provider } from 'react-redux'
@@ -7,18 +7,14 @@ import { HelmetProvider } from 'react-helmet-async'
 import HoneybadgerProvider from './components/HoneybadgerProvider'
 import OnlineStatusMonitor from './components/OnlineStatusMonitor'
 import AppRoutes from './AppRoutes'
+import { ThemeProvider } from './components/ThemeProvider'
 
-const App = () => {
-  useEffect(() => {
-    document.body.classList.add('dark-theme')
-    return () => document.body.classList.remove('dark-theme')
-  }, [])
-
-  return (
-    <HoneybadgerProvider>
-      <HelmetProvider>
-        <div className="min-h-screen md:min-w-fit flex flex-col text-primary bg-primary">
-          <Provider store={store}>
+const App = () =>(
+  <HoneybadgerProvider>
+    <HelmetProvider>
+      <div className="min-h-screen md:min-w-fit flex flex-col text-primary bg-primary">
+        <Provider store={store}>
+          <ThemeProvider>
             <PersistGate loading={null} persistor={persistor}>
               <OnlineStatusMonitor>
                 <BrowserRouter>
@@ -28,11 +24,11 @@ const App = () => {
                 </BrowserRouter>
               </OnlineStatusMonitor>
             </PersistGate>
-          </Provider>
-        </div>
-      </HelmetProvider>
-    </HoneybadgerProvider>
-  )
-}
+          </ThemeProvider>
+        </Provider>
+      </div>
+    </HelmetProvider>
+  </HoneybadgerProvider>
+)
 
 export default App

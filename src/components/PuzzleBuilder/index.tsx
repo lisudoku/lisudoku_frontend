@@ -222,7 +222,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   id={ConstraintType.Thermo}
                   label="Thermometer"
                   checked={constraintType === ConstraintType.Thermo}
-                  labelProps={{ className: classNames('text-white', {
+                  labelProps={{ className: classNames({
                     'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize!,
                     'text-green-600': _.inRange(currentThermo.length, 2, gridSize! + 1),
                   })}}
@@ -231,7 +231,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   id={ConstraintType.Arrow}
                   label="Arrow"
                   checked={constraintType === ConstraintType.Arrow}
-                  labelProps={{ className: classNames('text-white', {
+                  labelProps={{ className: classNames({
                     'text-red-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length === 0,
                     'text-green-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length > 0,
                   })}}

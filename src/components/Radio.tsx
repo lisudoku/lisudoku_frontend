@@ -1,11 +1,10 @@
 import { forwardRef, useCallback } from 'react'
+import classNames from 'classnames'
 import { Radio as MuiRadio } from '@material-tailwind/react'
 
 const EXTRA_CLASSNAME = 'text-highlight checked:border-highlight'
 
-const LABEL_PROPS = {
-  className: 'text-primary'
-}
+const LABEL_CLASSNAME = 'text-primary'
 
 const CONTAINER_PROPS = {
   className: 'px-1 py-2'
@@ -23,7 +22,10 @@ const Radio = forwardRef((props: any, ref) => {
               ref={ref}
               color="cyan"
               className={`${EXTRA_CLASSNAME} ${props.className}`}
-              labelProps={{ ...LABEL_PROPS, ...props.labelProps }}
+              labelProps={{
+                ...props.labelProps,
+                className: classNames(LABEL_CLASSNAME, props.labelProps?.className),
+              }}
               containerProps={{ ...CONTAINER_PROPS, ...props.containerProps }}
               onChange={handleChange}
     >

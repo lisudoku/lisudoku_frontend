@@ -492,7 +492,22 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
       col: area.Column,
     }))
   } else if (area.Region !== undefined) {
-    return constraints.regions[area.Region]
+    // Assume all extra regions contain grid_size cells
+    if (area.Region < constraints.regions.length) {
+      return constraints.regions[area.Region]
+    } else {
+      return constraints.extraRegions![area.Region - constraints.regions.length]
+    }
+  } else if (area === 'PrimaryDiagonal') {
+    return _.times(constraints.gridSize, idx => ({
+      row: idx,
+      col: idx,
+    }))
+  } else if (area === 'SecondaryDiagonal') {
+    return _.times(constraints.gridSize, idx => ({
+      row: idx,
+      col: constraints.gridSize - 1 - idx,
+    }))
   }
   return []
 }

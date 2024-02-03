@@ -62,7 +62,7 @@ const AddCompetitionForm = () => {
                 name="from_date"
                 component="input"
                 type="datetime-local"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
+                className="w-96 bg-secondary border border-secondary p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
 
@@ -73,7 +73,7 @@ const AddCompetitionForm = () => {
                 name="to_date"
                 component="input"
                 type="datetime-local"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
+                className="w-96 bg-secondary border border-secondary p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
           </div>
@@ -83,7 +83,6 @@ const AddCompetitionForm = () => {
               id="ib_puzzle_collection_id"
               name="ib_puzzle_collection_id"
               component={({ input, ...rest }) => <PuzzleCollectionsSelect  {...input} {...rest} label="IB Puzzle Collection" />}
-              className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
             />
           </div>
 
@@ -92,7 +91,6 @@ const AddCompetitionForm = () => {
               id="puzzle_collection_id"
               name="puzzle_collection_id"
               component={({ input, ...rest }) => <PuzzleCollectionsSelect {...input} {...rest} label="Puzzle Collection" />}
-              className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
             />
           </div>
 

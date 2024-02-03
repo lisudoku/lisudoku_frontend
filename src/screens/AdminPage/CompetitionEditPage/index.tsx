@@ -6,6 +6,7 @@ import { useSelector } from 'src/hooks'
 import { apiUpdateCompetition, CompetitionInput, fetchCompetitionById } from 'src/utils/apiService'
 import { Form, Field } from 'react-final-form'
 import Button from 'src/components/Button'
+import Input from 'src/components/Input'
 import { FORM_ERROR } from 'final-form'
 
 export type CompetitionFormData = {
@@ -72,24 +73,20 @@ const CompetitionEditPage = () => {
       render={({ handleSubmit, submitError, submitting, pristine }) => (
         <form onSubmit={handleSubmit} className="flex gap-2 p-4">
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="name" className="font-medium">Name</label>
-              <Field
-                id="name"
-                name="name"
-                component="input"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="name">
+                {props => (
+                  <Input {...props.input} label="Name" className="w-full" />
+                )}
+              </Field>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="url" className="font-medium">URL</label>
-              <Field
-                id="url"
-                name="url"
-                component="input"
-                className="w-96 bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
-              />
+            <div>
+              <Field name="url">
+                {props => (
+                  <Input {...props.input} label="URL" className="w-full" />
+                )}
+              </Field>
             </div>
 
             <div className="flex flex-col gap-1">
@@ -99,7 +96,7 @@ const CompetitionEditPage = () => {
                 name="from_date"
                 component="input"
                 type="datetime-local"
-                className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
+                className="bg-secondary border border-secondary p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
 
@@ -110,7 +107,7 @@ const CompetitionEditPage = () => {
                 name="to_date"
                 component="input"
                 type="datetime-local"
-                className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
+                className="bg-secondary border border-secondary p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
 
@@ -119,7 +116,6 @@ const CompetitionEditPage = () => {
                 id="ib_puzzle_collection_id"
                 name="ib_puzzle_collection_id"
                 component={({ input, ...rest }) => <PuzzleCollectionsSelect  {...input} {...rest} label="IB Puzzle Collection" />}
-                className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
 
@@ -128,7 +124,6 @@ const CompetitionEditPage = () => {
                 id="puzzle_collection_id"
                 name="puzzle_collection_id"
                 component={({ input, ...rest }) => <PuzzleCollectionsSelect {...input} {...rest} label="Puzzle Collection" />}
-                className="bg-gray-700 border border-gray-500 p-1 rounded outline-1 outline-gray-600 focus:outline-gray-600"
               />
             </div>
 

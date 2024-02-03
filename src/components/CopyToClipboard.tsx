@@ -30,7 +30,7 @@ const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
       <PopoverHandler onClick={handleClick}>
         {children}
       </PopoverHandler>
-      <PopoverContent className="text-white bg-gray-500 rounded border-none">
+      <PopoverContent className="text-primary bg-tertiary rounded border-none">
         URL copied to the clipboard
       </PopoverContent>
     </Popover>

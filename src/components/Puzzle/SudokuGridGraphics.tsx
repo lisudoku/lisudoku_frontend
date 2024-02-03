@@ -569,7 +569,7 @@ const KillerGraphics = ({ gridSize, cellSize, killerCages }: KillerGraphicsProps
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
     </g>
-    <g className="killer-cage-sums stroke-none fill-digit-unfixed font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
+    <g className="killer-cage-sums stroke-none fill-digit-fixed font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
       {killerSums.map(({ sum, x, y }, index) => (
         <text key={index} x={x} y={y} dominantBaseline="text-before-edge">{sum}</text>
       ))}
@@ -600,7 +600,7 @@ const KropkiGraphics = ({ kropkiDots, cellSize }: KropkiGraphicsProps) => {
   }))
 
   return (
-    <g className="kropki-dots" stroke="white" strokeWidth="1.5">
+    <g className="kropki-dots stroke-cell-border-strong" strokeWidth="1.5">
       {circles.map((circle, index) => (
         <circle key={index}
                 cx={circle.x}
@@ -638,7 +638,7 @@ type ExtraRegionsGraphicsProps = {
 
 const OddGraphics = ({ cellSize, cells }: OddGraphicsProps) => {
   const half = cellSize / 2
-  const radius = Math.floor(half * 21 / 28)
+  const radius = Math.floor(half * 23 / 28)
 
   return (
     <g className="odd-cells fill-oddeven stroke-none">
@@ -695,7 +695,7 @@ const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) 
           cellNotes={_.compact([cell.value])}
           killerActive={killerActive}
           cellSize={cellSize}
-          cellClassName="fill-digit-unfixed stroke-none"
+          cellClassName="fill-digit-fixed stroke-none"
         />
       </React.Fragment>
     ))}

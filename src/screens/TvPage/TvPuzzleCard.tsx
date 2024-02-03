@@ -17,7 +17,7 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
 
   return (
     <div className="flex flex-col items-center mt-1 w-fit text-sm">
-      <div className="flex gap-x-2">
+      <div className="flex gap-x-2 text-primary">
         <div>{SudokuVariantDisplay[puzzle.variant]} - {SudokuDifficultyDisplay[puzzle.difficulty]}</div>
         <div>
           <PuzzleCardIcons constraints={puzzle.constraints} />
@@ -33,7 +33,7 @@ const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
           </span>
         </div>
       ) : (
-        <div className="text-gray-500">
+        <div className="text-tertiary">
           Updated {getDurationShort(puzzle.updatedAt)} ago
         </div>
       )}

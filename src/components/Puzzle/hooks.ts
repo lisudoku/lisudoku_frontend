@@ -13,6 +13,7 @@ import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
 import { CellHighlight } from './SudokuGridGraphics'
 import { StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { Theme, useTheme } from '../ThemeProvider'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -235,12 +236,14 @@ export const useTvPlayerWebsocket = () => {
   }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved, isExternal])
 }
 
-const CELL_COLOR = 'lightgreen'
-const AREA_COLOR = 'lightgrey'
 const OTHER_CELLS_COLOR = 'red'
 
 export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: SudokuLogicalSolveResult | null, constraints: SudokuConstraints) => {
+  const theme = useTheme()
   const cellHighlights = useMemo(() => {
+    const areaColor = theme === Theme.Light ? 'grey' : 'lightgray'
+    const cellColor = theme === Theme.Light ? 'grey' : 'lightgreen'
+
     if (hintLevel !== HintLevel.Big || hintSolution === null) {
       return []
     }
@@ -259,14 +262,14 @@ export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: Sud
       case StepRule.NakedSingle: {
         cellHighlights.push({
           position: cell,
-          color: CELL_COLOR,
+          color: cellColor,
         })
         break
       }
       case StepRule.HiddenSingle: {
         cellHighlights = getAreaCells(area, constraints).map((areaCell: CellPosition) => ({
           position: areaCell,
-          color: AREA_COLOR,
+          color: areaColor,
         }))
         otherCells.forEach(otherCell => {
           cellHighlights.push({
@@ -276,14 +279,14 @@ export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: Sud
         })
         cellHighlights.push({
           position: cell,
-          color: CELL_COLOR,
+          color: cellColor,
         })
         break
       }
     }
 
     return cellHighlights
-  }, [hintLevel, hintSolution, constraints])
+  }, [hintLevel, hintSolution, constraints, theme])
 
   return cellHighlights
 }
