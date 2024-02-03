@@ -239,7 +239,7 @@ export const useTvPlayerWebsocket = () => {
 const OTHER_CELLS_COLOR = 'red'
 
 export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: SudokuLogicalSolveResult | null, constraints: SudokuConstraints) => {
-  const theme = useTheme()
+  const { theme } = useTheme()
   const cellHighlights = useMemo(() => {
     const areaColor = theme === Theme.Light ? 'grey' : 'lightgray'
     const cellColor = theme === Theme.Light ? 'grey' : 'lightgreen'

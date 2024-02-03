@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { Option, Select } from './Select'
-import { useDispatch, useSelector } from 'src/hooks'
+import { useDispatch } from 'src/hooks'
 import { useCallback } from 'react'
 import { updateTheme } from 'src/reducers/userData'
-import { ThemeOption } from './ThemeProvider'
+import { ThemeOption, useTheme } from './ThemeProvider'
 
 const ThemeOptionDisplay: { [key in ThemeOption]: string } = {
   [ThemeOption.Light]: 'Light',
@@ -13,7 +13,7 @@ const ThemeOptionDisplay: { [key in ThemeOption]: string } = {
 
 export const ThemeSelect = () => {
   const dispatch = useDispatch()
-  const value = useSelector(state => state.userData.settings?.theme)
+  const { themeOption: value } = useTheme()
   const onChange = useCallback((theme: ThemeOption) => {
     dispatch(updateTheme(theme))
   }, [dispatch])

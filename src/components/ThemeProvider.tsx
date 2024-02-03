@@ -41,11 +41,14 @@ export const useTheme = () => {
     savedTheme === undefined || savedTheme === ThemeOption.System ? systemTheme : (savedTheme as unknown as Theme)
   ), [savedTheme, systemTheme])
 
-  return theme
+  return {
+    theme,
+    themeOption: savedTheme,
+  }
 }
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const theme = useTheme()
+  const { theme } = useTheme()
 
   useEffect(() => {
     document.body.classList.add(theme)
