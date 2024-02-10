@@ -16,14 +16,14 @@ const EmptyCategory = ({ variant, difficulty }: { variant: SudokuVariant, diffic
   }, [navigate, variant])
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 py-4 px-6">
       <Typography variant="paragraph">
         There are no unsolved puzzles here. You can select other variants or difficulties.
       </Typography>
-      <div className="w-full md:ml-6 md:w-fit">
+      <div className="w-full md:w-32">
         <VariantSelect value={variant} onChange={onVariantChange} />
       </div>
-      <div className="w-full md:ml-6 md:w-fit">
+      <div className="w-full md:w-32">
         <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
       </div>
     </div>
