@@ -8,7 +8,8 @@ import { useSelector } from 'src/hooks'
 type GroupCount = {
   variant: SudokuVariant
   difficulty: SudokuDifficulty
-  count: number
+  puzzle_count: number
+  solve_count: number
 }
 
 const GroupCounts = () => {
@@ -34,25 +35,32 @@ const GroupCounts = () => {
             <tr className="divide-x">
               <th className="p-2">Variant</th>
               <th className="p-2">Difficulty</th>
-              <th className="p-2">Count</th>
+              <th className="p-2">Puzzles</th>
+              <th className="p-2">Solved</th>
             </tr>
           </thead>
           <tbody className="divide-y">
             <tr className="h-8 divide-x">
               <td colSpan={2} className="p-2">Total</td>
-              <td className="flex justify-center p-2 font-bold">
-                {_.sumBy(groupCounts, 'count')}
+              <td className="text-center p-2 font-bold">
+                {_.sumBy(groupCounts, 'puzzle_count')}
+              </td>
+              <td className="text-center p-2 font-bold">
+                {_.sumBy(groupCounts, 'solve_count')}
               </td>
             </tr>
-            {groupCounts.map(({ variant, difficulty, count }, index) => (
-              <tr key={index} className="h-8 divide-x">
+            {groupCounts.map(({ variant, difficulty, puzzle_count, solve_count }) => (
+              <tr key={`${variant}-${difficulty}`} className="h-8 divide-x">
                 <td className="p-2">{variant}</td>
                 <td className="p-2">{difficulty}</td>
-                <td className={classNames('flex justify-center p-2 font-bold', {
-                  'bg-green-500': count >= 10,
-                  'bg-yellow-200 text-black': 3 <= count && count < 10,
-                  'bg-red-400': count < 3,
-                })}>{count}</td>
+                <td className={classNames('text-center p-2 font-bold', {
+                  'bg-green-500': puzzle_count >= 10,
+                  'bg-yellow-200 text-black': 3 <= puzzle_count && puzzle_count < 10,
+                  'bg-red-400': puzzle_count < 3,
+                })}>{puzzle_count}</td>
+                <td className={classNames('text-center p-2 font-bold', {
+                  'bg-red-400': solve_count === puzzle_count,
+                })}>{solve_count}</td>
               </tr>
             ))}
           </tbody>
