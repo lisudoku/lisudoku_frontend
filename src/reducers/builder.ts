@@ -413,6 +413,10 @@ export const builderSlice = createSlice({
           break
         }
         case ConstraintType.Killer: {
+          assert(
+            !_.isEmpty(state.selectedCells),
+            'Select at least one cell. You can select multiple cells with Shift + Click.'
+          )
           const region: Region = _.sortBy(state.selectedCells, [ 'row', 'col' ])
           const killerCage: KillerCage = {
             sum: state.killerSum!,
