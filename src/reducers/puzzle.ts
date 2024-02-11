@@ -38,12 +38,19 @@ type ControlsState = {
   paused: boolean
 }
 
+type SolveStats = {
+  median: number
+  count: number
+  rank: number
+}
+
 type PuzzleState = {
   data: Puzzle | null
   grid: Grid | null
   notes: number[][][] | null
   solveTimer: number
-  solved: boolean
+  solved: boolean | null
+  solveStats: SolveStats | null
   lastUpdate: string | null
   lastUpdateTimer: number | null
   refreshKey: number
@@ -81,7 +88,8 @@ export const puzzleSlice = createSlice({
     grid: null,
     notes: null,
     solveTimer: 0,
-    solved: false,
+    solved: null,
+    solveStats: null,
     lastUpdate: null,
     lastUpdateTimer: null,
     refreshKey: 0,
@@ -103,7 +111,8 @@ export const puzzleSlice = createSlice({
       const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)
       puzzleData.constraints.killerCages ||= []
       state.data = puzzleData
-      state.solved = false
+      state.solved = null
+      state.solveStats = null
       state.solveTimer = 0
       markUpdate(state)
       state.controls.selectedCells = []
@@ -237,9 +246,12 @@ export const puzzleSlice = createSlice({
     updateTimer(state) {
       state.solveTimer += 1
     },
-    requestSolved() {},
+    requestSolved(state) {
+      state.solved = null
+    },
     responseSolved(state, action) {
       state.solved = action.payload.solved
+      state.solveStats = action.payload.solveStats
       markUpdate(state)
     },
     fetchNewPuzzle(state) {

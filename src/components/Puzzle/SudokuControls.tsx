@@ -9,6 +9,7 @@ import SolveTimer from './SolveTimer'
 import { changePaused } from 'src/reducers/puzzle'
 import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
+import SolveStatsPanel from './SolveStatsPanel'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()
@@ -42,44 +43,47 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
 
   return (
     <div className="flex flex-col gap-2 md:gap-4">
-      <div className="w-full md:w-64 mt-2 md:mt-0">
-        <SudokuDigitInput
-          gridSize={gridSize}
-          disabled={!controlEnabled}
-          onClick={handleDigitClick}
-        />
-      </div>
-      <div className="flex gap-1 justify-between md:justify-center">
-        <Button color={notesActive ? 'green' : 'blue-gray'}
-                disabled={!controlEnabled}
-                onClick={onNotesActiveToggle}
-                className="grow"
-        >
-          <FontAwesomeIcon icon={faPencil} />
-          <div className="inline-block w-7">
-            {notesActive ? ' on' : ' off'}
-          </div>
-        </Button>
-        <IconButton color="blue-gray"
-                    size="md"
-                    disabled={!controlEnabled || !undoActive}
-                    onClick={onUndo}
-        >
-          <FontAwesomeIcon icon={faArrowRotateLeft} />
-        </IconButton>
-        <IconButton color="blue-gray"
-                    size="md"
-                    disabled={!controlEnabled || !redoActive}
-                    onClick={onRedo}
-        >
-          <FontAwesomeIcon icon={faArrowRotateRight} />
-        </IconButton>
-        <Button disabled={!controlEnabled}
-                onClick={handleReset}
-        >
-          <FontAwesomeIcon icon={faEraser} />
-          {' Reset'}
-        </Button>
+      <div className="relative flex flex-col gap-2 md:gap-4">
+        <SolveStatsPanel />
+        <div className="w-full md:w-64 mt-2 md:mt-0">
+          <SudokuDigitInput
+            gridSize={gridSize}
+            disabled={!controlEnabled}
+            onClick={handleDigitClick}
+          />
+        </div>
+        <div className="flex gap-1 justify-between md:justify-center">
+          <Button color={notesActive ? 'green' : 'blue-gray'}
+                  disabled={!controlEnabled}
+                  onClick={onNotesActiveToggle}
+                  className="grow"
+          >
+            <FontAwesomeIcon icon={faPencil} />
+            <div className="inline-block w-7">
+              {notesActive ? ' on' : ' off'}
+            </div>
+          </Button>
+          <IconButton color="blue-gray"
+                      size="md"
+                      disabled={!controlEnabled || !undoActive}
+                      onClick={onUndo}
+          >
+            <FontAwesomeIcon icon={faArrowRotateLeft} />
+          </IconButton>
+          <IconButton color="blue-gray"
+                      size="md"
+                      disabled={!controlEnabled || !redoActive}
+                      onClick={onRedo}
+          >
+            <FontAwesomeIcon icon={faArrowRotateRight} />
+          </IconButton>
+          <Button disabled={!controlEnabled}
+                  onClick={handleReset}
+          >
+            <FontAwesomeIcon icon={faEraser} />
+            {' Reset'}
+          </Button>
+        </div>
       </div>
       <div className="w-full flex flex-col gap-2">
         <SolveTimer isSolvedLoading={isSolvedLoading}

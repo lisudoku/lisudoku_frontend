@@ -46,6 +46,8 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
       return
     }
 
+    onIsSolvedLoadingChange(true)
+
     // Check locally if it's correct first
     if (!checkSolved(constraints, grid)) {
       return
@@ -56,11 +58,11 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
       dispatch(responseSolved({
         solved: true,
       }))
+      onIsSolvedLoadingChange(false)
       return
     }
 
     dispatch(requestSolved())
-    onIsSolvedLoadingChange(true)
     const processedActions = actions.map(action => _.omit(action, ['previousDigits', 'previousNotes']))
     requestPuzzleCheck(id, grid, processedActions).then(result => {
       dispatch(responseSolved({
@@ -68,6 +70,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
         variant,
         difficulty,
         solved: result.correct,
+        solveStats: result.stats,
       }))
       onIsSolvedLoadingChange(false)
     })
@@ -103,8 +106,8 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     <div className={classNames(
       'w-full rounded border border-primary px-3 py-1 flex justify-center select-none', {
         'border-yellow-600': gridFull && isSolvedLoading,
-        'border-green-600': gridFull && !isSolvedLoading && solved,
-        'border-red-600': gridFull && !isSolvedLoading && !solved,
+        'border-green-600': gridFull && !isSolvedLoading && solved === true,
+        'border-red-600': gridFull && !isSolvedLoading && solved === false,
       }
     )}>
       <Typography variant="h6">
