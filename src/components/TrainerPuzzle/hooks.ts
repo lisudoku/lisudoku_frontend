@@ -1,6 +1,6 @@
+import { isEqual, uniqWith } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
-import _ from 'lodash';
 import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';
 import { CellPosition, FixedNumber, Grid } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
@@ -64,8 +64,7 @@ export const useCellHighlights = (finished: boolean, success: boolean, solutions
     if (!finished) {
       return []
     }
-    return _
-      .uniqWith(solutions, (a, b) => _.isEqual(a.position, b.position))
+    return uniqWith(solutions, (a, b) => isEqual(a.position, b.position))
       .filter(({ position: { row, col }}) => !success || !grid![row][col])
       .map(fixedNumber => ({
         position: fixedNumber.position,

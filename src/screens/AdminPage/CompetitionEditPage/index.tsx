@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import LoadingSpinner from 'src/components/LoadingSpinner'
+import LoadingSpinner from 'src/shared/LoadingSpinner'
 import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { useSelector } from 'src/hooks'
 import { apiUpdateCompetition, CompetitionInput, fetchCompetitionById } from 'src/utils/apiService'
 import { Form, Field } from 'react-final-form'
-import Button from 'src/components/Button'
-import Input from 'src/components/Input'
+import Button from 'src/shared/Button'
+import Input from 'src/shared/Input'
 import { FORM_ERROR } from 'final-form'
 
 export type CompetitionFormData = {

@@ -1,7 +1,7 @@
-import _ from 'lodash'
+import { map } from 'lodash-es'
 import { useLocation } from 'react-router-dom'
-import { Typography } from '@material-tailwind/react'
 import TechniqueCard from './TechniqueCard'
+import Typography from 'src/shared/Typography'
 import PageMeta from 'src/components/PageMeta'
 import { TECHNIQUES_BY_DIFFICULTY } from './techniques'
 import { Technique } from './types'
@@ -18,7 +18,7 @@ const LearnPage = () => {
       <Typography variant="h3">
         <a href="/learn#">Solving Techniques</a>
       </Typography>
-      {_.map(TECHNIQUES_BY_DIFFICULTY, (techniques: Technique[], difficulty: EStepRuleDifficulty) => (
+      {map(TECHNIQUES_BY_DIFFICULTY, (techniques: Technique[], difficulty: EStepRuleDifficulty) => (
         <div key={difficulty} className="mt-4">
           <Typography variant="h4">
             {StepRuleDifficultyDisplay[difficulty]}

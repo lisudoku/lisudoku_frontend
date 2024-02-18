@@ -1,11 +1,11 @@
-import _ from 'lodash'
-import { Select, Option } from '../Select'
+import { values } from 'lodash-es'
+import { Select, Option } from '../../shared/Select'
 import { SudokuVariant } from 'src/types/sudoku'
 import { ACTIVE_VARIANTS, SudokuVariantDisplay } from 'src/utils/constants'
 
 const VariantSelect = ({ value, onChange, label, disabled }: VariantSelectProps) => (
   <Select value={value} onChange={onChange} label={label} disabled={disabled}>
-    {_.values(ACTIVE_VARIANTS).map(value => (
+    {values(ACTIVE_VARIANTS).map(value => (
       <Option key={value} value={value}>{SudokuVariantDisplay[value]}</Option>
     ))}
   </Select>

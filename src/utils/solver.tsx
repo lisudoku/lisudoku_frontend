@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { difference, intersection, last, uniqBy } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
@@ -156,13 +156,13 @@ export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel, gri
 
 const cellsDoNotContainCandidates = (cells: CellPosition[], values: number[], notes: CellNotes[][]) => (
   cells.every(
-    ({ row, col }) => notes[row][col].length > 0 && _.intersection(notes[row][col], values).length === 0
+    ({ row, col }) => notes[row][col].length > 0 && intersection(notes[row][col], values).length === 0
   )
 )
 
 const cellsOnlyContainCandidates = (cells: CellPosition[], values: number[], notes: CellNotes[][]) => (
   cells.every(
-    ({ row, col }) => notes[row][col].length > 0 && _.difference(notes[row][col], values).length === 0
+    ({ row, col }) => notes[row][col].length > 0 && difference(notes[row][col], values).length === 0
   )
 )
 
@@ -232,9 +232,9 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
   let relevantSteps = steps.slice(0, singleIndex + 1)
   let candidateSteps = relevantSteps.slice(0, relevantSteps.length - 1)
   if (hintLevel === HintLevel.Small) {
-    candidateSteps = _.uniqBy(candidateSteps, 'rule')
+    candidateSteps = uniqBy(candidateSteps, 'rule')
   }
-  const lastStep = _.last(relevantSteps)!
+  const lastStep = last(relevantSteps)!
 
   let message = <>
     <p>We need to work with cell candidates now. Use the following techniques to remove candidates:</p>

@@ -1,4 +1,4 @@
-import { Select as MuiSelect, Option as MuiOption } from '@material-tailwind/react'
+import { Select as MuiSelect, Option as MuiOption } from '@material-tailwind/react/components/Select'
 
 const EXTRA_CLASSES  = 'border-0 text-primary disabled:!bg-transparent'
 const LABEL_CLASSES = 'top-0 text-secondary after:border-0 peer-disabled:!text-secondary normal-case'

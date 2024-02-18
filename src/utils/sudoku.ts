@@ -1,4 +1,6 @@
-import _ from 'lodash'
+import {
+  difference, differenceWith, flatten, flattenDeep, isEqual, map, range, sortBy, sumBy, times,
+} from 'lodash-es'
 import {
   CellNotes, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
 } from 'src/types/sudoku'
@@ -15,12 +17,12 @@ const computeRegionSizes = (gridSize: number) => {
 
 export const ensureDefaultRegions = (gridSize: number): Region[] => {
   const [ regionHeight, regionWidth ] = computeRegionSizes(gridSize)
-  const defaultRegions: Region[] = _.flatten(
-    _.times(gridSize / regionHeight, regionRowIndex => (
-      _.times(gridSize / regionWidth, regionColIndex => (
-        _.flattenDeep(
-          _.times(regionHeight, rowIndex => (
-            _.times(regionWidth, colIndex => (
+  const defaultRegions: Region[] = flatten(
+    times(gridSize / regionHeight, regionRowIndex => (
+      times(gridSize / regionWidth, regionColIndex => (
+        flattenDeep(
+          times(regionHeight, rowIndex => (
+            times(regionWidth, colIndex => (
               {
                 row: regionRowIndex * regionHeight + rowIndex,
                 col: regionColIndex * regionWidth + colIndex,
@@ -37,8 +39,8 @@ export const ensureDefaultRegions = (gridSize: number): Region[] => {
 
 export const regionGridToRegions = (gridSize: number, regionGrid: Grid): Region[] => {
   const regions: Region[] = []
-  _.times(gridSize, row => {
-    _.times(gridSize, col => {
+  times(gridSize, row => {
+    times(gridSize, col => {
       const regionIndex = regionGrid[row][col]! - 1
       regions[regionIndex] ||= []
       const cell: CellPosition = { row, col }
@@ -127,16 +129,16 @@ type CountMap = {
 }
 
 const getRowCells = (row: number, gridSize: number) => (
-  _.times(gridSize, col => ({ row, col }))
+  times(gridSize, col => ({ row, col }))
 )
 const getColCells = (col: number, gridSize: number) => (
-  _.times(gridSize, row => ({ row, col }))
+  times(gridSize, row => ({ row, col }))
 )
 const getPrimaryDiagonalCells = (gridSize: number) => (
-  _.times(gridSize, index => ({ row: index, col: index }))
+  times(gridSize, index => ({ row: index, col: index }))
 )
 const getSecondaryDiagonalCells = (gridSize: number) => (
-  _.times(gridSize, index => ({ row: index, col: gridSize - 1 - index }))
+  times(gridSize, index => ({ row: index, col: gridSize - 1 - index }))
 )
 
 const isCompletelyEmpty = (cell: CellPosition, valuesGrid: Grid, notes: CellNotes[][]) => {
@@ -155,7 +157,7 @@ enum CheckType {
 const validPeersForValue = (value: number, checkType: CheckType, gridSize: number) => {
   switch (checkType) {
     case CheckType.Equal:
-      return _.range(1, gridSize + 1).filter(x => x !== value)
+      return range(1, gridSize + 1).filter(x => x !== value)
     case CheckType.KropkiConsecutive: {
       const values = []
       if (value > 1) {
@@ -177,7 +179,7 @@ const validPeersForValue = (value: number, checkType: CheckType, gridSize: numbe
       return values
     }
     case CheckType.KropkiNegative: {
-      const values = _.range(1, gridSize + 1).filter(x => {
+      const values = range(1, gridSize + 1).filter(x => {
         const peerValue = x
         return value * 2 !== peerValue &&
                peerValue * 2 !== value &&
@@ -205,12 +207,12 @@ const checkErrorsBetween = (
       gridErrors[peer.row][peer.col] = true
     }
   } else if (value) {
-    const extraValues = _.difference(peerNoteSet, validPeersForValue(value, checkType, gridSize))
+    const extraValues = difference(peerNoteSet, validPeersForValue(value, checkType, gridSize))
     for (const extraValue of extraValues) {
       noteErrors[peer.row][peer.col].add(extraValue)
     }
   } else if (peerValue) {
-    const extraValues = _.difference(noteSet, validPeersForValue(peerValue, checkType, gridSize))
+    const extraValues = difference(noteSet, validPeersForValue(peerValue, checkType, gridSize))
     for (const extraValue of extraValues) {
       noteErrors[cell.row][cell.col].add(extraValue)
     }
@@ -242,7 +244,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   }
   regions.push(...constraints.regions)
   regions.push(...constraints.extraRegions ?? [])
-  regions.push(..._.map(constraints.killerCages, 'region'))
+  regions.push(...map(constraints.killerCages, 'region'))
   if (constraints.primaryDiagonal) {
     regions.push(getPrimaryDiagonalCells(gridSize))
   }
@@ -305,11 +307,11 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       continue
     }
     let circleValue = 0
-    for (const cell of _.sortBy(arrow.circleCells, ['row', 'col'])) {
+    for (const cell of sortBy(arrow.circleCells, ['row', 'col'])) {
       const value = valuesGrid[cell.row][cell.col]!
       circleValue = 10 * circleValue + value
     }
-    const arrowSum = _.sumBy(arrow.arrowCells, cell => valuesGrid[cell.row][cell.col] ?? 0)
+    const arrowSum = sumBy(arrow.arrowCells, cell => valuesGrid[cell.row][cell.col] ?? 0)
     const arrowFull = arrow.arrowCells.every(cell => valuesGrid[cell.row][cell.col])
     if (arrowSum > circleValue || (arrowFull && arrowSum !== circleValue)) {
       for (const { row, col } of [...arrow.circleCells, ...arrow.arrowCells]) {
@@ -355,7 +357,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     if (!killerCage.sum) {
       continue
     }
-    const sum = _.sumBy(killerCage.region, cell => (
+    const sum = sumBy(killerCage.region, cell => (
       valuesGrid[cell.row][cell.col]!
     ))
     if (sum > killerCage.sum) {
@@ -386,7 +388,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       }
       const peers = getAdjacentPeers(cell, gridSize)
       const dotPeers = gridToKropkiDots[cell.row][cell.col]
-      const negativePeers = _.differenceWith(peers, dotPeers, _.isEqual)
+      const negativePeers = differenceWith(peers, dotPeers, isEqual)
 
       negativePeers.forEach((peer: CellPosition) => {
         if (isCompletelyEmpty(peer, grid, notes)) {
@@ -415,9 +417,9 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
 }
 
 export const getAllCells = (gridSize: number) => {
-  const cells: CellPosition[] = _.flatten(
-    _.times(gridSize, rowIndex => (
-      _.times(gridSize, colIndex => (
+  const cells: CellPosition[] = flatten(
+    times(gridSize, rowIndex => (
+      times(gridSize, colIndex => (
         {
           row: rowIndex,
           col: colIndex,
@@ -432,7 +434,7 @@ const KNIGHT_ROW_DELTA = [ 1, 2, -1, -2, 1, 2, -1, -2 ]
 const KNIGHT_COL_DELTA = [ 2, 1, 2, 1, -2, -1, -2, -1 ]
 const getKnightPeers = (cell: CellPosition, gridSize: number) => {
   const peers: CellPosition[] = []
-  _.times(8, dir => {
+  times(8, dir => {
     const peer = {
       row: cell.row + KNIGHT_ROW_DELTA[dir],
       col: cell.col + KNIGHT_COL_DELTA[dir],
@@ -449,7 +451,7 @@ const KING_ROW_DELTA = [ -1, -1, -1, 0, 0, 1, 1, 1 ]
 const KING_COL_DELTA = [ -1, 0, 1, -1, 1, -1, 0, 1 ]
 const getKingPeers = (cell: CellPosition, gridSize: number) => {
   const peers: CellPosition[] = []
-  _.times(8, dir => {
+  times(8, dir => {
     const peer = {
       row: cell.row + KING_ROW_DELTA[dir],
       col: cell.col + KING_COL_DELTA[dir],
@@ -466,7 +468,7 @@ const ADJACENT_ROW_DELTA = [ 0, 0, 1, -1 ]
 const ADJACENT_COL_DELTA = [ 1, -1, 0, 0 ]
 const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
   const peers: CellPosition[] = []
-  _.times(4, dir => {
+  times(4, dir => {
     const peer = {
       row: cell.row + ADJACENT_ROW_DELTA[dir],
       col: cell.col + ADJACENT_COL_DELTA[dir],
@@ -482,12 +484,12 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
 // TODO: this is also a duplicate between wasm and js
 export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
   if (area.Row !== undefined) {
-    return _.times(constraints.gridSize, col => ({
+    return times(constraints.gridSize, col => ({
       row: area.Row,
       col,
     }))
   } else if (area.Column !== undefined) {
-    return _.times(constraints.gridSize, row => ({
+    return times(constraints.gridSize, row => ({
       row,
       col: area.Column,
     }))
@@ -499,12 +501,12 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
       return constraints.extraRegions![area.Region - constraints.regions.length]
     }
   } else if (area === 'PrimaryDiagonal') {
-    return _.times(constraints.gridSize, idx => ({
+    return times(constraints.gridSize, idx => ({
       row: idx,
       col: idx,
     }))
   } else if (area === 'SecondaryDiagonal') {
-    return _.times(constraints.gridSize, idx => ({
+    return times(constraints.gridSize, idx => ({
       row: idx,
       col: constraints.gridSize - 1 - idx,
     }))

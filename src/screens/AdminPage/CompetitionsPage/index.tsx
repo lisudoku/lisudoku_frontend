@@ -1,10 +1,10 @@
-import _ from 'lodash'
-import { Typography } from '@material-tailwind/react'
+import { orderBy } from 'lodash-es'
 import { formatISO9075, parseISO } from 'date-fns'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Button from 'src/components/Button'
-import LoadingSpinner from 'src/components/LoadingSpinner'
+import Button from 'src/shared/Button'
+import LoadingSpinner from 'src/shared/LoadingSpinner'
+import Typography from 'src/shared/Typography'
 import { useDispatch, useSelector } from 'src/hooks'
 import { deletedCompetition, receiveCompetitions } from 'src/reducers/competitions'
 import { deleteCompetition, fetchAllCompetitions } from 'src/utils/apiService'
@@ -60,7 +60,7 @@ const CompetitionsPage = () => {
           </tr>
         </thead>
         <tbody className="divide-y">
-          {_.orderBy(competitions, 'fromDate', 'desc').map(({ id, name, url, fromDate, toDate, puzzleCollectionId, ibPuzzleCollectionId }) => (
+          {orderBy(competitions, 'fromDate', 'desc').map(({ id, name, url, fromDate, toDate, puzzleCollectionId, ibPuzzleCollectionId }) => (
             <tr key={id} className="h-8 divide-x">
               <td className="p-2">{id}</td>
               <td className="p-2">{name}</td>

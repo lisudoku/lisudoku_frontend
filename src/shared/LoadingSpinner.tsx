@@ -1,4 +1,4 @@
-import { Spinner } from '@material-tailwind/react'
+import { Spinner } from '@material-tailwind/react/components/Spinner'
 import { colors } from '@material-tailwind/react/types/generic'
 import classNames from 'classnames'
 

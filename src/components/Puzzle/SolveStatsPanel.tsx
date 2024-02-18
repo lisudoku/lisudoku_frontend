@@ -1,7 +1,7 @@
-import _ from 'lodash'
-import { Typography } from '@material-tailwind/react';
+import { isNil } from 'lodash-es'
 import { useSelector } from 'src/hooks'
-import Alert from '../Alert'
+import Alert from '../../shared/Alert'
+import Typography from 'src/shared/Typography';
 import { formatTimer } from 'src/utils/sudoku';
 
 // https://leancrew.com/all-this/2020/06/ordinal-numerals-and-javascript/
@@ -13,7 +13,7 @@ function ordinal(n: number) {
 
 const SolveStatsPanel = () => {
   const solveStats = useSelector(state => state.puzzle.solveStats)
-  if (_.isNil(solveStats)) {
+  if (isNil(solveStats)) {
     return null
   }
 

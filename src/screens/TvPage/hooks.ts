@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import _ from 'lodash'
+import { orderBy } from 'lodash-es'
 import { useWebsocket } from 'src/utils/websocket'
 import { useDispatch, useSelector } from 'src/hooks'
 import { TvPuzzle, initPuzzles, removePuzzles, updatePuzzle, updateViewerCount } from 'src/reducers/tv'
@@ -42,7 +42,7 @@ export const useTvViewerWebsocket = () => {
   const tvPuzzles = useSelector(state => state.tv.tvPuzzles)
   const viewerCount = useSelector(state => state.tv.viewerCount)
   const sortedTvPuzzles = useMemo(() => (
-    _.orderBy(
+    orderBy(
       tvPuzzles,
       [
         (tvPuzzle: TvPuzzle) => tvPuzzle.constraints.gridSize,

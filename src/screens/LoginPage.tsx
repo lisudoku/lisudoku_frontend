@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Form, Field } from 'react-final-form'
 import { FORM_ERROR } from 'final-form'
 import { login, LoginData } from 'src/utils/apiService'
-import Button from 'src/components/Button'
-import { Typography } from '@material-tailwind/react'
+import Button from 'src/shared/Button'
+import Input from 'src/shared/Input'
+import Typography from 'src/shared/Typography'
 import { loginSuccess } from 'src/reducers/userData'
 import { useDispatch } from 'src/hooks'
-import Input from 'src/components/Input'
 
 const LoginPage = () => {
   const dispatch = useDispatch()

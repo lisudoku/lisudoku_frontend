@@ -1,4 +1,4 @@
-import Button from '../Button'
+import Button from '../../shared/Button'
 import CopyToClipboard from '../CopyToClipboard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink } from '@fortawesome/free-solid-svg-icons'

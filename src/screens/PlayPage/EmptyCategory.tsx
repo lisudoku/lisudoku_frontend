@@ -1,8 +1,8 @@
-import { Typography } from '@material-tailwind/react'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import VariantSelect from 'src/components/Puzzle/VariantSelect'
+import Typography from 'src/shared/Typography'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 const EmptyCategory = ({ variant, difficulty }: { variant: SudokuVariant, difficulty: SudokuDifficulty }) => {

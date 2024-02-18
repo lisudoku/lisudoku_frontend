@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Checkbox as MuiCheckbox } from '@material-tailwind/react'
+import { Checkbox as MuiCheckbox } from '@material-tailwind/react/components/Checkbox'
 
 const EXTRA_CLASSNAME = 'checked:bg-highlight checked:border-primary'
 

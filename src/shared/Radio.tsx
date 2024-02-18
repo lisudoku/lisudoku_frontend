@@ -1,6 +1,6 @@
 import { forwardRef, useCallback } from 'react'
 import classNames from 'classnames'
-import { Radio as MuiRadio } from '@material-tailwind/react'
+import { Radio as MuiRadio } from '@material-tailwind/react/components/Radio'
 
 const EXTRA_CLASSNAME = 'text-highlight checked:border-highlight'
 

@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
-import _ from 'lodash'
+import {
+  differenceWith, find, findIndex, isEmpty, isEqual,
+  pull, pullAllWith, remove, sortBy, uniqWith, xorWith,
+} from 'lodash-es'
 import {
   Arrow,
   CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
@@ -73,7 +76,7 @@ const areAdjacent4 = (cell1: CellPosition, cell2: CellPosition) => {
 }
 
 const isCellInPath = (thermo: Thermo, cell: CellPosition) => (
-  thermo.find(thermoCell => _.isEqual(thermoCell, cell))
+  thermo.find(thermoCell => isEqual(thermoCell, cell))
 )
 
 const expandsPath = (path: CellPosition[], cell: CellPosition) => {
@@ -114,10 +117,10 @@ const handleConstraintChange = (state: BuilderState) => {
 
 const detectVariant = (state: BuilderState) => {
   const variants = []
-  if (!_.isEmpty(state.constraints?.thermos)) {
+  if (!isEmpty(state.constraints?.thermos)) {
     variants.push(SudokuVariant.Thermo)
   }
-  if (!_.isEmpty(state.constraints?.arrows)) {
+  if (!isEmpty(state.constraints?.arrows)) {
     variants.push(SudokuVariant.Arrow)
   }
   if (state.constraints?.primaryDiagonal || state.constraints?.secondaryDiagonal) {
@@ -129,19 +132,19 @@ const detectVariant = (state: BuilderState) => {
   if (state.constraints?.antiKing) {
     variants.push(SudokuVariant.AntiKing)
   }
-  if (!_.isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
+  if (!isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
     variants.push(SudokuVariant.Irregular)
   }
-  if (!_.isEmpty(state.constraints?.killerCages)) {
+  if (!isEmpty(state.constraints?.killerCages)) {
     variants.push(SudokuVariant.Killer)
   }
-  if (!_.isEmpty(state.constraints?.kropkiDots)) {
+  if (!isEmpty(state.constraints?.kropkiDots)) {
     variants.push(SudokuVariant.Kropki)
   }
-  if (!_.isEmpty(state.constraints?.extraRegions)) {
+  if (!isEmpty(state.constraints?.extraRegions)) {
     variants.push(SudokuVariant.ExtraRegions)
   }
-  if (!_.isEmpty(state.constraints?.oddCells) || !_.isEmpty(state.constraints?.evenCells)) {
+  if (!isEmpty(state.constraints?.oddCells) || !isEmpty(state.constraints?.evenCells)) {
     variants.push(SudokuVariant.OddEven)
   }
   if (state.constraints?.topBottom) {
@@ -240,9 +243,9 @@ export const builderSlice = createSlice({
       const { cell, ctrl, isClick } = action.payload
       if (ctrl) {
         if (isClick) {
-          state.selectedCells = _.xorWith(state.selectedCells, [ cell ], _.isEqual)
+          state.selectedCells = xorWith(state.selectedCells, [ cell ], isEqual)
         } else {
-          state.selectedCells = _.uniqWith([ ...state.selectedCells, cell ], _.isEqual)
+          state.selectedCells = uniqWith([ ...state.selectedCells, cell ], isEqual)
         }
       } else {
         state.selectedCells = [ cell ]
@@ -250,7 +253,7 @@ export const builderSlice = createSlice({
 
       let anyConstraintsChanged = false
       for (const selectedCell of state.selectedCells) {
-        const isSelectedCell = (cell: CellPosition) => _.isEqual(cell, selectedCell)
+        const isSelectedCell = (cell: CellPosition) => isEqual(cell, selectedCell)
 
         let constraintChanged = true
         switch (state.constraintType) {
@@ -262,13 +265,13 @@ export const builderSlice = createSlice({
           }
           case ConstraintType.Arrow: {
             if (state.arrowConstraintType === ArrowConstraintType.Circle) {
-              if (expandsArea4(state.currentArrow.circleCells, cell) && !_.find(state.currentArrow.arrowCells, cell)) {
+              if (expandsArea4(state.currentArrow.circleCells, cell) && !find(state.currentArrow.arrowCells, cell)) {
                 state.currentArrow.circleCells.push(cell)
               }
             } else {
               if (
                 state.currentArrow.circleCells.length > 0 &&
-                !_.find(state.currentArrow.circleCells, cell) &&
+                !find(state.currentArrow.circleCells, cell) &&
                 (
                   (
                     state.currentArrow.arrowCells.length > 0 &&
@@ -343,13 +346,13 @@ export const builderSlice = createSlice({
             position: selectedCell,
             value: action.payload,
           }))
-          const areAllExisting = _.isEmpty(_.differenceWith(
-            fixedNumbers, state.constraints!.fixedNumbers ?? [], _.isEqual
+          const areAllExisting = isEmpty(differenceWith(
+            fixedNumbers, state.constraints!.fixedNumbers ?? [], isEqual
           ))
           const isEqualPosition = (fn1: FixedNumber, fn2: FixedNumber) => (
-            _.isEqual(fn1.position, fn2.position)
+            isEqual(fn1.position, fn2.position)
           )
-          _.pullAllWith(state.constraints!.fixedNumbers ?? [], fixedNumbers, isEqualPosition)
+          pullAllWith(state.constraints!.fixedNumbers ?? [], fixedNumbers, isEqualPosition)
           if (!areAllExisting) {
             state.constraints!.fixedNumbers?.push(...fixedNumbers)
           }
@@ -399,7 +402,7 @@ export const builderSlice = createSlice({
           break
         }
         case ConstraintType.ExtraRegions: {
-          const region: Region = _.sortBy(state.selectedCells, [ 'row', 'col' ])
+          const region: Region = sortBy(state.selectedCells, [ 'row', 'col' ])
           assert(
             region.length === gridSize,
             `Extra region must be of size ${gridSize}. Select multiple cells with Shift + Click.`
@@ -409,10 +412,10 @@ export const builderSlice = createSlice({
         }
         case ConstraintType.Killer: {
           assert(
-            !_.isEmpty(state.selectedCells),
+            !isEmpty(state.selectedCells),
             'Select at least one cell. You can select multiple cells with Shift + Click.'
           )
-          const region: Region = _.sortBy(state.selectedCells, [ 'row', 'col' ])
+          const region: Region = sortBy(state.selectedCells, [ 'row', 'col' ])
           const killerCage: KillerCage = {
             sum: state.killerSum!,
             region,
@@ -423,7 +426,7 @@ export const builderSlice = createSlice({
         }
         case ConstraintType.KropkiConsecutive:
         case ConstraintType.KropkiDouble: {
-          const cells: CellPosition[] = _.sortBy(state.selectedCells, [ 'row', 'col' ])
+          const cells: CellPosition[] = sortBy(state.selectedCells, [ 'row', 'col' ])
           assert(cells.length === 2, 'Select exactly 2 cells with Shift + Click.')
           assert(
             Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
@@ -437,7 +440,7 @@ export const builderSlice = createSlice({
             cell2: cells[1],
           }
           const existingDot = state.constraints!.kropkiDots?.find(dot => (
-            _.isEqual(dot.cell1, kropkiDot.cell1) && _.isEqual(dot.cell2, kropkiDot.cell2)
+            isEqual(dot.cell1, kropkiDot.cell1) && isEqual(dot.cell2, kropkiDot.cell2)
           ))
           if (!existingDot) {
             state.constraints!.kropkiDots!.push(kropkiDot)
@@ -452,12 +455,12 @@ export const builderSlice = createSlice({
       for (const cell of state.selectedCells) {
         state.notes![cell.row][cell.col] = []
 
-        const isSelectedCell = (areaCell: CellPosition) => _.isEqual(areaCell, cell)
+        const isSelectedCell = (areaCell: CellPosition) => isEqual(areaCell, cell)
 
         // Fixed numbers
-        _.remove(
+        remove(
           state.constraints!.fixedNumbers ?? [],
-          (existingFixedNumber: FixedNumber) => _.isEqual(existingFixedNumber.position, cell)
+          (existingFixedNumber: FixedNumber) => isEqual(existingFixedNumber.position, cell)
         )
 
         // Thermo
@@ -465,7 +468,7 @@ export const builderSlice = createSlice({
           state.currentThermo = []
         }
 
-        const thermoIndex = _.findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
+        const thermoIndex = findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
         if (thermoIndex !== -1) {
           state.constraints!.thermos?.splice(thermoIndex, 1)
         }
@@ -478,7 +481,7 @@ export const builderSlice = createSlice({
           }
         }
 
-        const arrowIndex = _.findIndex(state.constraints!.arrows, (arrow: Arrow) => (
+        const arrowIndex = findIndex(state.constraints!.arrows, (arrow: Arrow) => (
           arrow.circleCells.some(isSelectedCell) || arrow.arrowCells.some(isSelectedCell)
         ))
         if (arrowIndex !== -1) {
@@ -486,25 +489,25 @@ export const builderSlice = createSlice({
         }
 
         // Killer
-        const killerIndex = _.findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(isSelectedCell))
+        const killerIndex = findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(isSelectedCell))
         if (killerIndex !== -1) {
           state.constraints!.killerCages?.splice(killerIndex, 1)
         }
 
         // Kropki
-        _.remove(state.constraints!.kropkiDots ?? [], kropkiDot => (
-          _.isEqual(kropkiDot.cell1, cell) || _.isEqual(kropkiDot.cell2, cell)
+        remove(state.constraints!.kropkiDots ?? [], kropkiDot => (
+          isEqual(kropkiDot.cell1, cell) || isEqual(kropkiDot.cell2, cell)
         ))
 
         // Extra Regions
-        const regionIndex = _.findIndex(state.constraints!.extraRegions, (extraRegion: Region) => extraRegion.some(isSelectedCell))
+        const regionIndex = findIndex(state.constraints!.extraRegions, (extraRegion: Region) => extraRegion.some(isSelectedCell))
         if (regionIndex !== -1) {
           state.constraints!.extraRegions?.splice(regionIndex, 1)
         }
 
         // Odd Even
-        _.remove(state.constraints!.oddCells ?? [], isSelectedCell)
-        _.remove(state.constraints!.evenCells ?? [], isSelectedCell)
+        remove(state.constraints!.oddCells ?? [], isSelectedCell)
+        remove(state.constraints!.evenCells ?? [], isSelectedCell)
       }
 
       handleConstraintChange(state)
@@ -558,7 +561,7 @@ export const builderSlice = createSlice({
       ))
 
       for (const { row, col } of state.selectedCells) {
-        _.pull(state.notes![row][col], value)
+        pull(state.notes![row][col], value)
       }
 
       if (!areAllExisting) {
@@ -568,7 +571,7 @@ export const builderSlice = createSlice({
       }
     },
     changeSelectedCellConstraint(state, action) {
-      if (_.isEmpty(state.selectedCells)) {
+      if (isEmpty(state.selectedCells)) {
         return
       }
       switch (state.constraintType) {

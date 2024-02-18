@@ -1,7 +1,7 @@
 import {
   Popover, PopoverHandler, PopoverContent,
-} from '@material-tailwind/react'
-import Button from '../Button'
+} from 'src/shared/Popover'
+import Button from '../../shared/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons'
 

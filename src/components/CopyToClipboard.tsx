@@ -1,14 +1,14 @@
 import { ReactElement } from 'react'
 import { useCallback, useRef, useState } from 'react'
-import _ from 'lodash'
-import { Popover, PopoverHandler, PopoverContent } from '@material-tailwind/react'
+import { isFunction } from 'lodash-es'
+import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
 
 const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
   const [ open, setOpen ] = useState(false)
 
   const timerRef = useRef<number>()
   const handleClick = useCallback(() => {
-    const data = _.isFunction(text) ? text() : text
+    const data = isFunction(text) ? text() : text
     navigator.clipboard.writeText(data)
     if (timerRef.current) {
       clearTimeout(timerRef.current)

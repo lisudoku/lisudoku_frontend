@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Textarea as MuiTextArea, TextareaProps } from '@material-tailwind/react'
+import { Textarea as MuiTextArea, TextareaProps } from '@material-tailwind/react/components/Textarea'
 
 const EXTRA_CLASSNAME = 'rounded !bg-none !text-primary border-primary focus:border-primary'
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react'
-import _ from 'lodash'
+import { omit } from 'lodash-es'
 import classNames from 'classnames'
 import useInterval from 'react-useinterval'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -7,7 +7,7 @@ import { requestSolved, responseSolved, changePaused, updateTimer } from 'src/re
 import { requestPuzzleCheck } from 'src/utils/apiService'
 import { checkSolved } from 'src/utils/wasm'
 import { formatTimer, gridIsFull } from 'src/utils/sudoku'
-import { Typography } from '@material-tailwind/react'
+import Typography from 'src/shared/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { SudokuDifficulty } from 'src/types/sudoku'
@@ -63,7 +63,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     }
 
     dispatch(requestSolved())
-    const processedActions = actions.map(action => _.omit(action, ['previousDigits', 'previousNotes']))
+    const processedActions = actions.map(action => omit(action, ['previousDigits', 'previousNotes']))
     requestPuzzleCheck(id, grid, processedActions).then(result => {
       dispatch(responseSolved({
         id,

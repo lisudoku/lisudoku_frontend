@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { TrainerTechnique } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { StepRule } from 'src/types/wasm'
@@ -39,7 +39,7 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.Mixed]: 'Mixed',
 }
 
-export const SudokuVariantRank = _.chain(SudokuVariant).values().invert().mapValues(_.toInteger).value()
+export const SudokuVariantRank = mapValues(invert(values(SudokuVariant)), toInteger)
 
 export const SudokuDifficultyDisplay: { [key in SudokuDifficulty]: string } = {
   [SudokuDifficulty.Easy4x4]: 'Easy 4x4',
@@ -50,7 +50,7 @@ export const SudokuDifficultyDisplay: { [key in SudokuDifficulty]: string } = {
   [SudokuDifficulty.Hard9x9]: 'Hard 9x9',
 }
 
-export const SudokuDifficultyRank = _.chain(SudokuDifficulty).values().invert().mapValues(_.toInteger).value()
+export const SudokuDifficultyRank = mapValues(invert(values(SudokuDifficulty)), toInteger)
 
 export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.HiddenSingle]: 'Hidden Single',

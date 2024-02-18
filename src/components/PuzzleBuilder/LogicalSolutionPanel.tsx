@@ -1,5 +1,5 @@
-import _ from 'lodash'
-import { Typography } from '@material-tailwind/react'
+import { max, orderBy, sumBy, toPairs } from 'lodash-es'
+import Typography from 'src/shared/Typography'
 import SolutionPanel from './SolutionPanel'
 import { HintLevel } from 'src/reducers/puzzle'
 import { SudokuConstraints } from 'src/types/sudoku'
@@ -14,8 +14,8 @@ const groupStepsByType = (steps: SolutionStep[]) => {
     groups[step.rule]! += 1
   }
 
-  return _.orderBy(
-    _.toPairs(groups),
+  return orderBy(
+    toPairs(groups),
     [
       group => StepRuleDifficulty[group[0] as StepRule],
       1
@@ -31,8 +31,8 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   }
 
   let nonEmptyCells = constraints.fixedNumbers?.length ?? 0
-  nonEmptyCells += _.sumBy(constraints.thermos, 'length') / 3
-  nonEmptyCells += _.sumBy(constraints.arrows, 'length') / 3
+  nonEmptyCells += sumBy(constraints.thermos, 'length') / 3
+  nonEmptyCells += sumBy(constraints.arrows, 'length') / 3
   if (constraints.primaryDiagonal) {
     nonEmptyCells += 3
   }
@@ -45,7 +45,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   if (constraints.antiKing) {
     nonEmptyCells += constraints.gridSize * 3 / 2
   }
-  nonEmptyCells += _.sumBy(constraints.killerCages, 'region.length') / 3
+  nonEmptyCells += sumBy(constraints.killerCages, 'region.length') / 3
   nonEmptyCells += constraints.kropkiDots?.length ?? 0 / 2
   nonEmptyCells += constraints.extraRegions?.length ?? 0 * 2
   nonEmptyCells += constraints.oddCells?.length ?? 0 / 2
@@ -66,7 +66,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
 }
 
 const estimateDifficultyByRules = (steps: SolutionStep[]) => {
-  const maxDifficulty = _.max(steps.map(step => {
+  const maxDifficulty = max(steps.map(step => {
     const difficulty = StepRuleDifficulty[step.rule]
     if (difficulty === undefined) {
       throw Error(`No difficulty found for rule ${step.rule}`)

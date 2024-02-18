@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import Button from '../Button'
+import Button from '../../shared/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons'
 import { logicalHint } from 'src/utils/wasm'
 import { combineConstraintsWithGrid } from 'src/utils/solver'
 import { changeHintSolution, changePaused } from 'src/reducers/puzzle'
-import Tooltip from '../Tooltip'
+import Tooltip from '../../shared/Tooltip'
 
 const HINT_DISABLED_TOOLTIP = <div className="w-48">
   You should spend at least 1 minute to figure it out yourself before requesting hints.

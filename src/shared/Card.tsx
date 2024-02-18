@@ -1,4 +1,4 @@
-import { CardProps, Card as MuiCard } from '@material-tailwind/react'
+import { CardProps, Card as MuiCard, CardBody as MuiCardBody } from '@material-tailwind/react/components/Card'
 import classNames from 'classnames'
 import { forwardRef } from 'react'
 
@@ -14,4 +14,6 @@ const Card = forwardRef((props: CardProps, ref: React.ForwardedRef<HTMLDivElemen
   </MuiCard>
 ))
 
-export default Card
+const CardBody = MuiCardBody
+
+export { Card, CardBody }

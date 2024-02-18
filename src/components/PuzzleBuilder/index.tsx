@@ -1,6 +1,6 @@
 import { useCallback, useEffect, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom'
-import _ from 'lodash'
+import { inRange } from 'lodash-es'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
@@ -10,15 +10,15 @@ import {
   changeTopBottom,
   ConstraintType, initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
-import Radio from 'src/components/Radio'
+import Radio from 'src/shared/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
-import Button from 'src/components/Button'
-import Checkbox from 'src/components/Checkbox'
-import { Typography, } from '@material-tailwind/react'
+import Button from 'src/shared/Button'
+import Checkbox from 'src/shared/Checkbox'
 import CopyToClipboard from '../CopyToClipboard'
 import PuzzleActions from './PuzzleActions'
 import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import Input from 'src/components/Input'
+import Input from 'src/shared/Input'
+import Typography from 'src/shared/Typography'
 import { exportToLisudoku, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
@@ -225,7 +225,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   checked={constraintType === ConstraintType.Thermo}
                   labelProps={{ className: classNames({
                     'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize!,
-                    'text-green-600': _.inRange(currentThermo.length, 2, gridSize! + 1),
+                    'text-green-600': inRange(currentThermo.length, 2, gridSize! + 1),
                   })}}
                   onChange={handleConstraintTypeChange} />
             <Radio name="build-item"

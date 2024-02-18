@@ -7,7 +7,7 @@ if (!DEBUG) {
   self.__WB_DISABLE_DEV_LOGS = true;
 }
 
-import _ from 'lodash'
+import { sample } from 'lodash-es'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
 import { precache, createHandlerBoundToURL } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
@@ -134,7 +134,7 @@ const createPuzzleRouteHandler = (filterPuzzles: FilterPuzzlesFn) => async (args
     }
 
     console.log(`Candidate puzzle count = ${candidatePuzzles.length}`)
-    const puzzle = _.sample(candidatePuzzles)
+    const puzzle = sample(candidatePuzzles)
     console.log('Got this puzzle content', JSON.stringify(puzzle).substring(0, 100))
     return new Response(JSON.stringify(puzzle), RESPONSE_HEADERS)
   })

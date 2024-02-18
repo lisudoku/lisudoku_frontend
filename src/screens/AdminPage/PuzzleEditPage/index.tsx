@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import LoadingSpinner from 'src/components/LoadingSpinner'
+import LoadingSpinner from 'src/shared/LoadingSpinner'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { useSelector } from 'src/hooks'
 import { SudokuDifficulty } from 'src/types/sudoku'
 import { apiUpdatePuzzle, fetchPuzzleById } from 'src/utils/apiService'
 import { Form, Field } from 'react-final-form'
-import Button from 'src/components/Button'
+import Button from 'src/shared/Button'
 import { FORM_ERROR } from 'final-form'
 
 export type PuzzleFormData = {

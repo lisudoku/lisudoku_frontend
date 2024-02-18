@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { differenceWith, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
@@ -62,7 +62,7 @@ const performAction = (state: PuzzleState, action: UserAction) => {
     switch(action.type) {
       case ActionType.Digit: state.grid![row][col] = action.value
                              break
-      case ActionType.Note: state.notes![row][col] = _.xor(state.notes![row][col], [action.value])
+      case ActionType.Note: state.notes![row][col] = xor(state.notes![row][col], [action.value])
                             break
       case ActionType.Delete: state.grid![row][col] = null
                               state.notes![row][col] = []
@@ -138,9 +138,9 @@ export const puzzleSlice = createSlice({
       const { cell, ctrl, isClick, doubleClick } = action.payload
       if (ctrl) {
         if (isClick) {
-          state.controls.selectedCells = _.xorWith(state.controls.selectedCells, [ cell ], _.isEqual)
+          state.controls.selectedCells = xorWith(state.controls.selectedCells, [ cell ], isEqual)
         } else {
-          state.controls.selectedCells = _.uniqWith([ ...state.controls.selectedCells, cell ], _.isEqual)
+          state.controls.selectedCells = uniqWith([ ...state.controls.selectedCells, cell ], isEqual)
         }
       } else if (doubleClick) {
         const value = state.grid![cell.row][cell.col]
@@ -157,14 +157,14 @@ export const puzzleSlice = createSlice({
       }
     },
     changeSelectedCellValue(state, action) {
-      if (_.isEmpty(state.controls.selectedCells)) {
+      if (isEmpty(state.controls.selectedCells)) {
         return
       }
 
       const value = action.payload
       const actionType = value === null ? ActionType.Delete : ActionType.Digit
-      const cells = _.differenceWith(
-        state.controls.selectedCells, _.map(state.data!.constraints.fixedNumbers, 'position'), _.isEqual
+      const cells = differenceWith(
+        state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
       )
 
       const allHaveValue = cells.every(
@@ -181,7 +181,7 @@ export const puzzleSlice = createSlice({
         newValue = value
       }
 
-      if (!_.isEmpty(relevantCells)) {
+      if (!isEmpty(relevantCells)) {
         const userAction: UserAction = {
           type: actionType,
           cells: relevantCells,
@@ -202,13 +202,13 @@ export const puzzleSlice = createSlice({
       markUpdate(state)
     },
     changeSelectedCellNotes(state, action) {
-      if (_.isEmpty(state.controls.selectedCells)) {
+      if (isEmpty(state.controls.selectedCells)) {
         return
       }
 
       const value = action.payload
-      const cells = _.differenceWith(
-        state.controls.selectedCells, _.map(state.data!.constraints.fixedNumbers, 'position'), _.isEqual
+      const cells = differenceWith(
+        state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
       )
 
       const allHaveValue = cells.every(
@@ -222,7 +222,7 @@ export const puzzleSlice = createSlice({
         relevantCells = cells.filter(({ row, col }) => !state.notes![row][col].includes(value))
       }
 
-      if (!_.isEmpty(relevantCells)) {
+      if (!isEmpty(relevantCells)) {
         const userAction: UserAction = {
           type: ActionType.Note,
           cells: relevantCells,

@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import SudokuConstraintsGraphics, { CellHighlight } from './SudokuGridGraphics'
-import LoadingSpinner from '../LoadingSpinner'
+import LoadingSpinner from '../../shared/LoadingSpinner'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

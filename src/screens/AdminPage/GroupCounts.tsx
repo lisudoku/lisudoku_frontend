@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import classNames from 'classnames'
-import _ from 'lodash'
+import { sumBy } from 'lodash-es'
 import { fetchGroupCounts } from 'src/utils/apiService'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { useSelector } from 'src/hooks'
@@ -43,10 +43,10 @@ const GroupCounts = () => {
             <tr className="h-8 divide-x">
               <td colSpan={2} className="p-2">Total</td>
               <td className="text-center p-2 font-bold">
-                {_.sumBy(groupCounts, 'puzzle_count')}
+                {sumBy(groupCounts, 'puzzle_count')}
               </td>
               <td className="text-center p-2 font-bold">
-                {_.sumBy(groupCounts, 'solve_count')}
+                {sumBy(groupCounts, 'solve_count')}
               </td>
             </tr>
             {groupCounts.map(({ variant, difficulty, puzzle_count, solve_count }) => (

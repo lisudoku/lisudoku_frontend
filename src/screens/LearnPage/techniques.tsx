@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { groupBy } from 'lodash-es'
 import { Link } from 'react-router-dom'
 import ExternalLink from 'src/components/ExternalLink'
 import { StepRule } from 'src/types/wasm'
@@ -497,6 +497,6 @@ const TECHNIQUES: Technique[] = [
   },
 ]
 
-export const TECHNIQUES_BY_DIFFICULTY = _.groupBy(
+export const TECHNIQUES_BY_DIFFICULTY = groupBy(
   TECHNIQUES, technique => StepRuleDifficulty[technique.id]
 )

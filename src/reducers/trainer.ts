@@ -1,8 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
-import { TrainerPuzzle, TrainerTechnique } from 'src/types';
-import { CellPosition, Grid, SudokuConstraints } from 'src/types/sudoku';
-import { ensureDefaultRegions, gridSizeFromString, gridStringToFixedNumbers, gridStringToGrid } from 'src/utils/sudoku';
+import { createSlice } from '@reduxjs/toolkit'
+import { isEqual } from 'lodash-es'
+import { TrainerPuzzle, TrainerTechnique } from 'src/types'
+import { CellPosition, Grid, SudokuConstraints } from 'src/types/sudoku'
+import {
+  ensureDefaultRegions, gridSizeFromString, gridStringToFixedNumbers, gridStringToGrid,
+} from 'src/utils/sudoku'
 
 interface ExtendedTrainerPuzzle extends TrainerPuzzle {
   constraints: SudokuConstraints
@@ -111,7 +113,7 @@ export const trainerSlice = createSlice({
 
       // Result
       state.finished = true
-      state.success = !!state.data?.solutions.find(s => s.value === value && _.isEqual(s.position, state.selectedCell))
+      state.success = !!state.data?.solutions.find(s => s.value === value && isEqual(s.position, state.selectedCell))
     },
   },
 })

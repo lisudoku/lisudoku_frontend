@@ -1,9 +1,9 @@
-import { CardBody, Typography } from '@material-tailwind/react'
-import Card from '../Card'
 import TrainerTechniqueSelect from './TrainerTechniqueSelect'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useCallback } from 'react'
 import { TrainerTechnique } from 'src/types'
+import { Card, CardBody } from 'src/shared/Card'
+import Typography from 'src/shared/Typography'
 import { updateTechnique } from 'src/reducers/trainer'
 
 const TrainerMisc = () => {

@@ -1,4 +1,4 @@
-import { Typography } from '@material-tailwind/react'
+import Typography from 'src/shared/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 

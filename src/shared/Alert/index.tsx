@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Alert as MuiAlert } from '@material-tailwind/react'
+import { Alert as MuiAlert } from '@material-tailwind/react/components/Alert'
 import { onClose } from '@material-tailwind/react/types/components/alert'
 import styles from './styles.module.css'
 

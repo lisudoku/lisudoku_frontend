@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Tooltip as MuiTooltip, TooltipProps as MuiTooltipProps } from '@material-tailwind/react'
+import { Tooltip as MuiTooltip, TooltipProps as MuiTooltipProps } from '@material-tailwind/react/components/Tooltip'
 
 interface TooltipProps extends MuiTooltipProps {}
 

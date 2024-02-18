@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import _ from 'lodash'
-import { Typography } from '@material-tailwind/react'
+import { groupBy, mapValues, sortBy, toPairs } from 'lodash-es'
 import PuzzleCard from './PuzzleCard'
+import Typography from 'src/shared/Typography'
 import { responsePuzzles } from 'src/reducers/admin'
 import { fetchAllPuzzles } from 'src/utils/apiService'
 import {
   SudokuDifficultyDisplay, SudokuDifficultyRank, SudokuVariantDisplay, SudokuVariantRank,
 } from 'src/utils/constants'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { ExtendedPuzzle } from 'src/types'
 
 const PuzzlesPage = () => {
   const [ loading, setLoading ] = useState(true)
@@ -23,21 +24,18 @@ const PuzzlesPage = () => {
     })
   }, [dispatch, userToken])
 
-  const puzzleGroups = useMemo(() => (
-    _.chain(puzzles)
-     .sortBy(puzzle => (
-       SudokuVariantRank[puzzle.variant!] * 100 + SudokuDifficultyRank[puzzle.difficulty!]
-     ))
-     .groupBy('variant')
-     .mapValues(variantPuzzles => (
-        _.chain(variantPuzzles)
-         .groupBy('difficulty')
-         .toPairs()
-         .value()
-     ))
-     .toPairs()
-     .value()
-  ), [puzzles])
+  const puzzleGroups = useMemo(() => {
+    const sortedPuzzles = sortBy(puzzles, (puzzle: ExtendedPuzzle) => (
+      SudokuVariantRank[puzzle.variant!] * 100 + SudokuDifficultyRank[puzzle.difficulty!]
+    ))
+    const groups = groupBy(sortedPuzzles, 'variant')
+    const processedGroups = mapValues(
+      groups,
+      variantPuzzles => toPairs(groupBy(variantPuzzles, 'difficulty')),
+    )
+    const groupPairs = toPairs(processedGroups)
+    return groupPairs
+  }, [puzzles])
 
   return (
     <div>

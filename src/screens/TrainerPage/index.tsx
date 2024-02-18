@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import ErrorPage from 'src/components/ErrorPage'
-import LoadingSpinner from 'src/components/LoadingSpinner'
+import LoadingSpinner from 'src/shared/LoadingSpinner'
 import PageMeta from 'src/components/PageMeta'
 import { useDispatch, useSelector } from 'src/hooks'
 import { receivedTrainerPuzzle, requestedTrainerPuzzle } from 'src/reducers/trainer'

@@ -1,6 +1,6 @@
-import _ from 'lodash'
-import { CardBody, Typography } from '@material-tailwind/react'
-import Card from '../Card'
+import { isEmpty } from 'lodash-es'
+import { Card, CardBody } from 'src/shared/Card'
+import Typography from 'src/shared/Typography'
 import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -14,21 +14,21 @@ const computeRules = (constraints: SudokuConstraints) => {
     `Place a digit from 1 to ${constraints.gridSize} in each of the empty cells so ` +
     `that each digit appears exactly once in each row, column and outlined region.`
   )
-  if (!_.isEmpty(constraints.extraRegions)) {
+  if (!isEmpty(constraints.extraRegions)) {
     rules.push(<>
       <FontAwesomeIcon icon={faSquare} size="sm" className="text-cyan-700" />
       {' '}
       Each blue region contains each digit from 1 to {constraints.gridSize}.
     </>)
   }
-  if (!_.isEmpty(constraints.thermos)) {
+  if (!isEmpty(constraints.thermos)) {
     rules.push(<>
       <FontAwesomeIcon icon={faThermometer4} size="sm"/>
       {' '}
       Each thermometer contains digits in increasing order from the bulb to the end.
     </>)
   }
-  if (!_.isEmpty(constraints.arrows)) {
+  if (!isEmpty(constraints.arrows)) {
     rules.push(<>
       <FontAwesomeIcon icon={faUpLong} size="sm"/>
       {' '}
@@ -64,7 +64,7 @@ const computeRules = (constraints: SudokuConstraints) => {
       Cells a king move away must not contain the same digit.
     </>)
   }
-  if (!_.isEmpty(constraints.killerCages)) {
+  if (!isEmpty(constraints.killerCages)) {
     rules.push(<>
       <svg height={13} width={13} className="inline-block">
         <rect x="0" y="0" width="100%" height="100%" fill="transparent" stroke="white" strokeDasharray="2" />
@@ -74,7 +74,7 @@ const computeRules = (constraints: SudokuConstraints) => {
       No number appears more than once in a cage.
     </>)
   }
-  if (!_.isEmpty(constraints.kropkiDots)) {
+  if (!isEmpty(constraints.kropkiDots)) {
     rules.push(<>
       <FontAwesomeIcon icon={faCircleSolid} size="sm" />
       {' '}
@@ -93,14 +93,14 @@ const computeRules = (constraints: SudokuConstraints) => {
       </>)
     }
   }
-  if (!_.isEmpty(constraints.oddCells)) {
+  if (!isEmpty(constraints.oddCells)) {
     rules.push(<>
       <FontAwesomeIcon icon={faCircleSolid} size="sm" color="lightgray" />
       {' '}
       Cells with shaded circles contain odd digits.
     </>)
   }
-  if (!_.isEmpty(constraints.evenCells)) {
+  if (!isEmpty(constraints.evenCells)) {
     rules.push(<>
       <FontAwesomeIcon icon={faSquare} size="sm" color="lightgray" />
       {' '}

@@ -1,6 +1,6 @@
 import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
-import _ from 'lodash'
+import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
 import { Arrow, CellNotes, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid, useNoteErrors } from './hooks'
@@ -119,10 +119,10 @@ const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) 
 
   let circleRect: SVGProps<SVGRectElement> | undefined
   if (arrow.circleCells.length > 0) {
-    const circleMinRow = _.minBy(arrow.circleCells, 'row')!.row
-    const circleMaxRow = _.maxBy(arrow.circleCells, 'row')!.row
-    const circleMinCol = _.minBy(arrow.circleCells, 'col')!.col
-    const circleMaxCol = _.maxBy(arrow.circleCells, 'col')!.col
+    const circleMinRow = minBy(arrow.circleCells, 'row')!.row
+    const circleMaxRow = maxBy(arrow.circleCells, 'row')!.row
+    const circleMinCol = minBy(arrow.circleCells, 'col')!.col
+    const circleMaxCol = maxBy(arrow.circleCells, 'col')!.col
     circleRect = {
       x: circleMinCol * cellSize + 1 + strokeWidth / 2 + margin,
       y: circleMinRow * cellSize + 1 + strokeWidth / 2 + margin,
@@ -136,7 +136,7 @@ const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) 
   const firstCell = arrow.arrowCells[0]
   let closestCircleCell
   if (firstCell) {
-    closestCircleCell = _.minBy(arrow.circleCells, cell => (
+    closestCircleCell = minBy(arrow.circleCells, cell => (
       (firstCell.row - cell.row) ** 2 + (firstCell.col - cell.col) ** 2
     ))
   }
@@ -347,7 +347,7 @@ const DigitGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, c
     const key = row * gridSize + col
 
     const hasError = checkErrors && errorGrid[row][col]
-    const isFixed = !_.isNil(fixedNumbersGrid[row][col])
+    const isFixed = !isNil(fixedNumbersGrid[row][col])
     digitElements.push((
       <text x={x}
             y={y}
@@ -692,7 +692,7 @@ const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) 
         <CellNotesGraphics
           row={cell.position.row}
           col={cell.position.col}
-          cellNotes={_.compact([cell.value])}
+          cellNotes={compact([cell.value])}
           killerActive={killerActive}
           cellSize={cellSize}
           cellClassName="fill-digit-fixed stroke-none"
@@ -717,7 +717,7 @@ const SudokuConstraintsGraphics = (
   } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
-  const killerActive = !_.isEmpty(killerCages)
+  const killerActive = !isEmpty(killerCages)
 
   return (
     <svg height={gridSize * cellSize + 2}

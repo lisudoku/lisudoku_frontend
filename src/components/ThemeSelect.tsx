@@ -1,5 +1,5 @@
-import _ from 'lodash'
-import { Option, Select } from './Select'
+import { values } from 'lodash-es'
+import { Option, Select } from '../shared/Select'
 import { useDispatch } from 'src/hooks'
 import { useCallback } from 'react'
 import { updateTheme } from 'src/reducers/userData'
@@ -24,7 +24,7 @@ export const ThemeSelect = () => {
       onChange={onChange}
       label="Theme"
     >
-      {_.values(ThemeOption).map(value => (
+      {values(ThemeOption).map(value => (
         <Option key={value} value={value}>{ThemeOptionDisplay[value]}</Option>
       ))}
     </Select>

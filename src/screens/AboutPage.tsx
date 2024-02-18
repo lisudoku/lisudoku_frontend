@@ -1,5 +1,5 @@
 import PageMeta from 'src/components/PageMeta'
-import { Typography } from '@material-tailwind/react'
+import Typography from 'src/shared/Typography'
 
 const AboutPage = () => (
   <>

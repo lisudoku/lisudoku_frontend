@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
-import Button from 'src/components/Button'
-import Input from 'src/components/Input'
+import Button from 'src/shared/Button'
+import Input from 'src/shared/Input'
 import {
   changeAuthor,
   changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution,

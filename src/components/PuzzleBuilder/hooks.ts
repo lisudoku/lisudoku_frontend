@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { inRange, isEmpty, last } from 'lodash-es'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
@@ -85,9 +85,9 @@ export const useKeyboardHandler = (digitsActive = true) => {
 
       if (ARROWS.includes(e.key)) {
         let nextCell
-        if (!_.isEmpty(selectedCells)) {
+        if (!isEmpty(selectedCells)) {
           const dir = ARROWS.indexOf(e.key)
-          const lastCell = _.last(selectedCells)!
+          const lastCell = last(selectedCells)!
           nextCell = {
             row: (lastCell.row + dirRow[dir] + gridSize) % gridSize,
             col: (lastCell.col + dirCol[dir] + gridSize) % gridSize,
@@ -110,7 +110,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
         return
       }
 
-      if (_.isEmpty(selectedCells)) {
+      if (isEmpty(selectedCells)) {
         return
       }
 
@@ -142,7 +142,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
         return
       }
 
-      if (!_.inRange(value, 1, gridSize + 1)) {
+      if (!inRange(value, 1, gridSize + 1)) {
         return
       }
 

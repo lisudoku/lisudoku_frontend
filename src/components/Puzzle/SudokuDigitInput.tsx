@@ -1,6 +1,6 @@
-import _ from 'lodash'
+import { times } from 'lodash-es'
 import classNames from 'classnames'
-import Button from '../Button'
+import Button from '../../shared/Button'
 
 type SudokuDigitInputProps = {
   gridSize: number
@@ -13,7 +13,7 @@ const SudokuDigitInput = ({ gridSize, disabled, onClick }: SudokuDigitInputProps
 
   return (
     <div className="flex flex-wrap w-full">
-      {_.times(gridSize).map(value => (
+      {times(gridSize).map(value => (
         <div key={value}
               className={classNames('h-12 md:h-20 grow md:pb-1 px-0.5 first:pl-0 last:pr-0', {
                 'md:w-1/3': buttonsPerRow === 3,

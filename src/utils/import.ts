@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom'
-import _ from 'lodash'
+import { flatMap, isBoolean, isEmpty, isEqual, isNumber, omitBy, times } from 'lodash-es'
 import { AxiosError } from 'axios'
 import { FixedNumber, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints } from 'src/types/sudoku'
 import { fetchPuzzleByPublicId } from './apiService'
@@ -45,7 +45,7 @@ const detectSource = (url: string) => {
 }
 
 const isInlineData = (data: string) => (
-  !_.isEmpty(decompressFromBase64(data))
+  !isEmpty(decompressFromBase64(data))
 )
 
 export const importPuzzle = async (url: string): Promise<ImportResult> => {
@@ -160,8 +160,8 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
   }
 
   const fixedNumbers: FixedNumber[] = []
-  _.times(gridSize, row => {
-    _.times(gridSize, col => {
+  times(gridSize, row => {
+    times(gridSize, col => {
       const cell = data.grid[row][col]
       if (cell.value) {
         const fixedNumber: FixedNumber = {
@@ -178,8 +178,8 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
 
   const defaultRegions = ensureDefaultRegions(gridSize)
   const regionGrid = regionsToRegionGrid(gridSize, defaultRegions)
-  _.times(gridSize, row => {
-    _.times(gridSize, col => {
+  times(gridSize, row => {
+    times(gridSize, col => {
       regionGrid[row][col] -= 1
       const regionIndex = data.grid[row][col].region
       if (regionIndex !== undefined) {
@@ -226,7 +226,7 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
     extraRegions: (data.extraregion ?? []).map(({ cells }: { cells: string[] }) => (
       mapCellStringArray(cells)
     )),
-    thermos: _.flatMap((data.thermometer ?? []), ({ lines }: { lines: string[][] }) => (
+    thermos: flatMap((data.thermometer ?? []), ({ lines }: { lines: string[][] }) => (
       lines.map((cells: string[]) => mapCellStringArray(cells))
     )),
     arrows: (data.arrow ?? []).map(({ cells, lines }: { cells: string[], lines: string[][] }) => ({
@@ -243,7 +243,7 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
       region: mapCellStringArray(cells),
     })),
     kropkiDots,
-    kropkiNegative: !_.isEmpty(data.negative) && data.nonconsecutive,
+    kropkiNegative: !isEmpty(data.negative) && data.nonconsecutive,
     oddCells: (data.odd ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
     evenCells: (data.even ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
     topBottom: false,
@@ -276,12 +276,12 @@ const mapCellStringArray = (cells: string[]) => (
 )
 
 export const exportToLisudoku = (constraints: SudokuConstraints) => {
-  const filteredConstraints = _.omitBy(
+  const filteredConstraints = omitBy(
     constraints,
-    value => !_.isNumber(value) &&
-             (value === false || (!_.isBoolean(value) && _.isEmpty(value)))
+    value => !isNumber(value) &&
+             (value === false || (!isBoolean(value) && isEmpty(value)))
   )
-  if (_.isEqual(filteredConstraints.regions, ensureDefaultRegions(constraints.gridSize))) {
+  if (isEqual(filteredConstraints.regions, ensureDefaultRegions(constraints.gridSize))) {
     delete filteredConstraints.regions
   }
   const constraintsStr = JSON.stringify(filteredConstraints)

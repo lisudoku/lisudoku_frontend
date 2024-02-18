@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
-import { ButtonProps, Button as MuiButton } from '@material-tailwind/react'
+import { ButtonProps, Button as MuiButton } from '@material-tailwind/react/components/Button'
 
 const EXTRA_CLASSNAME = 'rounded select-none outline-none focus:opacity-100 focus:ring-0'
 

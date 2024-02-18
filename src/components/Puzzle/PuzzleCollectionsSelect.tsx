@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import LoadingSpinner from '../LoadingSpinner'
-import { Select, Option } from '../Select'
+import LoadingSpinner from '../../shared/LoadingSpinner'
+import { Select, Option } from '../../shared/Select'
 import { fetchAllCollections } from 'src/utils/apiService'
 import { responsePuzzleCollections } from 'src/reducers/collections'
 

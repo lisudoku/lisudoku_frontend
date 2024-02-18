@@ -1,11 +1,11 @@
-import _ from 'lodash'
 import { useEffect, useRef } from 'react'
-import { CardBody, Typography } from '@material-tailwind/react'
-import Card from 'src/components/Card'
+import { isEmpty } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
 import { StepRuleDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl, pluralize } from 'src/utils/misc'
 import { Technique } from './types'
+import { Card, CardBody } from 'src/shared/Card'
+import Typography from 'src/shared/Typography'
 
 const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
   const { id, akas, summary, externalResources, practicePuzzleIds } = technique
@@ -24,7 +24,7 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
           <Typography variant="h5">
             <a href={`#${id}`}>{StepRuleDisplay[id]}</a>
           </Typography>
-          {akas && !_.isEmpty(akas) && (
+          {akas && !isEmpty(akas) && (
             <Typography variant="paragraph">
               <b>Also known as</b>: {akas.join(', ')}.
             </Typography>
@@ -32,7 +32,7 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
           <Typography variant="paragraph">
             <b>Summary</b>: {summary}
           </Typography>
-          {externalResources && !_.isEmpty(externalResources) && (
+          {externalResources && !isEmpty(externalResources) && (
             <Typography variant="paragraph">
               <b>Detailed explanations</b>: {' '}
               {externalResources.map((resource, index: number) => (
@@ -46,7 +46,7 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
               .
             </Typography>
           )}
-          {practicePuzzleIds && !_.isEmpty(practicePuzzleIds) && (
+          {practicePuzzleIds && !isEmpty(practicePuzzleIds) && (
             <Typography variant="paragraph">
               <b>Practice {pluralize(practicePuzzleIds.length, 'puzzle')}</b>: {' '}
               {practicePuzzleIds.map((publicId, index) => (

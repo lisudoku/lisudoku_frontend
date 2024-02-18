@@ -1,4 +1,4 @@
-import { IconButton as MuiIconButton } from '@material-tailwind/react'
+import { IconButton as MuiIconButton } from '@material-tailwind/react/components/IconButton'
 
 const EXTRA_CLASSNAME = 'rounded select-none outline-none focus:opacity-100'
 

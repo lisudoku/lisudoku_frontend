@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import _ from 'lodash'
+import { some } from 'lodash-es'
 import { Competition } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
@@ -93,7 +93,7 @@ export const userDataSlice = createSlice({
         return
       }
 
-      if (!action.payload.solved || _.some(state.solvedPuzzles, [ 'id', id ])) {
+      if (!action.payload.solved || some(state.solvedPuzzles, [ 'id', id ])) {
         return
       }
 

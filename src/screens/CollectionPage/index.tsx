@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
+import { sortBy } from 'lodash-es'
 import { useSelector } from 'src/hooks'
-import _ from 'lodash'
 import PageMeta from 'src/components/PageMeta'
 import { Link, useParams } from 'react-router-dom'
-import { Typography } from '@material-tailwind/react'
-import LoadingSpinner from 'src/components/LoadingSpinner'
+import LoadingSpinner from 'src/shared/LoadingSpinner'
+import Typography from 'src/shared/Typography'
 import { PuzzleCollection } from 'src/types'
 import { fetchPuzzleCollection } from 'src/utils/apiService'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
@@ -61,7 +61,7 @@ const CollectionPage = () => {
           </tr>
         </thead>
         <tbody className="divide-y">
-          {_.sortBy(puzzleCollection.puzzles, [ 'variant', 'difficulty' ]).map(puzzle => (
+          {sortBy(puzzleCollection.puzzles, [ 'variant', 'difficulty' ]).map(puzzle => (
             <tr key={puzzle.id} className="h-8 divide-x">
               <td className="p-2 text-center">
                 {solvedPuzzleIds.includes(puzzle.publicId!) && (

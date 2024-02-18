@@ -1,5 +1,5 @@
 import { forwardRef, useCallback } from 'react'
-import { Switch as MuiSwitch } from '@material-tailwind/react'
+import { Switch as MuiSwitch } from '@material-tailwind/react/components/Switch'
 import classNames from 'classnames'
 
 const EXTRA_CLASSES = 'outline-none checked:bg-highlight'

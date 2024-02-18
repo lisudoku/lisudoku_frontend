@@ -2,10 +2,13 @@ import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
-import { Navbar, Collapse, Typography, IconButton } from '@material-tailwind/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faBars, faTrophy, faFire, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { ThemeSelect } from './ThemeSelect'
+import IconButton from 'src/shared/IconButton'
+import Typography from 'src/shared/Typography'
+import Navbar from 'src/shared/Navbar'
+import Collapse from 'src/shared/Collapse'
 
 const ITEMS: any[] = [
   {
