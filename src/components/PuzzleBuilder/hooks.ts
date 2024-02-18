@@ -8,6 +8,7 @@ import {
   errorSolution, requestSolution, responseSolution, toggleNotesActive,
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
+import SolverWorker from 'src/workers/solver.worker?worker'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -175,10 +176,7 @@ export const useSolver = (solverType: SolverType) => {
         onWorkerInitializedResolve.current = resolve
       })
 
-      const _worker = new Worker(
-        new URL('../../workers/solver.worker', import.meta.url),
-        { type: 'module' }
-      )
+      const _worker = new SolverWorker()
 
       // Wait for 'init' message and then mark worker as initialized
       _worker.addEventListener('message', (e) => {
