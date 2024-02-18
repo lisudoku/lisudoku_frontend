@@ -1,5 +1,10 @@
 import { CellPosition, Grid } from './sudoku'
 
+export enum SolverType {
+  Brute = 'brute',
+  Logical = 'logical',
+}
+
 export type SudokuBruteSolveResult = {
   solution_count: number
   solution?: Grid

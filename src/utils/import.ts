@@ -7,7 +7,7 @@ import { decompressFromBase64, compressToBase64 } from 'lz-string'
 import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from './sudoku'
 import { GRID_SIZES } from './constants'
 import { defaultConstraints } from 'src/reducers/builder'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from './json'
 
 const FPUZZLES_UNIMPLEMENTED_CONSTRAINTS = [
   'disjointgroups', 'littlekillersum', 'minimum', 'maximum',
@@ -79,7 +79,7 @@ const importLisudokuPuzzle = async (url: string): Promise<ImportResult> => {
   let status
   await (fetchPuzzleByPublicId(id, null)
     .then((data: Puzzle) => {
-      puzzle = jcc.camelCaseKeys(data)
+      puzzle = camelCaseKeys(data)
     })
     .catch((e: AxiosError) => {
       status = e.response?.status
@@ -114,7 +114,7 @@ const importLisudokuInline = (encodedData: string): ImportResult => {
       message: '[lisudoku] Error while parsing inline data',
     }
   }
-  const filteredConstraints = jcc.camelCaseKeys(JSON.parse(constraintsStr!))
+  const filteredConstraints = camelCaseKeys(JSON.parse(constraintsStr!))
   const constraints = {
     ...defaultConstraints(filteredConstraints.gridSize),
     ...filteredConstraints,

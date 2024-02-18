@@ -4,7 +4,7 @@ import { Competition } from 'src/types'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
 import { ThemeOption } from 'src/components/ThemeProvider'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from 'src/utils/json'
 
 type SolvedPuzzle = {
   id: string
@@ -63,7 +63,7 @@ export const userDataSlice = createSlice({
       state.difficulty = action.payload
     },
     receiveActiveCompetitions(state, action) {
-      state.activeCompetitions = jcc.camelCaseKeys(action.payload)
+      state.activeCompetitions = camelCaseKeys(action.payload)
     },
     updateShowTimer(state, action) {
       if (state.settings === undefined) {

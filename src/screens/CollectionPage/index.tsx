@@ -11,7 +11,7 @@ import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constan
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from 'src/utils/json'
 
 const CollectionPage = () => {
   const { id } = useParams()
@@ -20,7 +20,7 @@ const CollectionPage = () => {
 
   useEffect(() => {
     fetchPuzzleCollection(id!).then(data => {
-      const puzzleData: PuzzleCollection = jcc.camelCaseKeys(data)
+      const puzzleData: PuzzleCollection = camelCaseKeys(data)
       setPuzzleCollection(puzzleData)
     })
   }, [id])

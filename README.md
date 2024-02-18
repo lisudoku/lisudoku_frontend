@@ -31,7 +31,7 @@ Join the [discord server](https://discord.gg/SGV8TQVSeT).
 3. `yarn install`
 4. Create `.env.local` with the following content
 ```
-REACT_APP_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:3000
 ```
 5. Start the app with `yarn start` (make sure the [backend](https://github.com/lisudoku/lisudoku_backend) is running)
 

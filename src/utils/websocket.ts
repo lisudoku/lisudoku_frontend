@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createConsumer, Subscription } from '@rails/actioncable'
 import { useSelector } from 'src/hooks'
 
-const CABLE_URL = `${process.env.REACT_APP_API_BASE_URL}/cable`
+const CABLE_URL = `${import.meta.env.VITE_API_BASE_URL}/cable`
 const consumer = createConsumer(CABLE_URL)
 
 export type WebsocketMessage = {

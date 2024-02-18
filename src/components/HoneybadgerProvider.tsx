@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { Honeybadger, HoneybadgerErrorBoundary } from '@honeybadger-io/react'
 
 const config = {
-  apiKey: process.env.REACT_APP_HONEYBADGER_API_KEY,
-  environment: process.env.NODE_ENV,
+  apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
+  environment: import.meta.env.PROD ? 'production' : 'development',
   revision: 'main',
 }
 

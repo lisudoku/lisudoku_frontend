@@ -1,14 +1,11 @@
 /// <reference lib="webworker" />
 /* eslint-disable no-restricted-globals */
 
-// Original at https://github.com/cra-template/pwa/blob/main/packages/cra-template-pwa-typescript/template/src/service-worker.ts
+const DEBUG = false
 
-// This service worker can be customized!
-// See https://developers.google.com/web/tools/workbox/modules
-// for the list of available Workbox modules, or add any other
-// code you'd like.
-// You can also remove this file if you'd prefer not to use a
-// service worker, and the Workbox build step will be skipped.
+if (!DEBUG) {
+  self.__WB_DISABLE_DEV_LOGS = true;
+}
 
 import _ from 'lodash'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
@@ -19,7 +16,7 @@ import { differenceInDays, parseISO } from 'date-fns'
 
 declare const self: ServiceWorkerGlobalScope
 
-const SERVER_URL = process.env.REACT_APP_API_BASE_URL
+const SERVER_URL = import.meta.env.VITE_API_BASE_URL
 const DOWNLOAD_PATH = '/api/puzzles/download'
 const MAX_DOWNLOAD_AGE_DAYS = 30
 const RESPONSE_HEADERS = {
@@ -45,7 +42,7 @@ setCacheNameDetails({
 
 const CACHE_NAME = cacheNames.runtime
 
-const extraRoutes = [ '/', '/favicon.ico', '/manifest.json', 'app_icon.png' ].map(url => ({
+const extraRoutes = [ '/' ].map(url => ({
   url,
   revision: null,
 }))
@@ -55,7 +52,7 @@ const routes = [
   ...extraRoutes,
 ]
 
-console.log(routes)
+console.log('SW routes', routes)
 
 // Saved data to runtime cache
 precache(routes)
@@ -233,14 +230,16 @@ registerRoute(
 // Catch-all GET handler
 registerRoute(
   ({ url }) => {
-    console.log('GET', url.pathname)
+    if (DEBUG) {
+      console.log('GET', url.pathname)
+    }
     return true
   },
   new NetworkFirst(),
 )
 
 self.addEventListener('install', (e) => {
-  console.log('Extra install steps')
+  // console.log('Extra install steps')
 })
 
 // Download offline puzzle data on activation

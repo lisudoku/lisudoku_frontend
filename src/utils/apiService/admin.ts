@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { PuzzleFormData } from 'src/screens/AdminPage/PuzzleEditPage'
 import { Puzzle } from 'src/types/sudoku'
-const jcc = require('json-case-convertor')
+import { snakeCaseKeys } from '../json'
 
 export const fetchGroupCounts = async (userToken: string) => {
   return axios.get('/puzzles/group_counts', {
@@ -10,7 +10,7 @@ export const fetchGroupCounts = async (userToken: string) => {
 }
 
 export const apiAddPuzzle = async (puzzle: Puzzle, userToken: string) => {
-  const apiPuzzle = jcc.snakeCaseKeys(puzzle)
+  const apiPuzzle = snakeCaseKeys(puzzle)
   return axios.post('/puzzles', {
     puzzle: apiPuzzle,
   }, {
@@ -60,7 +60,7 @@ export type PuzzleCollectionInput = {
 }
 
 export const createPuzzleCollection = async (puzzleCollection: PuzzleCollectionInput, userToken: string) => {
-  const apiPuzzleCollection = jcc.snakeCaseKeys(puzzleCollection)
+  const apiPuzzleCollection = snakeCaseKeys(puzzleCollection)
   return axios.post('/puzzle_collections', {
     puzzle_collection: apiPuzzleCollection,
   }, {
@@ -75,7 +75,7 @@ export const deletePuzzleCollection = async (id: number, userToken: string) => {
 }
 
 export const apiUpdatePuzzleCollection = async (id: string, puzzleCollection: PuzzleCollectionInput, userToken: string) => {
-  const apiPuzzleCollection = jcc.snakeCaseKeys(puzzleCollection)
+  const apiPuzzleCollection = snakeCaseKeys(puzzleCollection)
   return axios.patch(`/puzzle_collections/${id}`, {
     puzzle_collection: apiPuzzleCollection,
   }, {

@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import { wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
-import { SolverType } from 'src/reducers/builder'
+import { SolverType } from 'src/types/wasm';
 import { computeWasmConstraints } from 'src/utils/wasm'
 
 self.onmessage = function(e: any) {

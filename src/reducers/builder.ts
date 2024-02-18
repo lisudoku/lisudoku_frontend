@@ -5,10 +5,10 @@ import {
   CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
   Region, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
-import { SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
 import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
-const jcc = require('json-case-convertor')
 
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
@@ -26,11 +26,6 @@ export enum ConstraintType {
 export enum ArrowConstraintType {
   Circle = 'arrow-circle',
   Arrow = 'arrow-arrow',
-}
-
-export enum SolverType {
-  Brute = 'brute',
-  Logical = 'logical',
 }
 
 // TODO: split into separate reducers
@@ -227,7 +222,7 @@ export const builderSlice = createSlice({
       state.manualChange = false
     },
     receivedPuzzle(state, action) {
-      const constraints: Partial<SudokuConstraints> = jcc.camelCaseKeys(action.payload)
+      const constraints: Partial<SudokuConstraints> = camelCaseKeys(action.payload)
       const gridSize = constraints.gridSize!
       state.constraints = {
         ...defaultConstraints(gridSize),

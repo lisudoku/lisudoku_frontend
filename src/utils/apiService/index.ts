@@ -4,7 +4,7 @@ import { ActionType } from 'src/reducers/puzzle'
 import { TrainerTechnique } from 'src/types'
 import { CellPosition, FixedNumber, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
-axios.defaults.baseURL = `${process.env.REACT_APP_API_BASE_URL}/api`
+axios.defaults.baseURL = `${import.meta.env.VITE_API_BASE_URL}/api`
 
 export * from './admin'
 

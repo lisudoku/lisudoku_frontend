@@ -1,10 +1,10 @@
 import { wasm_check_solved, wasm_logical_hint } from 'lisudoku-solver'
 import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
-const jcc = require('json-case-convertor')
+import { snakeCaseKeys } from './json'
 
 export const computeWasmConstraints = (constraints: SudokuConstraints) => {
-  const wasmConstraints = jcc.snakeCaseKeys(constraints)
+  const wasmConstraints = snakeCaseKeys(constraints)
   // Some puzzles may not have some fields because they didn't exist yet
   wasmConstraints.thermos ||= []
   wasmConstraints.arrows ||= []

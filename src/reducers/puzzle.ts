@@ -4,7 +4,7 @@ import formatISO from 'date-fns/formatISO'
 import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid, getAllCells } from 'src/utils/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from 'src/utils/json'
 
 export enum ActionType {
   Digit = 'digit',
@@ -108,7 +108,7 @@ export const puzzleSlice = createSlice({
     requestedPuzzle(_state) {
     },
     receivedPuzzle(state, action) {
-      const puzzleData: Puzzle = jcc.camelCaseKeys(action.payload)
+      const puzzleData: Puzzle = camelCaseKeys(action.payload)
       puzzleData.constraints.killerCages ||= []
       state.data = puzzleData
       state.solved = null

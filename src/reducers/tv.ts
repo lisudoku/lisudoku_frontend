@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { CellPosition, Grid, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from 'src/utils/json'
 
 export type TvPuzzle = {
   id: string
@@ -31,7 +31,7 @@ export const tvSlice = createSlice({
   reducers: {
     initPuzzles(state, action) {
       const tvPuzzles = action.payload.tv_puzzles.map((tvPuzzle: any) => ({
-        ...jcc.camelCaseKeys(tvPuzzle),
+        ...camelCaseKeys(tvPuzzle),
         // grid has to be handled separately because of jcc
         grid: tvPuzzle.grid,
         selectedCells: tvPuzzle.selected_cells ?? [], // smooth transition from previous data
@@ -45,7 +45,7 @@ export const tvSlice = createSlice({
       // Grid has to be handled separately
       const grid = data.grid
 
-      const tvPuzzle = jcc.camelCaseKeys(data)
+      const tvPuzzle = camelCaseKeys(data)
       tvPuzzle.grid = grid
       const { id, notes, selectedCells, solved, updatedAt } = tvPuzzle
 

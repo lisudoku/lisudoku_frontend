@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Competition } from 'src/types'
-const jcc = require('json-case-convertor')
+import { camelCaseKeys } from 'src/utils/json'
 
 type CompetitionsState = {
   competitions?: Competition[]
@@ -13,10 +13,10 @@ export const competitionsSlice = createSlice({
   } as CompetitionsState,
   reducers: {
     receiveCompetitions(state, action) {
-      state.competitions = jcc.camelCaseKeys(action.payload)
+      state.competitions = camelCaseKeys(action.payload)
     },
     createdCompetition(state, action) {
-      const competition = jcc.camelCaseKeys(action.payload)
+      const competition = camelCaseKeys(action.payload)
       state.competitions!.push(competition)
     },
     deletedCompetition(state, action) {

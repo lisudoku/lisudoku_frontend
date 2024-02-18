@@ -6,7 +6,7 @@ import { Popover, PopoverHandler, PopoverContent } from '@material-tailwind/reac
 const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
   const [ open, setOpen ] = useState(false)
 
-  const timerRef = useRef<NodeJS.Timeout>()
+  const timerRef = useRef<number>()
   const handleClick = useCallback(() => {
     const data = _.isFunction(text) ? text() : text
     navigator.clipboard.writeText(data)

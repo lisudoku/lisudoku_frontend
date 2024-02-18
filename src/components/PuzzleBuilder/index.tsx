@@ -8,7 +8,7 @@ import {
   addConstraint, ArrowConstraintType, changeAntiKing, changeAntiKnight, changeArrowConstraintType, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
   changeTopBottom,
-  ConstraintType, initPuzzle, receivedPuzzle, SolverType,
+  ConstraintType, initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
 import Radio from 'src/components/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
@@ -24,6 +24,7 @@ import GridSizeSelect from './GridSizeSelect'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
+import { SolverType } from 'src/types/wasm'
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
