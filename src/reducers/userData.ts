@@ -10,6 +10,7 @@ type SolvedPuzzle = {
   id: string
   variant: SudokuVariant
   difficulty: SudokuDifficulty
+  solveTime: number
 }
 
 type UserSettings = {
@@ -87,7 +88,7 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
-      const { id, variant, difficulty } = action.payload
+      const { id, variant, difficulty, solveTime } = action.payload
       if (!id) {
         // External puzzle
         return
@@ -101,6 +102,7 @@ export const userDataSlice = createSlice({
         id,
         variant,
         difficulty,
+        solveTime,
       }
       state.solvedPuzzles.push(solvedPuzzle)
     })

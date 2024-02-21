@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { sortBy } from 'lodash-es'
+import { fromPairs, sortBy } from 'lodash-es'
 import { useSelector } from 'src/hooks'
 import PageMeta from 'src/components/PageMeta'
 import { Link, useParams } from 'react-router-dom'
@@ -12,11 +12,14 @@ import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import { camelCaseKeys } from 'src/utils/json'
+import { formatTimer } from 'src/utils/sudoku'
 
 const CollectionPage = () => {
   const { id } = useParams()
   const [ puzzleCollection, setPuzzleCollection ] = useState<PuzzleCollection>()
-  const solvedPuzzleIds = useSelector(state => state.userData.solvedPuzzles.map(puzzle => puzzle.id))
+  const solvedPuzzles = useSelector(
+    state => fromPairs(state.userData.solvedPuzzles.map(puzzle => [puzzle.id, puzzle]))
+  )
 
   useEffect(() => {
     fetchPuzzleCollection(id!).then(data => {
@@ -54,18 +57,24 @@ const CollectionPage = () => {
       <table className="mt-4 border border-collapse">
         <thead className="border-b">
           <tr className="divide-x">
-            <th className="p-2 w-20">Solved?</th>
+            <th className="p-2">#</th>
+            <th className="p-2 min-w-20">Solved?</th>
             <th className="p-2">Variant</th>
             <th className="p-2">Difficulty</th>
             <th className="p-2"></th>
           </tr>
         </thead>
         <tbody className="divide-y">
-          {sortBy(puzzleCollection.puzzles, [ 'variant', 'difficulty' ]).map(puzzle => (
+          {sortBy(puzzleCollection.puzzles, [ 'variant', 'difficulty' ]).map((puzzle, index) => (
             <tr key={puzzle.id} className="h-8 divide-x">
-              <td className="p-2 text-center">
-                {solvedPuzzleIds.includes(puzzle.publicId!) && (
-                  <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
+              <td className="p-2 text-center">{index + 1}</td>
+              <td className="p-2">
+                {solvedPuzzles[puzzle.publicId!] !== undefined && (
+                  <div className="flex gap-1 items-center justify-center">
+                    {solvedPuzzles[puzzle.publicId!].solveTime !== undefined &&
+                      formatTimer(solvedPuzzles[puzzle.publicId!].solveTime)}
+                    <FontAwesomeIcon icon={faCircleCheck} size="sm" color="lightgreen" />
+                  </div>
                 )}
               </td>
               <td className="p-2">{SudokuVariantDisplay[puzzle.variant!]}</td>
