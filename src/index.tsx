@@ -5,12 +5,15 @@ import './index.css'
 import App from './App'
 import { parseISO, differenceInDays } from 'date-fns'
 import reportWebVitals from './reportWebVitals'
+import { registerSW } from 'virtual:pwa-register'
 
 if (import.meta.env.PROD) {
   console.debug = () => {}
   console.log = () => {}
   console.info = () => {}
 }
+
+registerSW()
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
