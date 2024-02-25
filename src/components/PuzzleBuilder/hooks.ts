@@ -3,17 +3,19 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
 import {
-  changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellNotes,
+  changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellCornerMarks,
   changeSelectedCellValue, ConstraintType, deleteConstraint,
-  errorSolution, requestSolution, responseSolution, toggleNotesActive,
+  errorSolution, requestSolution, responseSolution, toggleCornerMarksActive,
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
 import SolverWorker from 'src/workers/solver.worker?worker'
+import { InputMode } from 'src/reducers/puzzle'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
 const dirCol = [ 0, 0, -1, 1 ]
 
+// Not super satisfied with this keycloak handler approach :(
 export const useControlCallbacks = () => {
   const dispatch = useDispatch()
 
@@ -32,11 +34,11 @@ export const useControlCallbacks = () => {
   const handleDelete = useCallback(() => {
     dispatch(deleteConstraint())
   }, [dispatch])
-  const handleNotesActiveToggle = useCallback(() => {
-    dispatch(toggleNotesActive())
+  const handleCornerMarksActiveToggle = useCallback(() => {
+    dispatch(toggleCornerMarksActive())
   }, [dispatch])
-  const handleSelectedCellNotesChange = useCallback((value: number) => {
-    dispatch(changeSelectedCellNotes(value))
+  const handleSelectedCellCornerMarksChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellCornerMarks(value))
   }, [dispatch])
   const handleSelectedCellConstraintChange = useCallback((value: number) => {
     dispatch(changeSelectedCellConstraint(value))
@@ -51,8 +53,8 @@ export const useControlCallbacks = () => {
 
   return {
     onSelectedCellValueChange: handleSelectedCellValueChange,
-    onNotesActiveToggle: handleNotesActiveToggle,
-    onSelectedCellNotesChange: handleSelectedCellNotesChange,
+    onNotesActiveToggle: handleCornerMarksActiveToggle,
+    onSelectedCellNotesChange: handleSelectedCellCornerMarksChange,
     onCellClick: handleCellClick,
     onDelete: handleDelete,
     onSelectedCellConstraintChange: handleSelectedCellConstraintChange,
@@ -67,7 +69,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
   const constraints = useSelector(state => state.builder.constraints)
   const selectedCells = useSelector(state => state.builder.selectedCells)
   const constraintType = useSelector(state => state.builder.constraintType)
-  const notesActive = useSelector(state => state.builder.notesActive)
+  const inputMode = useSelector(state => state.builder.inputMode)
 
   const gridSize = constraints?.gridSize ?? 9
 
@@ -147,7 +149,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
         return
       }
 
-      if (notesActive) {
+      if (inputMode === InputMode.CornerMarks) {
         onSelectedCellNotesChange(value)
       } else if (constraintType === ConstraintType.FixedNumber) {
         onSelectedCellValueChange(value)
@@ -159,7 +161,7 @@ export const useKeyboardHandler = (digitsActive = true) => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    gridSize, selectedCells, constraintType, notesActive, digitsActive,
+    gridSize, selectedCells, constraintType, inputMode, digitsActive,
     onCellClick, onSelectedCellValueChange, onDelete,
     onNotesActiveToggle, onSelectedCellNotesChange,
     onSelectedCellConstraintChange,

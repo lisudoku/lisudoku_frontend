@@ -63,7 +63,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     }
 
     dispatch(requestSolved())
-    const processedActions = actions.map(action => omit(action, ['previousDigits', 'previousNotes']))
+    const processedActions = actions.map(action => omit(action, ['previousDigits', 'previousCellMarks']))
     const solveTime = actions.at(-1)!.time
     requestPuzzleCheck(id, grid, processedActions).then(result => {
       dispatch(responseSolved({

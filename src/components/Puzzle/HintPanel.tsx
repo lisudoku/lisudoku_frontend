@@ -15,7 +15,7 @@ const useComputeHintElement = () => {
 
   const solution = useSelector(state => state.puzzle.controls.hintSolution)
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
-  const notes = useSelector(state => state.puzzle.notes!)
+  const cellMarks = useSelector(state => state.puzzle.cellMarks!)
   const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
   const gridSize = useSelector(state => state.puzzle.data!.constraints.gridSize)
 
@@ -24,8 +24,8 @@ const useComputeHintElement = () => {
   }, [dispatch])
 
   const [ message, filteredSteps, error ] = useMemo(
-    () => computeHintContent(solution, hintLevel!, notes, isExternal, gridSize),
-    [solution, hintLevel, notes, isExternal, gridSize]
+    () => computeHintContent(solution, hintLevel!, cellMarks, isExternal, gridSize),
+    [solution, hintLevel, cellMarks, isExternal, gridSize]
   )
 
   if (solution === null) {

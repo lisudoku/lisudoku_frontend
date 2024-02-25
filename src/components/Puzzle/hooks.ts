@@ -1,13 +1,16 @@
 import { inRange, isEmpty, last } from 'lodash-es'
 import { useEffect, useCallback, useMemo } from 'react'
-import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { computeErrors, computeFixedNumbersGrid, getAreaCells } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
   HintLevel,
+  InputMode,
+  changeInputMode,
   changePaused,
-  changeSelectedCell, changeSelectedCellNotes, changeSelectedCellValue,
-  fetchNewPuzzle, redoAction, resetPuzzle, toggleNotesActive, undoAction,
+  changeSelectedCell,
+  changeSelectedCellValue, changeSelectedCellCornerMarks, changeSelectedCellCenterMarks,
+  fetchNewPuzzle, redoAction, resetPuzzle, undoAction, changeNextInputMode,
 } from 'src/reducers/puzzle'
 import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
@@ -24,19 +27,19 @@ export const useFixedNumbersGrid = (gridSize: number, fixedNumbers?: FixedNumber
 )
 
 export const useGridErrors = (
-  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]
+  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, cellMarks?: CellMarks[][]
 ) => (
   useMemo(() => (
-    computeErrors(checkErrors, constraints, grid, notes).gridErrors
-  ), [checkErrors, constraints, grid, notes])
+    computeErrors(checkErrors, constraints, grid, cellMarks).gridErrors
+  ), [checkErrors, constraints, grid, cellMarks])
 )
 
-export const useNoteErrors = (
-  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]
+export const useCellMarkErrors = (
+  checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, cellMarks?: CellMarks[][]
 ) => (
   useMemo(() => (
-    computeErrors(checkErrors, constraints, grid, notes).noteErrors
-  ), [checkErrors, constraints, grid, notes])
+    computeErrors(checkErrors, constraints, grid, cellMarks).cellMarksErrors
+  ), [checkErrors, constraints, grid, cellMarks])
 )
 
 export const useControlCallbacks = (isSolvedLoading: boolean) => {
@@ -45,7 +48,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
   const paused = useSelector(state => state.puzzle.controls.paused)
-  const notesActive = useSelector(state => state.puzzle.controls.notesActive)
+  const inputMode = useSelector(state => state.puzzle.controls.inputMode)
   const undoActive = useSelector(state => state.puzzle.controls.actionIndex >= 0)
   const redoActive = useSelector(state => (
     state.puzzle.controls.actionIndex + 1 < state.puzzle.controls.actions.length
@@ -59,11 +62,24 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
   }, [dispatch])
-  const handleSelectedCellNotesChange = useCallback((value: number) => {
-    dispatch(changeSelectedCellNotes(value))
+  const handleSelectedCellCornerMarksChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellCornerMarks(value))
   }, [dispatch])
-  const handleNotesActiveToggle = useCallback(() => {
-    dispatch(toggleNotesActive())
+  const handleSelectedCellCenterMarksChange = useCallback((value: number) => {
+    dispatch(changeSelectedCellCenterMarks(value))
+  }, [dispatch])
+
+  const handleNextInputMode = useCallback(() => {
+    dispatch(changeNextInputMode())
+  }, [dispatch])
+  const handleNumbersActive = useCallback(() => {
+    dispatch(changeInputMode(InputMode.Numbers))
+  }, [dispatch])
+  const handleCornerMarksActive = useCallback(() => {
+    dispatch(changeInputMode(InputMode.CornerMarks))
+  }, [dispatch])
+  const handleCenterMarksActive = useCallback(() => {
+    dispatch(changeInputMode(InputMode.CenterMarks))
   }, [dispatch])
   const handleReset = useCallback(() => {
     dispatch(resetPuzzle())
@@ -89,13 +105,17 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 
   return {
     enabled,
-    notesActive,
+    inputMode,
     undoActive,
     redoActive,
+    onNextInputMode: handleNextInputMode,
     onSelectedCellValueChange: handleSelectedCellValueChange,
-    onSelectedCellNotesChange: handleSelectedCellNotesChange,
+    onSelectedCellCornerMarksChange: handleSelectedCellCornerMarksChange,
+    onSelectedCellCenterMarksChange: handleSelectedCellCenterMarksChange,
     onSelectedCellChange: handleSelectedCellChange,
-    onNotesActiveToggle: handleNotesActiveToggle,
+    onNumbersActive: handleNumbersActive,
+    onCornerMarksActive: handleCornerMarksActive,
+    onCenterMarksActive: handleCenterMarksActive,
     onNewPuzzle: handleNewPuzzle,
     onReset: handleReset,
     onUndo: handleUndo,
@@ -111,9 +131,9 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   const { gridSize } = constraints
 
   const {
-    enabled, notesActive, undoActive, redoActive,
-    onSelectedCellChange, onNotesActiveToggle, onUndo, onRedo,
-    onSelectedCellValueChange, onSelectedCellNotesChange, onPause,
+    enabled, inputMode, undoActive, redoActive,
+    onSelectedCellChange, onUndo, onRedo, onPause, onNextInputMode,
+    onSelectedCellValueChange, onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
   } = useControlCallbacks(isSolvedLoading)
 
   useEffect(() => {
@@ -144,7 +164,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
       }
 
       if (e.key === ' ' || e.key === 'Tab') {
-        onNotesActiveToggle()
+        onNextInputMode()
         e.preventDefault()
         return
       }
@@ -189,19 +209,26 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      if (notesActive) {
-        onSelectedCellNotesChange(value)
-      } else {
-        onSelectedCellValueChange(value)
+      switch (inputMode) {
+        case InputMode.Numbers:
+          onSelectedCellValueChange(value)
+          break
+        case InputMode.CornerMarks:
+          onSelectedCellCornerMarksChange(value)
+          break
+        case InputMode.CenterMarks:
+          onSelectedCellCenterMarksChange(value)
+          break
       }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [
-    enabled, gridSize, selectedCells, notesActive, redoActive, undoActive,
-    onSelectedCellChange, onNotesActiveToggle, onSelectedCellValueChange,
-    onSelectedCellNotesChange, onUndo, onRedo, onPause,
+    enabled, gridSize, selectedCells, inputMode, redoActive, undoActive,
+    onSelectedCellChange, onSelectedCellValueChange,
+    onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
+    onUndo, onRedo, onPause,
   ])
 }
 
@@ -209,7 +236,7 @@ export const useTvPlayerWebsocket = () => {
   const isExternal = useSelector(state => state.puzzle.data!.isExternal)
   const publicId = useSelector(state => state.puzzle.data!.publicId)
   const grid = useSelector(state => state.puzzle.grid)
-  const notes = useSelector(state => state.puzzle.notes)
+  const cellMarks = useSelector(state => state.puzzle.cellMarks)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const solved = useSelector(state => state.puzzle.solved)
 
@@ -228,12 +255,12 @@ export const useTvPlayerWebsocket = () => {
       data: {
         puzzle_id: publicId,
         grid,
-        notes,
+        cell_marks: cellMarks,
         selected_cells: selectedCells,
         solved,
       },
     })
-  }, [ready, publicId, sendMessage, grid, notes, selectedCells, solved, isExternal])
+  }, [ready, publicId, sendMessage, grid, cellMarks, selectedCells, solved, isExternal])
 }
 
 const OTHER_CELLS_COLOR = 'red'

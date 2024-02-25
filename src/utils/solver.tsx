@@ -1,7 +1,7 @@
-import { difference, intersection, last, uniqBy } from 'lodash-es'
+import { difference, flatten, intersection, last, uniqBy, values as _values } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
-import { CellNotes, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
@@ -154,25 +154,28 @@ export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel, gri
   return hint
 }
 
-const cellsDoNotContainCandidates = (cells: CellPosition[], values: number[], notes: CellNotes[][]) => (
-  cells.every(
-    ({ row, col }) => notes[row][col].length > 0 && intersection(notes[row][col], values).length === 0
-  )
+const cellsDoNotContainCandidates = (cells: CellPosition[], values: number[], cellMarks: CellMarks[][]) => (
+  cells.every(({ row, col }) => {
+    const marks = flatten(_values(cellMarks[row][col]))
+    return marks.length > 0 && intersection(marks, values).length === 0
+  })
 )
 
-const cellsOnlyContainCandidates = (cells: CellPosition[], values: number[], notes: CellNotes[][]) => (
-  cells.every(
-    ({ row, col }) => notes[row][col].length > 0 && difference(notes[row][col], values).length === 0
-  )
+const cellsOnlyContainCandidates = (cells: CellPosition[], values: number[], cellMarks: CellMarks[][]) => (
+  cells.every(({ row, col }) => {
+    const marks = flatten(_values(cellMarks[row][col]))
+    return marks.length > 0 && difference(marks, values).length === 0
+  })
 )
 
-const cellsDoNotContainSet = (cells: CellPosition[], values: number[], notes: CellNotes[][]) => (
-  cells.every(
-    ({ row, col }, index) => notes[row][col].length > 0 && !notes[row][col].includes(values[index])
-  )
+const cellsDoNotContainSet = (cells: CellPosition[], values: number[], cellMarks: CellMarks[][]) => (
+  cells.every(({ row, col }, index) => {
+    const marks = flatten(_values(cellMarks[row][col]))
+    return marks.length > 0 && !marks.includes(values[index])
+  })
 )
 
-const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
+const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
   switch (step.rule) {
     case StepRule.Candidates:
       return true
@@ -182,15 +185,15 @@ const isRedundantStep = (step: SolutionStep, notes: CellNotes[][]) => {
       return false
     case StepRule.HiddenPairs:
     case StepRule.HiddenTriples:
-      return cellsOnlyContainCandidates(step.cells, step.values, notes)
+      return cellsOnlyContainCandidates(step.cells, step.values, cellMarks)
     case StepRule.XYWing:
       const zValue = step.values[2]
-      return cellsDoNotContainCandidates(step.affected_cells, [ zValue ], notes)
+      return cellsDoNotContainCandidates(step.affected_cells, [ zValue ], cellMarks)
     case StepRule.CommonPeerEliminationKropki:
     case StepRule.CommonPeerEliminationArrow:
-      return cellsDoNotContainSet(step.affected_cells, step.values, notes)
+      return cellsDoNotContainSet(step.affected_cells, step.values, cellMarks)
     default:
-      return cellsDoNotContainCandidates(step.affected_cells, step.values, notes)
+      return cellsDoNotContainCandidates(step.affected_cells, step.values, cellMarks)
   }
 }
 
@@ -254,7 +257,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
 }
 
 export const computeHintContent = (
-  solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, notes: CellNotes[][],
+  solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, cellMarks: CellMarks[][],
   isExternal: boolean, gridSize: number,
 ) => {
   if (!solution) {
@@ -268,7 +271,7 @@ export const computeHintContent = (
     ]
   }
 
-  const steps = solution.steps!.filter(step => !isRedundantStep(step, notes));
+  const steps = solution.steps!.filter(step => !isRedundantStep(step, cellMarks));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
   const [ message, error ] = computeHintText(steps, hintLevel, isExternal, gridSize)

@@ -5,6 +5,7 @@ import {
 } from 'lodash-es'
 import {
   Arrow,
+  CellMarks,
   CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
   Region, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
@@ -12,6 +13,7 @@ import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'sr
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
 import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
+import { InputMode } from './puzzle'
 
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
@@ -41,8 +43,8 @@ type BuilderState = {
   difficulty: SudokuDifficulty
   constraintType: ConstraintType
   arrowConstraintType: ArrowConstraintType
-  notesActive: boolean
-  notes: number[][][] | null
+  inputMode: InputMode
+  cellMarks: CellMarks[][] | null
   bruteSolution: SudokuBruteSolveResult | null
   logicalSolution: SudokuLogicalSolveResult | null
   setterMode: boolean
@@ -189,8 +191,8 @@ export const builderSlice = createSlice({
     difficulty: SudokuDifficulty.Easy9x9,
     constraintType: ConstraintType.FixedNumber,
     arrowConstraintType: ArrowConstraintType.Circle,
-    notesActive: false,
-    notes: null,
+    inputMode: InputMode.Numbers,
+    cellMarks: null,
     bruteSolution: null,
     bruteSolverRunning: false,
     logicalSolution: null,
@@ -218,7 +220,7 @@ export const builderSlice = createSlice({
         state.setterMode = action.payload.setterMode
       }
       state.difficulty = defaultDifficulty(gridSize)
-      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
@@ -233,7 +235,7 @@ export const builderSlice = createSlice({
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.variant = detectVariant(state)
-      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
@@ -453,7 +455,7 @@ export const builderSlice = createSlice({
     },
     deleteConstraint(state) {
       for (const cell of state.selectedCells) {
-        state.notes![cell.row][cell.col] = []
+        state.cellMarks![cell.row][cell.col] = {}
 
         const isSelectedCell = (areaCell: CellPosition) => isEqual(areaCell, cell)
 
@@ -550,23 +552,33 @@ export const builderSlice = createSlice({
     errorAddPuzzle(state) {
       state.puzzleAdding = false
     },
-    toggleNotesActive(state) {
-      state.notesActive = !state.notesActive
+    toggleCornerMarksActive(state) {
+      // Center marks reserved for solutions, so just toggle between numbers and corner marks
+      if (state.inputMode === InputMode.Numbers) {
+        state.inputMode = InputMode.CornerMarks
+      } else {
+        state.inputMode = InputMode.Numbers
+      }
     },
-    changeSelectedCellNotes(state, action) {
+    changeSelectedCellCornerMarks(state, action) {
       const value = action.payload
       const selectedCells: CellPosition[] = state.selectedCells
       const areAllExisting = selectedCells.every(({ row, col }: CellPosition) => (
-        state.notes![row][col].includes(value)
+        state.cellMarks![row][col]?.cornerMarks?.includes(value)
       ))
 
       for (const { row, col } of state.selectedCells) {
-        pull(state.notes![row][col], value)
+        if (state.cellMarks![row][col]?.cornerMarks !== undefined) {
+          pull(state.cellMarks![row][col]!.cornerMarks!, value)
+        }
       }
 
       if (!areAllExisting) {
         for (const { row, col } of state.selectedCells) {
-          state.notes![row][col].push(value)
+          if (state.cellMarks![row][col].cornerMarks === undefined) {
+            state.cellMarks![row][col].cornerMarks = []
+          }
+          state.cellMarks![row][col].cornerMarks!.push(value)
         }
       }
     },
@@ -634,7 +646,7 @@ export const {
   addConstraint, deleteConstraint, requestSolution, responseSolution,
   errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
-  toggleNotesActive, changeSelectedCellNotes,
+  toggleCornerMarksActive, changeSelectedCellCornerMarks,
   changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeAntiKing,
   changeKillerSum, changeKropkiNegative, changeTopBottom,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,

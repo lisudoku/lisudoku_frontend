@@ -1,9 +1,14 @@
 import {
-  difference, differenceWith, flatten, flattenDeep, isEqual, map, range, sortBy, sumBy, times,
+  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, range, sortBy, sumBy, times, values,
 } from 'lodash-es'
 import {
-  CellNotes, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
+  CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
 } from 'src/types/sudoku'
+
+export type CellMarkSets = {
+  cornerMarks?: Set<number>
+  centerMarks?: Set<number>
+}
 
 const computeRegionSizes = (gridSize: number) => {
   if (gridSize === 4) {
@@ -141,10 +146,10 @@ const getSecondaryDiagonalCells = (gridSize: number) => (
   times(gridSize, index => ({ row: index, col: gridSize - 1 - index }))
 )
 
-const isCompletelyEmpty = (cell: CellPosition, valuesGrid: Grid, notes: CellNotes[][]) => {
+const isCompletelyEmpty = (cell: CellPosition, valuesGrid: Grid, cellMarks: CellMarks[][]) => {
   const value = valuesGrid[cell.row][cell.col]
-  const noteSet = notes[cell.row][cell.col]
-  return !value && noteSet.length === 0
+  const currentCellMarks = cellMarks[cell.row][cell.col]
+  return !value && isEmpty(currentCellMarks?.cornerMarks) && isEmpty(currentCellMarks?.centerMarks)
 }
 
 enum CheckType {
@@ -191,14 +196,26 @@ const validPeersForValue = (value: number, checkType: CheckType, gridSize: numbe
   }
 }
 
+const addToErrorSet = (errorsSet: CellMarkSets, extraValue: number) => {
+  if (errorsSet.cornerMarks === undefined) {
+    errorsSet.cornerMarks = new Set()
+  }
+  errorsSet.cornerMarks!.add(extraValue)
+  // Add the same thing to center marks... maybe we should not do it separately
+  if (errorsSet.centerMarks === undefined) {
+    errorsSet.centerMarks = new Set()
+  }
+  errorsSet.centerMarks!.add(extraValue)
+}
+
 const checkErrorsBetween = (
-  cell: CellPosition, peer: CellPosition, valuesGrid: Grid, notes: CellNotes[][], checkType: CheckType,
-  gridErrors: boolean[][], noteErrors: Set<number>[][]
+  cell: CellPosition, peer: CellPosition, valuesGrid: Grid, cellMarks: CellMarks[][], checkType: CheckType,
+  gridErrors: boolean[][], cellMarksErrors: CellMarkSets[][]
 ) => {
   const value = valuesGrid[cell.row][cell.col]
-  const noteSet = notes[cell.row][cell.col]
+  const cellMarkSet = cellMarks[cell.row][cell.col]
   const peerValue = valuesGrid[peer.row][peer.col]
-  const peerNoteSet = notes[peer.row][peer.col]
+  const peerCellMarkSet = cellMarks[peer.row][peer.col]
   const gridSize = gridErrors.length
 
   if (value && peerValue) {
@@ -207,25 +224,26 @@ const checkErrorsBetween = (
       gridErrors[peer.row][peer.col] = true
     }
   } else if (value) {
-    const extraValues = difference(peerNoteSet, validPeersForValue(value, checkType, gridSize))
+    const extraValues = difference(peerCellMarkSet.cornerMarks, validPeersForValue(value, checkType, gridSize))
     for (const extraValue of extraValues) {
-      noteErrors[peer.row][peer.col].add(extraValue)
+      addToErrorSet(cellMarksErrors[peer.row][peer.col], extraValue)
     }
   } else if (peerValue) {
-    const extraValues = difference(noteSet, validPeersForValue(peerValue, checkType, gridSize))
+    const extraValues = difference(cellMarkSet.cornerMarks, validPeersForValue(peerValue, checkType, gridSize))
     for (const extraValue of extraValues) {
-      noteErrors[cell.row][cell.col].add(extraValue)
+      addToErrorSet(cellMarksErrors[cell.row][cell.col], extraValue)
     }
   }
 }
 
 // TODO: deduplicate code by returning offending cells from the wasm checker
-export const computeErrors = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, notes?: CellNotes[][]) => {
+// (but it needs to handle cell marks, so...)
+export const computeErrors = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, cellMarks?: CellMarks[][]) => {
   const { gridSize, fixedNumbers } = constraints
   const gridErrors: boolean[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
-  const noteErrors: Set<number>[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => new Set()))
-  if (!checkErrors || !grid || !notes) {
-    return { gridErrors, noteErrors }
+  const cellMarksErrors: CellMarkSets[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
+  if (!checkErrors || !grid || !cellMarks) {
+    return { gridErrors, cellMarksErrors }
   }
 
   const valuesGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -276,9 +294,9 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       if (value) {
         continue
       }
-      for (const note of notes[row][col]) {
-        if (valueCounts[note] && valueCounts[note] > 0) {
-          noteErrors[row][col].add(note)
+      for (const mark of flatten(values(cellMarks[row][col]))) {
+        if (valueCounts[mark] && valueCounts[mark] > 0) {
+          addToErrorSet(cellMarksErrors[row][col], mark)
         }
       }
     }
@@ -323,15 +341,15 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   if (constraints.antiKnight) {
     const cells = getAllCells(gridSize)
     cells.forEach(cell => {
-      if (isCompletelyEmpty(cell, valuesGrid, notes)) {
+      if (isCompletelyEmpty(cell, valuesGrid, cellMarks)) {
         return
       }
       const peers = getKnightPeers(cell, gridSize)
       peers.forEach(peer => {
-        if (isCompletelyEmpty(peer, valuesGrid, notes)) {
+        if (isCompletelyEmpty(peer, valuesGrid, cellMarks)) {
           return
         }
-        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.Equal, gridErrors, noteErrors)
+        checkErrorsBetween(cell, peer, valuesGrid, cellMarks, CheckType.Equal, gridErrors, cellMarksErrors)
       })
     })
   }
@@ -339,15 +357,15 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   if (constraints.antiKing) {
     const cells = getAllCells(gridSize)
     cells.forEach(cell => {
-      if (isCompletelyEmpty(cell, valuesGrid, notes)) {
+      if (isCompletelyEmpty(cell, valuesGrid, cellMarks)) {
         return
       }
       const peers = getKingPeers(cell, gridSize)
       peers.forEach(peer => {
-        if (isCompletelyEmpty(peer, valuesGrid, notes)) {
+        if (isCompletelyEmpty(peer, valuesGrid, cellMarks)) {
           return
         }
-        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.Equal, gridErrors, noteErrors)
+        checkErrorsBetween(cell, peer, valuesGrid, cellMarks, CheckType.Equal, gridErrors, cellMarksErrors)
       })
     })
   }
@@ -371,7 +389,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   for (const kropkiDot of constraints.kropkiDots ?? []) {
     const { cell1: cell, cell2: peer } = kropkiDot
     const checkType = kropkiDot.dotType === KropkiDotType.Consecutive ? CheckType.KropkiConsecutive : CheckType.KropkiDouble
-    checkErrorsBetween(cell, peer, valuesGrid, notes, checkType, gridErrors, noteErrors)
+    checkErrorsBetween(cell, peer, valuesGrid, cellMarks, checkType, gridErrors, cellMarksErrors)
   }
 
   if (constraints.kropkiNegative) {
@@ -383,7 +401,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     }
     const cells = getAllCells(gridSize)
     cells.forEach(cell => {
-      if (isCompletelyEmpty(cell, grid, notes)) {
+      if (isCompletelyEmpty(cell, grid, cellMarks)) {
         return
       }
       const peers = getAdjacentPeers(cell, gridSize)
@@ -391,10 +409,10 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       const negativePeers = differenceWith(peers, dotPeers, isEqual)
 
       negativePeers.forEach((peer: CellPosition) => {
-        if (isCompletelyEmpty(peer, grid, notes)) {
+        if (isCompletelyEmpty(peer, grid, cellMarks)) {
           return
         }
-        checkErrorsBetween(cell, peer, valuesGrid, notes, CheckType.KropkiNegative, gridErrors, noteErrors)
+        checkErrorsBetween(cell, peer, valuesGrid, cellMarks, CheckType.KropkiNegative, gridErrors, cellMarksErrors)
       })
     })
   }
@@ -413,7 +431,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     }
   }
 
-  return { gridErrors, noteErrors }
+  return { gridErrors, cellMarksErrors }
 }
 
 export const getAllCells = (gridSize: number) => {

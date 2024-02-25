@@ -27,6 +27,7 @@ interface KeyboardHandlerSettings {
   callbacks: SudokuEventCallbacks
 }
 
+// Not super satisfied with this keycloak handler approach :(
 export const useKeyboardHandler = (
   { disabled, constraints, selectedCells, notesActive, redoActive, undoActive, callbacks }: KeyboardHandlerSettings
 ) => {

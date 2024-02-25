@@ -1,14 +1,15 @@
 import { differenceWith, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
-import { CellPosition, Grid, Puzzle } from 'src/types/sudoku'
+import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid, getAllCells } from 'src/utils/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 
 export enum ActionType {
   Digit = 'digit',
-  Note = 'note',
+  CornerMark = 'corner_mark',
+  CenterMark = 'center_mark',
   Delete = 'delete',
 }
 
@@ -18,18 +19,26 @@ export enum HintLevel {
   Full = 'Full',
 }
 
+export enum InputMode {
+  Numbers = 'numbers',
+  CornerMarks = 'corner_marks',
+  CenterMarks = 'center_marks',
+}
+
+const INPUT_MODE_ORDER = [ InputMode.Numbers, InputMode.CornerMarks, InputMode.CenterMarks ]
+
 type UserAction = {
   type: ActionType
   cells: CellPosition[]
   value: number
   previousDigits: (number | null)[]
-  previousNotes: number[][]
+  previousCellMarks: CellMarks[]
   time: number
 }
 
 type ControlsState = {
   selectedCells: CellPosition[]
-  notesActive: boolean
+  inputMode: InputMode
   actions: UserAction[]
   actionIndex: number
   hintSolution: SudokuLogicalSolveResult | null
@@ -47,7 +56,7 @@ type SolveStats = {
 type PuzzleState = {
   data: Puzzle | null
   grid: Grid | null
-  notes: number[][][] | null
+  cellMarks: CellMarks[][] | null
   solveTimer: number
   solved: boolean | null
   solveStats: SolveStats | null
@@ -62,13 +71,56 @@ const performAction = (state: PuzzleState, action: UserAction) => {
     switch(action.type) {
       case ActionType.Digit: state.grid![row][col] = action.value
                              break
-      case ActionType.Note: state.notes![row][col] = xor(state.notes![row][col], [action.value])
-                            break
+      case ActionType.CornerMark: state.cellMarks![row][col].cornerMarks = xor(state.cellMarks![row][col].cornerMarks, [action.value])
+                                  break
+      case ActionType.CenterMark: state.cellMarks![row][col].centerMarks = xor(state.cellMarks![row][col].centerMarks, [action.value])
+      break
       case ActionType.Delete: state.grid![row][col] = null
-                              state.notes![row][col] = []
+                              state.cellMarks![row][col] = {}
                               break
     }
   }
+}
+
+const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, actionType: ActionType) => {
+  if (isEmpty(state.controls.selectedCells)) {
+    return
+  }
+
+  const markKey = actionType === ActionType.CornerMark ? 'cornerMarks' : 'centerMarks'
+
+  const cells = differenceWith(
+    state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
+  )
+
+  const allHaveValue = cells.every(
+    ({ row, col }) => state.cellMarks![row][col]?.[markKey]?.includes(value)
+  )
+
+  let relevantCells
+  if (allHaveValue) {
+    relevantCells = cells
+  } else {
+    relevantCells = cells.filter(({ row, col }) => !state.cellMarks![row][col]?.[markKey]?.includes(value))
+  }
+
+  if (!isEmpty(relevantCells)) {
+    const userAction: UserAction = {
+      type: actionType,
+      cells: relevantCells,
+      value,
+      previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
+      previousCellMarks: relevantCells.map(({ row, col }) => state.cellMarks![row][col]),
+      time: state.solveTimer,
+    }
+
+    performAction(state, userAction)
+
+    state.controls.actions.push(userAction)
+    state.controls.actionIndex = state.controls.actions.length - 1
+  }
+
+  markUpdate(state)
 }
 
 const markUpdate = (state: PuzzleState) => {
@@ -86,7 +138,7 @@ export const puzzleSlice = createSlice({
   initialState: {
     data: null,
     grid: null,
-    notes: null,
+    cellMarks: null,
     solveTimer: 0,
     solved: null,
     solveStats: null,
@@ -95,7 +147,7 @@ export const puzzleSlice = createSlice({
     refreshKey: 0,
     controls: {
       selectedCells: [],
-      notesActive: false,
+      inputMode: InputMode.Numbers,
       actions: [],
       actionIndex: -1,
       hintSolution: null,
@@ -122,13 +174,13 @@ export const puzzleSlice = createSlice({
       state.controls.lastHintTimer = null
       state.controls.hintLevel = null
       state.controls.paused = false
-      state.controls.notesActive = false
+      state.controls.inputMode = InputMode.Numbers;
 
       const { gridSize, fixedNumbers } = puzzleData.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
       state.grid = Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
 
-      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
     },
     clearPuzzle(state) {
       state.data = null
@@ -187,7 +239,7 @@ export const puzzleSlice = createSlice({
           cells: relevantCells,
           value: newValue,
           previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
-          previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
+          previousCellMarks: relevantCells.map(({ row, col }) => state.cellMarks![row][col]),
           time: state.solveTimer,
         }
 
@@ -201,47 +253,18 @@ export const puzzleSlice = createSlice({
       state.controls.hintLevel = null
       markUpdate(state)
     },
-    changeSelectedCellNotes(state, action) {
-      if (isEmpty(state.controls.selectedCells)) {
-        return
-      }
-
-      const value = action.payload
-      const cells = differenceWith(
-        state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
-      )
-
-      const allHaveValue = cells.every(
-        ({ row, col }) => state.notes![row][col].includes(value)
-      )
-
-      let relevantCells
-      if (allHaveValue) {
-        relevantCells = cells
-      } else {
-        relevantCells = cells.filter(({ row, col }) => !state.notes![row][col].includes(value))
-      }
-
-      if (!isEmpty(relevantCells)) {
-        const userAction: UserAction = {
-          type: ActionType.Note,
-          cells: relevantCells,
-          value,
-          previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
-          previousNotes: relevantCells.map(({ row, col }) => state.notes![row][col]),
-          time: state.solveTimer,
-        }
-
-        performAction(state, userAction)
-
-        state.controls.actions.push(userAction)
-        state.controls.actionIndex = state.controls.actions.length - 1
-      }
-
-      markUpdate(state)
+    changeSelectedCellCornerMarks(state, action) {
+      handleChangeSelectedCellMarks(state, action.payload, ActionType.CornerMark)
     },
-    toggleNotesActive(state) {
-      state.controls.notesActive = !state.controls.notesActive
+    changeSelectedCellCenterMarks(state, action) {
+      handleChangeSelectedCellMarks(state, action.payload, ActionType.CenterMark)
+    },
+    changeInputMode(state, action) {
+      state.controls.inputMode = action.payload
+    },
+    changeNextInputMode(state) {
+      const index = INPUT_MODE_ORDER.indexOf(state.controls.inputMode)
+      state.controls.inputMode = INPUT_MODE_ORDER[(index + 1) % INPUT_MODE_ORDER.length]
     },
     updateTimer(state) {
       state.solveTimer += 1
@@ -263,7 +286,7 @@ export const puzzleSlice = createSlice({
       const { gridSize, fixedNumbers } = state.data!.constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
       state.grid = Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
-      state.notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+      state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
       state.controls.actions = []
       state.controls.actionIndex = -1
     },
@@ -273,7 +296,7 @@ export const puzzleSlice = createSlice({
       state.controls.selectedCells = userAction.cells
       userAction.cells.forEach((cell, index) => {
         state.grid![cell.row][cell.col] = userAction.previousDigits[index]
-        state.notes![cell.row][cell.col] = userAction.previousNotes[index]
+        state.cellMarks![cell.row][cell.col] = userAction.previousCellMarks[index]
       })
       state.controls.actionIndex--
     },
@@ -306,7 +329,8 @@ export const puzzleSlice = createSlice({
 
 export const {
   requestedPuzzle, receivedPuzzle, clearPuzzle, changeSelectedCell, changeSelectedCellValue,
-  changeSelectedCellNotes, toggleNotesActive, updateTimer, requestSolved, responseSolved,
+  changeSelectedCellCornerMarks, changeSelectedCellCenterMarks, changeInputMode, changeNextInputMode,
+  updateTimer, requestSolved, responseSolved,
   fetchNewPuzzle, resetPuzzle, undoAction, redoAction, changeHintSolution, changeHintLevel,
   changePaused,
 } = puzzleSlice.actions

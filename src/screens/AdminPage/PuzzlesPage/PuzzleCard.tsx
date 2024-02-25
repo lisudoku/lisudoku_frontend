@@ -17,7 +17,7 @@ const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
 
   const gridSize = puzzle.constraints.gridSize
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
-  const notes = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+  const cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
   // 4 => ~40; 6 => ~35; 9 => ~30
   const cellSize = 90 / Math.sqrt(gridSize)
 
@@ -34,7 +34,7 @@ const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
       <SudokuGrid
         constraints={puzzle.constraints}
         grid={grid}
-        notes={notes}
+        cellMarks={cellMarks}
         cellSize={cellSize}
       />
       <div className="flex gap-3 w-fit text-sm">

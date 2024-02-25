@@ -1,9 +1,11 @@
 import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
 import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
-import { Arrow, CellNotes, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { Arrow, CellMarks, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
-import { useGridErrors, useFixedNumbersGrid, useNoteErrors } from './hooks'
+import { useGridErrors, useFixedNumbersGrid } from './hooks'
+import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
+import { CornerMarksGraphics, CellCornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 
 export type CellHighlight = {
   position: CellPosition
@@ -231,105 +233,9 @@ const ArrowsGraphics = ({ arrows, cellSize }: { arrows: Arrow[], cellSize: numbe
   </>
 )
 
-const computeNotesFontSize = (cellSize: number) => (
-  cellSize * 3 / 14
-)
-
-const CellNotesGraphics = ({ row, col, cellNotes, noteErrors, cellSize, killerActive, cellClassName, cellStyle }: CellNotesGraphicsProps) => {
-  const notesPaddingX = cellSize / 14 + (killerActive ? 3 : 0)
-  const notesPaddingY = cellSize / 14 + (killerActive ? 10 : 0)
-  const notesFontSize = computeNotesFontSize(cellSize)
-  const notesFontWidth = notesFontSize * 2 / 3
-  const notesWidth = cellSize - notesPaddingX * 2
-  const notesHeight = cellSize - notesPaddingY * 2
-  const notesColumnWidth = notesWidth / 3
-  const notesColumnHeight = notesHeight / 3
-
-  return (
-    <>
-      {cellNotes.map(value => {
-        const hasError = noteErrors?.has(value) ?? false
-        const noteRow = Math.floor((value - 1) / 3)
-        const noteCol = (value - 1) % 3
-        const x = col * cellSize + 1 + noteCol * notesColumnWidth + notesPaddingX + notesColumnWidth / 2 - notesFontWidth / 2
-        const y = row * cellSize + 1 + noteRow * notesColumnHeight + notesPaddingY + notesFontSize
-
-        return (
-          <text
-            x={x}
-            y={y}
-            className={classNames(cellClassName, {'fill-digit-error': hasError })}
-            style={cellStyle}
-            key={value}
-          >
-            {value}
-          </text>
-        )
-      })}
-    </>
-  )
-}
-
-type CellNotesGraphicsProps = {
-  row: number
-  col: number
-  cellNotes: CellNotes
-  noteErrors?: Set<number>
-  cellSize: number
-  killerActive: boolean
-  cellClassName?: string
-  cellStyle?: React.CSSProperties
-}
-
-const NotesGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, killerActive, checkErrors }: NotesGraphicsProps) => {
-  const noteErrors: Set<number>[][] = useNoteErrors(checkErrors, constraints, grid, notes)
-  const notesFontSize = computeNotesFontSize(cellSize)
-
-  if (!notes) {
-    return null
-  }
-
-  const noteElements: ReactElement[] = []
-  notes.forEach((rowNotes, row) => {
-    rowNotes.forEach((cellNotes, col) => {
-      const value = fixedNumbersGrid[row][col] || grid?.[row][col]
-      if (value) {
-        return
-      }
-      noteElements.push(
-        <CellNotesGraphics
-          row={row}
-          col={col}
-          cellNotes={cellNotes}
-          noteErrors={checkErrors ? noteErrors[row][col] : undefined}
-          killerActive={killerActive}
-          cellSize={cellSize}
-          key={col + row * rowNotes.length}
-        />
-      )
-    })
-  })
-
-  return (
-    <g className="notes fill-digit-pencil stroke-none font-bold" style={{ fontSize: notesFontSize }}>
-      {noteElements}
-    </g>
-  )
-}
-
-type NotesGraphicsProps = {
-  constraints: SudokuConstraints
-  notes?: number[][][]
-  grid?: Grid
-  fixedNumbersGrid: Grid
-  cellSize: number
-  killerActive: boolean
-  checkErrors: boolean
-}
-
-const DigitGraphics = ({ cellSize, constraints, notes, grid, fixedNumbersGrid, checkErrors }: DigitGraphicsProps) => {
+const DigitGraphics = ({ cellSize, constraints, cellMarks, grid, fixedNumbersGrid, checkErrors }: DigitGraphicsProps) => {
   const gridSize = constraints.gridSize
-  const errorGrid = useGridErrors(checkErrors, constraints, grid, notes)
+  const errorGrid = useGridErrors(checkErrors, constraints, grid, cellMarks)
 
   const digitFontSize = cellSize * 9 / 14
   const digitFontHeight = digitFontSize * 2 / 3
@@ -375,7 +281,7 @@ type DigitGraphicsProps = {
   cellSize: number
   constraints: SudokuConstraints
   grid?: Grid
-  notes?: CellNotes[][]
+  cellMarks?: CellMarks[][]
   fixedNumbersGrid: Grid
   checkErrors: boolean
 }
@@ -680,7 +586,7 @@ type EvenGraphicsProps = {
 }
 
 const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) => (
-  <g className="cell-highlights font-bold" style={{ fontSize: computeNotesFontSize(cellSize) }}>
+  <g className="cell-highlights font-bold">
     {cells.map((cell, index) => (
       <React.Fragment key={index}>
         <HighlightedCell
@@ -689,10 +595,10 @@ const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) 
           className="opacity-40"
           style={{ fill: cell.color, stroke: cell.color }}
         />
-        <CellNotesGraphics
+        <CellCornerMarksGraphics
           row={cell.position.row}
           col={cell.position.col}
-          cellNotes={compact([cell.value])}
+          cornerMarks={compact([cell.value])}
           killerActive={killerActive}
           cellSize={cellSize}
           cellClassName="fill-digit-fixed stroke-none"
@@ -709,7 +615,7 @@ type CellHighlightsProps = {
 }
 
 const SudokuConstraintsGraphics = (
-  { cellSize, constraints, notes, grid, checkErrors, selectedCells, onCellClick, highlightedCells }: SudokuConstraintsGraphicsProps
+  { cellSize, constraints, cellMarks, grid, checkErrors, selectedCells, onCellClick, highlightedCells }: SudokuConstraintsGraphicsProps
 ) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
@@ -740,8 +646,9 @@ const SudokuConstraintsGraphics = (
       />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
-      <DigitGraphics cellSize={cellSize} constraints={constraints} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
-      <NotesGraphics cellSize={cellSize} constraints={constraints} notes={notes} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
+      <DigitGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
+      <CornerMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
+      <CenterMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
       <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
       <CellHighlights cells={highlightedCells || []} cellSize={cellSize} killerActive={killerActive} />
     </svg>
@@ -750,7 +657,7 @@ const SudokuConstraintsGraphics = (
 
 type SudokuConstraintsGraphicsProps = {
   constraints: SudokuConstraints
-  notes?: number[][][]
+  cellMarks?: CellMarks[][]
   cellSize: number
   grid?: Grid
   checkErrors: boolean

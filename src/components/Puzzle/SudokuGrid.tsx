@@ -1,14 +1,14 @@
 import { useCallback } from 'react'
 import SudokuConstraintsGraphics, { CellHighlight } from './SudokuGridGraphics'
 import LoadingSpinner from '../../shared/LoadingSpinner'
-import { Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellMarks, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { CellPosition } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { useCellSize } from 'src/utils/misc'
 
 const SudokuGrid = ({
-  constraints, grid, notes, selectedCells, checkErrors = false, loading, onCellClick,
+  constraints, grid, cellMarks, selectedCells, checkErrors = false, loading, onCellClick,
   cellSize: propsCellSize, highlightedCells,
   paused, onUnpause,
 }: SudokuGridProps) => {
@@ -23,7 +23,7 @@ const SudokuGrid = ({
         <SudokuConstraintsGraphics
           constraints={constraints}
           grid={grid}
-          notes={notes}
+          cellMarks={cellMarks}
           cellSize={cellSize}
           checkErrors={checkErrors}
           selectedCells={selectedCells}
@@ -53,7 +53,7 @@ SudokuGrid.defaultProps = {
 type SudokuGridProps = {
   constraints: SudokuConstraints
   grid?: Grid
-  notes?: number[][][]
+  cellMarks?: CellMarks[][]
   selectedCells?: CellPosition[]
   checkErrors?: boolean
   loading?: boolean

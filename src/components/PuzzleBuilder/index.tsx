@@ -1,6 +1,6 @@
-import { useCallback, useEffect, ChangeEvent } from 'react'
+import { useCallback, useEffect, ChangeEvent, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { inRange } from 'lodash-es'
+import { cloneDeep, inRange } from 'lodash-es'
 import classNames from 'classnames'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
@@ -69,7 +69,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const arrowConstraintType = useSelector(state => state.builder.arrowConstraintType)
   const currentThermo = useSelector(state => state.builder.currentThermo)
   const currentArrow = useSelector(state => state.builder.currentArrow)
-  const notes = useSelector(state => state.builder.notes)
+  const cellMarks = useSelector(state => state.builder.cellMarks)
   const constraintGrid = useSelector(state => state.builder.constraintGrid!)
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
   const bruteSolution = useSelector(state => state.builder.bruteSolution?.solution)
@@ -162,6 +162,22 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     return `${window.location.origin}/e?${params}`
   }, [constraints])
 
+  // Visualize solutions while building the puzzle
+  const solution = bruteSolution || logicalSolution
+  const usedMarks = useMemo(() => {
+    let marks = cloneDeep(cellMarks!)
+    if (solution) {
+      solution.forEach((solutionRow, rowIndex) => {
+        solutionRow.forEach((digit, colIndex) => {
+          if (digit !== null && digit !== 0) {
+            marks[rowIndex][colIndex].centerMarks = [digit]
+          }
+        })
+      })
+    }
+    return marks
+  }, [cellMarks, solution])
+
   if (!constraints) {
     return null
   }
@@ -189,21 +205,12 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     constraintPreview.fixedNumbers = []
   }
 
-  // Visualize solutions while building the puzzle
-  let usedNotes = notes!
-  const solution = bruteSolution || logicalSolution
-  if (solution) {
-    usedNotes = solution.map(solutionRow => (
-      solutionRow.map(digit => digit === 0 ? [] : [ digit! ])
-    ))
-  }
-
   return (
     <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
       <SudokuGrid
         constraints={constraintPreview}
         grid={usedGrid}
-        notes={usedNotes}
+        cellMarks={usedMarks}
         selectedCells={selectedCells}
         checkErrors={constraintType === ConstraintType.FixedNumber}
         onCellClick={onCellClick}

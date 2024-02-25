@@ -1,12 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRotateLeft, faArrowRotateRight, faEraser, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser, faPencil } from '@fortawesome/free-solid-svg-icons'
 import Button from '../../shared/Button'
-import IconButton from '../../shared/IconButton'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import SolveTimer from './SolveTimer'
-import { changePaused } from 'src/reducers/puzzle'
+import { InputMode, changePaused } from 'src/reducers/puzzle'
 import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
 import SolveStatsPanel from './SolveStatsPanel'
@@ -19,20 +18,27 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
   const gridSize = constraints.gridSize
 
   const {
-    enabled: controlEnabled, notesActive, undoActive, redoActive,
-    onSelectedCellValueChange, onSelectedCellNotesChange,
-    onNotesActiveToggle, onNewPuzzle, onReset, onUndo, onRedo,
+    enabled: controlEnabled, inputMode, undoActive, redoActive,
+    onSelectedCellValueChange, onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
+    onNumbersActive, onCornerMarksActive, onCenterMarksActive,
+    onNewPuzzle, onReset, onUndo, onRedo,
   } = useControlCallbacks(isSolvedLoading)
 
   useKeyboardHandler(isSolvedLoading)
 
   const handleDigitClick = useCallback((value: number) => {
-    if (notesActive) {
-      onSelectedCellNotesChange(value)
-    } else {
-      onSelectedCellValueChange(value)
+    switch (inputMode) {
+      case InputMode.Numbers:
+        onSelectedCellValueChange(value)
+        break
+      case InputMode.CornerMarks:
+        onSelectedCellCornerMarksChange(value)
+        break
+      case InputMode.CenterMarks:
+        onSelectedCellCenterMarksChange(value)
+        break
     }
-  }, [notesActive, onSelectedCellValueChange, onSelectedCellNotesChange])
+  }, [inputMode, onSelectedCellValueChange, onSelectedCellCornerMarksChange])
 
   const handleReset = useCallback(() => {
     if (window.confirm('Are you sure you want to reset?')) {
@@ -40,6 +46,10 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
     }
     setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, onReset])
+
+  const handleDelete = useCallback(() => {
+    onSelectedCellValueChange(null)
+  }, [onSelectedCellValueChange])
 
   return (
     <div className="flex flex-col gap-2 md:gap-4">
@@ -53,35 +63,68 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
           />
         </div>
         <div className="flex gap-1 justify-between md:justify-center">
-          <Button color={notesActive ? 'green' : 'blue-gray'}
+          <Button color={inputMode === InputMode.Numbers ? 'green' : 'blue-gray'}
                   disabled={!controlEnabled}
-                  onClick={onNotesActiveToggle}
-                  className="grow"
+                  onClick={onNumbersActive}
+                  className="grow shrink basis-0 py-0 text-xl"
           >
-            <FontAwesomeIcon icon={faPencil} />
-            <div className="inline-block w-7">
-              {notesActive ? ' on' : ' off'}
+            #
+          </Button>
+          <Button color={inputMode === InputMode.CornerMarks ? 'green' : 'blue-gray'}
+                  disabled={!controlEnabled}
+                  onClick={onCornerMarksActive}
+                  className="grow shrink basis-0 py-1"
+          >
+            <div className="relative h-full">
+              <div className="absolute top-0 left-1/3 md:left-1/4">1</div>
+              <div className="absolute top-0 right-1/3 md:right-1/4">2</div>
+              <div className="absolute bottom-0 left-1/3 md:left-1/4">3</div>
             </div>
           </Button>
-          <IconButton color="blue-gray"
-                      size="md"
-                      disabled={!controlEnabled || !undoActive}
-                      onClick={onUndo}
+          <Button color={inputMode === InputMode.CenterMarks ? 'green' : 'blue-gray'}
+                  disabled={!controlEnabled}
+                  onClick={onCenterMarksActive}
+                  className="grow shrink basis-0 text-lg"
+          >
+            123
+          </Button>
+        </div>
+        <div className="flex gap-1 justify-between md:justify-center">
+          <Button color="blue-gray"
+                  size="md"
+                  disabled={!controlEnabled}
+                  onClick={handleDelete}
+                  className="grow shrink basis-0"
+                  title="Delete"
+          >
+            <FontAwesomeIcon icon={faDeleteLeft} />
+          </Button>
+          <Button color="blue-gray"
+                  size="md"
+                  disabled={!controlEnabled || !undoActive}
+                  onClick={onUndo}
+                  className="grow shrink basis-0"
+                  title="Undo"
           >
             <FontAwesomeIcon icon={faArrowRotateLeft} />
-          </IconButton>
-          <IconButton color="blue-gray"
-                      size="md"
-                      disabled={!controlEnabled || !redoActive}
-                      onClick={onRedo}
+          </Button>
+          <Button color="blue-gray"
+                  size="md"
+                  disabled={!controlEnabled || !redoActive}
+                  onClick={onRedo}
+                  className="grow shrink basis-0"
+                  title="Redo"
           >
             <FontAwesomeIcon icon={faArrowRotateRight} />
-          </IconButton>
-          <Button disabled={!controlEnabled}
+          </Button>
+          <Button color="blue-gray"
+                  size="md"
+                  disabled={!controlEnabled}
                   onClick={handleReset}
+                  className="grow shrink basis-0"
+                  title="Reset"
           >
             <FontAwesomeIcon icon={faEraser} />
-            {' Reset'}
           </Button>
         </div>
       </div>

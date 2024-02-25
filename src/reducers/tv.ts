@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { CellPosition, Grid, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { CellMarks, CellPosition, Grid, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { camelCaseKeys } from 'src/utils/json'
 
 export type TvPuzzle = {
@@ -10,7 +10,7 @@ export type TvPuzzle = {
   variant: SudokuVariant
   difficulty: SudokuDifficulty
   grid: Grid
-  notes: number[][][]
+  cellMarks: CellMarks[][]
   selectedCells: CellPosition[]
   solved: boolean
   createdAt: string
@@ -47,7 +47,7 @@ export const tvSlice = createSlice({
 
       const tvPuzzle = camelCaseKeys(data)
       tvPuzzle.grid = grid
-      const { id, notes, selectedCells, solved, updatedAt } = tvPuzzle
+      const { id, cellMarks, selectedCells, solved, updatedAt } = tvPuzzle
 
       const existingPuzzle = state.tvPuzzles.find((puzzle: TvPuzzle) => puzzle.id === id)
 
@@ -57,7 +57,7 @@ export const tvSlice = createSlice({
             return {
               ...tvPuzzle,
               grid,
-              notes,
+              cellMarks,
               selectedCells,
               solved,
               updatedAt,

@@ -55,7 +55,7 @@ const TvPuzzleCard = ({ puzzle }: { puzzle: TvPuzzle }) => {
       <SudokuGrid
         constraints={puzzle.constraints}
         grid={puzzle.grid}
-        notes={puzzle.notes}
+        cellMarks={puzzle.cellMarks}
         selectedCells={puzzle.selectedCells}
         cellSize={cellSize}
       />

@@ -5,7 +5,10 @@ export type CellPosition = {
 
 export type Grid = (number | null)[][]
 
-export type CellNotes = number[]
+export type CellMarks = {
+  cornerMarks?: number[]
+  centerMarks?: number[]
+}
 
 export enum SudokuVariant {
   Classic = 'classic',

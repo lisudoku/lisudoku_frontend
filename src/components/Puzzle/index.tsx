@@ -13,7 +13,7 @@ const PuzzleComponent = () => {
 
   const constraints = useSelector(state => state.puzzle.data!.constraints)
   const grid = useSelector(state => state.puzzle.grid)
-  const notes = useSelector(state => state.puzzle.notes)
+  const cellMarks = useSelector(state => state.puzzle.cellMarks)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
@@ -39,7 +39,7 @@ const PuzzleComponent = () => {
         <SudokuGrid
           constraints={constraints}
           grid={grid!}
-          notes={notes!}
+          cellMarks={cellMarks!}
           selectedCells={selectedCells}
           checkErrors={checkErrors}
           loading={isSolvedLoading}
