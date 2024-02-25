@@ -1,5 +1,5 @@
 import {
-  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, range, sortBy, sumBy, times, values,
+  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, range, sortBy, sumBy, times, uniqWith, values,
 } from 'lodash-es'
 import {
   CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
@@ -133,16 +133,16 @@ type CountMap = {
   [key: number]: number
 }
 
-const getRowCells = (row: number, gridSize: number) => (
+const getRowCells = (row: number, gridSize: number): CellPosition[] => (
   times(gridSize, col => ({ row, col }))
 )
-const getColCells = (col: number, gridSize: number) => (
+const getColCells = (col: number, gridSize: number): CellPosition[] => (
   times(gridSize, row => ({ row, col }))
 )
-const getPrimaryDiagonalCells = (gridSize: number) => (
+const getPrimaryDiagonalCells = (gridSize: number): CellPosition[] => (
   times(gridSize, index => ({ row: index, col: index }))
 )
-const getSecondaryDiagonalCells = (gridSize: number) => (
+const getSecondaryDiagonalCells = (gridSize: number): CellPosition[] => (
   times(gridSize, index => ({ row: index, col: gridSize - 1 - index }))
 )
 
@@ -194,6 +194,29 @@ const validPeersForValue = (value: number, checkType: CheckType, gridSize: numbe
       return values
     }
   }
+}
+
+const getExtendedConstraintRegions = (constraints: SudokuConstraints): CellPosition[][] => {
+  const { gridSize } = constraints
+  const regions: CellPosition[][] = []
+  for (let row = 0; row < gridSize; row++) {
+    regions.push(getRowCells(row, gridSize))
+  }
+  for (let col = 0; col < gridSize; col++) {
+    regions.push(getColCells(col, gridSize))
+  }
+  regions.push(...constraints.regions)
+  regions.push(...constraints.extraRegions ?? [])
+  regions.push(...map(constraints.killerCages, 'region'))
+  if (constraints.primaryDiagonal) {
+    regions.push(getPrimaryDiagonalCells(gridSize))
+  }
+  if (constraints.secondaryDiagonal) {
+    regions.push(getSecondaryDiagonalCells(gridSize))
+  }
+  regions.push(...(constraints.thermos ?? []))
+
+  return regions
 }
 
 const addToErrorSet = (errorsSet: CellMarkSets, extraValue: number) => {
@@ -253,24 +276,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     }
   }
 
-  const regions = []
-  for (let row = 0; row < gridSize; row++) {
-    regions.push(getRowCells(row, gridSize))
-  }
-  for (let col = 0; col < gridSize; col++) {
-    regions.push(getColCells(col, gridSize))
-  }
-  regions.push(...constraints.regions)
-  regions.push(...constraints.extraRegions ?? [])
-  regions.push(...map(constraints.killerCages, 'region'))
-  if (constraints.primaryDiagonal) {
-    regions.push(getPrimaryDiagonalCells(gridSize))
-  }
-  if (constraints.secondaryDiagonal) {
-    regions.push(getSecondaryDiagonalCells(gridSize))
-  }
-  regions.push(...(constraints.thermos ?? []))
-
+  const regions = getExtendedConstraintRegions(constraints)
   for (const region of regions) {
     const valueCounts: CountMap = {}
     for (const { row, col } of region) {
@@ -530,4 +536,18 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
     }))
   }
   return []
+}
+
+export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition): CellPosition[] => {
+  const regions = getExtendedConstraintRegions(constraints)
+
+  const cellRegions = regions.filter(region => region.find(regionCell => isEqual(regionCell, cell)))
+  if (constraints.antiKnight) {
+    cellRegions.push(getKnightPeers(cell, constraints.gridSize))
+  }
+  if (constraints.antiKing) {
+    cellRegions.push(getKingPeers(cell, constraints.gridSize))
+  }
+
+  return uniqWith(flatten(cellRegions), isEqual)
 }

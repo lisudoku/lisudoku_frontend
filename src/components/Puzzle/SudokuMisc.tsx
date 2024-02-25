@@ -11,6 +11,7 @@ import DifficultySelect from './DifficultySelect'
 import HintPanel from './HintPanel'
 import ShowTimerToggle from './ShowTimerToggle'
 import CheckErrorsToggle from './CheckErrorsToggle'
+import ShowPeersToggle from './ShowPeersToggle'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
@@ -56,6 +57,9 @@ const SudokuMisc = () => {
           </div>
           <div className="mt-1">
             <CheckErrorsToggle />
+          </div>
+          <div className="mt-1">
+            <ShowPeersToggle />
           </div>
           {sourceCollectionId && (
             <div className="flex flex-col mt-2 w-full md:w-fit">

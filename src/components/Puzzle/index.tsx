@@ -17,14 +17,12 @@ const PuzzleComponent = () => {
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
-  const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
-  const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
   useTvPlayerWebsocket()
 
-  const cellHighlights = useCellHighlights(hintLevel, hintSolution, constraints)
+  const cellHighlights = useCellHighlights()
 
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(false))

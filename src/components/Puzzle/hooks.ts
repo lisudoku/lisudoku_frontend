@@ -1,7 +1,7 @@
-import { inRange, isEmpty, last } from 'lodash-es'
+import { inRange, isEmpty, isEqual, last, pullAllWith, uniqBy } from 'lodash-es'
 import { useEffect, useCallback, useMemo } from 'react'
 import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { computeErrors, computeFixedNumbersGrid, getAreaCells } from 'src/utils/sudoku'
+import { computeErrors, computeFixedNumbersGrid, getAreaCells, getCellPeers } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
   HintLevel,
@@ -17,6 +17,7 @@ import { TvMessageType } from 'src/screens/TvPage/hooks'
 import { CellHighlight } from './SudokuGridGraphics'
 import { StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { Theme, useTheme } from '../ThemeProvider'
+import { UserSettings } from 'src/reducers/userData'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -265,12 +266,18 @@ export const useTvPlayerWebsocket = () => {
 
 const OTHER_CELLS_COLOR = 'red'
 
-export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: SudokuLogicalSolveResult | null, constraints: SudokuConstraints) => {
+export const useCellHighlights = () => {
+  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
+  const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
+  const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
+  const userSettings = useSelector(state => state.userData.settings)
   const { theme } = useTheme()
-  const cellHighlights = useMemo(() => {
-    const areaColor = theme === Theme.Light ? 'grey' : 'lightgray'
-    const cellColor = theme === Theme.Light ? 'grey' : 'lightgreen'
 
+  const areaColor = theme === Theme.Light ? 'grey' : 'lightgray'
+  const cellColor = theme === Theme.Light ? 'grey' : 'lightgreen'
+
+  const hintHighlights = useMemo(() => {
     if (hintLevel !== HintLevel.Big || hintSolution === null) {
       return []
     }
@@ -313,7 +320,26 @@ export const useCellHighlights = (hintLevel: HintLevel | null, hintSolution: Sud
     }
 
     return cellHighlights
-  }, [hintLevel, hintSolution, constraints, theme])
+  }, [areaColor, cellColor, hintLevel, hintSolution, constraints, userSettings])
+
+  const peersHighlights = useMemo(() => {
+    if (userSettings === undefined || !userSettings.showPeers || selectedCells.length !== 1) {
+      return []
+    }
+
+    const selectedCell = selectedCells[0]
+    const peers = getCellPeers(constraints, selectedCell)
+    pullAllWith(peers, [selectedCell], isEqual)
+
+    const cellHighlights: CellHighlight[] = peers.map(peer => ({
+      position: peer,
+      color: cellColor,
+    }))
+
+    return cellHighlights
+  }, [cellColor, constraints, userSettings, selectedCells])
+
+  const cellHighlights = uniqBy(hintHighlights.concat(peersHighlights), 'position')
 
   return cellHighlights
 }

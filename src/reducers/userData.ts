@@ -13,16 +13,18 @@ type SolvedPuzzle = {
   solveTime: number
 }
 
-type UserSettings = {
+export type UserSettings = {
   showTimer: boolean
   checkErrors: boolean
   theme: ThemeOption
+  showPeers: boolean
 }
 
-const DEFAULT_USER_SETTINGS = {
+const DEFAULT_USER_SETTINGS: UserSettings = {
   showTimer: true,
   checkErrors: true,
   theme: ThemeOption.System,
+  showPeers: false,
 }
 
 type UserDataState = {
@@ -34,6 +36,13 @@ type UserDataState = {
   solvedPuzzles: SolvedPuzzle[]
   activeCompetitions: Competition[]
   settings?: UserSettings
+}
+
+const handleSettingUpdate = (state: UserDataState, key: keyof UserSettings, value: boolean) => {
+  if (state.settings === undefined) {
+    state.settings = DEFAULT_USER_SETTINGS
+  }
+  (state.settings[key] as any) = value
 }
 
 export const userDataSlice = createSlice({
@@ -67,23 +76,16 @@ export const userDataSlice = createSlice({
       state.activeCompetitions = camelCaseKeys(action.payload)
     },
     updateShowTimer(state, action) {
-      if (state.settings === undefined) {
-        state.settings = DEFAULT_USER_SETTINGS
-      }
-      state.settings.showTimer = action.payload
+      handleSettingUpdate(state, 'showTimer', action.payload)
     },
     updateCheckErrors(state, action) {
-      if (state.settings === undefined) {
-        state.settings = DEFAULT_USER_SETTINGS
-      }
-      state.settings.checkErrors = action.payload
+      handleSettingUpdate(state, 'checkErrors', action.payload)
     },
     updateTheme(state, action) {
-      // TODO: remove this duplication
-      if (state.settings === undefined) {
-        state.settings = DEFAULT_USER_SETTINGS
-      }
-      state.settings.theme = action.payload
+      handleSettingUpdate(state, 'theme', action.payload)
+    },
+    updateShowPeers(state, action) {
+      handleSettingUpdate(state, 'showPeers', action.payload)
     },
   },
   extraReducers: (builder) => {
@@ -111,7 +113,7 @@ export const userDataSlice = createSlice({
 
 export const {
   loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
-  updateShowTimer, updateCheckErrors, updateTheme,
+  updateShowTimer, updateCheckErrors, updateTheme, updateShowPeers,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer
