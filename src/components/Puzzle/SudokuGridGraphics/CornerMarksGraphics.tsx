@@ -28,7 +28,7 @@ const CellCornerMarksGraphics = ({ row, col, cornerMarks, cellMarksErrors, cellS
         const markRow = Math.floor((CORNER_POSITIONS[index] - 1) / 3)
         const markCol = (CORNER_POSITIONS[index] - 1) % 3
         const x = col * cellSize + 1 + markCol * marksColumnWidth + marksPaddingX + marksColumnWidth / 2 - marksFontWidth / 2
-        const y = row * cellSize + 1 + markRow * marksColumnHeight + marksPaddingY + marksFontSize
+        const y = row * cellSize + markRow * marksColumnHeight + marksPaddingY + marksFontSize + marksColumnHeight / 2 - marksFontSize / 2
 
         return (
           <text

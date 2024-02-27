@@ -28,7 +28,7 @@ const CellCenterMarksGraphics = ({ row, col, centerMarks, cellMarksErrors, cellS
         fontSize: centerMarksFontSize,
       }}
       textAnchor="middle"
-      dy="+0.25em"
+      dy="+0.32em"
     >
       {sortBy(centerMarks).map(value => (
         <tspan key={value} className={classNames({'fill-digit-error': cellMarksErrors?.centerMarks?.has(value) })}>
