@@ -43,6 +43,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const handleBruteSolveClick = useCallback(() => {
     honeybadger.notify({
       name: 'Running brute solver',
+      context: constraints!,
     })
     runBruteSolver(constraints)
   }, [constraints, runBruteSolver])
@@ -50,6 +51,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const handleLogicalSolveClick = useCallback(() => {
     honeybadger.notify({
       name: 'Running logical solver',
+      context: constraints!,
     })
     runLogicalSolver(constraints)
   }, [constraints, runLogicalSolver])
