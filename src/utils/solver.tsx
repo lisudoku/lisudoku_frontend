@@ -2,7 +2,7 @@ import { difference, flatten, intersection, last, uniqBy, values as _values } fr
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { InvalidStateType, SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
@@ -60,8 +60,30 @@ const areaDisplay = (area: any, gridSize: number) => {
     return 'the positive diagonal'
   } else if (area.Arrow !== undefined) {
     return 'an arrow'
+  } else if (area === 'Grid') {
+    return 'the grid'
+  } else if (area.Cell !== undefined) {
+    return `cell ${cellDisplay({ row: area.Cell[0], col: area.Cell[1] })}`
   } else {
     throw new Error(`unknown area ${JSON.stringify(area)}`)
+  }
+}
+
+const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
+  const reason = step.invalid_state_reason
+  switch (reason.state_type) {
+    case InvalidStateType.CellEmpty:
+      return `${areaDisplay(reason.area, gridSize)} is empty`
+    case InvalidStateType.CellInvalidValue:
+      return `${areaDisplay(reason.area, gridSize)} has invalid digit ${reason.values[0]}`
+    case InvalidStateType.CellNoCandidates:
+      return `${areaDisplay(reason.area, gridSize)} has no candidates left`
+    case InvalidStateType.AreaValueConflict:
+      return `${areaDisplay(reason.area, gridSize)} has multiple ${reason.values[0]} digits`
+    case InvalidStateType.AreaConstraint:
+      return `${areaDisplay(reason.area, gridSize)} constraints are not satisfied`
+    case InvalidStateType.AreaCandidates:
+      return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, gridSize)}`
   }
 }
 
@@ -127,6 +149,8 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
     case StepRule.EmptyRectangles:
       return ` in ${areaDisplay(step.areas[0], gridSize)} that sees strong link ` +
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
+    case StepRule.NishioForcingChains:
+      return ` Remove ${values} from cell ${affectedCells} because then ${computeInvalidStateReason(step, gridSize)}`;
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
       const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], gridSize)}` : ''

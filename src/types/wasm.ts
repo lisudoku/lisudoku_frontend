@@ -28,6 +28,22 @@ export type SolutionStep = {
   values: number[]
   areas: any[]
   affected_cells: CellPosition[]
+  invalid_state_reason: InvalidStateReason
+}
+
+export type InvalidStateReason = {
+  state_type: InvalidStateType
+  area: any
+  values: number[]
+}
+
+export enum InvalidStateType {
+  CellNoCandidates = 'CellNoCandidates',
+  CellEmpty = 'CellEmpty',
+  CellInvalidValue = 'CellInvalidValue',
+  AreaValueConflict = 'AreaValueConflict',
+  AreaCandidates = 'AreaCandidates',
+  AreaConstraint = 'AreaConstraint',
 }
 
 export enum StepRule {
@@ -62,4 +78,5 @@ export enum StepRule {
   CommonPeerEliminationArrow = 'CommonPeerEliminationArrow',
   TurbotFish = 'TurbotFish',
   EmptyRectangles = 'EmptyRectangles',
+  NishioForcingChains = 'NishioForcingChains',
 }

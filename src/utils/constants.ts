@@ -81,6 +81,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.CommonPeerElimination]: 'Common Peer Elimination',
   [StepRule.TurbotFish]: 'Turbot Fish',
   [StepRule.EmptyRectangles]: 'Empty Rectangle',
+  [StepRule.NishioForcingChains]: 'Nishio Forcing Chains',
 }
 
 export const enum EStepRuleDifficulty {
@@ -126,6 +127,7 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.CommonPeerElimination]: EStepRuleDifficulty.Hard,
   [StepRule.TurbotFish]: EStepRuleDifficulty.Hard,
   [StepRule.EmptyRectangles]: EStepRuleDifficulty.Hard,
+  [StepRule.NishioForcingChains]: EStepRuleDifficulty.Hard,
 }
 
 export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {

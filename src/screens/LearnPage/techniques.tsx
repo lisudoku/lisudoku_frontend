@@ -495,6 +495,19 @@ const TECHNIQUES: Technique[] = [
       },
     ],
   },
+  {
+    id: StepRule.NishioForcingChains,
+    summary: <>
+      Remove candidate X from a cell because putting digit X in it leads to an invalid grid state.
+    </>,
+    externalResources: [
+      {
+        name: 'sudokuwiki.org',
+        url: 'https://www.sudokuwiki.org/Nishio_Forcing_Chains',
+      },
+    ],
+    // practicePuzzleIds: [ '' ],
+  },
 ]
 
 export const TECHNIQUES_BY_DIFFICULTY = groupBy(
