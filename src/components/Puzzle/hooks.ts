@@ -300,7 +300,8 @@ export const useCellHighlights = () => {
         })
         break
       }
-      case StepRule.HiddenSingle: {
+      case StepRule.HiddenSingle:
+      case StepRule.Thermo: {
         cellHighlights = getAreaCells(area, constraints).map((areaCell: CellPosition) => ({
           position: areaCell,
           color: areaColor,
