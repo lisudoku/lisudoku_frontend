@@ -213,14 +213,17 @@ const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
 const isResource = (url: URL) => (
   url.pathname.match(fileExtensionRegexp)
 )
+
 // Redirect everything else to /
-registerRoute(
-  // Return false to exempt requests from being fulfilled by /
-  ({ request, url }: { request: Request; url: URL }) => (
-    request.mode === 'navigate' && !url.pathname.startsWith('/_') && !isResource(url)
-  ),
-  createHandlerBoundToURL('index.html')
-)
+if (import.meta.env.PROD) {
+  registerRoute(
+    // Return false to exempt requests from being fulfilled by /
+    ({ request, url }: { request: Request; url: URL }) => (
+      request.mode === 'navigate' && !url.pathname.startsWith('/_') && !isResource(url)
+    ),
+    createHandlerBoundToURL('index.html')
+  )
+}
 
 // Catch-all GET handler
 registerRoute(
