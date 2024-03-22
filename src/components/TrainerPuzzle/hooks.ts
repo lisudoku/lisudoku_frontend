@@ -12,7 +12,7 @@ interface TrainerControlCallbacks extends SudokuEventCallbacks {
 
 export const useTrainerControls: () => TrainerControlCallbacks = () => {
   const dispatch = useDispatch()
-  const trainerPuzzleId = useSelector(state => state.trainer.data!.id)
+  const trainerPuzzleId = useSelector(state => state.trainer.data?.id)
   const selectedCell = useSelector(state => state.trainer.selectedCell)
   const finished = useSelector(state => state.trainer.finished)
 
@@ -22,7 +22,7 @@ export const useTrainerControls: () => TrainerControlCallbacks = () => {
 
   const handleSelectedCellValueChange = useCallback((value: number | null) => {
     dispatch(changeSelectedCellValue(value))
-    if (selectedCell && value) {
+    if (selectedCell && value && trainerPuzzleId !== undefined) {
       requestTrainerPuzzleCheck(trainerPuzzleId, {
         value,
         position: selectedCell,
@@ -32,7 +32,9 @@ export const useTrainerControls: () => TrainerControlCallbacks = () => {
 
   const handleViewSolutions = useCallback(() => {
     dispatch(showSolutions())
-    requestTrainerPuzzleCheck(trainerPuzzleId)
+    if (trainerPuzzleId !== undefined) {
+      requestTrainerPuzzleCheck(trainerPuzzleId)
+    }
   }, [dispatch, trainerPuzzleId])
 
   const handleNextPuzzle = useCallback(() => {
@@ -53,15 +55,15 @@ export const useTrainerControls: () => TrainerControlCallbacks = () => {
 
 export const useTrainerKeyboardHandler: () => void = () => {
   const callbacks = useTrainerControls()
-  const constraints = useSelector(state => state.trainer.data!.constraints)
+  const constraints = useSelector(state => state.trainer.data?.constraints)
   const selectedCell = useSelector(state => state.trainer.selectedCell)
   const selectedCells = selectedCell ? [selectedCell] : []
   useKeyboardHandler({ constraints, selectedCells, callbacks })
 }
 
-export const useCellHighlights = (finished: boolean, success: boolean, solutions: FixedNumber[], grid: Grid | undefined) => {
+export const useCellHighlights = (finished: boolean, success: boolean, solutions: FixedNumber[] | undefined, grid: Grid | undefined) => {
   const cellHighlights = useMemo(() => {
-    if (!finished) {
+    if (!finished || solutions === undefined) {
       return []
     }
     return uniqWith(solutions, (a, b) => isEqual(a.position, b.position))

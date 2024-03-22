@@ -27,12 +27,12 @@ const getSolvedEmoji = (difficulty: SudokuDifficulty, solveTime: number) => {
 const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProps) => {
   const dispatch = useDispatch()
 
-  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
-  const id = useSelector(state => state.puzzle.data!.publicId!)
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const isExternal = useSelector(state => state.puzzle.data?.isExternal)
+  const id = useSelector(state => state.puzzle.data?.publicId!)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const grid = useSelector(state => state.puzzle.grid)
-  const variant = useSelector(state => state.puzzle.data!.variant)
-  const difficulty = useSelector(state => state.puzzle.data!.difficulty)
+  const variant = useSelector(state => state.puzzle.data?.variant)
+  const difficulty = useSelector(state => state.puzzle.data?.difficulty)
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
   const paused = useSelector(state => state.puzzle.controls.paused)
@@ -42,7 +42,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
 
   useEffect(() => {
-    if (solved || !grid || !gridFull) {
+    if (constraints === undefined || solved || !grid || !gridFull) {
       return
     }
 

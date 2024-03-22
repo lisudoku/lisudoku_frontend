@@ -16,14 +16,14 @@ import ShowPeersToggle from './ShowPeersToggle'
 const SudokuMisc = () => {
   const navigate = useNavigate()
 
-  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
-  const publicId = useSelector(state => state.puzzle.data!.publicId!)
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
-  const variant = useSelector(state => state.puzzle.data!.variant)
+  const isExternal = useSelector(state => state.puzzle.data?.isExternal)
+  const publicId = useSelector(state => state.puzzle.data?.publicId)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
+  const variant = useSelector(state => state.puzzle.data?.variant)
   const difficulty = useSelector(state => state.userData.difficulty)
-  const sourceCollectionId = useSelector(state => state.puzzle.data!.sourceCollectionId)
-  const sourceCollectionName = useSelector(state => state.puzzle.data!.sourceCollectionName)
-  const author = useSelector(state => state.puzzle.data!.author)
+  const sourceCollectionId = useSelector(state => state.puzzle.data?.sourceCollectionId)
+  const sourceCollectionName = useSelector(state => state.puzzle.data?.sourceCollectionName)
+  const author = useSelector(state => state.puzzle.data?.author)
 
   const onVariantChange = useCallback((variant: SudokuVariant) => {
     navigate(`/play/${variant}/${difficulty}`)
@@ -31,6 +31,10 @@ const SudokuMisc = () => {
   const onDifficultyChange = useCallback((difficulty: SudokuDifficulty) => {
     navigate(`/play/${variant}/${difficulty}`)
   }, [navigate, variant])
+
+  if (constraints === undefined || publicId === undefined) {
+    return null
+  }
 
   return (
     <div className="relative flex flex-col md:max-w-xs mt-3 md:mt-0">

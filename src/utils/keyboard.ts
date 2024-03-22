@@ -19,7 +19,7 @@ export interface SudokuEventCallbacks {
 
 interface KeyboardHandlerSettings {
   disabled?: boolean
-  constraints: SudokuConstraints
+  constraints?: SudokuConstraints
   selectedCells: CellPosition[]
   notesActive?: boolean
   redoActive?: boolean
@@ -31,11 +31,11 @@ interface KeyboardHandlerSettings {
 export const useKeyboardHandler = (
   { disabled, constraints, selectedCells, notesActive, redoActive, undoActive, callbacks }: KeyboardHandlerSettings
 ) => {
-  const gridSize = constraints.gridSize
+  const gridSize = constraints?.gridSize
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (disabled) {
+      if (disabled || gridSize === undefined) {
         return
       }
 

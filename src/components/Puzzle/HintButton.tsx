@@ -17,7 +17,7 @@ const LONG_THINK_THRESHOLD = 3 * 60
 
 const HintButton = () => {
   const dispatch = useDispatch()
-  const constraints = useSelector(state => state.puzzle.data!.constraints!)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const grid = useSelector(state => state.puzzle.grid!)
   const lastHintTimer = useSelector(state => state.puzzle.controls.lastHintTimer)
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
@@ -29,6 +29,9 @@ const HintButton = () => {
   const longThink = lastUpdateTimer && solveTimer - lastUpdateTimer >= LONG_THINK_THRESHOLD;
 
   const handleClick = useCallback(() => {
+    if (constraints === undefined) {
+      return
+    }
     if (!disabled) {
       const fullConstraints = combineConstraintsWithGrid(constraints, grid)
       const solution = logicalHint(fullConstraints)

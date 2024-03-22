@@ -11,7 +11,7 @@ const PuzzleComponent = () => {
   const dispatch = useDispatch()
   const [ isSolvedLoading, setIsSolvedLoading ] = useState(false)
 
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const grid = useSelector(state => state.puzzle.grid)
   const cellMarks = useSelector(state => state.puzzle.cellMarks)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
@@ -27,6 +27,10 @@ const PuzzleComponent = () => {
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(false))
   }, [dispatch])
+
+  if (constraints === undefined) {
+    return null
+  }
 
   return (
     <div className="w-fit flex flex-col md:flex-row mx-auto">

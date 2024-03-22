@@ -126,10 +126,8 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
 }
 
 export const useKeyboardHandler = (isSolvedLoading: boolean) => {
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
-
-  const { gridSize } = constraints
 
   const {
     enabled, inputMode, undoActive, redoActive,
@@ -137,9 +135,11 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
     onSelectedCellValueChange, onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
   } = useControlCallbacks(isSolvedLoading)
 
+  const gridSize = constraints?.gridSize
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!enabled) {
+      if (!enabled || gridSize === undefined) {
         return
       }
 
@@ -234,8 +234,8 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
 }
 
 export const useTvPlayerWebsocket = () => {
-  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
-  const publicId = useSelector(state => state.puzzle.data!.publicId)
+  const isExternal = useSelector(state => state.puzzle.data?.isExternal)
+  const publicId = useSelector(state => state.puzzle.data?.publicId)
   const grid = useSelector(state => state.puzzle.grid)
   const cellMarks = useSelector(state => state.puzzle.cellMarks)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
@@ -244,7 +244,7 @@ export const useTvPlayerWebsocket = () => {
   const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true }, isExternal)
 
   useEffect(() => {
-    if (!ready) {
+    if (!ready || isExternal === undefined || publicId === undefined) {
       return
     }
     if (isExternal) {
@@ -267,7 +267,7 @@ export const useTvPlayerWebsocket = () => {
 const OTHER_CELLS_COLOR = 'red'
 
 export const useCellHighlights = () => {
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
   const hintSolution = useSelector(state => state.puzzle.controls.hintSolution)
@@ -278,6 +278,9 @@ export const useCellHighlights = () => {
   const cellColor = theme === Theme.Light ? 'grey' : 'lightgreen'
 
   const hintHighlights = useMemo(() => {
+    if (constraints === undefined) {
+      return []
+    }
     if (hintLevel !== HintLevel.Big || hintSolution === null) {
       return []
     }
@@ -324,7 +327,9 @@ export const useCellHighlights = () => {
   }, [areaColor, cellColor, hintLevel, hintSolution, constraints, userSettings])
 
   const peersHighlights = useMemo(() => {
-    if (userSettings === undefined || !userSettings.showPeers || selectedCells.length !== 1) {
+    if (constraints === undefined || userSettings === undefined ||
+      !userSettings.showPeers || selectedCells.length !== 1
+    ) {
       return []
     }
 

@@ -12,10 +12,10 @@ import SolveStatsPanel from './SolveStatsPanel'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()
-  const isExternal = useSelector(state => state.puzzle.data!.isExternal)
-  const constraints = useSelector(state => state.puzzle.data!.constraints)
+  const isExternal = useSelector(state => state.puzzle.data?.isExternal)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const solved = useSelector(state => state.puzzle.solved)
-  const gridSize = constraints.gridSize
+  const gridSize = constraints?.gridSize
 
   const {
     enabled: controlEnabled, inputMode, undoActive, redoActive,
@@ -50,6 +50,10 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
   const handleDelete = useCallback(() => {
     onSelectedCellValueChange(null)
   }, [onSelectedCellValueChange])
+
+  if (gridSize === undefined) {
+    return null
+  }
 
   return (
     <div className="flex flex-col gap-2 md:gap-4">

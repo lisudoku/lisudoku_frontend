@@ -90,7 +90,7 @@ const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, action
   const markKey = actionType === ActionType.CornerMark ? 'cornerMarks' : 'centerMarks'
 
   const cells = differenceWith(
-    state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
+    state.controls.selectedCells, map(state.data?.constraints.fixedNumbers, 'position'), isEqual
   )
 
   const allHaveValue = cells.every(
@@ -199,7 +199,11 @@ export const puzzleSlice = createSlice({
         // Note: the single-click is fired before, so if the there is no digit there
         // it will be selected
         if (value !== null) {
-          const cellsWithValue = getAllCells(state.data!.constraints.gridSize).filter(c => (
+          const gridSize = state.data?.constraints.gridSize
+          if (gridSize === undefined) {
+            return
+          }
+          const cellsWithValue = getAllCells(gridSize).filter(c => (
             state.grid![c.row][c.col] === value
           ))
           state.controls.selectedCells = cellsWithValue
@@ -216,7 +220,7 @@ export const puzzleSlice = createSlice({
       const value = action.payload
       const actionType = value === null ? ActionType.Delete : ActionType.Digit
       const cells = differenceWith(
-        state.controls.selectedCells, map(state.data!.constraints.fixedNumbers, 'position'), isEqual
+        state.controls.selectedCells, map(state.data?.constraints.fixedNumbers, 'position'), isEqual
       )
 
       const allHaveValue = cells.every(
@@ -283,7 +287,11 @@ export const puzzleSlice = createSlice({
       clearUpdate(state)
     },
     resetPuzzle(state) {
-      const { gridSize, fixedNumbers } = state.data!.constraints
+      const constraints = state.data?.constraints
+      if (constraints === undefined) {
+        return
+      }
+      const { gridSize, fixedNumbers } = constraints
       const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
       state.grid = Array(gridSize).fill(null).map((_row, rowIndex) => Array(gridSize).fill(null).map((_col, colIndex) => (fixedNumbersGrid[rowIndex][colIndex])))
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))

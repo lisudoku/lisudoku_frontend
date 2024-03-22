@@ -5,18 +5,22 @@ import TrainerMisc from './TrainerMisc'
 import { useCellHighlights, useTrainerControls, useTrainerKeyboardHandler } from './hooks'
 
 const TrainerPuzzleComponent = () => {
-  const constraints = useSelector(state => state.trainer.data!.constraints)
+  const constraints = useSelector(state => state.trainer.data?.constraints)
   const grid = useSelector(state => state.trainer.grid)
   const selectedCell = useSelector(state => state.trainer.selectedCell)
   const selectedCells = selectedCell ? [selectedCell] : undefined
   const finished = useSelector(state => state.trainer.finished)
   const success = useSelector(state => state.trainer.success)
-  const solutions = useSelector(state => state.trainer.data!.solutions)
+  const solutions = useSelector(state => state.trainer.data?.solutions)
 
   const cellHighlights = useCellHighlights(finished, success, solutions, grid)
 
   const { onSelectedCellChange } = useTrainerControls()
   useTrainerKeyboardHandler()
+
+  if (constraints === undefined) {
+    return null
+  }
 
   return (
     <div className="w-fit flex flex-col md:flex-row mx-auto">
