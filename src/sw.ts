@@ -9,7 +9,7 @@ if (!DEBUG) {
 
 import { sample } from 'lodash-es'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
-import { precache, createHandlerBoundToURL } from 'workbox-precaching'
+import { precache, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { NetworkFirst } from 'workbox-strategies'
 import { differenceInDays, parseISO } from 'date-fns'
@@ -24,6 +24,7 @@ const RESPONSE_HEADERS = {
   headers: { 'Content-Type': 'application/json' },
 }
 
+cleanupOutdatedCaches()
 clientsClaim()
 self.skipWaiting()
 
