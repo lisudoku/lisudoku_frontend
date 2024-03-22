@@ -506,7 +506,7 @@ const TECHNIQUES: Technique[] = [
         url: 'https://www.sudokuwiki.org/Nishio_Forcing_Chains',
       },
     ],
-    // practicePuzzleIds: [ '' ],
+    practicePuzzleIds: [ 'hRl0nFcYe74qFRR4lvW4' ],
   },
 ]
 
