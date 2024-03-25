@@ -9,6 +9,8 @@ import IconButton from 'src/shared/IconButton'
 import Typography from 'src/shared/Typography'
 import Navbar from 'src/shared/Navbar'
 import Collapse from 'src/shared/Collapse'
+import DiscordIcon from './AppFooter/DiscordIcon'
+import GitHubIcon from './AppFooter/GitHubIcon'
 
 const ITEMS: any[] = [
   {
@@ -149,6 +151,10 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
       </Typography>
       <li className="w-20">
         <ThemeSelect />
+      </li>
+      <li className="flex gap-3">
+        <GitHubIcon size="1x" />
+        <DiscordIcon size="1x" />
       </li>
       {username ? (
         <>

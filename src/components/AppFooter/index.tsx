@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faDiscord, faGithub, faTwitter,
+  faTwitter,
   /* faReddit, faRedditAlien, faTiktok, faYoutube */
 } from '@fortawesome/free-brands-svg-icons'
+import GitHubIcon from './GitHubIcon'
+import DiscordIcon from './DiscordIcon'
 // import { faCircle } from '@fortawesome/free-solid-svg-icons'
 
-export const DISCORD_INVITE_URL = 'https://discord.gg/SGV8TQVSeT'
-export const GITHUB_URL = 'https://github.com/orgs/lisudoku/repositories'
 export const X_URL = 'http://x.com/lisudoku'
 // export const YOUTUBE_URL = 'https://www.youtube.com/@lisudoku'
 // export const REDDIT_URL = 'https://www.reddit.com/r/lisudoku'
@@ -35,18 +35,10 @@ const AppFooter = () => (
       </div>
       <div className="flex w-full justify-center">
         <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
-          <a href={GITHUB_URL}
-            target="_blank"
-            rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faGithub} size="2x" />
-          </a>
+          <GitHubIcon />
         </div>
         <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
-          <a href={DISCORD_INVITE_URL}
-            target="_blank"
-            rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faDiscord} size="2x" color="#9ca3f2" />
-          </a>
+          <DiscordIcon />
         </div>
         <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
           <a href={X_URL}

@@ -7,7 +7,7 @@ import { StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { DISCORD_INVITE_URL } from 'src/components/AppFooter'
+import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
 
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
   const { gridSize, fixedNumbers } = constraints
