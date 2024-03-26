@@ -25,6 +25,7 @@ import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
@@ -39,10 +40,24 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     const result: ImportResult = await importPuzzle(url)
     if (result.error) {
       alert(result.message)
+      honeybadger.notify({
+        name: 'Puzzle import error',
+        context: {
+          url,
+          result,
+        },
+      })
     } else {
       dispatch(receivedPuzzle(result.constraints!))
       if (result.alert) {
         alert(result.message)
+        honeybadger.notify({
+          name: 'Puzzle import error',
+          context: {
+            url,
+            result,
+          },
+        })
       }
       return result.constraints!
     }
