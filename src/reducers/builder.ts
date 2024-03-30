@@ -12,7 +12,7 @@ import {
 import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
-import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
+import { detectVariant, ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
 import { InputMode } from './puzzle'
 
 export enum ConstraintType {
@@ -111,54 +111,10 @@ const expandsArea4 = (area: CellPosition[], cell: CellPosition) => expandsArea(a
 const expandsArea8 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent8)
 
 const handleConstraintChange = (state: BuilderState) => {
-  state.variant = detectVariant(state)
+  state.variant = detectVariant(state.constraints)
   state.bruteSolution = null
   state.logicalSolution = null
   state.manualChange = true
-}
-
-const detectVariant = (state: BuilderState) => {
-  const variants = []
-  if (!isEmpty(state.constraints?.thermos)) {
-    variants.push(SudokuVariant.Thermo)
-  }
-  if (!isEmpty(state.constraints?.arrows)) {
-    variants.push(SudokuVariant.Arrow)
-  }
-  if (state.constraints?.primaryDiagonal || state.constraints?.secondaryDiagonal) {
-    variants.push(SudokuVariant.Diagonal)
-  }
-  if (state.constraints?.antiKnight) {
-    variants.push(SudokuVariant.AntiKnight)
-  }
-  if (state.constraints?.antiKing) {
-    variants.push(SudokuVariant.AntiKing)
-  }
-  if (!isEqual(state.constraints?.regions, ensureDefaultRegions(state.constraints!.gridSize))) {
-    variants.push(SudokuVariant.Irregular)
-  }
-  if (!isEmpty(state.constraints?.killerCages)) {
-    variants.push(SudokuVariant.Killer)
-  }
-  if (!isEmpty(state.constraints?.kropkiDots)) {
-    variants.push(SudokuVariant.Kropki)
-  }
-  if (!isEmpty(state.constraints?.extraRegions)) {
-    variants.push(SudokuVariant.ExtraRegions)
-  }
-  if (!isEmpty(state.constraints?.oddCells) || !isEmpty(state.constraints?.evenCells)) {
-    variants.push(SudokuVariant.OddEven)
-  }
-  if (state.constraints?.topBottom) {
-    variants.push(SudokuVariant.TopBottom)
-  }
-  if (variants.length > 1) {
-    return SudokuVariant.Mixed
-  } else if (variants.length === 1) {
-    return variants[0]
-  } else {
-    return SudokuVariant.Classic
-  }
 }
 
 export const defaultConstraints = (gridSize: number) => ({
@@ -234,7 +190,7 @@ export const builderSlice = createSlice({
         ...constraints,
       }
       state.difficulty = defaultDifficulty(gridSize)
-      state.variant = detectVariant(state)
+      state.variant = detectVariant(state.constraints)
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null

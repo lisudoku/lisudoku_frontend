@@ -151,7 +151,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const handleImportClick = useCallback(() => {
     const LISUDOKU_EXAMPLE = 'https://lisudoku.xyz/p/4pyPjYdnlzJyUvFPVToy'
     const FPUZZLES_EXAMPLE = 'https://www.f-puzzles.com/?load=N4IgzglgXgpiB...(long url)'
-    const url = window.prompt(`Enter puzzle URL. Examples:\n${LISUDOKU_EXAMPLE}\n${FPUZZLES_EXAMPLE}`)
+    const GRID_STRING_EXAMPLE = '043000000000060000000245000180004006064...(grid string)'
+    const url = window.prompt(`Enter puzzle data. Examples:\n${LISUDOKU_EXAMPLE}\n${FPUZZLES_EXAMPLE}\n${GRID_STRING_EXAMPLE}`)
     if (url != null) {
       runImport(url)
     }

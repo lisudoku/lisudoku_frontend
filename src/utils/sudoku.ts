@@ -2,8 +2,9 @@ import {
   difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, range, sortBy, sumBy, times, uniqWith, values,
 } from 'lodash-es'
 import {
-  CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints,
+  CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints, SudokuVariant,
 } from 'src/types/sudoku'
+import { GRID_SIZES } from './constants'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -113,9 +114,39 @@ export const gridStringToGrid: (gridString: string) => Grid = (gridString: strin
   return grid
 }
 
+export const gridToGridString: (grid: Grid) => string = (grid: Grid) => {
+  let gridString = '';
+  grid.forEach(row => {
+    row.forEach(cell => {
+      const value = cell !== null ? cell : 0;
+      gridString += value;
+    })
+  })
+  return gridString;
+}
+
+export const fixedNumbersToGridString: (gridSize: number, fixedNumbers?: FixedNumber[]) => string = (gridSize: number, fixedNumbers?: FixedNumber[]) => {
+  const grid = computeFixedNumbersGrid(gridSize, fixedNumbers)
+  return gridToGridString(grid)
+}
+
 export const gridStringToFixedNumbers: (gridString: string) => FixedNumber[] = (gridString: string) => {
   const grid = gridStringToGrid(gridString)
   return gridToFixedNumbers(grid)
+}
+
+export const isGridString = (gridString: string) => {
+  const gridSize = gridSizeFromString(gridString)
+  if (Math.trunc(gridSize) !== gridSize) {
+    return false
+  }
+  if (!GRID_SIZES.includes(gridSize)) {
+    return false
+  }
+  if (![...gridString].every(value => '0' <= value && value <= String(gridSize))) {
+    return false
+  }
+  return true
 }
 
 export const gridIsFull = (grid: Grid | null) => (
@@ -550,4 +581,51 @@ export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition)
   }
 
   return uniqWith(flatten(cellRegions), isEqual)
+}
+
+export const detectVariant = (constraints: SudokuConstraints | null) => {
+  if (constraints === null) {
+    return SudokuVariant.Classic
+  }
+  const variants = []
+  if (!isEmpty(constraints.thermos)) {
+    variants.push(SudokuVariant.Thermo)
+  }
+  if (!isEmpty(constraints.arrows)) {
+    variants.push(SudokuVariant.Arrow)
+  }
+  if (constraints.primaryDiagonal || constraints.secondaryDiagonal) {
+    variants.push(SudokuVariant.Diagonal)
+  }
+  if (constraints.antiKnight) {
+    variants.push(SudokuVariant.AntiKnight)
+  }
+  if (constraints.antiKing) {
+    variants.push(SudokuVariant.AntiKing)
+  }
+  if (!isEqual(constraints.regions, ensureDefaultRegions(constraints.gridSize))) {
+    variants.push(SudokuVariant.Irregular)
+  }
+  if (!isEmpty(constraints.killerCages)) {
+    variants.push(SudokuVariant.Killer)
+  }
+  if (!isEmpty(constraints.kropkiDots)) {
+    variants.push(SudokuVariant.Kropki)
+  }
+  if (!isEmpty(constraints.extraRegions)) {
+    variants.push(SudokuVariant.ExtraRegions)
+  }
+  if (!isEmpty(constraints.oddCells) || !isEmpty(constraints.evenCells)) {
+    variants.push(SudokuVariant.OddEven)
+  }
+  if (constraints.topBottom) {
+    variants.push(SudokuVariant.TopBottom)
+  }
+  if (variants.length > 1) {
+    return SudokuVariant.Mixed
+  } else if (variants.length === 1) {
+    return variants[0]
+  } else {
+    return SudokuVariant.Classic
+  }
 }

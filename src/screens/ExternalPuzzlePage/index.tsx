@@ -7,6 +7,7 @@ import LoadingSpinner from 'src/shared/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import { importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import { receivedPuzzle } from 'src/reducers/puzzle'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
 
 const ExternalPuzzlePage = () => {
   const importData = useImportParam()
@@ -37,6 +38,13 @@ const ExternalPuzzlePage = () => {
       importPuzzle(importData).then((result: ImportResult) => {
         if (result.error) {
           setError(true)
+          honeybadger.notify({
+            name: 'External puzzle import error',
+            context: {
+              importData,
+              result,
+            },
+          })
         } else {
           dispatch(receivedPuzzle({
             constraints: result.constraints,

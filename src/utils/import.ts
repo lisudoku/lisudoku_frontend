@@ -1,10 +1,10 @@
 import { useLocation } from 'react-router-dom'
 import { flatMap, isBoolean, isEmpty, isEqual, isNumber, omitBy, times } from 'lodash-es'
 import { AxiosError } from 'axios'
-import { FixedNumber, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints } from 'src/types/sudoku'
+import { FixedNumber, KropkiDot, KropkiDotType, Puzzle, Region, SudokuConstraints, SudokuVariant } from 'src/types/sudoku'
 import { fetchPuzzleByPublicId } from './apiService'
 import { decompressFromBase64, compressToBase64 } from 'lz-string'
-import { ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from './sudoku'
+import { detectVariant, ensureDefaultRegions, fixedNumbersToGridString, gridSizeFromString, gridStringToFixedNumbers, isGridString, regionGridToRegions, regionsToRegionGrid } from './sudoku'
 import { GRID_SIZES } from './constants'
 import { defaultConstraints } from 'src/reducers/builder'
 import { camelCaseKeys } from './json'
@@ -20,6 +20,7 @@ enum SourceType {
   LisudokuUrl = 'lisudoku-url',
   LisudokuInline = 'lisudoku-inline',
   Fpuzzles = 'f-puzzles',
+  GridString = 'grid-string',
 }
 
 export type ImportResult = {
@@ -39,6 +40,8 @@ const detectSource = (url: string) => {
     return SourceType.Fpuzzles
   } else if (isInlineData(url)) {
     return SourceType.LisudokuInline
+  } else if (isGridString(url)) {
+    return SourceType.GridString
   } else {
     return null
   }
@@ -54,7 +57,7 @@ export const importPuzzle = async (url: string): Promise<ImportResult> => {
   if (source === null) {
     return {
       error: true,
-      message: "Invalid URL. Couldn't detect source.",
+      message: "Invalid puzzle data.",
     }
   }
 
@@ -62,6 +65,7 @@ export const importPuzzle = async (url: string): Promise<ImportResult> => {
     case SourceType.LisudokuUrl: return importLisudokuPuzzle(url)
     case SourceType.LisudokuInline: return importLisudokuInline(url)
     case SourceType.Fpuzzles: return importFpuzzlesPuzzle(url)
+    case SourceType.GridString: return importGridString(url)
   }
 }
 
@@ -124,6 +128,20 @@ const importLisudokuInline = (encodedData: string): ImportResult => {
     error: false,
     alert: false,
     message: 'Puzzle imported successfully',
+    constraints,
+  }
+}
+
+const importGridString = (gridString: string): ImportResult => {
+  const gridSize = gridSizeFromString(gridString)
+  const constraints: SudokuConstraints = {
+    ...defaultConstraints(gridSize),
+    fixedNumbers: gridStringToFixedNumbers(gridString),
+  }
+  return {
+    error: false,
+    alert: false,
+    message: 'Grid string imported successfully',
     constraints,
   }
 }
@@ -276,6 +294,10 @@ const mapCellStringArray = (cells: string[]) => (
 )
 
 export const exportToLisudoku = (constraints: SudokuConstraints) => {
+  const variant = detectVariant(constraints)
+  if (variant === SudokuVariant.Classic) {
+    return fixedNumbersToGridString(constraints.gridSize, constraints.fixedNumbers)
+  }
   const filteredConstraints = omitBy(
     constraints,
     value => !isNumber(value) &&
