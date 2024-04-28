@@ -18,6 +18,7 @@ import BruteSolutionPanel from './BruteSolutionPanel'
 import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { exportToLisudokuSolver } from 'src/utils/import'
 
 const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
@@ -41,20 +42,26 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   )
 
   const handleBruteSolveClick = useCallback(() => {
-    if (!setterMode) {
+    if (!setterMode && constraints) {
       honeybadger.notify({
         name: 'Running brute solver',
-        context: constraints!,
+        context: {
+          url: exportToLisudokuSolver(constraints),
+          constraints: constraints,
+        },
       })
     }
     runBruteSolver(constraints)
   }, [constraints, runBruteSolver, setterMode])
 
   const handleLogicalSolveClick = useCallback(() => {
-    if (!setterMode) {
+    if (!setterMode && constraints) {
       honeybadger.notify({
         name: 'Running logical solver',
-        context: constraints!,
+        context: {
+          url: exportToLisudokuSolver(constraints),
+          constraints: constraints,
+        },
       })
     }
     runLogicalSolver(constraints)

@@ -19,7 +19,7 @@ import PuzzleActions from './PuzzleActions'
 import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import Input from 'src/shared/Input'
 import Typography from 'src/shared/Typography'
-import { exportToLisudoku, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
+import { exportToLisudokuPuzzle, exportToLisudokuSolver, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -166,17 +166,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     }
   }, [dispatch, manualChange])
 
-  const computeShareSolutionURL = useCallback(() => {
-    const encodedConstraints = exportToLisudoku(constraints!)
-    const params = new URLSearchParams({ import: encodedConstraints }).toString()
-    return `${window.location.origin}/solver?${params}`
-  }, [constraints])
+  const computeShareSolutionURL = useCallback(() => exportToLisudokuSolver(constraints!), [constraints])
 
-  const computeSharePuzzleURL = useCallback(() => {
-    const encodedConstraints = exportToLisudoku(constraints!)
-    const params = new URLSearchParams({ import: encodedConstraints }).toString()
-    return `${window.location.origin}/e?${params}`
-  }, [constraints])
+  const computeSharePuzzleURL = useCallback(() => exportToLisudokuPuzzle(constraints!), [constraints])
 
   // Visualize solutions while building the puzzle
   const solution = bruteSolution || logicalSolution

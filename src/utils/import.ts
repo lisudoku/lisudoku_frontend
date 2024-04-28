@@ -293,7 +293,7 @@ const mapCellStringArray = (cells: string[]) => (
   cells.map((cell: string) => cellStringToObject(cell))
 )
 
-export const exportToLisudoku = (constraints: SudokuConstraints) => {
+const encodeConstraints = (constraints: SudokuConstraints) => {
   const variant = detectVariant(constraints)
   if (variant === SudokuVariant.Classic) {
     return fixedNumbersToGridString(constraints.gridSize, constraints.fixedNumbers)
@@ -309,6 +309,18 @@ export const exportToLisudoku = (constraints: SudokuConstraints) => {
   const constraintsStr = JSON.stringify(filteredConstraints)
   const encodedData = compressToBase64(constraintsStr)
   return encodedData
+}
+
+export const exportToLisudokuSolver = (constraints: SudokuConstraints) => {
+  const encodedConstraints = encodeConstraints(constraints!)
+  const params = new URLSearchParams({ import: encodedConstraints }).toString()
+  return `${window.location.origin}/solver?${params}`
+}
+
+export const exportToLisudokuPuzzle = (constraints: SudokuConstraints) => {
+  const encodedConstraints = encodeConstraints(constraints!)
+  const params = new URLSearchParams({ import: encodedConstraints }).toString()
+  return `${window.location.origin}/e?${params}`
 }
 
 export const useImportParam = (paramName: string = 'import') => {
