@@ -33,6 +33,7 @@ const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
   let nonEmptyCells = constraints.fixedNumbers?.length ?? 0
   nonEmptyCells += sumBy(constraints.thermos, 'length') / 3
   nonEmptyCells += sumBy(constraints.arrows, 'length') / 3
+  nonEmptyCells += sumBy(constraints.renbans, 'length') / 3
   if (constraints.primaryDiagonal) {
     nonEmptyCells += 3
   }

@@ -18,6 +18,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.OddEven,
   SudokuVariant.TopBottom,
   SudokuVariant.Killer,
+  SudokuVariant.Renban,
   SudokuVariant.Mixed,
 ]
 
@@ -36,6 +37,7 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.AntiKing]: 'Anti King',
   [SudokuVariant.ExtraRegions]: 'Extra Regions',
   [SudokuVariant.OddEven]: 'Odd Even',
+  [SudokuVariant.Renban]: 'Renban',
   [SudokuVariant.Mixed]: 'Mixed',
 }
 
@@ -60,6 +62,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.ThermoCandidates]: 'Thermo Candidates',
   [StepRule.KillerCandidates]: 'Killer Cage Candidates',
   [StepRule.ArrowCandidates]: 'Arrow Candidates',
+  [StepRule.RenbanCandidates]: 'Renban Candidates',
   [StepRule.ArrowAdvancedCandidates]: 'Arrow Advanced Candidates',
   [StepRule.KropkiAdvancedCandidates]: 'Kropki Dot Chain Advanced Logic',
   [StepRule.Killer45]: 'Killer Sum Rule',
@@ -105,6 +108,7 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.ThermoCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.KillerCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.ArrowCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.RenbanCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.ArrowAdvancedCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.Killer45]: EStepRuleDifficulty.Medium,
   [StepRule.Kropki]: EStepRuleDifficulty.Medium,

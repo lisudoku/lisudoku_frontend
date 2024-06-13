@@ -13,6 +13,7 @@ export const computeWasmConstraints = (constraints: SudokuConstraints) => {
   wasmConstraints.extra_regions ||= []
   wasmConstraints.odd_cells ||= []
   wasmConstraints.even_cells ||= []
+  wasmConstraints.renbans ||= []
   wasmConstraints.kropki_negative ||= false
   wasmConstraints.primary_diagonal ||= false
   wasmConstraints.secondary_diagonal ||= false

@@ -5,6 +5,7 @@ import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faThermometer4, faXmark, faChessKnight, faChessKing, faSquare, faCircle as faCircleSolid, faBolt, faUpLong,
+  faLinesLeaning,
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 
@@ -34,6 +35,13 @@ const computeRules = (constraints: SudokuConstraints) => {
       {' '}
       The number placed in the arrow circle or oval must be the sum of digits placed
       in the cells that the arrow passes through. Digits may repeat on arrows.
+    </>)
+  }
+  if (!isEmpty(constraints.renbans)) {
+    rules.push(<>
+      <FontAwesomeIcon icon={faLinesLeaning} size="sm"/>
+      {' '}
+      Each gray line must contain a set of distinct, consecutive digits in any order.
     </>)
   }
   if (constraints.primaryDiagonal || constraints.secondaryDiagonal) {

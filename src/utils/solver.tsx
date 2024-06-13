@@ -60,6 +60,8 @@ const areaDisplay = (area: any, gridSize: number) => {
     return 'the positive diagonal'
   } else if (area.Arrow !== undefined) {
     return 'an arrow'
+  } else if (area.Renban !== undefined) {
+    return 'a renban'
   } else if (area === 'Grid') {
     return 'the grid'
   } else if (area.Cell !== undefined) {

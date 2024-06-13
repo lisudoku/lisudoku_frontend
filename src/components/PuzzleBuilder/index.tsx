@@ -84,6 +84,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const arrowConstraintType = useSelector(state => state.builder.arrowConstraintType)
   const currentThermo = useSelector(state => state.builder.currentThermo)
   const currentArrow = useSelector(state => state.builder.currentArrow)
+  const currentRenban = useSelector(state => state.builder.currentRenban)
   const cellMarks = useSelector(state => state.builder.cellMarks)
   const constraintGrid = useSelector(state => state.builder.constraintGrid!)
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
@@ -198,10 +199,15 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   if (currentArrow.arrowCells.length > 0 || currentArrow.circleCells.length > 0) {
     arrows = [ ...arrows, currentArrow ]
   }
+  let renbans = constraints?.renbans ?? []
+  if (currentRenban.length > 0) {
+    renbans = [ ...renbans, currentRenban ]
+  }
   const constraintPreview = {
     ...constraints,
     thermos,
     arrows,
+    renbans,
   }
 
   // Not really used, but SudokuGrid needs them... there are better solutions
@@ -287,6 +293,13 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   label="Even"
                   checked={constraintType === ConstraintType.EvenCells}
                   onChange={handleConstraintTypeChange} />
+            <Radio
+              name="build-item"
+              id={ConstraintType.Renban}
+              label="Renban"
+              checked={constraintType === ConstraintType.Renban}
+              onChange={handleConstraintTypeChange}
+            />
             <div className="flex flex-col w-full mt-2 gap-y-1">
               {constraintType === ConstraintType.Killer && (
                 <Input label="Sum"
@@ -322,7 +335,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               )}
               {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer,
                 ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble,
-                ConstraintType.ExtraRegions, ConstraintType.Arrow].includes(constraintType) && (
+                ConstraintType.ExtraRegions, ConstraintType.Arrow, ConstraintType.Renban
+              ].includes(constraintType) && (
                 <Button onClick={handleConstraintAdd}>Add</Button>
               )}
             </div>

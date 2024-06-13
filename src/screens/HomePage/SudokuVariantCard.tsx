@@ -115,6 +115,14 @@ const SudokuVariantCard = ({ variant, difficulty }: { variant: SudokuVariant, di
               <rect x="50" y="30" width="30" height="18" />
             </g>
           )}
+          {variant === SudokuVariant.Renban && (
+            <g className="opacity-60">
+              <polyline points="25,15 15,5 5,15 15,25" />
+              <polyline points="75,15 85,5 95,15 85,25" />
+              <polyline points="25,85 15,95 5,85 15,75" />
+              <polyline points="75,85 85,95 95,85 85,75" />
+            </g>
+          )}
         </svg>
       </div>
     </Link>

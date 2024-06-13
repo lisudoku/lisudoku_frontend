@@ -1,5 +1,5 @@
 import {
-  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, range, sortBy, sumBy, times, uniqWith, values,
+  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, max, min, range, sortBy, sumBy, times, uniqWith, values,
 } from 'lodash-es'
 import {
   CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints, SudokuVariant,
@@ -246,6 +246,7 @@ const getExtendedConstraintRegions = (constraints: SudokuConstraints): CellPosit
     regions.push(getSecondaryDiagonalCells(gridSize))
   }
   regions.push(...(constraints.thermos ?? []))
+  regions.push(...(constraints.renbans ?? []))
 
   return regions
 }
@@ -371,6 +372,23 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
     if (arrowSum > circleValue || (arrowFull && arrowSum !== circleValue)) {
       for (const { row, col } of [...arrow.circleCells, ...arrow.arrowCells]) {
         gridErrors[row][col] = true
+      }
+    }
+  }
+
+  // Renbans
+  for (const renban of constraints.renbans ?? []) {
+    if (renban.some(cell => !valuesGrid[cell.row][cell.col])) {
+      continue
+    }
+
+    const values = renban.map(cell => valuesGrid[cell.row][cell.col])
+    const maxValue = max(values)!
+    const minValue = min(values)!
+
+    if (maxValue - minValue + 1 !== renban.length) {
+      for (const cell of renban) {
+        gridErrors[cell.row][cell.col] = true
       }
     }
   }
@@ -620,6 +638,9 @@ export const detectVariant = (constraints: SudokuConstraints | null) => {
   }
   if (constraints.topBottom) {
     variants.push(SudokuVariant.TopBottom)
+  }
+  if (!isEmpty(constraints.renbans)) {
+    variants.push(SudokuVariant.Renban)
   }
   if (variants.length > 1) {
     return SudokuVariant.Mixed

@@ -56,6 +56,7 @@ export enum StepRule {
   ThermoCandidates = 'ThermoCandidates',
   KillerCandidates = 'KillerCandidates',
   ArrowCandidates = 'ArrowCandidates',
+  RenbanCandidates = 'RenbanCandidates',
   ArrowAdvancedCandidates = 'ArrowAdvancedCandidates',
   KropkiAdvancedCandidates = 'KropkiAdvancedCandidates',
   Killer45 = 'Killer45',

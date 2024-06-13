@@ -7,7 +7,7 @@ import {
   Arrow,
   CellMarks,
   CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
-  Region, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
+  Region, Renban, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
@@ -26,6 +26,7 @@ export enum ConstraintType {
   ExtraRegions = 'extraregions',
   OddCells = 'oddcells',
   EvenCells = 'evencells',
+  Renban = 'renban',
 }
 
 export enum ArrowConstraintType {
@@ -55,6 +56,7 @@ type BuilderState = {
   selectedCells: CellPosition[]
   currentThermo: Thermo
   currentArrow: Arrow
+  currentRenban: Renban
   constraintGrid: Grid | null
   killerSum: number | null
   manualChange: boolean
@@ -117,7 +119,7 @@ const handleConstraintChange = (state: BuilderState) => {
   state.manualChange = true
 }
 
-export const defaultConstraints = (gridSize: number) => ({
+export const defaultConstraints = (gridSize: number): Required<SudokuConstraints> => ({
   gridSize,
   fixedNumbers: [],
   regions: ensureDefaultRegions(gridSize),
@@ -134,6 +136,7 @@ export const defaultConstraints = (gridSize: number) => ({
   oddCells: [],
   evenCells: [],
   topBottom: false,
+  renbans: [],
 })
 
 export const builderSlice = createSlice({
@@ -164,6 +167,7 @@ export const builderSlice = createSlice({
       circleCells: [],
       arrowCells: [],
     },
+    currentRenban: [],
     killerSum: null,
     constraintGrid: null,
     manualChange: false,
@@ -262,6 +266,16 @@ export const builderSlice = createSlice({
             }
             break
           }
+          case ConstraintType.Renban: {
+            if (
+              state.currentRenban.length === 0 ||
+              !find(state.currentRenban, cell) &&
+              expandsArea8(state.currentRenban, cell)
+            ) {
+              state.currentRenban.push(cell)
+            }
+            break
+          }
           default:
             constraintChanged = false
         }
@@ -281,6 +295,7 @@ export const builderSlice = createSlice({
         circleCells: [],
         arrowCells: [],
       }
+      state.currentRenban = []
 
       const gridSize = state.constraints!.gridSize
       switch (state.constraintType) {
@@ -352,6 +367,20 @@ export const builderSlice = createSlice({
             circleCells: [],
             arrowCells: [],
           }
+          break
+        }
+        case ConstraintType.Renban: {
+          assert(state.currentRenban.length > 0, 'Click on a cell to start a renban line.')
+          assert(
+            state.currentRenban.length > 1,
+            'Renban line is too short. Click on other cells to expand it.'
+          )
+          assert(
+            state.currentRenban.length <= state.constraints!.gridSize,
+            'Renban line is too long. Delete it with Backspace.'
+          )
+          state.constraints!.renbans!.push(state.currentRenban)
+          state.currentRenban = []
           break
         }
         case ConstraintType.Regions: {
@@ -437,6 +466,16 @@ export const builderSlice = createSlice({
             circleCells: [],
             arrowCells: [],
           }
+        }
+
+        // Renban
+        if (state.currentRenban.find(isSelectedCell)) {
+          state.currentRenban = []
+        }
+
+        const renbanIndex = findIndex(state.constraints!.renbans, (renban: Renban) => renban.some(isSelectedCell))
+        if (renbanIndex !== -1) {
+          state.constraints!.renbans?.splice(renbanIndex, 1)
         }
 
         const arrowIndex = findIndex(state.constraints!.arrows, (arrow: Arrow) => (

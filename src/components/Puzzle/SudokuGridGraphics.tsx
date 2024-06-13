@@ -1,7 +1,7 @@
 import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
 import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
-import { Arrow, CellMarks, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { Arrow, CellMarks, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, Renban, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid } from './hooks'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
@@ -110,6 +110,47 @@ const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: n
   <>
     {thermos.map((thermo, index) => (
       <ThermoGraphics key={index} thermo={thermo} cellSize={cellSize} />
+    ))}
+  </>
+)
+
+const RenbanGraphics = ({ renban, cellSize }: { renban: Renban, cellSize: number }) => {
+  const half = cellSize / 2
+  const strokeWidth = cellSize / 8
+
+  const points = renban.map((cell, index) => {
+    let x: number = cell.col * cellSize + half + 1
+    let y: number = cell.row * cellSize + half + 1
+    if (index > 0 && index === renban.length - 1) {
+      const prevCell = renban[index - 1]
+      const dirX = Math.sign(cell.col - prevCell.col)
+      const dirY = Math.sign(cell.row - prevCell.row)
+      x += dirX * half / 5
+      y += dirY * half / 5
+    }
+    return `${x},${y}`
+  }).join(' ')
+
+  // Note: Reusing thermo fill color
+
+  return (
+    <g className="renban fill-thermo stroke-thermo opacity-60">
+      <polyline
+        points={points}
+        style={{
+          fill: 'none',
+          strokeWidth,
+          strokeLinecap: 'round',
+        }}
+      />
+    </g>
+  )
+}
+
+const RenbansGraphics = ({ renbans, cellSize }: { renbans: Renban[], cellSize: number }) => (
+  <>
+    {renbans.map((renban, index) => (
+      <RenbanGraphics key={index} renban={renban} cellSize={cellSize} />
     ))}
   </>
 )
@@ -619,7 +660,7 @@ const SudokuConstraintsGraphics = (
 ) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
-    oddCells, evenCells,
+    oddCells, evenCells, renbans,
   } = constraints
   const onGridClick = useOnGridClick(cellSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
@@ -635,6 +676,7 @@ const SudokuConstraintsGraphics = (
       <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
+      <RenbansGraphics renbans={renbans || []} cellSize={cellSize} />
       <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
       <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />

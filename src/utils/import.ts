@@ -265,6 +265,8 @@ const importFpuzzlesPuzzle = (url: string): ImportResult => {
     oddCells: (data.odd ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
     evenCells: (data.even ?? []).map(({ cell }: { cell: string }) => cellStringToObject(cell)),
     topBottom: false,
+    // TODO: find f-puzzle with renban
+    // renbans: data.renban
   }
 
   let message = 'Puzzle imported'

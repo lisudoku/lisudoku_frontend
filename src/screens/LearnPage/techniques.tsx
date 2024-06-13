@@ -446,6 +446,15 @@ const TECHNIQUES: Technique[] = [
     </>,
   },
   {
+    id: StepRule.RenbanCandidates,
+    summary: <>
+      Only applies to Renban puzzles.
+      <br/>
+      For a renban, find all digit combinations that are a unique consecutive set of digits.
+      Remove all candidate digits that do not appear in any combination.
+    </>,
+  },
+  {
     id: StepRule.TurbotFish,
     summary: <>
       For a digit X there are 2 strong links (A-B, C-D) and one of their ends see each other

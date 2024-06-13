@@ -24,6 +24,7 @@ export enum SudokuVariant {
   AntiKing = 'antiking',
   ExtraRegions = 'extraregions',
   OddEven = 'oddeven',
+  Renban = 'renban',
 }
 
 export enum SudokuDifficulty {
@@ -52,6 +53,7 @@ export type SudokuConstraints = {
   oddCells?: CellPosition[]
   evenCells?: CellPosition[]
   topBottom?: boolean
+  renbans?: Renban[]
 }
 
 export type FixedNumber = {
@@ -83,6 +85,8 @@ export enum KropkiDotType {
   Consecutive = 'Consecutive',
   Double = 'Double',
 }
+
+export type Renban = CellPosition[]
 
 export type Puzzle = {
   id?: string
