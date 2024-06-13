@@ -244,7 +244,7 @@ export const useTvPlayerWebsocket = () => {
   const { ready, sendMessage } = useWebsocket('TvChannel', null, { is_player: true }, isExternal)
 
   useEffect(() => {
-    if (!ready || isExternal === undefined || publicId === undefined) {
+    if (!ready || publicId === undefined) {
       return
     }
     if (isExternal) {
