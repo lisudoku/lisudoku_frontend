@@ -47,7 +47,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         name: 'Running brute solver',
         context: {
           url: exportToLisudokuSolver(constraints),
-          constraints: constraints,
+          constraints,
         },
       })
     }
@@ -60,7 +60,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         name: 'Running logical solver',
         context: {
           url: exportToLisudokuSolver(constraints),
-          constraints: constraints,
+          constraints,
         },
       })
     }
@@ -113,11 +113,15 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
     if (bruteSolution?.solution_count === 1 &&
         logicalSolution &&
         logicalSolution.solution_type !== SolutionType.Full &&
-        !setterMode) {
+        !setterMode &&
+        constraints) {
       honeybadger.notify({
         name: 'Unsolved puzzle',
         message: `Couldn't solve ${variant} puzzle`,
-        context: constraints!,
+        context: {
+          url: exportToLisudokuSolver(constraints),
+          constraints,
+        },
       })
     }
   }, [bruteSolution, logicalSolution, variant, constraints, setterMode])
