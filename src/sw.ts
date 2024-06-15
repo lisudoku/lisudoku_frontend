@@ -11,7 +11,7 @@ import { sample } from 'lodash-es'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
 import { precache, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
-import { NetworkFirst } from 'workbox-strategies'
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { differenceInDays, parseISO } from 'date-fns'
 
 declare const self: ServiceWorkerGlobalScope
@@ -224,6 +224,13 @@ if (import.meta.env.PROD) {
     createHandlerBoundToURL('index.html')
   )
 }
+
+// Make sure to keep serving old assets while updating everything
+// This helps avoid situations like having old index.html but only new asset files
+registerRoute(
+  ({ url }) => isResource(url),
+  new StaleWhileRevalidate(),
+)
 
 // Catch-all GET handler
 registerRoute(
