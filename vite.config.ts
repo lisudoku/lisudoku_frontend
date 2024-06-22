@@ -6,15 +6,13 @@ import svgr from 'vite-plugin-svgr'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa'
+import legacy from '@vitejs/plugin-legacy'
 import manifest from './src/manifest.json'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
   const env = loadEnv(mode, process.cwd());
-
-  console.log(process.env);
-  console.log(env);
 
   const hbPluginOptions = {
     apiKey: env.VITE_HONEYBADGER_API_KEY,
@@ -33,6 +31,10 @@ export default defineConfig(({ mode }) => {
       }),
       wasm(),
       topLevelAwait(),
+      // Legacy polyfills
+      legacy({
+        targets: ['defaults', 'not IE 11'],
+      }),
       VitePWA({
         registerType: 'autoUpdate',
         strategies: 'injectManifest',
@@ -43,7 +45,7 @@ export default defineConfig(({ mode }) => {
           type: 'module',
         },
         manifest: manifest as Partial<ManifestOptions>,
-      })
+      }),
     ],
     worker: {
       plugins: () => [
