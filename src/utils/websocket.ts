@@ -80,7 +80,7 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
   }, [channel])
 
   return {
-    ready: !!(connected && wsUserId),
+    ready: Boolean(connected && wsUserId),
     sendMessage,
     error: error || !isOnline,
     errorReason: error ? 'rejected' : !isOnline ? 'offline' : null,
