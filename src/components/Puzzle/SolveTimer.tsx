@@ -11,6 +11,8 @@ import Typography from 'src/shared/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { SudokuDifficulty } from 'src/types/sudoku'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { exportToLisudokuSolver } from 'src/utils/import'
 
 const getSolvedEmoji = (difficulty: SudokuDifficulty, solveTime: number) => {
   switch (difficulty) {
@@ -50,6 +52,14 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
 
     // Check locally if it's correct first
     if (!checkSolved(constraints, grid)) {
+      honeybadger.notify({
+        name: 'Full grid unsolved',
+        context: {
+          id,
+          url: exportToLisudokuSolver(constraints),
+          grid,
+        },
+      })
       return
     }
 
