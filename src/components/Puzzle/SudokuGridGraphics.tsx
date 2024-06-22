@@ -118,16 +118,9 @@ const RenbanGraphics = ({ renban, cellSize }: { renban: Renban, cellSize: number
   const half = cellSize / 2
   const strokeWidth = cellSize / 8
 
-  const points = renban.map((cell, index) => {
+  const points = renban.map((cell) => {
     let x: number = cell.col * cellSize + half + 1
     let y: number = cell.row * cellSize + half + 1
-    if (index > 0 && index === renban.length - 1) {
-      const prevCell = renban[index - 1]
-      const dirX = Math.sign(cell.col - prevCell.col)
-      const dirY = Math.sign(cell.row - prevCell.row)
-      x += dirX * half / 5
-      y += dirY * half / 5
-    }
     return `${x},${y}`
   }).join(' ')
 
