@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import {
+  compact,
   differenceWith, find, findIndex, isEmpty, isEqual,
   pull, pullAllWith, remove, sortBy, uniqWith, xorWith,
 } from 'lodash-es'
@@ -210,7 +211,8 @@ export const builderSlice = createSlice({
           state.selectedCells = uniqWith([ ...state.selectedCells, cell ], isEqual)
         }
       } else {
-        state.selectedCells = [ cell ]
+        // Passing a null cell will clear the selection
+        state.selectedCells = compact([ cell ])
       }
 
       let anyConstraintsChanged = false

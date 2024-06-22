@@ -19,6 +19,7 @@
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "final-form": "^4.20.7",
+    "html2canvas": "^1.4.1",
     "lisudoku-solver": "0.1.25",
     "lodash-es": "^4.17.21",
     "lz-string": "^1.4.4",
@@ -31,6 +32,7 @@
     "react-useinterval": "^1.0.2",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
+    "use-react-screenshot": "^4.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

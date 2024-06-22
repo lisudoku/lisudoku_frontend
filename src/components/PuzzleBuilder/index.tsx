@@ -1,12 +1,14 @@
-import { useCallback, useEffect, ChangeEvent, useMemo } from 'react'
+import { useCallback, useEffect, ChangeEvent, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { cloneDeep, inRange } from 'lodash-es'
 import classNames from 'classnames'
+import { useScreenshot, createFileName } from 'use-react-screenshot';
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
   addConstraint, ArrowConstraintType, changeAntiKing, changeAntiKnight, changeArrowConstraintType, changeConstraintType, changeInputActive, changeKillerSum,
   changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
+  changeSelectedCell,
   changeTopBottom,
   ConstraintType, initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
@@ -16,16 +18,22 @@ import Button from 'src/shared/Button'
 import Checkbox from 'src/shared/Checkbox'
 import CopyToClipboard from '../CopyToClipboard'
 import PuzzleActions from './PuzzleActions'
-import { Grid, Puzzle, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { Grid, SudokuConstraints } from 'src/types/sudoku'
 import Input from 'src/shared/Input'
 import Typography from 'src/shared/Typography'
 import { exportToLisudokuPuzzle, exportToLisudokuSolver, importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
-import { fetchRandomPuzzle } from 'src/utils/apiService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLink, faDice, faUpload } from '@fortawesome/free-solid-svg-icons'
+import { faLink, faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
+
+const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
+  const a = document.createElement('a')
+  a.href = image
+  a.download = createFileName(extension, name)
+  a.click()
+}
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const { gridSize: paramGridSize } = useParams()
@@ -90,7 +98,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
   const bruteSolution = useSelector(state => state.builder.bruteSolution?.solution)
   const logicalSolution = useSelector(state => state.builder.logicalSolution?.solution)
-  const manualChange = useSelector(state => state.builder.manualChange)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
@@ -159,13 +166,23 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     }
   }, [runImport])
 
-  const handleRandomClick = useCallback(() => {
-    if (!manualChange || window.confirm('Are you sure you want to import a random puzzle?')) {
-      fetchRandomPuzzle(SudokuVariant.Classic, SudokuDifficulty.Easy9x9, [], null).then((puzzle: Puzzle) => {
-        dispatch(receivedPuzzle(puzzle.constraints))
-      })
-    }
-  }, [dispatch, manualChange])
+  const gridWrapperRef = useRef<HTMLDivElement>(null)
+
+  const [_image, takeScreenShot] = useScreenshot({
+    type: 'image/png',
+    quality: 1.0,
+  })
+
+  const handleDownloadClick = useCallback(() => {
+    // Clear selected cell and generate the png
+    dispatch(changeSelectedCell({ cell: null }))
+    // Use the timeout to wait for the dispatch
+    setTimeout(() => {
+      if (gridWrapperRef.current) {
+        takeScreenShot(gridWrapperRef.current).then(downloadImage)
+      }
+    }, 1)
+  }, [dispatch, takeScreenShot, gridWrapperRef])
 
   const computeShareSolutionURL = useCallback(() => exportToLisudokuSolver(constraints!), [constraints])
 
@@ -221,14 +238,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   return (
     <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
-      <SudokuGrid
-        constraints={constraintPreview}
-        grid={usedGrid}
-        cellMarks={usedMarks}
-        selectedCells={selectedCells}
-        checkErrors={constraintType === ConstraintType.FixedNumber}
-        onCellClick={onCellClick}
-      />
+      {/* wrap the grid so we can screenshot it using the ref */}
+      <div ref={gridWrapperRef} className="bg-primary">
+        <SudokuGrid
+          constraints={constraintPreview}
+          grid={usedGrid}
+          cellMarks={usedMarks}
+          selectedCells={selectedCells}
+          checkErrors={constraintType === ConstraintType.FixedNumber}
+          onCellClick={onCellClick}
+        />
+      </div>
       <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
         <div className="flex flex-col">
           <Typography variant="h6">
@@ -375,9 +395,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             <FontAwesomeIcon icon={faUpload} />
             {' Import'}
           </Button>
-          <Button className="w-1/2" variant="outlined" onClick={handleRandomClick}>
-            <FontAwesomeIcon icon={faDice} />
-            {' Random'}
+          <Button className="w-1/2" variant="outlined" onClick={handleDownloadClick}>
+            <FontAwesomeIcon icon={faDownload} />
+            {' png'}
           </Button>
         </div>
         <div className="flex w-full gap-x-1">
