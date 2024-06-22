@@ -35,6 +35,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const puzzleAdding = useSelector(state => state.builder.puzzleAdding)
   const sourceCollectionId = useSelector(state => state.builder.sourceCollectionId)
   const author = useSelector(state => state.builder.author)
+  const manualChange = useSelector(state => state.builder.manualChange)
 
   const addPuzzleEnabled = (
     logicalSolution?.solution_type === SolutionType.Full &&
@@ -42,7 +43,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   )
 
   const handleBruteSolveClick = useCallback(() => {
-    if (!setterMode && constraints) {
+    if (!setterMode && constraints && manualChange) {
       honeybadger.notify({
         name: 'Running brute solver',
         context: {
@@ -55,7 +56,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   }, [constraints, runBruteSolver, setterMode])
 
   const handleLogicalSolveClick = useCallback(() => {
-    if (!setterMode && constraints) {
+    if (!setterMode && constraints && manualChange) {
       honeybadger.notify({
         name: 'Running logical solver',
         context: {
