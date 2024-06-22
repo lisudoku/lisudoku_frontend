@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
@@ -8,47 +9,66 @@ import { ManifestOptions, VitePWA } from 'vite-plugin-pwa'
 import manifest from './src/manifest.json'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  base: '/',
-  plugins: [
-    react(), 
-    viteTsconfigPaths(),
-    svgr({
-      include: '**/*.svg?react',
-    }),
-    wasm(),
-    topLevelAwait(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'sw.ts',
-      devOptions: {
-        enabled: true,
-        type: 'module',
-      },
-      manifest: manifest as Partial<ManifestOptions>,
-    })
-  ],
-  worker: {
-    plugins: () => [
+export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production';
+  const env = loadEnv(mode, process.cwd());
+
+  console.log(process.env);
+  console.log(env);
+
+  const hbPluginOptions = {
+    apiKey: env.VITE_HONEYBADGER_API_KEY,
+    assetsUrl: 'https://lisudoku.xyz',
+    environment: mode,
+    deploy: true,
+  }
+
+  return {
+    base: '/',
+    plugins: [
+      react(),
+      viteTsconfigPaths(),
+      svgr({
+        include: '**/*.svg?react',
+      }),
       wasm(),
       topLevelAwait(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
+        devOptions: {
+          enabled: true,
+          type: 'module',
+        },
+        manifest: manifest as Partial<ManifestOptions>,
+      })
     ],
-  },
-  build: {
-    outDir: 'build',
-    sourcemap: true,
-  },
-  server: {
-    open: true,
-  },
-  resolve: {
-    alias: {
-      src: "/src",
+    worker: {
+      plugins: () => [
+        wasm(),
+        topLevelAwait(),
+      ],
     },
-  },
-  define: {
-    global: {},
-  },
-});
+    build: {
+      outDir: 'build',
+      sourcemap: true,
+      rollupOptions: {
+        // Upload sourcemaps on deployment
+        plugins: isProd ? [ honeybadgerRollupPlugin(hbPluginOptions) ] : [],
+      }
+    },
+    server: {
+      open: true,
+    },
+    resolve: {
+      alias: {
+        src: "/src",
+      },
+    },
+    define: {
+      global: {},
+    },
+  }
+})
