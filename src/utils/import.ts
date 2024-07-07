@@ -20,6 +20,7 @@ enum SourceType {
   LisudokuUrl = 'lisudoku-url',
   LisudokuInline = 'lisudoku-inline',
   Fpuzzles = 'f-puzzles',
+  Ctc = 'ctc',
   GridString = 'grid-string',
 }
 
@@ -32,12 +33,15 @@ export type ImportResult = {
 
 const LISUDOKU_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/p\/(.+)/
 const FPUZZLES_REGEX = /(?:https:\/\/)?(?:www\.)?f-puzzles\.com\/\?load=(.+)/
+const CTC_REGEX = /(?:https:\/\/)?app\.crackingthecryptic\.com\/(.+)/
 
 const detectSource = (url: string) => {
   if (LISUDOKU_REGEX.test(url)) {
     return SourceType.LisudokuUrl
   } else if (FPUZZLES_REGEX.test(url)) {
     return SourceType.Fpuzzles
+  } else if (CTC_REGEX.test(url)) {
+    return SourceType.Ctc
   } else if (isInlineData(url)) {
     return SourceType.LisudokuInline
   } else if (isGridString(url)) {
@@ -54,10 +58,17 @@ const isInlineData = (data: string) => (
 export const importPuzzle = async (url: string): Promise<ImportResult> => {
   const source = detectSource(url)
 
+  if (source === SourceType.Ctc) {
+    return {
+      error: true,
+      message: 'CTC imports are not supported',
+    }
+  }
+
   if (source === null) {
     return {
       error: true,
-      message: "Invalid puzzle data.",
+      message: 'Invalid puzzle data.',
     }
   }
 
