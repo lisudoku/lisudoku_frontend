@@ -48,7 +48,7 @@ const detectSource = (url: string) => {
 }
 
 const isInlineData = (data: string) => (
-  !isEmpty(decompressFromBase64(data))
+  !isEmpty(decompressFromBase64(decodeURIComponent(data)))
 )
 
 export const importPuzzle = async (url: string): Promise<ImportResult> => {
@@ -111,7 +111,7 @@ const importLisudokuPuzzle = async (url: string): Promise<ImportResult> => {
 }
 
 const importLisudokuInline = (encodedData: string): ImportResult => {
-  const constraintsStr = decompressFromBase64(encodedData)
+  const constraintsStr = decompressFromBase64(decodeURIComponent(encodedData))
   if (constraintsStr === null) {
     return {
       error: true,
