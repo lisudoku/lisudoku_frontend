@@ -31,7 +31,7 @@ export type ImportResult = {
 }
 
 const LISUDOKU_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/p\/(.+)/
-const FPUZZLES_REGEX = /https:\/\/(?:www\.)?f-puzzles\.com\/\?load=(.+)/
+const FPUZZLES_REGEX = /(?:https:\/\/)?(?:www\.)?f-puzzles\.com\/\?load=(.+)/
 
 const detectSource = (url: string) => {
   if (LISUDOKU_REGEX.test(url)) {
