@@ -51,7 +51,8 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     onIsSolvedLoadingChange(true)
 
     // Check locally if it's correct first
-    if (!checkSolved(constraints, grid)) {
+    const [localSolved] = checkSolved(constraints, grid)
+    if (!localSolved) {
       honeybadger.notify({
         name: 'Full grid unsolved',
         context: {
@@ -60,6 +61,10 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
           grid,
         },
       })
+      dispatch(responseSolved({
+        solved: false,
+      }))
+      onIsSolvedLoadingChange(false)
       return
     }
 
