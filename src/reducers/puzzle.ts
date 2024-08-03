@@ -126,11 +126,13 @@ const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, action
 const markUpdate = (state: PuzzleState) => {
   state.lastUpdate = formatISO(new Date())
   state.lastUpdateTimer = state.solveTimer
+  state.solved = null
 }
 
 const clearUpdate = (state: PuzzleState) => {
   state.lastUpdate = null
   state.lastUpdateTimer = null
+  state.solved = null
 }
 
 export const puzzleSlice = createSlice({

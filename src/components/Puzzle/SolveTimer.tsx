@@ -44,7 +44,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
   const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
 
   useEffect(() => {
-    if (constraints === undefined || solved || !grid || !gridFull) {
+    if (constraints === undefined || solved !== null || !grid || !gridFull) {
       return
     }
 
