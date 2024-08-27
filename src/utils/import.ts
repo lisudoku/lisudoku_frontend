@@ -17,7 +17,8 @@ const FPUZZLES_UNIMPLEMENTED_CONSTRAINTS = [
 ]
 
 enum SourceType {
-  LisudokuUrl = 'lisudoku-url',
+  LisudokuDbPuzzleUrl = 'lisudoku-db-puzzle-url',
+  LisudokuImportPuzzleUrl = 'lisudoku-import-puzzle-url',
   LisudokuInline = 'lisudoku-inline',
   Fpuzzles = 'f-puzzles',
   Ctc = 'ctc',
@@ -31,13 +32,16 @@ export type ImportResult = {
   constraints?: SudokuConstraints
 }
 
-const LISUDOKU_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/p\/(.+)/
+const LISUDOKU_DB_PUZZLE_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/p\/(.+)/
+const LISUDOKU_IMPORT_PUZZLE_REGEX = /(?:https:\/\/(?:www\.)?lisudoku\.xyz|http:\/\/localhost:\d+)\/e\?import=(.+)/
 const FPUZZLES_REGEX = /(?:https:\/\/)?(?:www\.)?f-puzzles\.com\/\?load=(.+)/
 const CTC_REGEX = /(?:https:\/\/)?app\.crackingthecryptic\.com\/(.+)/
 
 const detectSource = (url: string) => {
-  if (LISUDOKU_REGEX.test(url)) {
-    return SourceType.LisudokuUrl
+  if (LISUDOKU_DB_PUZZLE_REGEX.test(url)) {
+    return SourceType.LisudokuDbPuzzleUrl
+  } else if (LISUDOKU_IMPORT_PUZZLE_REGEX.test(url)) {
+    return SourceType.LisudokuImportPuzzleUrl
   } else if (FPUZZLES_REGEX.test(url)) {
     return SourceType.Fpuzzles
   } else if (CTC_REGEX.test(url)) {
@@ -55,6 +59,7 @@ const isInlineData = (data: string) => (
   !isEmpty(decompressFromBase64(decodeURIComponent(data)))
 )
 
+// TODO: extract to separate library
 export const importPuzzle = async (url: string): Promise<ImportResult> => {
   const source = detectSource(url)
 
@@ -73,15 +78,16 @@ export const importPuzzle = async (url: string): Promise<ImportResult> => {
   }
 
   switch (source) {
-    case SourceType.LisudokuUrl: return importLisudokuPuzzle(url)
+    case SourceType.LisudokuDbPuzzleUrl: return importLisudokuDbPuzzle(url)
+    case SourceType.LisudokuImportPuzzleUrl: return importLisudokuImportPuzzle(url)
     case SourceType.LisudokuInline: return importLisudokuInline(url)
     case SourceType.Fpuzzles: return importFpuzzlesPuzzle(url)
     case SourceType.GridString: return importGridString(url)
   }
 }
 
-const importLisudokuPuzzle = async (url: string): Promise<ImportResult> => {
-  const match = url.match(LISUDOKU_REGEX)
+const importLisudokuDbPuzzle = async (url: string): Promise<ImportResult> => {
+  const match = url.match(LISUDOKU_DB_PUZZLE_REGEX)
   if (!match) {
     return {
       error: false,
@@ -141,6 +147,19 @@ const importLisudokuInline = (encodedData: string): ImportResult => {
     message: 'Puzzle imported successfully',
     constraints,
   }
+}
+
+const importLisudokuImportPuzzle = (url: string): ImportResult => {
+  const match = url.match(LISUDOKU_IMPORT_PUZZLE_REGEX)
+  if (!match) {
+    return {
+      error: false,
+      message: "[lisudoku-import-url] Something went wrong.",
+    }
+  }
+
+  const encodedData = match[1]
+  return importLisudokuInline(encodedData)
 }
 
 const importGridString = (gridString: string): ImportResult => {
