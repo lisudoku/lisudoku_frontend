@@ -20,6 +20,20 @@ type Border = {
   y2: number
 }
 
+const OutsideBorderGraphics = ({ gridSize, cellSize }: OutsideBorderGraphicsProps) => (
+  <>
+    <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
+    <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
+    <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
+    <line x1={gridSize * cellSize + 1} y1="0" x2={gridSize * cellSize + 1} y2={gridSize * cellSize + 2} />
+  </>
+)
+
+type OutsideBorderGraphicsProps = {
+  gridSize: number
+  cellSize: number
+}
+
 const BordersGraphics = ({ gridSize, regions, cellSize }: BordersGraphicsProps) => {
   const regionGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   regions.forEach((regionCells, regionIndex) => {
@@ -53,10 +67,7 @@ const BordersGraphics = ({ gridSize, regions, cellSize }: BordersGraphicsProps) 
 
   return (
     <g className="regions stroke-cell-border-strong">
-      <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
-      <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
-      <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
-      <line x1={gridSize * cellSize + 1} y1="0" x2={gridSize * cellSize + 1} y2={gridSize * cellSize + 2} />
+      <OutsideBorderGraphics gridSize={gridSize} cellSize={cellSize} />
       {borders.map(({ x1, y1, x2, y2 }, index) => (
         <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
       ))}
@@ -68,6 +79,24 @@ type BordersGraphicsProps = {
   gridSize: number
   regions: Region[]
   cellSize: number
+}
+
+const BorderHighlightsGraphics = ({ gridSize, cellSize, color }: BorderHighlightsGraphicsProps) => {
+  if (color === undefined) {
+    return null
+  }
+
+  return (
+    <g className={classNames('border-highlights', color)}>
+      <OutsideBorderGraphics gridSize={gridSize} cellSize={cellSize} />
+    </g>
+  )
+}
+
+type BorderHighlightsGraphicsProps = {
+  gridSize: number
+  cellSize: number
+  color?: string
 }
 
 const ThermoGraphics = ({ thermo, cellSize }: { thermo: Thermo, cellSize: number }) => {
@@ -648,9 +677,10 @@ type CellHighlightsProps = {
   killerActive: boolean
 }
 
-const SudokuConstraintsGraphics = (
-  { cellSize, constraints, cellMarks, grid, checkErrors, selectedCells, onCellClick, highlightedCells }: SudokuConstraintsGraphicsProps
-) => {
+const SudokuConstraintsGraphics = ({
+  cellSize, constraints, cellMarks, grid, checkErrors, selectedCells,
+  onCellClick, highlightedCells, borderHighlightColor,
+}: SudokuConstraintsGraphicsProps) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
     oddCells, evenCells, renbans,
@@ -681,6 +711,7 @@ const SudokuConstraintsGraphics = (
       />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
       <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
+      <BorderHighlightsGraphics gridSize={gridSize} cellSize={cellSize} color={borderHighlightColor} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
       <CornerMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
       <CenterMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
@@ -699,6 +730,7 @@ type SudokuConstraintsGraphicsProps = {
   selectedCells?: CellPosition[]
   onCellClick?: Function
   highlightedCells?: CellHighlight[]
+  borderHighlightColor?: string
 }
 
 export default SudokuConstraintsGraphics

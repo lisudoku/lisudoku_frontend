@@ -1,10 +1,11 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import SudokuGrid from './SudokuGrid'
 import SudokuControls from './SudokuControls'
 import SudokuMisc from './SudokuMisc'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useCellHighlights, useControlCallbacks, useTvPlayerWebsocket } from './hooks'
 import { changePaused } from 'src/reducers/puzzle'
+import { gridIsFull } from 'src/utils/sudoku'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
@@ -17,6 +18,21 @@ const PuzzleComponent = () => {
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
+  const solved = useSelector(state => state.puzzle.solved)
+
+  const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
+  const borderHighlightColor = useMemo(() => {
+    if (!gridFull) {
+      return undefined
+    }
+    if (isSolvedLoading) {
+      return 'stroke-yellow-600'
+    }
+    if (solved === false) {
+      return 'stroke-red-600'
+    }
+    return undefined
+  }, [gridFull, isSolvedLoading, solved])
 
   const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
 
@@ -49,6 +65,7 @@ const PuzzleComponent = () => {
           paused={paused}
           onUnpause={handlePauseClick}
           highlightedCells={cellHighlights}
+          borderHighlightColor={borderHighlightColor}
         />
       </div>
       <div className="order-2 md:order-3 w-full md:w-fit md:pl-5">
