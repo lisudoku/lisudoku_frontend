@@ -279,9 +279,9 @@ export const puzzleSlice = createSlice({
       state.solved = null
     },
     responseSolved(state, action) {
+      markUpdate(state)
       state.solved = action.payload.solved
       state.solveStats = action.payload.solveStats
-      markUpdate(state)
     },
     fetchNewPuzzle(state) {
       // This will trigger refetching the puzzle
