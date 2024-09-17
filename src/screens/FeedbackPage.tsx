@@ -5,6 +5,7 @@ import Textarea from 'src/shared/Textarea'
 import ErrorPage from 'src/components/ErrorPage'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { useSelector } from 'src/hooks'
+import Input from 'src/shared/Input'
 
 const FeedbackPage = () => {
   const [feedback, setFeedback] = useState('')
@@ -34,7 +35,8 @@ const FeedbackPage = () => {
                 url="https://lisudoku.xyz/feedback"
                 description="Send any feedback :)" />
       {isOnline ? (
-        <>
+        <div className="flex flex-col gap-3">
+          <Input label="Email (optional, only if you want a response)" color="white" />
           <Textarea
             label="Send any feedback!"
             className="h-52"
@@ -47,7 +49,7 @@ const FeedbackPage = () => {
           >
             Send
           </Button>
-        </>
+        </div>
       ) : (
         <ErrorPage text="You can't submit feedback while offline" />
       )}
