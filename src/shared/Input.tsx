@@ -4,8 +4,7 @@ import { useCallback } from 'react'
 const EXTRA_CLASSES  = '!text-primary'
 const CONTAINER_CLASSES = 'min-w-0'
 
-const Input = (props: any) => {
-  const propsOnChange = props.onChange
+const Input = ({ onChange: propsOnChange, className, containerProps, ...props }: any) => {
   const propsType = props.type
   const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue
@@ -19,14 +18,14 @@ const Input = (props: any) => {
 
   return (
     <MuiInput 
-      {...props}
       color="cyan"
-      className={`${EXTRA_CLASSES} ${props.className ?? ''}`}
+      className={`${EXTRA_CLASSES} ${className ?? ''}`}
       containerProps={{
-        ...props.containerProps,
-        className: `${CONTAINER_CLASSES} ${props.containerProps?.className ?? ''}`,
+        ...containerProps,
+        className: `${CONTAINER_CLASSES} ${containerProps?.className ?? ''}`,
       }}
       onChange={onChange}
+      {...props}
     >
       {props.children}
     </MuiInput>
