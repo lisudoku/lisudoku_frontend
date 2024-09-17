@@ -16,16 +16,25 @@ const useComputeHintElement = () => {
   const solution = useSelector(state => state.puzzle.controls.hintSolution)
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
   const cellMarks = useSelector(state => state.puzzle.cellMarks!)
-  const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
   const gridSize = useSelector(state => state.puzzle.data?.constraints.gridSize)
+  const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
+  const publicId = useSelector(state => state.puzzle.data?.publicId)
+  const grid = useSelector(state => state.puzzle.grid)
+  const context = useMemo(() => ({
+    isExternal,
+    publicId,
+    grid,
+  }), [isExternal, publicId, grid])
 
   const handleBigHintClick = useCallback(() => {
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
   const [ message, filteredSteps, error ] = useMemo(
-    () => gridSize === undefined ? [] : computeHintContent(solution, hintLevel!, cellMarks, isExternal, gridSize),
-    [solution, hintLevel, cellMarks, isExternal, gridSize]
+    () => gridSize === undefined ? [] : computeHintContent(
+      solution, hintLevel!, cellMarks, gridSize, isExternal, context
+    ),
+    [solution, hintLevel, cellMarks, gridSize, isExternal, context]
   )
 
   if (solution === null) {

@@ -223,7 +223,7 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
   }
 }
 
-const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal: boolean, gridSize: number) => {
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean, context: object) => {
   const singleIndex = steps.findIndex(step => (
     [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo].includes(step.rule))
   )
@@ -231,7 +231,10 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
   if (singleIndex === -1) {
     honeybadger.notify({
       name: 'No hint',
-      message: `external = ${isExternal}`,
+      context: {
+        steps,
+        ...context
+      },
     })
     let message
     if (isExternal) {
@@ -245,9 +248,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
       // This shouldn't ever happen :D
       message = <>
         Well, this is embarrassing... 😅 Can't figure this out either...
-        You should contact the admins on {' '}
-        <ExternalLink url={DISCORD_INVITE_URL}>Discord</ExternalLink>
-        !
+        We received a notification and will fix it.
       </>
     }
     return [ message, true ]
@@ -284,7 +285,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, isExternal
 
 export const computeHintContent = (
   solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, cellMarks: CellMarks[][],
-  isExternal: boolean, gridSize: number,
+  gridSize: number, isExternal: boolean, context: object,
 ) => {
   if (!solution) {
     return [ '', false ]
@@ -300,7 +301,7 @@ export const computeHintContent = (
   const steps = solution.steps!.filter(step => !isRedundantStep(step, cellMarks));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
-  const [ message, error ] = computeHintText(steps, hintLevel, isExternal, gridSize)
+  const [ message, error ] = computeHintText(steps, hintLevel, gridSize, isExternal, context)
 
   return [ message, filteredSteps, error ]
 }
