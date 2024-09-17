@@ -127,13 +127,21 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
       {solveCount >= 2 && (
         <>
           {' '}
-          {solveCount >= 5 ? (
-            <FontAwesomeIcon icon={faTrophy} color={solveCount >= 15 ? 'gold' : solveCount >= 10 ? 'silver' : '#cd7f32'} />
-          ) : (
+          {solveCount < 5 ? (
             <span className="fa-layers fa-fw">
               <FontAwesomeIcon icon={faCircle} color="yellow" size="sm" />
               <FontAwesomeIcon icon={faFire} color="red" size="lg" />
             </span>
+          ) : solveCount < 10 ? (
+            <FontAwesomeIcon icon={faTrophy} color="#cd7f32" />
+          ) : solveCount < 15 ? (
+            <FontAwesomeIcon icon={faTrophy} color="silver" />
+          ) : solveCount < 50 ? (
+            <FontAwesomeIcon icon={faTrophy} color="gold" />
+          ) : solveCount < 100 ? (
+            <>🧠</>
+          ) : (
+            <>🚀</>
           )}
         </>
       )}
