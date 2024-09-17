@@ -35,7 +35,7 @@ const useComputeHintElement = () => {
   return (
     <>
       <Typography variant="h3" className="pb-2 text-primary">
-        {hintLevel} hint {' '}
+        {hintLevel !== null ? `${hintLevel} hint` : 'Hint'} {' '}
         {filteredSteps && !error && (
           <span className="relative top-[1px]">
             <Tooltip content="Some steps were removed assuming your pencil marks are correct" placement="bottom">
