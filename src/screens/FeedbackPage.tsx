@@ -9,6 +9,7 @@ import Input from 'src/shared/Input'
 
 const FeedbackPage = () => {
   const [feedback, setFeedback] = useState('')
+  const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const isOnline = useSelector(state => state.misc.isOnline)
 
@@ -16,7 +17,10 @@ const FeedbackPage = () => {
     setSubmitting(true)
     honeybadger.notifyAsync({
       name: 'Feedback',
-      message: feedback,
+      context: {
+        feedback,
+        email,
+      }
     }).then(() => {
       setFeedback('')
       setTimeout(() => {
@@ -27,7 +31,7 @@ const FeedbackPage = () => {
     }).finally(() => {
       setSubmitting(false)
     })
-  }, [feedback])
+  }, [feedback, email])
 
   return (
     <div className="px-4 py-3">
@@ -36,7 +40,12 @@ const FeedbackPage = () => {
                 description="Send any feedback :)" />
       {isOnline ? (
         <div className="flex flex-col gap-3">
-          <Input label="Email (optional, only if you want a response)" color="white" />
+          <Input
+            label="Email (optional, only if you want a response)"
+            color="white"
+            value={email}
+            onChange={(value: string) => setEmail(value)}
+          />
           <Textarea
             label="Send any feedback!"
             className="h-52"
