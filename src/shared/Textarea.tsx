@@ -10,10 +10,11 @@ const LABEL_PROPS = {
 interface TextAreaProps extends TextareaProps {}
 
 const Textarea = forwardRef((props: TextAreaProps, ref: React.ForwardedRef<HTMLDivElement | null>) => (
-  <MuiTextArea {...props}
-               ref={ref}
-               className={`${EXTRA_CLASSNAME} ${props.className}`}
-               labelProps={{ ...LABEL_PROPS, ...props.labelProps }}
+  <MuiTextArea
+    {...props}
+    ref={ref}
+    className={`${EXTRA_CLASSNAME} ${props.className}`}
+    labelProps={{ ...LABEL_PROPS, ...props.labelProps }}
   >
     {props.children}
   </MuiTextArea>
