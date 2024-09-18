@@ -4,13 +4,11 @@ import Button from 'src/shared/Button';
 import Input from 'src/shared/Input';
 import Radio from 'src/shared/Radio';
 import { SudokuConstraints } from 'src/types/sudoku';
-import { getAllFormats, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
+import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
 import { honeybadger } from '../HoneybadgerProvider';
 import { isGridString } from 'src/utils/sudoku';
-
-const FORMATS = getAllFormats()
 
 const CopiableInput = ({ url }: { url?: string }) => (
   <>

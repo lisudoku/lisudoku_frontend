@@ -27,20 +27,20 @@ const encodeConstraints = (constraints: SudokuConstraints) => {
   return dataString
 }
 
-export const buildLisudokuSolverUrl = (dataString: string) => {
-  const params = new URLSearchParams({ import: dataString }).toString()
-  return `${window.location.origin}/solver?${params}`
-}
+// Note: assumes <dataString> is already url escaped
+export const buildLisudokuSolverUrl = (dataString: string) => (
+  `${window.location.origin}/solver?import=${dataString}`
+)
 
 export const exportToLisudokuSolver = (constraints: SudokuConstraints) => {
   const encodedConstraints = encodeConstraints(constraints!)
   return buildLisudokuSolverUrl(encodedConstraints)
 }
 
-export const buildLisudokuPuzzleUrl = (dataString: string) => {
-  const params = new URLSearchParams({ import: dataString }).toString()
-  return `${window.location.origin}/e?${params}`
-}
+// Note: assumes <dataString> is already url escaped
+export const buildLisudokuPuzzleUrl = (dataString: string) => (
+  `${window.location.origin}/e?import=${dataString}`
+)
 
 export const exportToLisudokuPuzzle = (constraints: SudokuConstraints) => {
   const encodedConstraints = encodeConstraints(constraints!)

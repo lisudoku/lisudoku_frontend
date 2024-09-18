@@ -3,9 +3,8 @@ import { useState } from 'react';
 import Button from 'src/shared/Button';
 import Input from 'src/shared/Input';
 import Typography from 'src/shared/Typography';
-import { getAllFormats } from 'sudoku-formats';
+import { FORMATS } from 'sudoku-formats';
 
-const FORMATS = getAllFormats()
 const LISUDOKU_EXAMPLE_1 = 'https://lisudoku.xyz/e?import=N4Ig5gTglgJgylAXgUxA...'
 const LISUDOKU_EXAMPLE_2 = 'https://lisudoku.xyz/p/4pyPjYdnlzJyUvFPVToy'
 const FPUZZLES_EXAMPLE = 'https://www.f-puzzles.com/?load=N4IgzglgXgpiB...'

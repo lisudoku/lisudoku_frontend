@@ -27,7 +27,6 @@ import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { ensureDefaultRegions } from 'src/utils/sudoku';
-import { getAllFormats } from 'sudoku-formats';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 
