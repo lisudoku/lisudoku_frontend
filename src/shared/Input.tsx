@@ -1,7 +1,7 @@
 import { Input as MuiInput } from '@material-tailwind/react/components/Input'
 import { useCallback } from 'react'
 
-const EXTRA_CLASSES  = '!text-primary'
+const EXTRA_CLASSES  = '!text-primary disabled:bg-secondary disabled:text-primary'
 const CONTAINER_CLASSES = 'min-w-0'
 
 const Input = (props: any) => {
@@ -19,8 +19,8 @@ const Input = (props: any) => {
 
   return (
     <MuiInput 
-      {...props}
       color="cyan"
+      {...props}
       className={`${EXTRA_CLASSES} ${props.className ?? ''}`}
       containerProps={{
         ...props.containerProps,
