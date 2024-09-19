@@ -43,7 +43,7 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
           </Typography>
           Examples
           <ul className="list-disc pl-4">
-            <li><code>{GRID_STRING_EXAMPLE}</code></li>
+            <li><code>{GRID_STRING_EXAMPLE}</code> (4x4 grid string)</li>
             <li><code>{LISUDOKU_EXAMPLE_1}</code></li>
             <li><code>{LISUDOKU_EXAMPLE_2}</code></li>
             <li><code>{FPUZZLES_EXAMPLE}</code></li>
