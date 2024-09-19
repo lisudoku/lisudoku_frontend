@@ -1,9 +1,10 @@
+import classNames from 'classnames'
 import { ReactElement } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import { isFunction } from 'lodash-es'
 import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
 
-const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
+const CopyToClipboard = ({ children, text, className }: CopyToClipboardProps) => {
   const [ open, setOpen ] = useState(false)
 
   const timerRef = useRef<number>()
@@ -30,8 +31,8 @@ const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
       <PopoverHandler onClick={handleClick}>
         {children}
       </PopoverHandler>
-      <PopoverContent className="text-primary bg-tertiary rounded border-none">
-        URL copied to the clipboard
+      <PopoverContent className={classNames('text-primary bg-tertiary rounded border-none border-primary z-[1000000]', className)}>
+        Copied to the clipboard
       </PopoverContent>
     </Popover>
   )
@@ -40,6 +41,7 @@ const CopyToClipboard = ({ children, text }: CopyToClipboardProps) => {
 type CopyToClipboardProps = {
   children: ReactElement
   text: Function | string
+  className?: string
 }
 
 export default CopyToClipboard

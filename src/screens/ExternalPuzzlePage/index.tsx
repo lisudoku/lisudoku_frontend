@@ -55,7 +55,7 @@ const ExternalPuzzlePage = () => {
 
         setPuzzleLoading(false)
         if (result.error) {
-          throw new Error(result.message)
+          throw new Error(result.error)
         }
       })
     }
