@@ -126,7 +126,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }, [gridSize, setterMode])
 
   const { onCellClick } = useControlCallbacks()
-  useKeyboardHandler(!inputActive)
+  useKeyboardHandler(!inputActive && !importOpen)
 
   const handleInputFocus = useCallback(() => {
     dispatch(changeInputActive(true))
