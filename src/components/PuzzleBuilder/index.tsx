@@ -64,7 +64,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     } else {
       dispatch(receivedPuzzle(result.constraints!))
       if (result.warning !== undefined) {
-        alert(result.warning)
+        alert(`Puzzle imported partially. ${result.warning}`)
         honeybadger.notify({
           name: 'Puzzle import warning',
           context: {
