@@ -24,6 +24,11 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
     setInput('')
   }
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    onConfirm(input)
+  }
+
   return (
     <Dialog
       open={open}
@@ -31,39 +36,41 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
       size="md"
       className="bg-tertiary text-primary"
     >
-      <DialogHeader className="text-primary">Import puzzle</DialogHeader>
-      <DialogBody className="text-primary flex flex-col gap-3">
-        <Input color="white" label="Enter puzzle data here" value={input} onChange={setInput} />
-        <div>
-          <Typography>
-            Valid formats: grid string, {sources}.
-          </Typography>
-          <Typography>
-            Works with URL shortener (tinyurl) links too.
-          </Typography>
-          Examples
-          <ul className="list-disc pl-4">
-            <li><code>{GRID_STRING_EXAMPLE}</code> (4x4 grid string)</li>
-            <li><code>{LISUDOKU_EXAMPLE_1}</code></li>
-            <li><code>{LISUDOKU_EXAMPLE_2}</code></li>
-            <li><code>{FPUZZLES_EXAMPLE}</code></li>
-          </ul>
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          onClick={onClose}
-        >
-          Close
-        </Button>
-        <Button
-          variant="filled"
-          onClick={() => onConfirm(input)}
-        >
-          Import
-        </Button>
-      </DialogFooter>
+      <form onSubmit={onSubmit}>
+        <DialogHeader className="text-primary">Import puzzle</DialogHeader>
+        <DialogBody className="text-primary flex flex-col gap-3">
+          <Input color="white" label="Enter puzzle data here" value={input} onChange={setInput} />
+          <div>
+            <Typography>
+              Valid formats: grid string, {sources}.
+            </Typography>
+            <Typography>
+              Works with URL shortener (tinyurl) links too.
+            </Typography>
+            Examples
+            <ul className="list-disc pl-4">
+              <li><code>{GRID_STRING_EXAMPLE}</code> (4x4 grid string)</li>
+              <li><code>{LISUDOKU_EXAMPLE_1}</code></li>
+              <li><code>{LISUDOKU_EXAMPLE_2}</code></li>
+              <li><code>{FPUZZLES_EXAMPLE}</code></li>
+            </ul>
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            onClick={onClose}
+          >
+            Close
+          </Button>
+          <Button
+            type="submit"
+            variant="filled"
+          >
+            Import
+          </Button>
+        </DialogFooter>
+      </form>
     </Dialog>
   )
 }
