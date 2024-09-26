@@ -4585,6 +4585,11 @@ open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
+pako@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
+  integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
+
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz"
@@ -5308,13 +5313,14 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-sudoku-formats@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.3.tgz#1a2d4bfa3d70601aa7363432716fdad1cfcda8a1"
-  integrity sha512-s0cq4Cw+kdIedKpdEfvG7ZsatsX1BEEHgEI1HYmTjnQdKgzLLijLWANtkzVTQ0tsIWD87UixzTeZB2rCfxbGmw==
+sudoku-formats@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.4.tgz#3a28482808e2e43ba3b0e899b0c83f591b446257"
+  integrity sha512-EtzgYQGJGMQ8s/sj+9Ad6wWWlvYR4+JdBT9mu+yFgkI+6lKBJc1MFjEwPcbt7FgetNlBNnmLQJSbh3yfmvPNwA==
   dependencies:
     lodash-es "^4.17.21"
     lz-string "^1.5.0"
+    pako "^2.1.0"
 
 supports-color@^5.3.0:
   version "5.5.0"
