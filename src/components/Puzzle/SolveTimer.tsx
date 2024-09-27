@@ -47,6 +47,11 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     if (constraints === undefined || solved !== null || !grid || !gridFull) {
       return
     }
+    if (actions.length === 0) {
+      // We might reach this state after solving a puzzle and requesting a new one
+      // When requesting a new puzzle we clear actions
+      return
+    }
 
     onIsSolvedLoadingChange(true)
 
