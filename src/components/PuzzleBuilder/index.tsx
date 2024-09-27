@@ -52,7 +52,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     const result = await importPuzzle(url)
     if (result.error !== undefined) {
       alert(result.error)
-      if (url.length > 0) {
+      if (url.length > 0 && !admin) {
         honeybadger.notify({
           name: 'Puzzle import error',
           context: {
@@ -65,21 +65,25 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       dispatch(receivedPuzzle(result.constraints!))
       if (result.warning !== undefined) {
         alert(`Puzzle imported partially. ${result.warning}`)
-        honeybadger.notify({
-          name: 'Puzzle import warning',
-          context: {
-            url,
-            result,
-          },
-        })
+        if (!admin) {
+          honeybadger.notify({
+            name: 'Puzzle import warning',
+            context: {
+              url,
+              result,
+            },
+          })
+        }
       } else {
-        honeybadger.notify({
-          name: 'Puzzle import success',
-          context: {
-            url,
-            result,
-          },
-        })
+        if (!admin) {
+          honeybadger.notify({
+            name: 'Puzzle import success',
+            context: {
+              url,
+              result,
+            },
+          })
+        }
       }
       // TODO: make SudokuConstraints.regions optional?
       const constraints: SudokuConstraints = {
@@ -88,7 +92,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       }
       return constraints
     }
-  }, [dispatch])
+  }, [dispatch, admin])
 
   useEffect(() => {
     if (importData) {
