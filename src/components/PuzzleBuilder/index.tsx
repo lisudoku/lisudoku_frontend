@@ -29,6 +29,7 @@ import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { ensureDefaultRegions } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
+import ImportImageModal from './ImportImageModal';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -40,6 +41,7 @@ const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const [exportOpen, setExportOpen] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
+  const [importImageOpen, setImportImageOpen] = useState(false)
   const { gridSize: paramGridSize } = useParams()
   const dispatch = useDispatch()
 
@@ -130,7 +132,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }, [gridSize, setterMode])
 
   const { onCellClick } = useControlCallbacks()
-  useKeyboardHandler(!inputActive && !importOpen)
+  useKeyboardHandler(!inputActive && !importOpen && !importImageOpen)
 
   const handleInputFocus = useCallback(() => {
     dispatch(changeInputActive(true))
@@ -199,7 +201,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     quality: 1.0,
   })
 
-  const handleDownloadClick = useCallback(() => {
+  const handleImportImageClick = useCallback(() => {
+    setImportImageOpen(true)
+  }, [])
+
+  const handleImportImageSuccess = useCallback(async (gridString: string) => {
+    // TODO: Maybe don't send a HB alert? Leave in for now...
+    await runImport(gridString)
+    setImportImageOpen(false)
+  }, [])
+
+  const handleExportImageClick = useCallback(() => {
     // Clear selected cell and generate the png
     dispatch(changeSelectedCell({ cell: null }))
     // Use the timeout to wait for the dispatch
@@ -269,6 +281,11 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         open={exportOpen}
         onClose={() => setExportOpen(false)}
         constraints={constraints}
+      />
+      <ImportImageModal
+        open={importImageOpen}
+        onClose={() => setImportImageOpen(false)}
+        onSuccess={handleImportImageSuccess}
       />
       <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
         {/* wrap the grid so we can screenshot it using the ref */}
@@ -430,7 +447,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           <hr />
           <div className="flex w-full mt-2 gap-x-1">
             <Button className="w-1/2" variant="outlined" onClick={handleImportClick}>
-              <FontAwesomeIcon icon={faUpload} />
+              <FontAwesomeIcon icon={faDownload} />
               {' Import'}
             </Button>
             <Button className="w-1/2" variant="outlined" onClick={handleExportClick}>
@@ -439,9 +456,13 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             </Button>
           </div>
           <div className="flex w-full gap-x-1">
-            <Button className="w-full" variant="outlined" onClick={handleDownloadClick}>
+            <Button className="w-1/2" variant="outlined" onClick={handleImportImageClick}>
               <FontAwesomeIcon icon={faDownload} />
-              {'Save as png'}
+              {'Import image'}
+            </Button>
+            <Button className="w-1/2" variant="outlined" onClick={handleExportImageClick}>
+              <FontAwesomeIcon icon={faUpload} />
+              {'Export image'}
             </Button>
           </div>
         </div>
