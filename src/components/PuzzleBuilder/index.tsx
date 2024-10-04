@@ -286,6 +286,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         open={importImageOpen}
         onClose={() => setImportImageOpen(false)}
         onSuccess={handleImportImageSuccess}
+        isAdmin={admin}
       />
       <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
         {/* wrap the grid so we can screenshot it using the ref */}

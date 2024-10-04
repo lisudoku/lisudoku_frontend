@@ -12,9 +12,10 @@ interface ImportImageModalProps {
   open: boolean
   onClose: () => void
   onSuccess: (gridString: string) => void
+  isAdmin: boolean
 }
 
-const ImportImageModal = ({ open, onClose, onSuccess }: ImportImageModalProps) => {
+const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string>()
 
@@ -55,16 +56,18 @@ const ImportImageModal = ({ open, onClose, onSuccess }: ImportImageModalProps) =
     setIsSubmitting(false)
     const body = await response.json()
 
-    const requestParams = new URLSearchParams(
-      formData as unknown as Record<string, string>,
-    ).toString();
-    honeybadger.notify({
-      name: 'Imported puzzle from image',
-      context: {
-        request: requestParams,
-        response: body,
-      },
-    })
+    if (!isAdmin) {
+      const requestParams = new URLSearchParams(
+        formData as unknown as Record<string, string>,
+      ).toString();
+      honeybadger.notify({
+        name: 'Imported puzzle from image',
+        context: {
+          request: requestParams,
+          response: body,
+        },
+      })
+    }
 
     if (response.status !== 200) {
       const errorMessage = body.error ?? 'Something went wrong while processing the image'
