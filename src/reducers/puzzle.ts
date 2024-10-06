@@ -2,7 +2,7 @@ import { differenceWith, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'l
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
-import { computeFixedNumbersGrid, getAllCells } from 'src/utils/sudoku'
+import { computeFixedNumbersGrid, defaultConstraints, getAllCells } from 'src/utils/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 
@@ -164,7 +164,10 @@ export const puzzleSlice = createSlice({
     },
     receivedPuzzle(state, action) {
       const puzzleData: Puzzle = camelCaseKeys(action.payload)
-      puzzleData.constraints.killerCages ||= []
+      puzzleData.constraints = {
+        ...defaultConstraints(puzzleData.constraints.gridSize),
+        ...puzzleData.constraints,
+      }
       state.data = puzzleData
       state.solved = null
       state.solveStats = null

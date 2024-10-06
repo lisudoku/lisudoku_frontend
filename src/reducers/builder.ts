@@ -13,7 +13,7 @@ import {
 import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
-import { detectVariant, ensureDefaultRegions, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
+import { defaultConstraints, detectVariant, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
 import { InputMode } from './puzzle'
 
 export enum ConstraintType {
@@ -119,26 +119,6 @@ const handleConstraintChange = (state: BuilderState) => {
   state.logicalSolution = null
   state.manualChange = true
 }
-
-export const defaultConstraints = (gridSize: number): Required<SudokuConstraints> => ({
-  gridSize,
-  fixedNumbers: [],
-  regions: ensureDefaultRegions(gridSize),
-  extraRegions: [],
-  thermos: [],
-  arrows: [],
-  killerCages: [],
-  kropkiDots: [],
-  kropkiNegative: false,
-  primaryDiagonal: false,
-  secondaryDiagonal: false,
-  antiKnight: false,
-  antiKing: false,
-  oddCells: [],
-  evenCells: [],
-  topBottom: false,
-  renbans: [],
-})
 
 export const builderSlice = createSlice({
   name: 'builder',

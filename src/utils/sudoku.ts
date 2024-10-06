@@ -43,6 +43,26 @@ export const ensureDefaultRegions = (gridSize: number): Region[] => {
   return defaultRegions
 }
 
+export const defaultConstraints = (gridSize: number): Required<SudokuConstraints> => ({
+  gridSize,
+  fixedNumbers: [],
+  regions: ensureDefaultRegions(gridSize),
+  extraRegions: [],
+  thermos: [],
+  arrows: [],
+  killerCages: [],
+  kropkiDots: [],
+  kropkiNegative: false,
+  primaryDiagonal: false,
+  secondaryDiagonal: false,
+  antiKnight: false,
+  antiKing: false,
+  oddCells: [],
+  evenCells: [],
+  topBottom: false,
+  renbans: [],
+})
+
 export const regionGridToRegions = (gridSize: number, regionGrid: Grid): Region[] => {
   const regions: Region[] = []
   times(gridSize, row => {
