@@ -1,5 +1,5 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Button from 'src/shared/Button';
 import Input from 'src/shared/Input';
 import Radio from 'src/shared/Radio';
@@ -10,12 +10,17 @@ import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import
 import { honeybadger } from '../HoneybadgerProvider';
 import { isGridString } from 'src/utils/sudoku';
 
-const CopiableInput = ({ url }: { url?: string }) => (
+interface CopiableInputProps {
+  url?: string
+  onCopy: (url: string) => void
+}
+
+const CopiableInput = ({ url, onCopy }: CopiableInputProps) => (
   <>
     {url ? (
       <div className="flex gap-1">
       <Input value={url} label="URL" disabled />
-      <CopyToClipboard text={url} className="border-solid">
+      <CopyToClipboard text={url} onCopy={onCopy} className="border-solid">
         <Button>
           Copy
         </Button>
@@ -50,6 +55,17 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
       },
     })
   }
+
+  const onCopy = useCallback((url: string) => {
+    honeybadger.notify({
+      name: 'Puzzle export copy',
+      context: {
+        url,
+        result: transformResult,
+        constraints,
+      },
+    })
+  }, [transformResult, constraints])
   
   return (
     <Dialog
@@ -82,14 +98,14 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
           </label>
           {selectedFormat === SudokuDataFormat.Lisudoku ? (
             <>
-              <CopiableInput url={buildLisudokuPuzzleUrl(dataString!)} />
-              <CopiableInput url={buildLisudokuSolverUrl(dataString!)} />
+              <CopiableInput url={buildLisudokuPuzzleUrl(dataString!)} onCopy={onCopy} />
+              <CopiableInput url={buildLisudokuSolverUrl(dataString!)} onCopy={onCopy} />
               {isGridString(dataString!) && (
-                <CopiableInput url={dataString} />
+                <CopiableInput url={dataString} onCopy={onCopy} />
               )}
             </>
           ) : (
-            <CopiableInput url={url} />
+            <CopiableInput url={url} onCopy={onCopy} />
           )}
         </div>
       </DialogBody>
