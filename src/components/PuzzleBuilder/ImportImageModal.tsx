@@ -90,7 +90,7 @@ const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModa
         <DialogHeader className="text-primary">Import puzzle from image</DialogHeader>
         <DialogBody className="text-primary flex flex-col gap-3">
           <Typography variant="paragraph" className="mb-3">
-            Upload a classic sudoku image or paste its URL.
+            Upload a classic sudoku screenshot or paste its URL.
           </Typography>
           <Input type="file" name="file_content" label="Image file" color="white" />
           <div className="w-full flex justify-center">
