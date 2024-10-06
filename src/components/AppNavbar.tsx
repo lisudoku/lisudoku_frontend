@@ -140,8 +140,12 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
             <FontAwesomeIcon icon={faTrophy} color="gold" />
           ) : solveCount < 100 ? (
             <>🧠</>
-          ) : (
+          ) : solveCount < 125 ? (
             <>🚀</>
+          ) : solveCount < 150 ? (
+            <>🚀🚀</>
+          ) : (
+            <>🚀🚀🚀</>
           )}
         </>
       )}
