@@ -192,7 +192,7 @@ export const puzzleSlice = createSlice({
       state.data = null
       clearUpdate(state)
     },
-    changeSelectedCell: (state, action) => {
+    changeSelectedCell(state, action) {
       const { cell, ctrl, isClick, doubleClick } = action.payload
       if (ctrl) {
         if (isClick) {
