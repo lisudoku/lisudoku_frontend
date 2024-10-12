@@ -58,7 +58,7 @@ type SudokuGridProps = {
   selectedCells?: CellPosition[]
   checkErrors?: boolean
   loading?: boolean
-  onCellClick?: Function
+  onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
   cellSize?: number
   paused?: boolean
   onUnpause?: Function

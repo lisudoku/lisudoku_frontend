@@ -1,11 +1,12 @@
 import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
 import classNames from 'classnames'
-import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
+import { compact, inRange, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
 import { Arrow, CellMarks, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, Renban, SudokuConstraints, Thermo } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid } from './hooks'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
 import { CornerMarksGraphics, CellCornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
+import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
 
 export type CellHighlight = {
   position: CellPosition
@@ -418,18 +419,6 @@ type SelectedCellGraphicsProps = {
   selectedCells?: CellPosition[]
 }
 
-const useOnGridClick = (cellSize: number, onCellClick?: Function) => (
-  useCallback((e: MouseEvent) => {
-    const x = e.clientX - e.currentTarget.getBoundingClientRect().left
-    const y = e.clientY - e.currentTarget.getBoundingClientRect().top
-    const row = Math.floor(Math.max(0, y - 1) / cellSize)
-    const col = Math.floor(Math.max(0, x - 1) / cellSize)
-    const ctrl = e.metaKey || e.ctrlKey || e.shiftKey
-    const doubleClick = e.detail === 2
-    onCellClick?.({ row, col }, ctrl, true, doubleClick)
-  }, [cellSize, onCellClick])
-)
-
 const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGraphicsProps) => (
   <g className="diagonals stroke-diagonal stroke-[3px]">
     {primary && (
@@ -685,15 +674,21 @@ const SudokuConstraintsGraphics = ({
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
     oddCells, evenCells, renbans,
   } = constraints
-  const onGridClick = useOnGridClick(cellSize, onCellClick)
+  const onGridClick = useOnGridClick(cellSize, gridSize, onCellClick)
+  const onMouseMove = useOnMouseMove(cellSize, gridSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
   const killerActive = !isEmpty(killerCages)
 
   return (
-    <svg height={gridSize * cellSize + 2}
-         width={gridSize * cellSize + 2}
-         style={{ top: 0, left: 0, stroke: 'black', strokeWidth: 2 }}
-         onClick={onGridClick}
+    <svg
+      height={gridSize * cellSize + 2}
+      width={gridSize * cellSize + 2}
+      className="top-0 left-0 stroke-[2px]"
+      // Using onMouseDown instead of onClick for the cases when you
+      // start the click somewhere and end it in another place.
+      onMouseDown={onGridClick}
+      // Select cells as you drag your mouse over them
+      onMouseMove={onMouseMove}
     >
       <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
       <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
@@ -728,7 +723,7 @@ type SudokuConstraintsGraphicsProps = {
   grid?: Grid
   checkErrors: boolean
   selectedCells?: CellPosition[]
-  onCellClick?: Function
+  onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
   highlightedCells?: CellHighlight[]
   borderHighlightColor?: string
 }
