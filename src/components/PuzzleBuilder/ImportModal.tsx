@@ -42,7 +42,7 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
           <Input color="white" label="Enter puzzle data here" value={input} onChange={setInput} />
           <div>
             <Typography>
-              Valid formats: grid string, {sources}.
+              Valid formats: {sources}.
             </Typography>
             <Typography>
               Works with URL shortener (tinyurl) links too.

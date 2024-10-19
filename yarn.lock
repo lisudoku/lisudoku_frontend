@@ -5313,10 +5313,10 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-sudoku-formats@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.4.tgz#3a28482808e2e43ba3b0e899b0c83f591b446257"
-  integrity sha512-EtzgYQGJGMQ8s/sj+9Ad6wWWlvYR4+JdBT9mu+yFgkI+6lKBJc1MFjEwPcbt7FgetNlBNnmLQJSbh3yfmvPNwA==
+sudoku-formats@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.5.tgz#46cb1c9d52d5dd7a420ec7258206fe8a558f9cbc"
+  integrity sha512-QP15knjwQE4xdrXAtEO3ii2Oq5gwNVyrTxnjiCeRB2pwATjJ4QfH6INcAanlqWN7vKUnlGFxsFxlK6YIJoRKjg==
   dependencies:
     lodash-es "^4.17.21"
     lz-string "^1.5.0"

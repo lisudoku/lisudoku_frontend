@@ -81,7 +81,7 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
             <b>Destination</b>
           </label>
           <div className="flex gap-3">
-            {FORMATS.map(({ format }) => (
+            {FORMATS.filter(({ format }) => format !== SudokuDataFormat.GridString).map(({ format }) => (
               <Radio
                 name="format"
                 label={format}
