@@ -186,8 +186,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }, [runImport])
 
   const handleImportConfirm = useCallback(async (url: string) => {
-    await runImport(url)
-    setImportOpen(false)
+    const result = await runImport(url)
+    if (result) {
+      setImportOpen(false)
+    }
   }, [runImport])
 
   const handleExportClick = useCallback(() => {
