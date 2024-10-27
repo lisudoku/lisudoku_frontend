@@ -32,7 +32,7 @@ const SudokuMisc = () => {
     navigate(`/play/${variant}/${difficulty}`)
   }, [navigate, variant])
 
-  if (constraints === undefined || publicId === undefined) {
+  if (constraints === undefined) {
     return null
   }
 
@@ -52,7 +52,9 @@ const SudokuMisc = () => {
               <div className="w-full md:ml-1 mt-2">
                 <DifficultySelect value={difficulty} onChange={onDifficultyChange} />
               </div>
-              <PermalinkButton publicId={publicId} />
+              {publicId !== undefined && (
+                <PermalinkButton publicId={publicId} />
+              )}
             </>
           )}
           <ShortcutsButton />
