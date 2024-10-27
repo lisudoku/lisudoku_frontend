@@ -7,28 +7,14 @@ import {
 import {
   Arrow,
   CellMarks,
-  CellPosition, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
+  CellPosition, ConstraintKeyType, ConstraintType, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
   Region, Renban, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
-import { defaultConstraints, detectVariant, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
+import { defaultConstraints, detectConstraints, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
 import { InputMode } from './puzzle'
-
-export enum ConstraintType {
-  FixedNumber = 'fixed_number',
-  Thermo = 'thermo',
-  Arrow = 'arrow',
-  Regions = 'regions',
-  Killer = 'killer',
-  KropkiConsecutive = 'kropki_consecutive',
-  KropkiDouble = 'kropki_double',
-  ExtraRegions = 'extraregions',
-  OddCells = 'oddcells',
-  EvenCells = 'evencells',
-  Renban = 'renban',
-}
 
 export enum ArrowConstraintType {
   Circle = 'arrow-circle',
@@ -114,7 +100,7 @@ const expandsArea4 = (area: CellPosition[], cell: CellPosition) => expandsArea(a
 const expandsArea8 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent8)
 
 const handleConstraintChange = (state: BuilderState) => {
-  state.variant = detectVariant(state.constraints)
+  state.variant = detectConstraints(state.constraints).variant
   state.bruteSolution = null
   state.logicalSolution = null
   state.manualChange = true
@@ -175,7 +161,7 @@ export const builderSlice = createSlice({
         ...constraints,
       }
       state.difficulty = defaultDifficulty(gridSize)
-      state.variant = detectVariant(state.constraints)
+      state.variant = detectConstraints(state.constraints).variant
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
       state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
@@ -232,7 +218,7 @@ export const builderSlice = createSlice({
             }
             break
           }
-          case ConstraintType.OddCells: {
+          case ConstraintType.Odd: {
             if (!state.constraints?.oddCells?.find(isSelectedCell) &&
                 !state.constraints?.evenCells?.find(isSelectedCell)
             ) {
@@ -240,7 +226,7 @@ export const builderSlice = createSlice({
             }
             break
           }
-          case ConstraintType.EvenCells: {
+          case ConstraintType.Even: {
             if (!state.constraints?.oddCells?.find(isSelectedCell) &&
                 !state.constraints?.evenCells?.find(isSelectedCell)
             ) {
@@ -379,7 +365,7 @@ export const builderSlice = createSlice({
           state.constraints!.extraRegions?.push(region)
           break
         }
-        case ConstraintType.Killer: {
+        case ConstraintType.KillerCage: {
           assert(
             !isEmpty(state.selectedCells),
             'Select at least one cell. You can select multiple cells with Shift + Click.'
@@ -572,32 +558,12 @@ export const builderSlice = createSlice({
         }
       }
     },
-    changePrimaryDiagonal(state, action) {
-      state.constraints!.primaryDiagonal = action.payload
-      handleConstraintChange(state)
-    },
-    changeSecondaryDiagonal(state, action) {
-      state.constraints!.secondaryDiagonal = action.payload
-      handleConstraintChange(state)
-    },
-    changeAntiKnight(state, action) {
-      state.constraints!.antiKnight = action.payload
-      handleConstraintChange(state)
-    },
-    changeAntiKing(state, action) {
-      state.constraints!.antiKing = action.payload
+    changeConstraintValue(state, { payload: { key, value } }: { payload: { key: ConstraintKeyType, value: boolean } }) {
+      state.constraints![key] = value
       handleConstraintChange(state)
     },
     changeKillerSum(state, action) {
       state.killerSum = action.payload
-      handleConstraintChange(state)
-    },
-    changeKropkiNegative(state, action) {
-      state.constraints!.kropkiNegative = action.payload
-      handleConstraintChange(state)
-    },
-    changeTopBottom(state, action) {
-      state.constraints!.topBottom = action.payload
       handleConstraintChange(state)
     },
     changeSourceCollectionId(state, action) {
@@ -624,8 +590,7 @@ export const {
   errorSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
   toggleCornerMarksActive, changeSelectedCellCornerMarks,
-  changePrimaryDiagonal, changeSecondaryDiagonal, changeAntiKnight, changeAntiKing,
-  changeKillerSum, changeKropkiNegative, changeTopBottom,
+  changeConstraintValue, changeKillerSum,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
   clearBruteSolution, clearLogicalSolution, changeAuthor,
 } = builderSlice.actions

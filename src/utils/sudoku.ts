@@ -1,10 +1,10 @@
 import {
-  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, max, min, range, sortBy, sumBy, times, uniqWith, values,
+  difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, max, min, range, sortBy, sumBy, times, uniq, uniqWith, values,
 } from 'lodash-es'
 import {
-  CellMarks, CellPosition, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints, SudokuVariant,
+  CellMarks, CellPosition, ConstraintType, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints, SudokuVariant,
 } from 'src/types/sudoku'
-import { GRID_SIZES } from './constants'
+import { CONSTRAINT_TYPE_VARIANTS, GRID_SIZES } from './constants'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -621,52 +621,87 @@ export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition)
   return uniqWith(flatten(cellRegions), isEqual)
 }
 
-export const detectVariant = (constraints: SudokuConstraints | null) => {
-  if (constraints === null) {
-    return SudokuVariant.Classic
-  }
-  const variants = []
-  if (!isEmpty(constraints.thermos)) {
-    variants.push(SudokuVariant.Thermo)
-  }
-  if (!isEmpty(constraints.arrows)) {
-    variants.push(SudokuVariant.Arrow)
-  }
-  if (constraints.primaryDiagonal || constraints.secondaryDiagonal) {
-    variants.push(SudokuVariant.Diagonal)
-  }
-  if (constraints.antiKnight) {
-    variants.push(SudokuVariant.AntiKnight)
-  }
-  if (constraints.antiKing) {
-    variants.push(SudokuVariant.AntiKing)
-  }
-  if (!isEqual(constraints.regions, ensureDefaultRegions(constraints.gridSize))) {
-    variants.push(SudokuVariant.Irregular)
-  }
-  if (!isEmpty(constraints.killerCages)) {
-    variants.push(SudokuVariant.Killer)
-  }
-  if (!isEmpty(constraints.kropkiDots)) {
-    variants.push(SudokuVariant.Kropki)
-  }
-  if (!isEmpty(constraints.extraRegions)) {
-    variants.push(SudokuVariant.ExtraRegions)
-  }
-  if (!isEmpty(constraints.oddCells) || !isEmpty(constraints.evenCells)) {
-    variants.push(SudokuVariant.OddEven)
-  }
-  if (constraints.topBottom) {
-    variants.push(SudokuVariant.TopBottom)
-  }
-  if (!isEmpty(constraints.renbans)) {
-    variants.push(SudokuVariant.Renban)
-  }
+const getVariant = (constraintTypes: ConstraintType[]): SudokuVariant => {
+  const variants = uniq(
+    constraintTypes.map(constraintType => CONSTRAINT_TYPE_VARIANTS[constraintType])
+  )
+
   if (variants.length > 1) {
     return SudokuVariant.Mixed
   } else if (variants.length === 1) {
     return variants[0]
   } else {
     return SudokuVariant.Classic
+  }
+}
+
+export interface ConstraintsCheckResult {
+  variant: SudokuVariant
+  constraintTypes: ConstraintType[]
+}
+
+export const detectConstraints = (constraints: SudokuConstraints | null): ConstraintsCheckResult => {
+  if (constraints === null) {
+    return {
+      variant: SudokuVariant.Classic,
+      constraintTypes: [],
+    }
+  }
+
+  const constraintTypes: ConstraintType[] = []
+  if (!isEqual(constraints.regions, ensureDefaultRegions(constraints.gridSize))) {
+    constraintTypes.push(ConstraintType.Regions)
+  }
+  if (!isEmpty(constraints.extraRegions)) {
+    constraintTypes.push(ConstraintType.ExtraRegions)
+  }
+  if (!isEmpty(constraints.thermos)) {
+    constraintTypes.push(ConstraintType.Thermo)
+  }
+  if (!isEmpty(constraints.arrows)) {
+    constraintTypes.push(ConstraintType.Arrow)
+  }
+  if (!isEmpty(constraints.renbans)) {
+    constraintTypes.push(ConstraintType.Renban)
+  }
+  if (constraints.primaryDiagonal) {
+    constraintTypes.push(ConstraintType.PrimaryDiagonal)
+  }
+  if (constraints.secondaryDiagonal) {
+    constraintTypes.push(ConstraintType.SecondaryDiagonal)
+  }
+  if (constraints.antiKnight) {
+    constraintTypes.push(ConstraintType.AntiKnight)
+  }
+  if (constraints.antiKing) {
+    constraintTypes.push(ConstraintType.AntiKing)
+  }
+  if (!isEmpty(constraints.killerCages)) {
+    constraintTypes.push(ConstraintType.KillerCage)
+  }
+  if (constraints.kropkiDots?.some(({ dotType }) => dotType === KropkiDotType.Consecutive)) {
+    constraintTypes.push(ConstraintType.KropkiConsecutive)
+  }
+  if (constraints.kropkiDots?.some(({ dotType }) => dotType === KropkiDotType.Double)) {
+    constraintTypes.push(ConstraintType.KropkiDouble)
+  }
+  if (constraints.kropkiNegative) {
+    constraintTypes.push(ConstraintType.KropkiNegative)
+  }
+  if (!isEmpty(constraints.oddCells)) {
+    constraintTypes.push(ConstraintType.Odd)
+  }
+  if (!isEmpty(constraints.evenCells)) {
+    constraintTypes.push(ConstraintType.Even)
+  }
+  if (constraints.topBottom) {
+    constraintTypes.push(ConstraintType.TopBottom)
+  }
+
+  const variant = getVariant(constraintTypes)
+
+  return {
+    variant,
+    constraintTypes,
   }
 }

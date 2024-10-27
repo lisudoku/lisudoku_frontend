@@ -1,4 +1,4 @@
-import { useCallback, useEffect, ChangeEvent, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { cloneDeep, inRange } from 'lodash-es'
 import classNames from 'classnames'
@@ -6,18 +6,15 @@ import { useScreenshot, createFileName } from 'use-react-screenshot';
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
-  addConstraint, ArrowConstraintType, changeAntiKing, changeAntiKnight, changeArrowConstraintType, changeConstraintType, changeInputActive, changeKillerSum,
-  changeKropkiNegative, changePrimaryDiagonal, changeSecondaryDiagonal,
+  addConstraint, ArrowConstraintType, changeArrowConstraintType, changeInputActive, changeKillerSum,
   changeSelectedCell,
-  changeTopBottom,
-  ConstraintType, initPuzzle, receivedPuzzle,
+  initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
 import Radio from 'src/shared/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/shared/Button'
-import Checkbox from 'src/shared/Checkbox'
 import PuzzleActions from './PuzzleActions'
-import { Grid, SudokuConstraints } from 'src/types/sudoku'
+import { ConstraintType, Grid, SudokuConstraints } from 'src/types/sudoku'
 import Input from 'src/shared/Input'
 import Typography from 'src/shared/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
@@ -30,6 +27,8 @@ import { ensureDefaultRegions } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
+import ConstraintRadio from './ConstraintRadio';
+import ConstraintCheckbox from './ConstraintCheckbox';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -141,10 +140,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     dispatch(changeInputActive(false))
   }, [dispatch])
 
-  const handleConstraintTypeChange = useCallback((id: string) => {
-    dispatch(changeConstraintType(id))
-  }, [dispatch])
-
   const handleArrowConstraintTypeChange = useCallback((id: string) => {
     dispatch(changeArrowConstraintType(id))
   }, [dispatch])
@@ -153,33 +148,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     dispatch(addConstraint())
   }, [dispatch])
 
-  const handlePrimaryDiagonalChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changePrimaryDiagonal(e.target.checked))
-  ), [dispatch])
-
-  const handleSecondaryDiagonalChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeSecondaryDiagonal(e.target.checked))
-  ), [dispatch])
-
-  const handleAntiKnightChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeAntiKnight(e.target.checked))
-  ), [dispatch])
-
-  const handleAntiKingChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeAntiKing(e.target.checked))
-  ), [dispatch])
-
   const handleKillerSumChange = useCallback((sum: number | null) => {
     dispatch(changeKillerSum(sum))
   }, [dispatch])
-
-  const handleKropkiNegativeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeKropkiNegative(e.target.checked))
-  ), [dispatch])
-
-  const handleTopBottomChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeTopBottom(e.target.checked))
-  ), [dispatch])
 
   const handleImportClick = useCallback(() => {
     setImportOpen(true)
@@ -313,73 +284,31 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                   <GridSizeSelect />
                 </div>
               </div>
-              <Radio name="build-item"
-                    id={ConstraintType.FixedNumber}
-                    label="Given Digit"
-                    checked={constraintType === ConstraintType.FixedNumber}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.Thermo}
-                    label="Thermometer"
-                    checked={constraintType === ConstraintType.Thermo}
-                    labelProps={{ className: classNames({
-                      'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize!,
-                      'text-green-600': inRange(currentThermo.length, 2, gridSize! + 1),
-                    })}}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.Arrow}
-                    label="Arrow"
-                    checked={constraintType === ConstraintType.Arrow}
-                    labelProps={{ className: classNames({
-                      'text-red-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length === 0,
-                      'text-green-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length > 0,
-                    })}}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.Regions}
-                    label="Regions"
-                    checked={constraintType === ConstraintType.Regions}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.ExtraRegions}
-                    label="Extra Regions"
-                    checked={constraintType === ConstraintType.ExtraRegions}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.Killer}
-                    label="Killer"
-                    checked={constraintType === ConstraintType.Killer}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.KropkiConsecutive}
-                    label="Kropki Consecutive"
-                    checked={constraintType === ConstraintType.KropkiConsecutive}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.KropkiDouble}
-                    label="Kropki Double"
-                    checked={constraintType === ConstraintType.KropkiDouble}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.OddCells}
-                    label="Odd"
-                    checked={constraintType === ConstraintType.OddCells}
-                    onChange={handleConstraintTypeChange} />
-              <Radio name="build-item"
-                    id={ConstraintType.EvenCells}
-                    label="Even"
-                    checked={constraintType === ConstraintType.EvenCells}
-                    onChange={handleConstraintTypeChange} />
-              <Radio
-                name="build-item"
-                id={ConstraintType.Renban}
-                label="Renban"
-                checked={constraintType === ConstraintType.Renban}
-                onChange={handleConstraintTypeChange}
+              <ConstraintRadio id={ConstraintType.FixedNumber} />
+              <ConstraintRadio id={ConstraintType.Regions} />
+              <ConstraintRadio
+                id={ConstraintType.Thermo}
+                labelProps={{ className: classNames({
+                  'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize!,
+                  'text-green-600': inRange(currentThermo.length, 2, gridSize! + 1),
+                })}}
               />
+              <ConstraintRadio
+                id={ConstraintType.Arrow}
+                labelProps={{ className: classNames({
+                  'text-red-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length === 0,
+                  'text-green-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length > 0,
+                })}}
+              />
+              <ConstraintRadio id={ConstraintType.ExtraRegions} />
+              <ConstraintRadio id={ConstraintType.KillerCage} />
+              <ConstraintRadio id={ConstraintType.KropkiConsecutive} />
+              <ConstraintRadio id={ConstraintType.KropkiDouble} />
+              <ConstraintRadio id={ConstraintType.Odd} />
+              <ConstraintRadio id={ConstraintType.Even} />
+              <ConstraintRadio id={ConstraintType.Renban} />
               <div className="flex flex-col w-full mt-2 gap-y-1">
-                {constraintType === ConstraintType.Killer && (
+                {constraintType === ConstraintType.KillerCage && (
                   <Input label="Sum"
                         type="number"
                         value={killerSum}
@@ -411,7 +340,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     </div>
                   </>
                 )}
-                {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.Killer,
+                {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.KillerCage,
                   ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble,
                   ConstraintType.ExtraRegions, ConstraintType.Arrow, ConstraintType.Renban
                 ].includes(constraintType) && (
@@ -422,30 +351,30 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           </div>
           <hr className="border-primary" />
           <div className="flex flex-wrap gap-x-3">
-            <Checkbox id="primary-diagonal"
-                      label="Primary Diagonal"
-                      checked={constraints.primaryDiagonal}
-                      onChange={handlePrimaryDiagonalChange} />
-            <Checkbox id="secondary-diagonal"
-                      label="Secondary Diagonal"
-                      checked={constraints.secondaryDiagonal}
-                      onChange={handleSecondaryDiagonalChange} />
-            <Checkbox id="anti-knight"
-                      label="Anti Knight"
-                      checked={constraints.antiKnight}
-                      onChange={handleAntiKnightChange} />
-            <Checkbox id="anti-king"
-                      label="Anti King"
-                      checked={constraints.antiKing}
-                      onChange={handleAntiKingChange} />
-            <Checkbox id="kropki-negative"
-                      label="Kropki Negative"
-                      checked={constraints.kropkiNegative}
-                      onChange={handleKropkiNegativeChange} />
-            <Checkbox id="top-bottom"
-                      label="Top-Bottom"
-                      checked={constraints.topBottom}
-                      onChange={handleTopBottomChange} />
+            <ConstraintCheckbox
+              id={ConstraintType.PrimaryDiagonal}
+              keyField="primaryDiagonal"
+            />
+            <ConstraintCheckbox
+              id={ConstraintType.SecondaryDiagonal}
+              keyField="secondaryDiagonal"
+            />
+            <ConstraintCheckbox
+              id={ConstraintType.AntiKnight}
+              keyField="antiKnight"
+            />
+            <ConstraintCheckbox
+              id={ConstraintType.AntiKing}
+              keyField="antiKing"
+            />
+            <ConstraintCheckbox
+              id={ConstraintType.KropkiNegative}
+              keyField="kropkiNegative"
+            />
+            <ConstraintCheckbox
+              id={ConstraintType.TopBottom}
+              keyField="topBottom"
+            />
           </div>
           <hr />
           <div className="flex w-full mt-2 gap-x-1">

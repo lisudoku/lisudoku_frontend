@@ -36,7 +36,7 @@ export enum SudokuDifficulty {
   Hard9x9 = 'hard9x9',
 }
 
-export type SudokuConstraints = {
+export interface SudokuConstraints {
   gridSize: number
   regions: Region[]
   fixedNumbers?: FixedNumber[]
@@ -56,7 +56,32 @@ export type SudokuConstraints = {
   renbans?: Renban[]
 }
 
-export type FixedNumber = {
+type BooleanConstraints = |
+  'primaryDiagonal' | 'secondaryDiagonal' | 'antiKnight' | 'antiKing' | 'kropkiNegative' | 'topBottom'
+export type ConstraintKeyType = keyof Pick<SudokuConstraints, BooleanConstraints>
+
+export enum ConstraintType {
+  FixedNumber = 'fixed_number',
+  Regions = 'regions',
+  ExtraRegions = 'extraregions',
+  Thermo = 'thermo',
+  Arrow = 'arrow',
+  Renban = 'renban',
+  PrimaryDiagonal = 'primary_diagonal',
+  SecondaryDiagonal = 'secondary_diagonal',
+  Diagonals = 'diagonals',
+  AntiKnight = 'anti_knight',
+  AntiKing = 'anti_king',
+  KillerCage = 'killer_cage',
+  KropkiConsecutive = 'kropki_consecutive',
+  KropkiDouble = 'kropki_double',
+  KropkiNegative = 'kropki_negative',
+  Odd = 'odd',
+  Even = 'even',
+  TopBottom = 'top_bottom',
+}
+
+export interface FixedNumber {
   position: CellPosition
   value: number
 }

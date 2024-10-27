@@ -1,6 +1,6 @@
 import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { TrainerTechnique } from 'src/types'
-import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { ConstraintType, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { StepRule } from 'src/types/wasm'
 
 export const GRID_SIZES = [ 4, 6, 9 ]
@@ -138,4 +138,25 @@ export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {
   [TrainerTechnique.HiddenSingle]: 'Hidden Single',
   [TrainerTechnique.NakedSingle]: 'Naked Single',
   [TrainerTechnique.Singles]: 'Hidden Single or Naked Single',
+}
+
+export const CONSTRAINT_TYPE_VARIANTS: { [key in ConstraintType]: SudokuVariant } = {
+  [ConstraintType.FixedNumber]: SudokuVariant.Classic,
+  [ConstraintType.Regions]: SudokuVariant.Irregular,
+  [ConstraintType.ExtraRegions]: SudokuVariant.ExtraRegions,
+  [ConstraintType.Thermo]: SudokuVariant.Thermo,
+  [ConstraintType.Arrow]: SudokuVariant.Arrow,
+  [ConstraintType.Renban]: SudokuVariant.Renban,
+  [ConstraintType.PrimaryDiagonal]: SudokuVariant.Diagonal,
+  [ConstraintType.SecondaryDiagonal]: SudokuVariant.Diagonal,
+  [ConstraintType.Diagonals]: SudokuVariant.Diagonal,
+  [ConstraintType.AntiKnight]: SudokuVariant.AntiKnight,
+  [ConstraintType.AntiKing]: SudokuVariant.AntiKing,
+  [ConstraintType.KillerCage]: SudokuVariant.Killer,
+  [ConstraintType.KropkiConsecutive]: SudokuVariant.Kropki,
+  [ConstraintType.KropkiDouble]: SudokuVariant.Kropki,
+  [ConstraintType.KropkiNegative]: SudokuVariant.Kropki,
+  [ConstraintType.Odd]: SudokuVariant.OddEven,
+  [ConstraintType.Even]: SudokuVariant.OddEven,
+  [ConstraintType.TopBottom]: SudokuVariant.TopBottom,
 }

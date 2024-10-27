@@ -1,10 +1,10 @@
 import { inRange, isEmpty, last } from 'lodash-es'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
-import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
+import { CellPosition, ConstraintType, SudokuConstraints } from 'src/types/sudoku'
 import {
   changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellCornerMarks,
-  changeSelectedCellValue, ConstraintType, deleteConstraint,
+  changeSelectedCellValue, deleteConstraint,
   errorSolution, requestSolution, responseSolution, toggleCornerMarksActive,
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
