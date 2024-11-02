@@ -8,6 +8,7 @@ import reportWebVitals from './reportWebVitals'
 import { registerSW } from 'virtual:pwa-register'
 
 if (import.meta.env.PROD) {
+  console.log('lisudoku is open source! https://github.com/orgs/lisudoku/repositories')
   console.debug = () => {}
   console.log = () => {}
   console.info = () => {}
