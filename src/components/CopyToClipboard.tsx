@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
 const CopyToClipboard = ({ children, text, className, onCopy }: CopyToClipboardProps) => {
   const [ open, setOpen ] = useState(false)
 
-  const timerRef = useRef<number>()
+  const timerRef = useRef<NodeJS.Timeout>()
   const handleClick = useCallback(() => {
     const data = isFunction(text) ? text() : text
     navigator.clipboard.writeText(data)
