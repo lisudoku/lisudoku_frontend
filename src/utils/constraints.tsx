@@ -108,14 +108,20 @@ export const CONSTRAINTS_DISPLAY: { [key in ConstraintType]: ConstraintDisplayDa
   },
   [ConstraintType.KropkiConsecutive]: {
     label: 'Kropki Consecutive',
-    icon: <FontAwesomeIcon icon={faCircleSolid} size="sm" />,
+    icon: <span className="fa-layers">
+      <FontAwesomeIcon icon={faCircleSolid} color="white" size="sm" />
+      <FontAwesomeIcon icon={faCircle} color="black" size="sm" />
+    </span>,
     description: () => <>
       Adjacent cells containing digits whose difference is 1 are marked with a white circle.
     </>,
   },
   [ConstraintType.KropkiDouble]: {
     label: 'Kropki Double',
-    icon: <FontAwesomeIcon icon={faCircle} size="sm"/>,
+    icon: <span className="fa-layers">
+      <FontAwesomeIcon icon={faCircleSolid} color="black" size="sm" />
+      <FontAwesomeIcon icon={faCircle} color="white" size="sm" />
+    </span>,
     description: () => <>
       Adjacent cells containing digits whose ratio is 2 are marked with a black circle.
     </>,
