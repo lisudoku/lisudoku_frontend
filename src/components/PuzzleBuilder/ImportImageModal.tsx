@@ -61,7 +61,7 @@ const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModa
         formData as unknown as Record<string, string>,
       ).toString();
       honeybadger.notify({
-        name: 'Imported puzzle from image',
+        name: 'Attempted import puzzle from image',
         context: {
           request: requestParams,
           response: body,
@@ -100,7 +100,14 @@ const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModa
           <input type="hidden" name="only_given_digits" value="true" />
 
           {error !== undefined && (
-            <Typography variant="paragraph" color="red">Error: {error}</Typography>
+            <div>
+              <Typography variant="paragraph" color="red">
+                Error: {error}
+              </Typography>
+              <Typography variant="paragraph" color="red">
+                Keep in mind that we expect Classic Sudoku puzzles and preferably screenshots.
+              </Typography>
+            </div>
           )}
         </DialogBody>
         <DialogFooter>
