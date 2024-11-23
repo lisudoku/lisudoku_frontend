@@ -286,7 +286,7 @@ export const useCellHighlights = () => {
     }
 
     let cellHighlights: CellHighlight[] = []
-    const step = hintSolution.steps!.at(-1)
+    const step = hintSolution.steps![hintSolution.steps!.length - 1]
     if (!step) {
       return []
     }
