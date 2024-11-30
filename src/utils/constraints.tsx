@@ -44,9 +44,12 @@ export const CONSTRAINTS_DISPLAY: { [key in ConstraintType]: ConstraintDisplayDa
   [ConstraintType.Arrow]: {
     label: 'Arrow',
     icon: <FontAwesomeIcon icon={faUpLong} size="sm"/>,
-    description: () => <>
+    description: ({ arrows }: SudokuConstraints) => <>
       The number placed in the arrow circle or oval must be the sum of digits placed
       in the cells that the arrow passes through. Digits may repeat on arrows.
+      {arrows?.some(arrow => arrow.circleCells.length > 1) && (
+        <>{' '}Each oval should be read as a two digit number left to right or top to bottom.</>
+      )}
     </>,
   },
   [ConstraintType.Renban]: {
