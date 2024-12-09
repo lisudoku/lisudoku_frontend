@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser } from '@fortawesome/free-solid-svg-icons'
 import Button from '../../shared/Button'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
@@ -9,6 +9,7 @@ import { InputMode, changePaused } from 'src/reducers/puzzle'
 import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
 import SolveStatsPanel from './SolveStatsPanel'
+import VoicePanel from '../voice/VoicePanel'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()
@@ -59,6 +60,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
     <div className="flex flex-col gap-2 md:gap-4">
       <div className="relative flex flex-col gap-2 md:gap-4">
         <SolveStatsPanel />
+        <VoicePanel />
         <div className="w-full md:w-64 mt-2 md:mt-0">
           <SudokuDigitInput
             gridSize={gridSize}

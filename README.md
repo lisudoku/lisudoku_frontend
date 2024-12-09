@@ -9,14 +9,15 @@ This is lisudoku's frontend written in React that connects to the Rails [backend
 Main features
 1. 13 supported sudoku variants
 2. Multiple grid sizes (4x4, 6x6, 9x9)
-3. Watch other solvers play live
-4. Get hints when you're stuck
-5. Use the Trainer to improve your technique
-6. Build puzzles and run the solver on any puzzle
-7. Share the puzzle you built and others can solve it
-8. Solve or run the solver on puzzles imported from f-puzzles
+3. Get hints when you're stuck
+4. Build puzzles and run the solver on any puzzle
+5. Share the puzzle you built and others can solve it
+6. Solve or run the solver on puzzles imported from external sources (e.g. f-puzzles)
+7. Watch other solvers play live
+8. Use the Trainer to improve your technique
 9. No account required
 10. Also works offline!
+11. Solve puzzles using your voice!
 
 ## Contribute
 

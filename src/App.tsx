@@ -8,6 +8,7 @@ import HoneybadgerProvider from './components/HoneybadgerProvider'
 import OnlineStatusMonitor from './components/OnlineStatusMonitor'
 import AppRoutes from './AppRoutes'
 import { ThemeProvider } from './components/ThemeProvider'
+import { VoiceProvider } from './components/voice/VoiceProvider'
 
 const App = () =>(
   <HoneybadgerProvider>
@@ -17,11 +18,13 @@ const App = () =>(
           <ThemeProvider>
             <PersistGate loading={null} persistor={persistor}>
               <OnlineStatusMonitor>
-                <BrowserRouter>
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <AppRoutes />
-                  </Suspense>
-                </BrowserRouter>
+                <VoiceProvider>
+                  <BrowserRouter>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <AppRoutes />
+                    </Suspense>
+                  </BrowserRouter>
+                </VoiceProvider>
               </OnlineStatusMonitor>
             </PersistGate>
           </ThemeProvider>

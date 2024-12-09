@@ -71,6 +71,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: {},
+      'process.nextTick': undefined,
     },
   }
 })

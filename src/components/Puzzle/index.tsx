@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { useCellHighlights, useControlCallbacks, useTvPlayerWebsocket } from './hooks'
 import { changePaused } from 'src/reducers/puzzle'
 import { gridIsFull } from 'src/utils/sudoku'
+import { updateVoiceWords } from 'src/reducers/misc'
+import { useVoice } from '../voice/VoiceProvider'
+import { VoiceHandlers } from '../voice/voice'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
@@ -18,6 +21,7 @@ const PuzzleComponent = () => {
   const selectedCells = useSelector(state => state.puzzle.controls.selectedCells)
   const paused = useSelector(state => state.puzzle.controls.paused)
   const checkErrors = useSelector(state => state.userData.settings?.checkErrors ?? true)
+  const voiceEnabled = useSelector(state => state.userData.settings?.voiceEnabled ?? false)
   const solved = useSelector(state => state.puzzle.solved)
 
   const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
@@ -34,7 +38,7 @@ const PuzzleComponent = () => {
     return undefined
   }, [gridFull, isSolvedLoading, solved])
 
-  const { onSelectedCellChange } = useControlCallbacks(isSolvedLoading)
+  const { onSelectedCellChange, onSelectedCellValueChange } = useControlCallbacks(isSolvedLoading)
 
   useTvPlayerWebsocket()
 
@@ -43,6 +47,17 @@ const PuzzleComponent = () => {
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(false))
   }, [dispatch])
+
+  const onWordsInput = useCallback((words: string) => {
+    dispatch(updateVoiceWords(words))
+  }, [dispatch])
+
+  const voiceHandlers: VoiceHandlers = {
+    onWordsInput,
+    onSelectedCellChange,
+    onSelectedCellValueChange,
+  }
+  useVoice(voiceEnabled, voiceHandlers)
 
   if (constraints === undefined) {
     return null
