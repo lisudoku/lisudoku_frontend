@@ -13,7 +13,7 @@ const VoiceToggle = () => {
 
   return (
     <Switch
-      label="Use voice (beta)"
+      label="Use voice"
       checked={voiceEnabled}
       onChange={handleSwitchChange}
     />
