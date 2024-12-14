@@ -1,7 +1,9 @@
 import { useWindowSize } from '@react-hook/window-size'
-import { intervalToDuration, parseISO } from 'date-fns'
+import { getMonth, intervalToDuration, parseISO } from 'date-fns/esm'
 import { DEFAULT_CELL_SIZE } from './constants'
 import { MAIN_PADDING } from 'src/components/Layout'
+
+export const XMAS_IS_HERE = getMonth(new Date()) === 11
 
 export const getPuzzleFullUrl = (publicId: string) => (
   `${window.location.origin}/p/${publicId}`

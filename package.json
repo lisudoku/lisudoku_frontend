@@ -29,6 +29,7 @@
     "react-helmet-async": "^2.0.4",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.3",
+    "react-snowfall": "^2.2.0",
     "react-useinterval": "^1.0.2",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
