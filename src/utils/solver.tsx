@@ -256,7 +256,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
 
   if (singleIndex === 0) {
     const step = steps[0]
-    return [ <>There is a {getStepDescription(step, hintLevel, gridSize)}.</>, false ]
+    return [ <>There is a <span>{getStepDescription(step, hintLevel, gridSize)}</span>.</>, false ]
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)

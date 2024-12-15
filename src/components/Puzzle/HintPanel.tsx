@@ -44,7 +44,7 @@ const useComputeHintElement = () => {
   return (
     <>
       <Typography variant="h3" className="pb-2 text-primary">
-        {hintLevel !== null ? `${hintLevel} hint` : 'Hint'} {' '}
+        {hintLevel !== null ? `${hintLevel} hint` : 'Hint'}{' '}
         {filteredSteps && !error && (
           <span className="relative top-[1px]">
             <Tooltip content="Some steps were removed assuming your pencil marks are correct" placement="bottom">
@@ -54,15 +54,14 @@ const useComputeHintElement = () => {
         )}
       </Typography>
       <div className="antialiased font-sans text-sm font-light leading-normal text-primary">
-        {message}
+        <span>{message}</span>
         {!error && (
           <>
             <p className="mt-3 pb-2 text-xs"><em>Click on each technique to learn how to apply them.</em></p>
             {hintLevel === HintLevel.Small && solution.solution_type !== SolutionType.None && (
               <p className="text-xs">
                 <em>
-                  Still confused? Check out the
-                  {' '}
+                  <span>Still confused? Check out the{' '}</span>
                   <span className="underline cursor-pointer" onClick={handleBigHintClick}>
                     big hint
                   </span>

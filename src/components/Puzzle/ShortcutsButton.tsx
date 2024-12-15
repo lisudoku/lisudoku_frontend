@@ -11,8 +11,8 @@ const ShortcutsButton = () => (
   <Popover placement="bottom">
     <PopoverHandler>
       <Button variant="filled" color="gray" className="hidden md:block w-full mt-2 md:mt-1">
-        <FontAwesomeIcon icon={faKeyboard} />
-        {' Shortcuts'}
+        <FontAwesomeIcon icon={faKeyboard} />{' '}
+        Shortcuts
       </Button>
     </PopoverHandler>
     <PopoverContent className="bg-tertiary text-primary border-secondary">

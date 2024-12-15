@@ -52,9 +52,9 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
               {practicePuzzleIds.map((publicId, index) => (
                 <span key={publicId}>
                   <ExternalLink url={getPuzzleRelativeUrl(publicId)}>
-                    #{index + 1}
+                    {index + 1}
                   </ExternalLink>
-                  {index + 1 < practicePuzzleIds.length && ', '}
+                  {index + 1 < practicePuzzleIds.length && ' '}
                 </span>
               ))}
               .
