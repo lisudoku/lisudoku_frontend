@@ -39,7 +39,10 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducers)
 
 const logger = createLogger({
-  predicate: (_getState, action) => !action.type.includes('puzzle/updateTimer'),
+  predicate: (_getState, action) => (
+    !action.type.includes('puzzle/updateTimer') &&
+    !action.type.includes('misc/updateVoiceWordsPreview')
+  ),
 })
 
 export const store = configureStore({

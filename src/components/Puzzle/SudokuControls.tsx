@@ -20,26 +20,12 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
 
   const {
     enabled: controlEnabled, inputMode, undoActive, redoActive,
-    onSelectedCellValueChange, onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
+    onSelectedCellValueChange, onSelectedCellDigitInput,
     onNumbersActive, onCornerMarksActive, onCenterMarksActive,
     onNewPuzzle, onReset, onUndo, onRedo,
   } = useControlCallbacks(isSolvedLoading)
 
   useKeyboardHandler(isSolvedLoading)
-
-  const handleDigitClick = useCallback((value: number) => {
-    switch (inputMode) {
-      case InputMode.Numbers:
-        onSelectedCellValueChange(value)
-        break
-      case InputMode.CornerMarks:
-        onSelectedCellCornerMarksChange(value)
-        break
-      case InputMode.CenterMarks:
-        onSelectedCellCenterMarksChange(value)
-        break
-    }
-  }, [inputMode, onSelectedCellValueChange, onSelectedCellCornerMarksChange])
 
   const handleReset = useCallback(() => {
     if (window.confirm('Are you sure you want to reset?')) {
@@ -65,7 +51,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
           <SudokuDigitInput
             gridSize={gridSize}
             disabled={!controlEnabled}
-            onClick={handleDigitClick}
+            onClick={onSelectedCellDigitInput}
           />
         </div>
         <div className="flex gap-1 justify-between md:justify-center">
@@ -73,6 +59,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
                   disabled={!controlEnabled}
                   onClick={onNumbersActive}
                   className="grow shrink basis-0 py-0 text-xl"
+                  title="Digits"
           >
             #
           </Button>
@@ -80,6 +67,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
                   disabled={!controlEnabled}
                   onClick={onCornerMarksActive}
                   className="grow shrink basis-0 py-1"
+                  title="Corner pencilmarks"
           >
             <div className="relative h-full">
               <div className="absolute top-0 left-1/3 md:left-1/4">1</div>
@@ -91,6 +79,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
                   disabled={!controlEnabled}
                   onClick={onCenterMarksActive}
                   className="grow shrink basis-0 text-lg"
+                  title="Center pencilmarks"
           >
             123
           </Button>

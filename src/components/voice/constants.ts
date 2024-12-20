@@ -28,12 +28,8 @@ const MUMBLING_WORDS = [
 ]
 
 export const GRAMMAR = [
-  'row', 'column', 'digit',
-  // TODO: add all commands
-  // 'put', 'write',
-  // undo, redo
-  // help, hint
-
+  'row', 'column', 'digit', 'undo', 'redo', 'delete', 'go', 'put',
+  'corner', 'center', 'pencil', 'mark', 'number', 'cell', 'remove',
   ...MUMBLING_WORDS,
   ...Object.keys(WORDS_TO_KEYS),
   ...Object.keys(WORDS_TO_NUMBERS)

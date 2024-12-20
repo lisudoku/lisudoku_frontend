@@ -38,12 +38,28 @@ interface VoskResult {
 }
 
 export interface VoiceHandlers {
-  onWordsInput?: (words: string) => void;
+  onWordsInput?: (words: string) => void
+  onWordsInputPreview?: (words: string) => void
   onSelectedCellChange?: SudokuEventCallbacks['onSelectedCellChange']
   onSelectedCellValueChange?: SudokuEventCallbacks['onSelectedCellValueChange']
+  onSelectedCellDigitInput?: (value: number | null) => void
+  onUndo?: SudokuEventCallbacks['onUndo']
+  onRedo?: SudokuEventCallbacks['onRedo']
+  onNumbersActive?: () => void
+  onCornerMarksActive?: () => void
+  onCenterMarksActive?: () => void
 }
 
+type InputProcessor = (text: string) => string | undefined
+
 export class Voice {
+  private model?: Model
+  private micStream?: MicrophoneStream
+  private audioBucket: Writable
+  private audioStreamer?: AudioStreamer
+  private isStarted: boolean
+  private INPUT_PROCESSORS: InputProcessor[]
+
   constructor(private handlers?: VoiceHandlers) {
     this.audioBucket = new Writable({
       write(_chunk, _encoding, callback) {
@@ -52,12 +68,15 @@ export class Voice {
       objectMode: true,
       decodeStrings: false,
     })
-  }
+    this.isStarted = false
 
-  private model?: Model
-  private micStream?: MicrophoneStream
-  private audioBucket: Writable
-  private audioStreamer?: AudioStreamer
+    const voice = this
+    this.INPUT_PROCESSORS = [
+      this.handleRowColInput, this.handleDigitInput, this.handleDeleteInput,
+      this.handleMoveInput, this.handleUndoInput, this.handleRedoInput,
+      this.handleNumbersModeInput, this.handleCornerMarksModeInput, this.handleCenterMarksModeInput,
+    ].map(fn => fn.bind(voice))
+  }
 
   public async init() {
     console.log('Loading voice')
@@ -74,11 +93,12 @@ export class Voice {
       const result: VoskResult = message.result
       this.handleWordInput(result)
     });
-    // TODO: use partial results
-    // recognizer.on("partialresult", (message: any) => {
-    //   // console.log('partialresult', message.result.partial)
-    //   // setPartial(message.result.partial)
-    // })
+    recognizer.on('partialresult', (message: any) => {
+      if (message.result.partial === '') {
+        return
+      }
+      this.handlers?.onWordsInputPreview?.(message.result.partial)
+    })
 
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: false,
@@ -99,21 +119,30 @@ export class Voice {
       objectMode: true,
     })
 
-    // Note: do not call this.start() here, as double calling start() causes bugs
+    // Note: do not call this.start() here, we may not want that
+
+    this.handlers?.onWordsInput?.('Loaded')
   }
 
   public start() {
-    console.warn('CALLING START()')
+    if (this.isStarted) {
+      return
+    }
     this.micStream?.unpipe(this.audioBucket)
     this.micStream?.pipe(this.audioStreamer!)
     console.log('Listening...')
     this.handlers?.onWordsInput?.('Listening...')
+    this.isStarted = true
   }
 
   public pause() {
-    console.warn('CALLING PAUSE()')
+    if (!this.isStarted) {
+      return
+    }
+    console.log('Pausing...')
     this.micStream?.unpipe(this.audioStreamer!)
     this.micStream?.pipe(this.audioBucket)
+    this.isStarted = false
   }
 
   public close() {
@@ -129,45 +158,147 @@ export class Voice {
   }
 
   handleWordInput(result: VoskResult) {
-    console.log('result', result)
-    const txt = result.text
+    let text = result.text
 
-    this.handlers?.onWordsInput?.(txt)
+    if (text === '') {
+      return
+    }
 
-    this.handleRowColInput(txt)
-    this.handleDigitInput(txt)
-    this.handleMoveInput(txt)
+    // TODO: filter words based on a confidence threshold?
+    // console.log('word input', result.result.map(word => `${word.word}(${word.conf})`))
+
+    this.handlers?.onWordsInput?.(text)
+
+    let foundMatch: boolean
+    do {
+      foundMatch = false
+      for (const processor of this.INPUT_PROCESSORS) {
+        const result = processor(text)
+        if (result !== undefined) {
+          text = text.substring(result.length).trimStart()
+          foundMatch = true
+          break
+        }
+      }
+      if (text === '') {
+        break
+      }
+    } while (foundMatch)
   }
 
-  handleRowColInput(txt: string) {
-    const match = txt.match(/row (\w+) column (\w+)/)
-    if (match) {
-      const row = WORDS_TO_NUMBERS[match[1]] - 1
-      const col = WORDS_TO_NUMBERS[match[2]] - 1
+  handleRowColInput(text: string) {
+    const matches = []
+
+    const match1 = text.match(/^row (\w+) column (\w+)/)
+    if (match1 !== null) {
+      matches.push([match1[0], match1[1], match1[2]])
+    }
+
+    const match2 = text.match(/^cell (\w+) (\w+)/)
+    if (match2 !== null) {
+      matches.push([match2[0], match2[1], match2[2]])
+    }
+
+    for (const [match, word1, word2] of matches) {
+      const row = WORDS_TO_NUMBERS[word1] - 1
+      const col = WORDS_TO_NUMBERS[word2] - 1
       if (row !== undefined && col !== undefined) {
-        console.warn(`Selected cell ${row},${col}`)
-        this.handlers?.onSelectedCellChange?.({ row, col }, false, false, false)
+        setTimeout(voice => voice.handlers?.onSelectedCellChange?.({ row, col }, false, false, false), 0, this)
+        return match
       }
     }
   }
 
-  // TODO: maybe also "write five" or "put in five"
-  handleDigitInput(txt: string) {
-    const match = txt.match(/digit (\w+)/)
-    if (match) {
-      console.log('matched digit regex', match[1])
-      const digit = WORDS_TO_NUMBERS[match[1]]
+  handleDigitInput(text: string) {
+    const words = []
+
+    const firstWord = text.split(' ')[0]
+    words.push([firstWord, firstWord])
+
+    const match = text.match(/^put (\w+)/)
+    if (match !== null) {
+      words.push([match[0], match[1]])
+    }
+
+    for (const [match, word] of words) {
+      const digit = WORDS_TO_NUMBERS[word]
       if (digit !== undefined) {
-        console.warn(`Wrote digit ${digit}`)
-        this.handlers?.onSelectedCellValueChange?.(digit)
+        setTimeout(voice => voice.handlers?.onSelectedCellDigitInput?.(digit), 0, this)
+        return match
       }
     }
   }
 
-  // TODO: maybe also "go up"
-  handleMoveInput(txt: string) {
-    if (WORDS_TO_KEYS[txt] !== undefined) {
-      window.dispatchEvent(new KeyboardEvent('keydown', {'key': WORDS_TO_KEYS[txt] }))
+  handleDeleteInput(text: string) {
+    const firstWord = text.split(' ')[0]
+    if (firstWord === 'delete' || firstWord === 'remove') {
+      setTimeout(voice => voice.handlers?.onSelectedCellValueChange?.(null), 0, this)
+      return firstWord
     }
+  }
+
+  handleMoveInput(text: string) {
+    const words = []
+
+    const firstWord = text.split(' ')[0]
+    words.push([firstWord, firstWord])
+
+    const match = text.match(/^go (\w+)/)
+    if (match !== null) {
+      words.push([match[0], match[1]])
+    }
+
+    for (const [match, word] of words) {
+      if (WORDS_TO_KEYS[word] !== undefined) {
+        setTimeout(() => {
+          window.dispatchEvent(new KeyboardEvent('keydown', {'key': WORDS_TO_KEYS[word] }))
+        }, 0)
+        return match
+      }
+    }
+  }
+
+  handleUndoInput(text: string) {
+    const firstWord = text.split(' ')[0]
+    if (firstWord === 'undo') {
+      setTimeout(voice => voice.handlers?.onUndo?.(), 0, this)
+      return firstWord
+    }
+  }
+
+  handleRedoInput(text: string) {
+    const firstWord = text.split(' ')[0]
+    if (firstWord === 'redo') {
+      setTimeout(voice => voice.handlers?.onRedo?.(), 0, this)
+      return firstWord
+    }
+  }
+
+  handleNumbersModeInput(text: string) {
+    const firstWord = text.split(' ')[0]
+    if (firstWord === 'digit' || firstWord === 'number') {
+      setTimeout(voice => voice.handlers?.onNumbersActive?.(), 0, this)
+      return firstWord
+    }
+  }
+
+  handleCornerMarksModeInput(text: string) {
+    const match = text.match(/^corner( (pencilmark|pencil mark|pencil|mark))?/)
+    if (match === null) {
+      return
+    }
+
+    setTimeout(voice => voice.handlers?.onCornerMarksActive?.(), 0, this)
+    return match[0]
+  }
+
+  handleCenterMarksModeInput(text: string) {
+    const match = text.match(/^center( (pencilmark|pencil mark|pencil|mark))?/)
+    if (match === null) {
+      return
+    }
+
+    setTimeout(voice => voice.handlers?.onCenterMarksActive?.(), 0, this)
+    return match[0]
   }
 }

@@ -1,4 +1,4 @@
-import { differenceWith, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
+import { differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
@@ -224,6 +224,10 @@ export const puzzleSlice = createSlice({
       }
 
       const value = action.payload
+      if (value !== null && !inRange(value, 1, state.data!.constraints.gridSize + 1)) {
+        return
+      }
+
       const actionType = value === null ? ActionType.Delete : ActionType.Digit
       const cells = differenceWith(
         state.controls.selectedCells, map(state.data?.constraints.fixedNumbers, 'position'), isEqual
@@ -305,6 +309,9 @@ export const puzzleSlice = createSlice({
       state.controls.actionIndex = -1
     },
     undoAction(state) {
+      if (state.controls.actionIndex <= 0) {
+        return
+      }
       const actionIndex = state.controls.actionIndex
       const userAction: UserAction = state.controls.actions[actionIndex]
       state.controls.selectedCells = userAction.cells
@@ -315,6 +322,9 @@ export const puzzleSlice = createSlice({
       state.controls.actionIndex--
     },
     redoAction(state) {
+      if (state.controls.actionIndex + 1 >= state.controls.actions.length) {
+        return
+      }
       state.controls.actionIndex++
       const actionIndex = state.controls.actionIndex
       const userAction: UserAction = state.controls.actions[actionIndex]

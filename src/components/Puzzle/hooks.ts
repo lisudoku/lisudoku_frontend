@@ -69,6 +69,26 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
   const handleSelectedCellCenterMarksChange = useCallback((value: number) => {
     dispatch(changeSelectedCellCenterMarks(value))
   }, [dispatch])
+  const handleSelectedCellDigitInput = useCallback((value: number | null) => {
+    switch (inputMode) {
+      case InputMode.Numbers:
+        handleSelectedCellValueChange(value)
+        break
+      case InputMode.CornerMarks:
+        if (value !== null) {
+          handleSelectedCellCornerMarksChange(value)
+        }
+        break
+      case InputMode.CenterMarks:
+        if (value !== null) {
+          handleSelectedCellCenterMarksChange(value)
+        }
+        break
+    }
+  }, [
+    inputMode, handleSelectedCellValueChange,
+    handleSelectedCellCornerMarksChange, handleSelectedCellCenterMarksChange,
+  ])
 
   const handleNextInputMode = useCallback(() => {
     dispatch(changeNextInputMode())
@@ -113,6 +133,7 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     onSelectedCellValueChange: handleSelectedCellValueChange,
     onSelectedCellCornerMarksChange: handleSelectedCellCornerMarksChange,
     onSelectedCellCenterMarksChange: handleSelectedCellCenterMarksChange,
+    onSelectedCellDigitInput: handleSelectedCellDigitInput,
     onSelectedCellChange: handleSelectedCellChange,
     onNumbersActive: handleNumbersActive,
     onCornerMarksActive: handleCornerMarksActive,
@@ -132,7 +153,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   const {
     enabled, inputMode, undoActive, redoActive,
     onSelectedCellChange, onUndo, onRedo, onPause, onNextInputMode,
-    onSelectedCellValueChange, onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
+    onSelectedCellValueChange, onSelectedCellDigitInput,
   } = useControlCallbacks(isSolvedLoading)
 
   const gridSize = constraints?.gridSize
@@ -210,17 +231,7 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
         return
       }
 
-      switch (inputMode) {
-        case InputMode.Numbers:
-          onSelectedCellValueChange(value)
-          break
-        case InputMode.CornerMarks:
-          onSelectedCellCornerMarksChange(value)
-          break
-        case InputMode.CenterMarks:
-          onSelectedCellCenterMarksChange(value)
-          break
-      }
+      onSelectedCellDigitInput(value)
     }
 
     window.addEventListener('keydown', handleKeyPress)
@@ -228,7 +239,6 @@ export const useKeyboardHandler = (isSolvedLoading: boolean) => {
   }, [
     enabled, gridSize, selectedCells, inputMode, redoActive, undoActive,
     onSelectedCellChange, onSelectedCellValueChange,
-    onSelectedCellCornerMarksChange, onSelectedCellCenterMarksChange,
     onUndo, onRedo, onPause,
   ])
 }

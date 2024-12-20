@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { useCellHighlights, useControlCallbacks, useTvPlayerWebsocket } from './hooks'
 import { changePaused } from 'src/reducers/puzzle'
 import { gridIsFull } from 'src/utils/sudoku'
-import { updateVoiceWords } from 'src/reducers/misc'
+import { updateVoiceWords, updateVoiceWordsPreview } from 'src/reducers/misc'
 import { useVoice } from '../voice/VoiceProvider'
-import { VoiceHandlers } from '../voice/voice'
+import type { VoiceHandlers } from '../voice/voice'
 
 // A puzzle that you are actively solving
 const PuzzleComponent = () => {
@@ -38,8 +38,6 @@ const PuzzleComponent = () => {
     return undefined
   }, [gridFull, isSolvedLoading, solved])
 
-  const { onSelectedCellChange, onSelectedCellValueChange } = useControlCallbacks(isSolvedLoading)
-
   useTvPlayerWebsocket()
 
   const cellHighlights = useCellHighlights()
@@ -52,12 +50,26 @@ const PuzzleComponent = () => {
     dispatch(updateVoiceWords(words))
   }, [dispatch])
 
-  const voiceHandlers: VoiceHandlers = {
-    onWordsInput,
-    onSelectedCellChange,
-    onSelectedCellValueChange,
-  }
-  useVoice(voiceEnabled, voiceHandlers)
+  const onWordsInputPreview = useCallback((words: string) => {
+    dispatch(updateVoiceWordsPreview(words))
+  }, [dispatch])
+
+  const {
+    onSelectedCellChange, onSelectedCellValueChange, onUndo, onRedo,
+    onNumbersActive, onCornerMarksActive, onCenterMarksActive,
+    onSelectedCellDigitInput,
+  } = useControlCallbacks(isSolvedLoading)
+
+  const voiceHandlers: VoiceHandlers = useMemo(() => ({
+    onWordsInput, onWordsInputPreview, onSelectedCellChange, onSelectedCellValueChange,
+    onUndo, onRedo, onNumbersActive, onSelectedCellDigitInput, onCornerMarksActive,
+    onCenterMarksActive,
+  }), [
+    onWordsInput, onWordsInputPreview, onSelectedCellChange, onSelectedCellValueChange,
+    onUndo, onRedo, onNumbersActive, onSelectedCellDigitInput, onCornerMarksActive,
+    onCenterMarksActive,
+  ])
+  useVoice(voiceEnabled, paused, voiceHandlers)
 
   if (constraints === undefined) {
     return null
