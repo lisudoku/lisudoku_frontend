@@ -1,7 +1,11 @@
-import AppNavbar from './AppNavbar'
+import { lazy } from 'react'
 import { Outlet } from 'react-router-dom'
-import AppFooter from './AppFooter'
 import classNames from 'classnames'
+import AppNavbar from './AppNavbar'
+import AppFooter from './AppFooter'
+import { XMAS_IS_HERE } from 'src/utils/misc'
+
+const SnowfallEffect = lazy(() => import('./SnowfallEffect'))
 
 export const MAIN_PADDING = 8
 const MAIN_PADDING_CLASS = 'p-[8px]'
@@ -17,6 +21,7 @@ const Layout = ({ admin, padding }: { admin: boolean, padding: boolean }) => (
     {!admin && (
       <AppFooter />
     )}
+    {XMAS_IS_HERE && <SnowfallEffect />}
   </>
 )
 

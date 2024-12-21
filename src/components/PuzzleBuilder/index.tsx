@@ -379,22 +379,22 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           <hr />
           <div className="flex w-full mt-2 gap-x-1">
             <Button className="w-1/2" variant="outlined" onClick={handleImportClick}>
-              <FontAwesomeIcon icon={faDownload} />
-              {' Import'}
+              <FontAwesomeIcon icon={faDownload} />{' '}
+              Import
             </Button>
             <Button className="w-1/2" variant="outlined" onClick={handleExportClick}>
-              <FontAwesomeIcon icon={faUpload} />
-              {' Export'}
+              <FontAwesomeIcon icon={faUpload} />{' '}
+              Export
             </Button>
           </div>
           <div className="flex w-full gap-x-1">
             <Button className="w-1/2" variant="outlined" onClick={handleImportImageClick}>
-              <FontAwesomeIcon icon={faDownload} />
-              {'Import image'}
+              <FontAwesomeIcon icon={faDownload} />{' '}
+              Import image
             </Button>
             <Button className="w-1/2" variant="outlined" onClick={handleExportImageClick}>
-              <FontAwesomeIcon icon={faUpload} />
-              {'Export image'}
+              <FontAwesomeIcon icon={faUpload} />{' '}
+              Export image
             </Button>
           </div>
         </div>

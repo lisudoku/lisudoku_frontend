@@ -9,6 +9,7 @@ import IconButton from 'src/shared/IconButton'
 import Typography from 'src/shared/Typography'
 import Navbar from 'src/shared/Navbar'
 import Collapse from 'src/shared/Collapse'
+import { XMAS_IS_HERE } from 'src/utils/misc'
 import DiscordIcon from './AppFooter/DiscordIcon'
 import GitHubIcon from './AppFooter/GitHubIcon'
 
@@ -202,9 +203,11 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
       <div className="h-full flex items-center justify-between">
         <Typography
           variant="h3"
-          className="mr-6 cursor-pointer font-normal lowercase relative hover:text-primary-hover"
+          className="mr-6 cursor-pointer font-normal lowercase whitespace-nowrap relative hover:text-primary-hover"
         >
-          <Link to={admin ? '/admin' : '/'}>lisudoku</Link>
+          <Link to={admin ? '/admin' : '/'}>
+            {`lisud${XMAS_IS_HERE ? '❄️' : 'o'}ku${XMAS_IS_HERE ? '🎅' : ''}`}
+          </Link>
         </Typography>
         <div className="hidden lg:block grow">{navList}</div>
         <div className="hidden lg:inline-block">{rightButtons}</div>
