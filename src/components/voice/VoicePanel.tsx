@@ -33,10 +33,10 @@ const VoicePanel = () => {
   return (
     <div className="flex gap-x-2 justify-between items-center w-full md:w-64 mt-2 md:mt-0 bg-secondary p-2 px-3">
       {error !== undefined ? (
-        <>
-          <FontAwesomeIcon icon={faCircleExclamation} />
+        <div className="flex gap-x-2 items-center">
+          <FontAwesomeIcon icon={faCircleExclamation} color="red" />
           <span>{error}</span>
-        </>
+        </div>
       ) : enabled ? (
         <>
           <div

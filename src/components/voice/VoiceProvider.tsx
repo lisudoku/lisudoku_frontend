@@ -70,6 +70,7 @@ export const VoiceProvider = ({ children }: { children: React.ReactNode }) => {
       if (get(error, 'name') === 'NotAllowedError') {
         setError('Please enable microphone permission')
       } else {
+        setError('Unknown error')
         throw error
       }
     }
