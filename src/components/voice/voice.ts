@@ -2,16 +2,13 @@
 import { type KaldiRecognizer, Model, createModel } from 'vosk-browser'
 import { DuplexOptions, Writable, Duplex } from 'readable-stream'
 import MicrophoneStream from 'microphone-stream'
+import process from 'process'
 
 import { GRAMMAR, MODEL_URL, WORDS_TO_KEYS, WORDS_TO_NUMBERS } from './constants'
 import type { SudokuEventCallbacks } from 'src/utils/keyboard'
 
 // Need to polyfill because microphone-stream uses it
-if (process.nextTick === undefined) {
-  process.nextTick = (callback, ...args) => {
-    setTimeout(() => callback(...args), 0)
-  }
-}
+window.process = process
 
 class AudioStreamer extends Duplex {
   constructor(public recognizer: KaldiRecognizer, options?: DuplexOptions) {

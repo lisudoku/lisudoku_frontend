@@ -4,9 +4,10 @@ import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
 import wasm from 'vite-plugin-wasm'
-import topLevelAwait from 'vite-plugin-top-level-await'
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa'
-import legacy from '@vitejs/plugin-legacy'
+import browserslist from 'browserslist'
+import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
+import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import manifest from './src/manifest.json'
 
 // https://vitejs.dev/config/
@@ -31,10 +32,6 @@ export default defineConfig(({ mode }) => {
       }),
       wasm(),
       topLevelAwait(),
-      // Legacy polyfills
-      legacy({
-        targets: ['defaults', 'not IE 11'],
-      }),
       VitePWA({
         registerType: 'autoUpdate',
         strategies: 'injectManifest',
@@ -54,6 +51,7 @@ export default defineConfig(({ mode }) => {
       ],
     },
     build: {
+      target: resolveToEsbuildTarget(browserslist(null, { env: mode, throwOnMissing: true })),
       outDir: 'build',
       sourcemap: true,
       rollupOptions: {
@@ -66,12 +64,11 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        src: "/src",
+        src: '/src',
       },
     },
     define: {
       global: {},
-      'process.nextTick': undefined,
     },
   }
 })
