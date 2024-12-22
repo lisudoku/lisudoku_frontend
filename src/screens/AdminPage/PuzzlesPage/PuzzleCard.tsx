@@ -9,6 +9,7 @@ import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import PuzzleCardIcons from './PuzzleCardIcons'
+import { confirm } from 'src/shared/ConfirmationDialog'
 
 const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const dispatch = useDispatch()
@@ -22,8 +23,8 @@ const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const cellSize = 90 / Math.sqrt(gridSize)
 
   const id = puzzle.id!
-  const handleDelete = useCallback(() => {
-    if (window.confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
+  const handleDelete = useCallback(async () => {
+    if (await confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
       dispatch(deletePuzzle(id))
       apiDeletePuzzle(id, userToken!).catch(() => alert('Error'))
     }

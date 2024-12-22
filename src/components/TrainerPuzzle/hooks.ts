@@ -2,6 +2,7 @@ import { isEqual, uniqWith } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
 import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';
+import { confirm } from 'src/shared/ConfirmationDialog';
 import { CellPosition, FixedNumber, Grid } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';
@@ -37,8 +38,8 @@ export const useTrainerControls: () => TrainerControlCallbacks = () => {
     }
   }, [dispatch, trainerPuzzleId])
 
-  const handleNextPuzzle = useCallback(() => {
-    if (finished || window.confirm('Are you sure you want to abort the current puzzle?')) {
+  const handleNextPuzzle = useCallback(async () => {
+    if (finished || await confirm('Are you sure you want to abort the current puzzle?')) {
       dispatch(fetchNewPuzzle())
     }
   }, [dispatch, finished])

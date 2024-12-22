@@ -26,6 +26,7 @@
     "microphone-stream": "^6.0.1",
     "process": "^0.11.10",
     "react": "^18.2.0",
+    "react-confirm": "^0.3.0-7",
     "react-dom": "^18.2.0",
     "react-final-form": "^6.5.9",
     "react-helmet-async": "^2.0.4",

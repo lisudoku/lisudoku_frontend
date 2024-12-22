@@ -7,6 +7,7 @@ import AddPuzzleCollectionForm from './AddPuzzleCollectionForm'
 import { useDispatch, useSelector } from 'src/hooks'
 import { deletedPuzzleCollection, responsePuzzleCollections } from 'src/reducers/collections'
 import { deletePuzzleCollection, fetchAllCollections } from 'src/utils/apiService'
+import { confirm } from 'src/shared/ConfirmationDialog'
 
 const CollectionsPage = () => {
   const [ loading, setLoading ] = useState(true)
@@ -22,8 +23,8 @@ const CollectionsPage = () => {
     })
   }, [dispatch, userToken])
 
-  const handleDelete = useCallback((id: number, name: string) => {
-    if (window.confirm(`Are you sure you want to delete puzzle collection "${name}"`)) {
+  const handleDelete = useCallback(async (id: number, name: string) => {
+    if (await confirm(`Are you sure you want to delete puzzle collection "${name}"`)) {
       setLoading(true)
       deletePuzzleCollection(id, userToken!).then(() => {
         dispatch(deletedPuzzleCollection(id))

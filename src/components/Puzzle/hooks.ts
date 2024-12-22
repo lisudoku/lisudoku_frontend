@@ -15,9 +15,9 @@ import {
 import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
 import { CellHighlight } from './SudokuGridGraphics'
-import { StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { StepRule } from 'src/types/wasm'
 import { Theme, useTheme } from '../ThemeProvider'
-import { UserSettings } from 'src/reducers/userData'
+import { confirm } from 'src/shared/ConfirmationDialog'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -111,14 +111,13 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
   const handleRedo = useCallback(() => {
     dispatch(redoAction())
   }, [dispatch])
-  const handleNewPuzzle = useCallback(() => {
+  const handleNewPuzzle = useCallback(async () => {
     if (solved ||
         solveTimer < 15 ||
-        window.confirm('Are you sure you want to abort the current puzzle?')
+        await confirm('Are you sure you want to abort the current puzzle?')
     ) {
       dispatch(fetchNewPuzzle())
     }
-    setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, solved, solveTimer])
   const handlePause = useCallback(() => {
     dispatch(changePaused(true))

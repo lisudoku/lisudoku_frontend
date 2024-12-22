@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { deletedCompetition, receiveCompetitions } from 'src/reducers/competitions'
 import { deleteCompetition, fetchAllCompetitions } from 'src/utils/apiService'
 import AddCompetitionForm from './AddCompetitionForm'
+import { confirm } from 'src/shared/ConfirmationDialog'
 
 const CompetitionsPage = () => {
   const [ loading, setLoading ] = useState(true)
@@ -24,8 +25,8 @@ const CompetitionsPage = () => {
     })
   }, [dispatch, userToken])
 
-  const handleDelete = useCallback((id: number, name: string) => {
-    if (window.confirm(`Are you sure you want to delete competition "${name}"`)) {
+  const handleDelete = useCallback(async (id: number, name: string) => {
+    if (await confirm(`Are you sure you want to delete competition "${name}"`)) {
       setLoading(true)
       deleteCompetition(id, userToken!).then(() => {
         dispatch(deletedCompetition(id))
