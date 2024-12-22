@@ -1,6 +1,6 @@
-import { Dialog, DialogBody, DialogFooter } from '@material-tailwind/react'
 import { confirmable, createConfirmation } from 'react-confirm'
 import Button from './Button'
+import { Dialog, DialogBody, DialogFooter } from './Dialog'
 
 interface ConfirmationDialogProps {
   show: boolean
@@ -9,8 +9,8 @@ interface ConfirmationDialogProps {
 }
 
 const ConfirmationDialogPure = ({ show, proceed, confirmation }: ConfirmationDialogProps) => (
-  <Dialog open={show} handler={() => proceed(false)} size="sm" className="bg-primary">
-    <DialogBody className="text-primary">{confirmation}</DialogBody>
+  <Dialog open={show} handler={() => proceed(false)}>
+    <DialogBody>{confirmation}</DialogBody>
     <DialogFooter>
       <Button
         variant="text"
