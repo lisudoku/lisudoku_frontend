@@ -6,6 +6,7 @@ import ErrorPage from 'src/components/ErrorPage'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { useSelector } from 'src/hooks'
 import Input from 'src/shared/Input'
+import { alert } from 'src/shared/ConfirmationDialog'
 
 const FeedbackPage = () => {
   const [feedback, setFeedback] = useState('')

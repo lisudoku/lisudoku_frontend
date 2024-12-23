@@ -13,26 +13,34 @@ const GRID_STRING_EXAMPLE = '0003100002000040'
 interface ImportModalProps {
   open: boolean
   onClose: () => void
-  onConfirm: (url: string) => void
+  onConfirm: (url: string) => Promise<void>
 }
 
 const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
   const sources = FORMATS.map(({ format }) => format).join(', ')
   const [input, setInput] = useState('')
-  
+  const [isImporting, setIsImporting] = useState(false)
+
   if (open === false && input.length > 0) {
     setInput('')
   }
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    onConfirm(input)
+    setIsImporting(true)
+    try {
+      await onConfirm(input)
+    }
+    finally {
+      setIsImporting(false)
+    }
   }
 
   return (
     <Dialog
       open={open}
-      handler={onClose}
+      // Prevent closing the import modal if the import method alerts
+      handler={isImporting ? (() => {}) : onClose}
       size="md"
       className="bg-tertiary text-primary"
     >

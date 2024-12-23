@@ -2,25 +2,33 @@ import { confirmable, createConfirmation } from 'react-confirm'
 import Button from './Button'
 import { Dialog, DialogBody, DialogFooter } from './Dialog'
 
+interface ConfirmationDialogOptions {
+  confirmText?: string
+  hideCancel?: boolean
+}
+
 interface ConfirmationDialogProps {
   show: boolean
   proceed: (value: boolean) => void
   confirmation: string
+  options?: ConfirmationDialogOptions
 }
 
-const ConfirmationDialogPure = ({ show, proceed, confirmation }: ConfirmationDialogProps) => (
+const ConfirmationDialogPure = ({ show, proceed, confirmation, options }: ConfirmationDialogProps) => (
   <Dialog open={show} handler={() => proceed(false)}>
     <DialogBody>{confirmation}</DialogBody>
     <DialogFooter>
-      <Button
-        variant="text"
-        onClick={() => proceed(false)}
-        className="mr-1"
-      >
-        <span>Cancel</span>
-      </Button>
+      {!options?.hideCancel && (
+        <Button
+          variant="text"
+          onClick={() => proceed(false)}
+          className="mr-1"
+        >
+          <span>Cancel</span>
+        </Button>
+      )}
       <Button variant="gradient" color="green" onClick={() => proceed(true)}>
-        <span>Confirm</span>
+        <span>{options?.confirmText ?? 'Confirm'}</span>
       </Button>
     </DialogFooter>
   </Dialog>
@@ -28,9 +36,14 @@ const ConfirmationDialogPure = ({ show, proceed, confirmation }: ConfirmationDia
 
 const ConfirmationDialog = confirmable(ConfirmationDialogPure)
 
-const confirmTemp = createConfirmation(ConfirmationDialog)
+const confirmAux = createConfirmation(ConfirmationDialog)
 
 export const confirm = (confirmation: string) => (
   // @ts-expect-error types are incorrectly generated from createConfirmation, they should be optional
-  confirmTemp({ confirmation })
+  confirmAux({ confirmation })
+)
+
+export const alert = (text: string) => (
+  // @ts-expect-error types are incorrectly generated from createConfirmation, they should be optional
+  confirmAux({ confirmation: text, options: { hideCancel: true, confirmText: 'Ok' } })
 )

@@ -29,6 +29,7 @@ import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
 import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
+import { alert } from 'src/shared/ConfirmationDialog';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -52,7 +53,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const runImport = useCallback(async (url: string): Promise<SudokuConstraints | undefined> => {
     const result = await importPuzzle(url)
     if (result.error !== undefined) {
-      alert(result.error)
+      await alert(result.error)
       if (url.length > 0 && !admin) {
         honeybadger.notify({
           name: 'Puzzle import error',
@@ -65,7 +66,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     } else {
       dispatch(receivedPuzzle(result.constraints!))
       if (result.warning !== undefined) {
-        alert(`Puzzle imported partially. ${result.warning}`)
+        await alert(`Puzzle imported partially. ${result.warning}`)
         if (!admin) {
           honeybadger.notify({
             name: 'Puzzle import warning',
@@ -154,7 +155,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const handleImportClick = useCallback(() => {
     setImportOpen(true)
-  }, [runImport])
+  }, [])
 
   const handleImportConfirm = useCallback(async (url: string) => {
     const result = await runImport(url)

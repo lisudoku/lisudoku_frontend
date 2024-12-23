@@ -2,6 +2,7 @@ import { useWindowSize } from '@react-hook/window-size'
 import { getMonth, intervalToDuration, parseISO } from 'date-fns/esm'
 import { DEFAULT_CELL_SIZE } from './constants'
 import { MAIN_PADDING } from 'src/components/Layout'
+import { alert } from 'src/shared/ConfirmationDialog'
 
 export const XMAS_IS_HERE = getMonth(new Date()) === 11
 
@@ -64,7 +65,7 @@ export const pluralize = (count: number, word: string) => {
 
 export const assert = (condition: boolean, message: string) => {
   if (!condition) {
-    alert(message)
+    setTimeout(() => alert(message), 0)
     throw Error(message)
   }
 }
