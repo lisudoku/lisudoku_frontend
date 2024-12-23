@@ -69,7 +69,7 @@ const PuzzleComponent = () => {
     onUndo, onRedo, onNumbersActive, onSelectedCellDigitInput, onCornerMarksActive,
     onCenterMarksActive,
   ])
-  useVoice(voiceEnabled, paused, voiceHandlers)
+  useVoice(voiceEnabled, paused || Boolean(solved), voiceHandlers)
 
   if (constraints === undefined) {
     return null
