@@ -3,9 +3,9 @@ import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser } from '@
 import Button from '../../shared/Button'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
-import { useSelector } from 'src/hooks'
+import { useDispatch, useSelector } from 'src/hooks'
 import SolveTimer from './SolveTimer'
-import { InputMode } from 'src/reducers/puzzle'
+import { changePaused, InputMode } from 'src/reducers/puzzle'
 import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
 import SolveStatsPanel from './SolveStatsPanel'
@@ -13,6 +13,7 @@ import VoicePanel from '../voice/VoicePanel'
 import { confirm } from 'src/shared/ConfirmationDialog'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
+  const dispatch = useDispatch()
   const isExternal = useSelector(state => state.puzzle.data?.isExternal)
   const constraints = useSelector(state => state.puzzle.data?.constraints)
   const solved = useSelector(state => state.puzzle.solved)
@@ -28,10 +29,12 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
   useKeyboardHandler(isSolvedLoading)
 
   const handleReset = useCallback(async () => {
+    setTimeout(() => dispatch(changePaused(true)), 1)
     if (await confirm('Are you sure you want to reset?')) {
       onReset()
     }
-  }, [onReset])
+    setTimeout(() => dispatch(changePaused(false)), 1)
+  }, [dispatch, onReset])
 
   const handleDelete = useCallback(() => {
     onSelectedCellValueChange(null)

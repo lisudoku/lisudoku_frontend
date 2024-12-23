@@ -112,12 +112,14 @@ export const useControlCallbacks = (isSolvedLoading: boolean) => {
     dispatch(redoAction())
   }, [dispatch])
   const handleNewPuzzle = useCallback(async () => {
+    setTimeout(() => dispatch(changePaused(true)), 1)
     if (solved ||
         solveTimer < 15 ||
         await confirm('Are you sure you want to abort the current puzzle?')
     ) {
       dispatch(fetchNewPuzzle())
     }
+    setTimeout(() => dispatch(changePaused(false)), 1)
   }, [dispatch, solved, solveTimer])
   const handlePause = useCallback(() => {
     dispatch(changePaused(true))
