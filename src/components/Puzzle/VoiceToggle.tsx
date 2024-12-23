@@ -6,6 +6,7 @@ import { honeybadger } from '../HoneybadgerProvider'
 import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
+import Typography from 'src/shared/Typography'
 
 const VoiceToggle = () => {
   const dispatch = useDispatch()
@@ -32,7 +33,14 @@ const VoiceToggle = () => {
           <FontAwesomeIcon icon={faCircleInfo} className="cursor-pointer" />
         </PopoverHandler>
         <PopoverContent className="bg-tertiary text-primary border-secondary">
-          Note: Voice mode will download a large file
+          <Typography variant="paragraph">
+            Voice mode requires a one-time download of a large file, which will be stored in the browser's cache.
+          </Typography>
+          {navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrom') && (
+            <Typography variant="paragraph">
+              This feature might not work on some Safari browsers.
+            </Typography>
+          )}
         </PopoverContent>
       </Popover>
     </div>
