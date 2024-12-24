@@ -41,9 +41,12 @@ const AppFooter = () => (
           <DiscordIcon />
         </div>
         <div className="w-full sm:w-1/2 md:w-1/3 lg:w-fit lg:px-5 text-center">
-          <a href={X_URL}
+          <a
+            href={X_URL}
             target="_blank"
-            rel="noopener noreferrer">
+            rel="noopener noreferrer"
+            aria-label="lisudoku X account"
+          >
             <FontAwesomeIcon icon={faTwitter} size="2x" color="#2d9bcd" />
           </a>
         </div>

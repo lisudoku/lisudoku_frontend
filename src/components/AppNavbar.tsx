@@ -216,6 +216,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           variant="text"
           className="ml-auto text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
           ripple={false}
+          aria-label="Toggle navbar menu"
           onClick={() => setOpenNav(!openNav)}
         >
           <FontAwesomeIcon icon={openNav ? faXmark : faBars} size="2x" />

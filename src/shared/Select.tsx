@@ -8,6 +8,7 @@ const CONTAINER_CLASSES = 'min-w-fit'
 export const Select = (props: any) => (
   <MuiSelect 
     {...props}
+    aria-label={props.label}
     variant="standard"
     size="md"
     color="gray"
