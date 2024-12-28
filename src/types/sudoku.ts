@@ -25,6 +25,7 @@ export enum SudokuVariant {
   ExtraRegions = 'extraregions',
   OddEven = 'oddeven',
   Renban = 'renban',
+  Palindrome = 'palindrome',
 }
 
 export enum SudokuDifficulty {
@@ -54,6 +55,7 @@ export interface SudokuConstraints {
   evenCells?: CellPosition[]
   topBottom?: boolean
   renbans?: Renban[]
+  palindromes?: Palindrome[]
 }
 
 type BooleanConstraints = |
@@ -67,6 +69,7 @@ export enum ConstraintType {
   Thermo = 'thermo',
   Arrow = 'arrow',
   Renban = 'renban',
+  Palindrome = 'palindrome',
   PrimaryDiagonal = 'primary_diagonal',
   SecondaryDiagonal = 'secondary_diagonal',
   Diagonals = 'diagonals',
@@ -112,6 +115,8 @@ export enum KropkiDotType {
 }
 
 export type Renban = CellPosition[]
+
+export type Palindrome = CellPosition[]
 
 export type Puzzle = {
   id?: string

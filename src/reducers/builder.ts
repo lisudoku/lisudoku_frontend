@@ -8,6 +8,7 @@ import {
   Arrow,
   CellMarks,
   CellPosition, ConstraintKeyType, ConstraintType, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
+  Palindrome,
   Region, Renban, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
 } from 'src/types/sudoku'
 import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
@@ -44,6 +45,7 @@ type BuilderState = {
   currentThermo: Thermo
   currentArrow: Arrow
   currentRenban: Renban
+  currentPalindrome: Palindrome
   constraintGrid: Grid | null
   killerSum: number | null
   manualChange: boolean
@@ -135,6 +137,7 @@ export const builderSlice = createSlice({
       arrowCells: [],
     },
     currentRenban: [],
+    currentPalindrome: [],
     killerSum: null,
     constraintGrid: null,
     manualChange: false,
@@ -244,6 +247,16 @@ export const builderSlice = createSlice({
             }
             break
           }
+          case ConstraintType.Palindrome: {
+            if (
+              state.currentPalindrome.length === 0 ||
+              !find(state.currentPalindrome, cell) &&
+              expandsArea8(state.currentPalindrome, cell)
+            ) {
+              state.currentPalindrome.push(cell)
+            }
+            break
+          }
           default:
             constraintChanged = false
         }
@@ -264,6 +277,7 @@ export const builderSlice = createSlice({
         arrowCells: [],
       }
       state.currentRenban = []
+      state.currentPalindrome = []
 
       const gridSize = state.constraints!.gridSize
       switch (state.constraintType) {
@@ -402,6 +416,16 @@ export const builderSlice = createSlice({
           }
           break
         }
+        case ConstraintType.Palindrome: {
+          assert(state.currentPalindrome.length > 0, 'Click on a cell to start a palindrome line.')
+          assert(
+            state.currentPalindrome.length > 1,
+            'Palindrome line is too short. Click on other cells to expand it.'
+          )
+          state.constraints!.palindromes!.push(state.currentPalindrome)
+          state.currentPalindrome = []
+          break
+        }
       }
 
       handleConstraintChange(state)
@@ -436,6 +460,13 @@ export const builderSlice = createSlice({
           }
         }
 
+        const arrowIndex = findIndex(state.constraints!.arrows, (arrow: Arrow) => (
+          arrow.circleCells.some(isSelectedCell) || arrow.arrowCells.some(isSelectedCell)
+        ))
+        if (arrowIndex !== -1) {
+          state.constraints!.arrows?.splice(arrowIndex, 1)
+        }
+
         // Renban
         if (state.currentRenban.find(isSelectedCell)) {
           state.currentRenban = []
@@ -446,11 +477,14 @@ export const builderSlice = createSlice({
           state.constraints!.renbans?.splice(renbanIndex, 1)
         }
 
-        const arrowIndex = findIndex(state.constraints!.arrows, (arrow: Arrow) => (
-          arrow.circleCells.some(isSelectedCell) || arrow.arrowCells.some(isSelectedCell)
-        ))
-        if (arrowIndex !== -1) {
-          state.constraints!.arrows?.splice(arrowIndex, 1)
+        // Palindrome
+        if (state.currentPalindrome.find(isSelectedCell)) {
+          state.currentPalindrome = []
+        }
+
+        const palindromeIndex = findIndex(state.constraints!.palindromes, (palindrome: Palindrome) => palindrome.some(isSelectedCell))
+        if (palindromeIndex !== -1) {
+          state.constraints!.palindromes?.splice(palindromeIndex, 1)
         }
 
         // Killer

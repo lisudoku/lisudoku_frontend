@@ -7,6 +7,7 @@ import { useGridErrors, useFixedNumbersGrid } from './hooks'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
 import { CornerMarksGraphics, CellCornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
+import PalindromesGraphics from './SudokuGridGraphics/PalindromesGraphics'
 
 export type CellHighlight = {
   position: CellPosition
@@ -672,7 +673,7 @@ const SudokuConstraintsGraphics = ({
 }: SudokuConstraintsGraphicsProps) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
-    oddCells, evenCells, renbans,
+    oddCells, evenCells, renbans, palindromes,
   } = constraints
   const onGridClick = useOnGridClick(cellSize, gridSize, onCellClick)
   const onMouseMove = useOnMouseMove(cellSize, gridSize, onCellClick)
@@ -695,6 +696,7 @@ const SudokuConstraintsGraphics = ({
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
       <RenbansGraphics renbans={renbans || []} cellSize={cellSize} />
+      <PalindromesGraphics palindromes={palindromes || []} cellSize={cellSize} />
       <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
       <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />

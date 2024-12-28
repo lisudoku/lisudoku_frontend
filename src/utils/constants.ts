@@ -19,6 +19,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
   SudokuVariant.TopBottom,
   SudokuVariant.Killer,
   SudokuVariant.Renban,
+  SudokuVariant.Palindrome,
   SudokuVariant.Mixed,
 ]
 
@@ -38,6 +39,7 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.ExtraRegions]: 'Extra Regions',
   [SudokuVariant.OddEven]: 'Odd Even',
   [SudokuVariant.Renban]: 'Renban',
+  [SudokuVariant.Palindrome]: 'Palindrome',
   [SudokuVariant.Mixed]: 'Mixed',
 }
 
@@ -58,11 +60,13 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.HiddenSingle]: 'Hidden Single',
   [StepRule.NakedSingle]: 'Naked Single',
   [StepRule.Thermo]: 'Thermo Single',
+  [StepRule.PalindromeValues]: 'Palindrome Values',
   [StepRule.Candidates]: 'Candidates',
   [StepRule.ThermoCandidates]: 'Thermo Candidates',
   [StepRule.KillerCandidates]: 'Killer Cage Candidates',
   [StepRule.ArrowCandidates]: 'Arrow Candidates',
   [StepRule.RenbanCandidates]: 'Renban Candidates',
+  [StepRule.PalindromeCandidates]: 'Palindrome Candidates',
   [StepRule.ArrowAdvancedCandidates]: 'Arrow Advanced Candidates',
   [StepRule.KropkiAdvancedCandidates]: 'Kropki Dot Chain Advanced Logic',
   [StepRule.Killer45]: 'Killer Sum Rule',
@@ -103,12 +107,14 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.HiddenSingle]: EStepRuleDifficulty.Easy,
   [StepRule.NakedSingle]: EStepRuleDifficulty.Easy,
   [StepRule.Thermo]: EStepRuleDifficulty.Easy,
+  [StepRule.PalindromeValues]: EStepRuleDifficulty.Easy,
 
   [StepRule.Candidates]: EStepRuleDifficulty.Medium,
   [StepRule.ThermoCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.KillerCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.ArrowCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.RenbanCandidates]: EStepRuleDifficulty.Medium,
+  [StepRule.PalindromeCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.ArrowAdvancedCandidates]: EStepRuleDifficulty.Medium,
   [StepRule.Killer45]: EStepRuleDifficulty.Medium,
   [StepRule.Kropki]: EStepRuleDifficulty.Medium,
@@ -147,6 +153,7 @@ export const CONSTRAINT_TYPE_VARIANTS: { [key in ConstraintType]: SudokuVariant 
   [ConstraintType.Thermo]: SudokuVariant.Thermo,
   [ConstraintType.Arrow]: SudokuVariant.Arrow,
   [ConstraintType.Renban]: SudokuVariant.Renban,
+  [ConstraintType.Palindrome]: SudokuVariant.Palindrome,
   [ConstraintType.PrimaryDiagonal]: SudokuVariant.Diagonal,
   [ConstraintType.SecondaryDiagonal]: SudokuVariant.Diagonal,
   [ConstraintType.Diagonals]: SudokuVariant.Diagonal,
@@ -160,3 +167,5 @@ export const CONSTRAINT_TYPE_VARIANTS: { [key in ConstraintType]: SudokuVariant 
   [ConstraintType.Even]: SudokuVariant.OddEven,
   [ConstraintType.TopBottom]: SudokuVariant.TopBottom,
 }
+
+export const GRID_STEPS = [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo, StepRule.PalindromeValues]

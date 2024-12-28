@@ -3,7 +3,7 @@ import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
 import { InvalidStateType, SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
-import { StepRuleDisplay } from './constants'
+import { GRID_STEPS, StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
@@ -62,6 +62,8 @@ const areaDisplay = (area: any, gridSize: number) => {
     return 'an arrow'
   } else if (area.Renban !== undefined) {
     return 'a renban'
+  } else if (area.Palindrome !== undefined) {
+    return 'a palindrome'
   } else if (area === 'Grid') {
     return 'the grid'
   } else if (area.Cell !== undefined) {
@@ -109,6 +111,7 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
     }
     case StepRule.NakedSingle:
     case StepRule.Thermo:
+    case StepRule.PalindromeValues:
       return applyGridStepHint(` on cell ${cellDisplay(step.cells[0])}`)
     case StepRule.Candidates:
       return ' for all cells'
@@ -160,6 +163,8 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
       // Some techniques don't have cells (e.g. killer cage, kropki chains)
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
 
+      // ????
+
       return `${areaMessage}${cellsMessage} to remove ${values} from ${affectedCells}`
   }
 }
@@ -208,6 +213,7 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
     case StepRule.HiddenSingle:
     case StepRule.NakedSingle:
     case StepRule.Thermo:
+    case StepRule.PalindromeValues:
       return false
     case StepRule.HiddenPairs:
     case StepRule.HiddenTriples:
@@ -224,9 +230,7 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
 }
 
 const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean, context: object) => {
-  const singleIndex = steps.findIndex(step => (
-    [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo].includes(step.rule))
-  )
+  const singleIndex = steps.findIndex(step => GRID_STEPS.includes(step.rule))
 
   if (singleIndex === -1) {
     honeybadger.notify({

@@ -118,6 +118,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const currentThermo = useSelector(state => state.builder.currentThermo)
   const currentArrow = useSelector(state => state.builder.currentArrow)
   const currentRenban = useSelector(state => state.builder.currentRenban)
+  const currentPalindrome = useSelector(state => state.builder.currentPalindrome)
   const cellMarks = useSelector(state => state.builder.cellMarks)
   const constraintGrid = useSelector(state => state.builder.constraintGrid!)
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
@@ -228,11 +229,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   if (currentRenban.length > 0) {
     renbans = [ ...renbans, currentRenban ]
   }
+  let palindromes = constraints?.palindromes ?? []
+  if (currentPalindrome.length > 0) {
+    palindromes = [ ...palindromes, currentPalindrome ]
+  }
+
   const constraintPreview = {
     ...constraints,
     thermos,
     arrows,
     renbans,
+    palindromes,
   }
 
   // Not really used, but SudokuGrid needs them... there are better solutions
@@ -308,6 +315,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               <ConstraintRadio id={ConstraintType.Odd} />
               <ConstraintRadio id={ConstraintType.Even} />
               <ConstraintRadio id={ConstraintType.Renban} />
+              <ConstraintRadio id={ConstraintType.Palindrome} />
               <div className="flex flex-col w-full mt-2 gap-y-1">
                 {constraintType === ConstraintType.KillerCage && (
                   <Input label="Sum"
@@ -343,7 +351,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                 )}
                 {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.KillerCage,
                   ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble,
-                  ConstraintType.ExtraRegions, ConstraintType.Arrow, ConstraintType.Renban
+                  ConstraintType.ExtraRegions, ConstraintType.Arrow, ConstraintType.Renban,
+                  ConstraintType.Palindrome,
                 ].includes(constraintType) && (
                   <Button onClick={handleConstraintAdd}>Add</Button>
                 )}

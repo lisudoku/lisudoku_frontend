@@ -2,6 +2,7 @@ import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import {
   faBolt, faChessKing, faChessKnight, faLinesLeaning, faSquare, faThermometer4,
   faUpLong, faXmark, faCircle as faCircleSolid, faSlash,
+  faArrowsLeftRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ReactNode } from 'react';
@@ -57,6 +58,13 @@ export const CONSTRAINTS_DISPLAY: { [key in ConstraintType]: ConstraintDisplayDa
     icon: <FontAwesomeIcon icon={faLinesLeaning} size="sm"/>,
     description: () => <>
       Each gray line must contain a set of distinct, consecutive digits in any order.
+    </>,
+  },
+  [ConstraintType.Palindrome]: {
+    label: 'Palindrome',
+    icon: <FontAwesomeIcon icon={faArrowsLeftRight} size="sm" />,
+    description: () => <>
+      Digits along any gray line form a palindrome (they read the same in both directions).
     </>,
   },
   [ConstraintType.PrimaryDiagonal]: {

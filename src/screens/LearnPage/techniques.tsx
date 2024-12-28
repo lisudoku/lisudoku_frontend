@@ -338,6 +338,26 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'ZiKD2zQKk97LamntZ32w' ],
   },
   {
+    id: StepRule.PalindromeValues,
+    summary: <>
+      Only applies to Palindrome puzzles.
+      <br/>
+      Whenever we fill in a digit on a palindrome we can automatically fill it
+      in on the other side of the palindrome.
+    </>,
+    practicePuzzleIds: [],
+  },
+  {
+    id: StepRule.PalindromeCandidates,
+    summary: <>
+      Only applies to Palindrome puzzles.
+      <br/>
+      Whenever we update a palindrome cell's candidates we can automatically do the same
+      on the other side of the palindrome.
+    </>,
+    practicePuzzleIds: [],
+  },
+  {
     id: StepRule.Kropki,
     summary: <>
       Only applies to Kropki puzzles.

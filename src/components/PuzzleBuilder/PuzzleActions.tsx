@@ -152,7 +152,12 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
       {setterMode && (
         <>
           <DifficultySelect value={difficulty} onChange={handleDifficultyChange} />
-          <VariantSelect value={variant} label="Variant (autodetected)" disabled />
+          <VariantSelect
+            value={variant}
+            label="Variant (autodetected)"
+            onChange={() => {}} // just to get rid of the warning
+            disabled
+          />
           <PuzzleCollectionsSelect
             value={sourceCollectionId}
             onChange={handleSourceCollectionChange}

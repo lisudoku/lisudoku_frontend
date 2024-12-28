@@ -61,6 +61,7 @@ export const defaultConstraints = (gridSize: number): Required<SudokuConstraints
   evenCells: [],
   topBottom: false,
   renbans: [],
+  palindromes: [],
 })
 
 export const regionGridToRegions = (gridSize: number, regionGrid: Grid): Region[] => {
@@ -205,6 +206,7 @@ const isCompletelyEmpty = (cell: CellPosition, valuesGrid: Grid, cellMarks: Cell
 
 enum CheckType {
   Equal,
+  NotEqual,
   KropkiConsecutive,
   KropkiDouble,
   KropkiNegative,
@@ -214,6 +216,8 @@ const validPeersForValue = (value: number, checkType: CheckType, gridSize: numbe
   switch (checkType) {
     case CheckType.Equal:
       return range(1, gridSize + 1).filter(x => x !== value)
+    case CheckType.NotEqual:
+      return [value]
     case CheckType.KropkiConsecutive: {
       const values = []
       if (value > 1) {
@@ -311,8 +315,6 @@ const checkErrorsBetween = (
   }
 }
 
-// TODO: deduplicate code by returning offending cells from the wasm checker
-// (but it needs to handle cell marks, so...)
 export const computeErrors = (checkErrors: boolean, constraints: SudokuConstraints, grid?: Grid, cellMarks?: CellMarks[][]) => {
   const { gridSize, fixedNumbers } = constraints
   const gridErrors: boolean[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false))
@@ -410,6 +412,19 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
       for (const cell of renban) {
         gridErrors[cell.row][cell.col] = true
       }
+    }
+  }
+
+  // Palindromes
+  for (const palindrome of constraints.palindromes ?? []) {
+    let left = 0
+    let right = palindrome.length - 1
+    while (left < right) {
+      checkErrorsBetween(
+        palindrome[left], palindrome[right], valuesGrid, cellMarks, CheckType.NotEqual, gridErrors, cellMarksErrors
+      )
+      left += 1
+      right -= 1
     }
   }
 
@@ -575,7 +590,7 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
 }
 
 // TODO: this is also a duplicate between wasm and js
-export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
+export const getAreaCells = (area: any, constraints: SudokuConstraints): CellPosition[] => {
   if (area.Row !== undefined) {
     return times(constraints.gridSize, col => ({
       row: area.Row,
@@ -593,6 +608,8 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints) => {
     } else {
       return constraints.extraRegions![area.Region - constraints.regions.length]
     }
+  } else if (area.Palindrome !== undefined) {
+    return constraints.palindromes?.[area.Palindrome] ?? []
   } else if (area === 'PrimaryDiagonal') {
     return times(constraints.gridSize, idx => ({
       row: idx,
@@ -617,6 +634,15 @@ export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition)
   if (constraints.antiKing) {
     cellRegions.push(getKingPeers(cell, constraints.gridSize))
   }
+
+  const palindromePeers = []
+  for (const palindrome of constraints.palindromes ?? []) {
+    const index = palindrome.findIndex(pCell => isEqual(pCell, cell))
+    if (2 * index + 1 !== palindrome.length) {
+      palindromePeers.push(palindrome[palindrome.length - 1 - index])
+    }
+  }
+  cellRegions.push(palindromePeers)
 
   return uniqWith(flatten(cellRegions), isEqual)
 }
@@ -663,6 +689,9 @@ export const detectConstraints = (constraints: SudokuConstraints | null): Constr
   }
   if (!isEmpty(constraints.renbans)) {
     constraintTypes.push(ConstraintType.Renban)
+  }
+  if (!isEmpty(constraints.palindromes)) {
+    constraintTypes.push(ConstraintType.Palindrome)
   }
   if (constraints.primaryDiagonal) {
     constraintTypes.push(ConstraintType.PrimaryDiagonal)

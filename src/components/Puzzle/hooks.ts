@@ -297,6 +297,8 @@ export const useCellHighlights = () => {
     }
 
     let cellHighlights: CellHighlight[] = []
+
+    // TODO: this highlight feature code should be more tightly coupled with the hint feature
     const step = hintSolution.steps![hintSolution.steps!.length - 1]
     if (!step) {
       return []
@@ -315,7 +317,8 @@ export const useCellHighlights = () => {
         break
       }
       case StepRule.HiddenSingle:
-      case StepRule.Thermo: {
+      case StepRule.Thermo:
+      case StepRule.PalindromeValues: {
         cellHighlights = getAreaCells(area, constraints).map((areaCell: CellPosition) => ({
           position: areaCell,
           color: areaColor,
