@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { receiveActiveCompetitions } from 'src/reducers/userData'
 import { Competition } from 'src/types'
 import { fetchActiveCompetitions } from 'src/utils/apiService'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
 
 const ContestsAlert = () => {
   const dispatch = useDispatch()
@@ -42,10 +43,19 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
   const finished = isPast(toDate)
 
   const externalLink = (
-    <a href={url}
-       target="_blank"
-       rel="noopener noreferrer"
-       className="underline">
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline"
+      onClick={() => honeybadger.notify({
+        name: 'Contest link clicked',
+        context: {
+          url,
+          name,
+        },
+      })}
+    >
       here
     </a>
   )
