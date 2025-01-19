@@ -31,9 +31,11 @@ const SolveStatsPanel = () => {
           Puzzle median time: <b>{formatTimer(solveStats.median)}</b>
         </Typography>
 
-        <Typography variant="paragraph">
-          You're in the <b>{ordinal(solveStats.rank)}</b> percentile.
-        </Typography>
+        {solveStats.rank >= 50 && (
+          <Typography variant="paragraph">
+            You're in the <b>{ordinal(solveStats.rank)}</b> percentile.
+          </Typography>
+        )}
       </div>
     </Alert>
   )
