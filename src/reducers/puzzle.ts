@@ -82,6 +82,12 @@ const performAction = (state: PuzzleState, action: UserAction) => {
   }
 }
 
+const insertAction = (state: PuzzleState, action: UserAction) => {
+  state.controls.actions.splice(state.controls.actionIndex + 1)
+  state.controls.actions.push(action)
+  state.controls.actionIndex = state.controls.actions.length - 1
+}
+
 const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, actionType: ActionType) => {
   if (isEmpty(state.controls.selectedCells)) {
     return
@@ -116,8 +122,7 @@ const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, action
 
     performAction(state, userAction)
 
-    state.controls.actions.push(userAction)
-    state.controls.actionIndex = state.controls.actions.length - 1
+    insertAction(state, userAction)
   }
 
   markUpdate(state)
@@ -259,8 +264,7 @@ export const puzzleSlice = createSlice({
 
         performAction(state, userAction)
 
-        state.controls.actions.push(userAction)
-        state.controls.actionIndex = state.controls.actions.length - 1
+        insertAction(state, userAction)
       }
 
       state.controls.hintSolution = null
@@ -309,7 +313,7 @@ export const puzzleSlice = createSlice({
       state.controls.actionIndex = -1
     },
     undoAction(state) {
-      if (state.controls.actionIndex <= 0) {
+      if (state.controls.actionIndex < 0) {
         return
       }
       const actionIndex = state.controls.actionIndex
