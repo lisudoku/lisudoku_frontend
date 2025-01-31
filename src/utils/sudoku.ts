@@ -638,7 +638,7 @@ export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition)
   const palindromePeers = []
   for (const palindrome of constraints.palindromes ?? []) {
     const index = palindrome.findIndex(pCell => isEqual(pCell, cell))
-    if (2 * index + 1 !== palindrome.length) {
+    if (index !== -1 && 2 * index + 1 !== palindrome.length) {
       palindromePeers.push(palindrome[palindrome.length - 1 - index])
     }
   }
