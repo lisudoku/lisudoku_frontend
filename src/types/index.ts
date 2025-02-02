@@ -1,4 +1,4 @@
-import { FixedNumber, Puzzle, SudokuVariant } from './sudoku'
+import { CellPosition, FixedNumber, Puzzle, SudokuVariant } from './sudoku'
 
 export type ExtendedPuzzle = Puzzle & {
   solved: boolean;
@@ -34,4 +34,26 @@ export type Competition = {
   toDate: string
   puzzleCollectionId: number | null
   ibPuzzleCollectionId: number | null
+}
+
+export enum ActionType {
+  Digit = 'digit',
+  CornerMark = 'corner_mark',
+  CenterMark = 'center_mark',
+  Delete = 'delete',
+}
+
+export type UserSolutionStep = {
+  type: ActionType
+  value: number // digit
+  time: number // seconds from start
+  cells: CellPosition[]
+}
+
+export type UserSolution = {
+  id?: number
+  puzzle: Pick<Puzzle, 'publicId' | 'variant' | 'difficulty'>
+  steps?: UserSolutionStep[]
+  createdAt?: string
+  solveTime?: number // seconds
 }

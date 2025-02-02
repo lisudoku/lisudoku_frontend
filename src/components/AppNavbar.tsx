@@ -58,6 +58,10 @@ const ADMIN_ITEMS = [
     url: '/admin/build',
   },
   {
+    text: 'Solves',
+    url: '/admin/solves',
+  },
+  {
     text: 'Collections',
     url: '/admin/collections',
   },
@@ -123,8 +127,8 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
   )
 
   const solvedElement = (
-    <span>
-      Solved: {solveCount}
+    <Link to="/mysolves">
+      My solves ({solveCount})
       {solveCount >= 2 && (
         <>
           {' '}
@@ -150,7 +154,7 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
           )}
         </>
       )}
-    </span>
+    </Link>
   )
 
   const rightButtons = (

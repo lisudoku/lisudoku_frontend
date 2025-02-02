@@ -17,6 +17,8 @@ import SolverPage from './screens/SolverPage'
 import OfflinePage from './screens/OfflinePage'
 import FeedbackPage from './screens/FeedbackPage'
 import PageNotFound from './screens/PageNotFound'
+import MySolvesPage from './screens/MySolvesPage'
+import MySolveReplayPage from './screens/MySolveReplayPage'
 import EnsureAdmin from './components/EnsureAdmin'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
@@ -41,6 +43,8 @@ const AppRoutes = () => (
       <Route path="solver" element={<SolverPage />} />
       <Route path="offline" element={<OfflinePage/>} />
       <Route path="feedback" element={<FeedbackPage />} />
+      <Route path="mysolves" element={<MySolvesPage />} />
+      <Route path="mysolves/:id" element={<MySolveReplayPage />} />
       <Route path="*" element={<PageNotFound />} />
     </Route>
     <Route path="/" element={<Layout admin />}>

@@ -17,7 +17,7 @@ const TvPage = () => {
                 url="https://lisudoku.xyz/tv"
                 description="Watch people solve puzzles in real time" />
       {error ? (
-        <ErrorPage text={errorMessage} />
+        <ErrorPage>{errorMessage}</ErrorPage>
       ) : loading ? (
         <LoadingSpinner fullPage />
       ) : (
