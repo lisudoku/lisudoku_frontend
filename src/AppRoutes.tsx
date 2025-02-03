@@ -17,11 +17,11 @@ import SolverPage from './screens/SolverPage'
 import OfflinePage from './screens/OfflinePage'
 import FeedbackPage from './screens/FeedbackPage'
 import PageNotFound from './screens/PageNotFound'
-import MySolvesPage from './screens/MySolvesPage'
 import MySolveReplayPage from './screens/MySolveReplayPage'
 import EnsureAdmin from './components/EnsureAdmin'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
+const MySolvesPage = lazy(() => import('./screens/MySolvesPage'))
 
 const AppRoutes = () => (
   <Routes>
