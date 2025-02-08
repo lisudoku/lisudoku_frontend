@@ -57,7 +57,9 @@ const TrainerPage = () => {
                 url="https://lisudoku.xyz/trainer"
                 description="Improve your sudoku solving technique with lisudoku trainer" />
       {!isOnline ? (
-        <ErrorPage text="Trainer is not available while offline" />
+        <ErrorPage>
+          Trainer is not available while offline
+        </ErrorPage>
       ) : error ? (
         <ErrorPage />
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (

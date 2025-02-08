@@ -13,6 +13,8 @@ import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { SudokuDifficulty } from 'src/types/sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
+import { UserSolution } from 'src/types'
+import { camelCaseKeys } from 'src/utils/json'
 
 const getSolvedEmoji = (difficulty: SudokuDifficulty, solveTime: number) => {
   switch (difficulty) {
@@ -87,10 +89,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     const solveTime = actions[actions.length - 1].time
     requestPuzzleCheck(id, grid, processedActions).then(result => {
       dispatch(responseSolved({
-        id,
-        variant,
-        difficulty,
-        solveTime,
+        userSolution: result.user_solution ? camelCaseKeys(result.user_solution) satisfies UserSolution : undefined,
         solved: result.correct,
         solveStats: result.stats,
       }))

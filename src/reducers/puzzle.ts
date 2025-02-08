@@ -5,13 +5,7 @@ import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid, defaultConstraints, getAllCells } from 'src/utils/sudoku'
 import { SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
-
-export enum ActionType {
-  Digit = 'digit',
-  CornerMark = 'corner_mark',
-  CenterMark = 'center_mark',
-  Delete = 'delete',
-}
+import { ActionType } from 'src/types'
 
 export enum HintLevel {
   Small = 'Small',
@@ -66,7 +60,10 @@ type PuzzleState = {
   controls: ControlsState
 }
 
-const performAction = (state: PuzzleState, action: UserAction) => {
+export const performAction = (
+  state: Pick<PuzzleState, 'grid' | 'cellMarks'>,
+  action: Pick<UserAction, 'type' | 'cells' | 'value'>,
+) => {
   for (const { row, col } of action.cells) {
     switch(action.type) {
       case ActionType.Digit: state.grid![row][col] = action.value

@@ -51,7 +51,7 @@ SudokuGrid.defaultProps = {
   paused: false,
 }
 
-type SudokuGridProps = {
+export type SudokuGridProps = {
   constraints: SudokuConstraints
   grid?: Grid
   cellMarks?: CellMarks[][]

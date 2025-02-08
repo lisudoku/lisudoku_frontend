@@ -129,3 +129,15 @@ export const apiUpdateCompetition = async (id: string, competition: CompetitionI
     headers: { 'Authorization': `Bearer ${userToken}` },
   }).then(response => response.data)
 }
+
+export const fetchAllUserSolutions = async (userToken: string) => {
+  return axios.get('/user_solutions', {
+    headers: { 'Authorization': `Bearer ${userToken}` },
+  }).then(response => response.data)
+}
+
+export const fetchUserSolution = async (id: string, userToken: string) => {
+  return axios.get(`/user_solutions/${id}`, {
+    headers: { 'Authorization': `Bearer ${userToken}` },
+  }).then(response => response.data)
+}

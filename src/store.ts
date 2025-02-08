@@ -5,7 +5,6 @@ import {
   FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-
 import puzzleReducer from './reducers/puzzle'
 import trainer from './reducers/trainer'
 import userData from './reducers/userData'
@@ -16,6 +15,7 @@ import collections from './reducers/collections'
 import competitions from './reducers/competitions'
 import misc from './reducers/misc'
 import { combineReducers } from 'redux'
+import { migrateStore } from './storeMigrations'
 
 const reducers = combineReducers({
   puzzle: puzzleReducer,
@@ -34,6 +34,7 @@ const persistConfig = {
   storage,
   version: 1,
   whitelist: [ 'userData', 'puzzle' ],
+  migrate: migrateStore,
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)

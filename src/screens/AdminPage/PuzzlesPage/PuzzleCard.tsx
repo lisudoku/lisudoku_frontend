@@ -10,11 +10,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import PuzzleCardIcons from './PuzzleCardIcons'
 import { alert, confirm } from 'src/shared/ConfirmationDialog'
+import { useSolvedPuzzleIds } from 'src/utils/solves'
 
 const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
-  const solvedPuzzleIds = useSelector(state => state.userData.solvedPuzzles.map(puzzle => puzzle.id))
+  const solvedPuzzleIds = useSolvedPuzzleIds()
 
   const gridSize = puzzle.constraints.gridSize
   const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))

@@ -8,6 +8,8 @@ import GroupCounts from './GroupCounts'
 import Overview from './Overview'
 import PuzzleEditPage from './PuzzleEditPage'
 import PuzzlesPage from './PuzzlesPage'
+import AdminSolvesPage from './AdminSolvesPage'
+import AdminSolvePage from './AdminSolvePage'
 
 const AdminPage = () => (
   <Routes>
@@ -16,6 +18,8 @@ const AdminPage = () => (
     <Route path="puzzles" element={<PuzzlesPage />} />
     <Route path="puzzles/:id/edit" element={<PuzzleEditPage />} />
     <Route path="build/*" element={<BuildPage />} />
+    <Route path="solves" element={<AdminSolvesPage />} />
+    <Route path="solves/:id" element={<AdminSolvePage />} />
     <Route path="collections" element={<CollectionsPage />} />
     <Route path="collections/:id/edit" element={<CollectionsEditPage />} />
     <Route path="competitions" element={<CompetitionsPage />} />

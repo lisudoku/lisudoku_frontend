@@ -61,7 +61,9 @@ const FeedbackPage = () => {
           </Button>
         </div>
       ) : (
-        <ErrorPage text="You can't submit feedback while offline" />
+        <ErrorPage>
+          You can't submit feedback while offline
+        </ErrorPage>
       )}
     </div>
   )

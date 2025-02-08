@@ -18,7 +18,9 @@ const CollectionPage = () => {
   const { id } = useParams()
   const [ puzzleCollection, setPuzzleCollection ] = useState<PuzzleCollection>()
   const solvedPuzzles = useSelector(
-    state => fromPairs(state.userData.solvedPuzzles.map(puzzle => [puzzle.id, puzzle]))
+    state => fromPairs(state.userData.solvedPuzzles.map(
+      solvedPuzzle => [solvedPuzzle.puzzle.publicId, solvedPuzzle]
+    ))
   )
 
   useEffect(() => {

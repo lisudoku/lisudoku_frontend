@@ -1,17 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { some } from 'lodash-es'
-import { Competition } from 'src/types'
-import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { Competition, UserSolution } from 'src/types'
+import { SudokuDifficulty } from 'src/types/sudoku'
 import { responseSolved } from './puzzle'
 import { ThemeOption } from 'src/components/ThemeProvider'
 import { camelCaseKeys } from 'src/utils/json'
-
-type SolvedPuzzle = {
-  id: string
-  variant: SudokuVariant
-  difficulty: SudokuDifficulty
-  solveTime: number
-}
 
 export type UserSettings = {
   showTimer: boolean
@@ -35,7 +27,7 @@ type UserDataState = {
   token: string | null
   admin: boolean
   difficulty: SudokuDifficulty
-  solvedPuzzles: SolvedPuzzle[]
+  solvedPuzzles: UserSolution[]
   activeCompetitions: Competition[]
   settings?: UserSettings
 }
@@ -95,23 +87,18 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
-      const { id, variant, difficulty, solveTime } = action.payload
-      if (!id) {
+      const { userSolution, solved } = action.payload
+      if (userSolution === undefined) {
         // External puzzle
         return
       }
 
-      if (!action.payload.solved || some(state.solvedPuzzles, [ 'id', id ])) {
+      if (!solved) {
         return
       }
 
-      const solvedPuzzle: SolvedPuzzle = {
-        id,
-        variant,
-        difficulty,
-        solveTime,
-      }
-      state.solvedPuzzles.push(solvedPuzzle)
+      // Note: allow multiple solves for same puzzle
+      state.solvedPuzzles.push(userSolution)
     })
   }
 })

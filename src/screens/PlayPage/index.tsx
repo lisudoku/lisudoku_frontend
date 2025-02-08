@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { map } from 'lodash-es'
+import { compact } from 'lodash-es'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInHours, differenceInSeconds } from 'date-fns/esm'
 import { AxiosError } from 'axios'
@@ -14,6 +14,7 @@ import { clearPuzzle, receivedPuzzle, requestedPuzzle } from '../../reducers/puz
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import LoadingSpinner from 'src/shared/LoadingSpinner'
 import ErrorPage from 'src/components/ErrorPage'
+import { useSolvedPuzzleIds } from 'src/utils/solves'
 
 const MAX_PUZZLE_PAUSE_HOURS = 48
 
@@ -30,7 +31,6 @@ const PlayPage = () => {
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
   const userToken = useSelector(state => state.userData.token)
-  const solvedPuzzles = useSelector(state => state.userData.solvedPuzzles)
   const lastUpdate = useSelector(state => state.puzzle.lastUpdate)
   const refreshKey = useSelector(state => state.puzzle.refreshKey)
   const solved = useSelector(state => state.puzzle.solved)
@@ -39,7 +39,7 @@ const PlayPage = () => {
   const persistedDifficulty = puzzleData?.difficulty
   const persistedIsExternal = puzzleData?.isExternal
 
-  const idBlacklist = useMemo(() => map(solvedPuzzles, 'id'), [solvedPuzzles])
+  const idBlacklist = useSolvedPuzzleIds()
 
   const previousVariant = useRef(variant)
   const previousDifficulty = useRef(difficulty)
