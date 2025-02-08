@@ -22,7 +22,9 @@ const SolvesTable = ({ userSolutions, isAdmin }: SolvesTableProps) => {
     <table className="mt-4 border border-collapse">
       <thead className="border-b">
         <tr className="divide-x">
-          <th className="p-2">ID</th>
+          {isAdmin && (
+            <th className="p-2">ID</th>
+          )}
           <th className="p-2">Date</th>
           <th className="p-2">Puzzle</th>
           <th className="p-2">Solve time</th>
@@ -32,7 +34,9 @@ const SolvesTable = ({ userSolutions, isAdmin }: SolvesTableProps) => {
       <tbody className="divide-y">
         {userSolutions.map((userSolution, index) => (
           <tr key={userSolution.id ?? index} className="h-8 divide-x">
-            <td className="p-2 text-center">{userSolution.id ?? '-'}</td>
+            {isAdmin && (
+              <td className="p-2 text-center">{userSolution.id ?? '-'}</td>
+            )}
             <td className="p-2">
               {userSolution.createdAt ? formatISO9075(parseISO(userSolution.createdAt)) : '-'}
             </td>
