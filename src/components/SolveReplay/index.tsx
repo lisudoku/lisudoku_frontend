@@ -40,7 +40,7 @@ const SolveReplay = ({ userSolution, constraints }: SolveReplayProps) => {
     }
   }, [isPlaying, currentStepIndex, history])
 
-  const cellSize = useCellSize(gridSize, 1.0, 16, 180)
+  const cellSize = useCellSize(gridSize, 1.0, 32, 180)
 
   return (
     <div>
