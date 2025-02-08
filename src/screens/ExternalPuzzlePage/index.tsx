@@ -8,6 +8,7 @@ import Puzzle from 'src/components/Puzzle'
 import { importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import { receivedPuzzle } from 'src/reducers/puzzle'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { isHeadlessBrowser } from 'src/utils/misc'
 
 const ExternalPuzzlePage = () => {
   const importData = useImportParam()
@@ -54,7 +55,7 @@ const ExternalPuzzlePage = () => {
         }
 
         setPuzzleLoading(false)
-        if (result.error) {
+        if (result.error && !isHeadlessBrowser()) {
           throw new Error(result.error)
         }
       })

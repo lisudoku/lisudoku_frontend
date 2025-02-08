@@ -77,3 +77,7 @@ export const scrollToTop = () => {
     behavior: 'smooth',
   })
 }
+
+export const isHeadlessBrowser = () => (
+  /HeadlessChrome|PhantomJS|Playwright|Puppeteer/.test(navigator.userAgent)
+)

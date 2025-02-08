@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { Honeybadger, HoneybadgerErrorBoundary } from '@honeybadger-io/react'
+import { isHeadlessBrowser } from 'src/utils/misc'
 
 export const honeybadger = Honeybadger.configure({
   apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
@@ -7,11 +8,14 @@ export const honeybadger = Honeybadger.configure({
   revision: 'main',
 })
 
+const IGNORE_HEADLESS_ALERTS = [
+  'Puzzle import success',
+  'External puzzle import error',
+]
+
 honeybadger.beforeNotify((notice) => {
-  if (notice?.name === 'Puzzle import success') {
-    return (
-      !/HeadlessChrome|PhantomJS|Playwright|Puppeteer/.test(navigator.userAgent)
-    )
+  if (notice !== undefined && IGNORE_HEADLESS_ALERTS.includes(notice.name)) {
+    return !isHeadlessBrowser()
   }
   return true
 })
