@@ -15,7 +15,7 @@ interface NavButtonsProps {
 const NavButtons = (
   { history, currentStepIndex, isPlaying, onCurrentStepIndexChange, onIsPlayingChange }: NavButtonsProps
 ) => (
-  <div className="flex gap-8 w-full justify-center">
+  <div className="flex gap-3 md:gap-8 w-full justify-center">
     <NavButton
       icon={faBackwardFast}
       onClick={() => {
