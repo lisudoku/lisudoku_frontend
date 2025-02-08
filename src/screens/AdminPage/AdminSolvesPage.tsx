@@ -30,7 +30,7 @@ const AdminSolvesPage = () => {
       <Typography variant="h3">
         Solves
       </Typography>
-      <SolvesTable userSolutions={userSolutions} />
+      <SolvesTable userSolutions={userSolutions} isAdmin />
     </>
   )
 }

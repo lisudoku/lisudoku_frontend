@@ -8,9 +8,10 @@ import { formatTimer } from 'src/utils/sudoku'
 
 interface SolvesTableProps {
   userSolutions: UserSolution[]
+  isAdmin?: boolean
 }
 
-const SolvesTable = ({ userSolutions }: SolvesTableProps) => {
+const SolvesTable = ({ userSolutions, isAdmin }: SolvesTableProps) => {
   if (userSolutions.length === 0) {
     return <>
       <Typography variant="paragraph">No puzzle solves yet, but I believe in you!</Typography>
@@ -45,7 +46,7 @@ const SolvesTable = ({ userSolutions }: SolvesTableProps) => {
             <td className="p-2">{userSolution.solveTime ? formatTimer(userSolution.solveTime) : '-'}</td>
             <td className="p-2">
               {userSolution.id ? (
-                <Link to={`/mysolves/${userSolution.id}`}>
+                <Link to={`/${isAdmin ? 'admin/solves' : 'mysolves'}/${userSolution.id}`}>
                   Play replay
                 </Link>
               ) : '-'}
