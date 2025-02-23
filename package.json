@@ -38,7 +38,7 @@
     "readable-stream": "^4.5.2",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "sudoku-formats": "^1.0.7",
+    "sudoku-formats": "^1.0.8",
     "use-react-screenshot": "^4.0.0",
     "vosk-browser": "^0.0.8",
     "web-vitals": "^2.1.4"
