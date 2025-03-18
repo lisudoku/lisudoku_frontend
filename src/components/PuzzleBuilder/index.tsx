@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { ensureDefaultRegions } from 'src/utils/sudoku';
+import { defaultConstraints, detectConstraints, ensureDefaultRegions } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
@@ -78,10 +78,15 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         }
       } else {
         if (!admin) {
+          const constraints = {
+            ...defaultConstraints(result.constraints.gridSize),
+            ...result.constraints,
+          }
           honeybadger.notify({
             name: 'Puzzle import success',
             context: {
               url,
+              variant: detectConstraints(constraints).variant,
               result,
             },
           })

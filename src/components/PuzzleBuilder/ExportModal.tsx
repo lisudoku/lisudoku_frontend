@@ -8,7 +8,7 @@ import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
 import { honeybadger } from '../HoneybadgerProvider';
-import { isGridString } from 'src/utils/sudoku';
+import { detectConstraints, isGridString } from 'src/utils/sudoku';
 
 interface CopiableInputProps {
   url?: string
@@ -61,6 +61,7 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
       name: 'Puzzle export copy',
       context: {
         url,
+        variant: detectConstraints(constraints).variant,
         result: transformResult,
         constraints,
       },
