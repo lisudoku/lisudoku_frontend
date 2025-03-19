@@ -134,11 +134,15 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
     // TODO: KropkiAdvancedCandidates + because it would eliminate all candidates from ${cells}
-    case StepRule.CommonPeerEliminationKropki:
-      return ` to remove ${values} from ${affectedCells} because all chain combinations in ${step.areas[0]} would eliminate them`
+    case StepRule.CommonPeerEliminationKropki: {
+      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      return ` to remove ${values} from ${affectedCells} because all chain combinations in ${areaMessage} would eliminate them`
+    }
     // TODO: ArrowAdvancedCandidates + because it would eliminate all candidates from ${cells}
-    case StepRule.CommonPeerEliminationArrow:
-      return ` to remove ${values} from ${affectedCells} because all arrow combinations in ${step.areas[0]} would eliminate them`
+    case StepRule.CommonPeerEliminationArrow: {
+      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      return ` to remove ${values} from ${affectedCells} because all arrow combinations in ${areaMessage} would eliminate them`
+    }
     case StepRule.TurbotFish:
       return ` on strong links ${cellDisplays[0]}-${cellDisplays[1]} and ` +
         `${cellDisplays[2]}-${cellDisplays[3]}. Because ${cellDisplays[0]} and ${cellDisplays[2]} ` +
