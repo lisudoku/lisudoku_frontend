@@ -1,4 +1,4 @@
-import { differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
+import { cloneDeep, differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
@@ -113,7 +113,7 @@ const handleChangeSelectedCellMarks = (state: PuzzleState, value: number, action
       cells: relevantCells,
       value,
       previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
-      previousCellMarks: relevantCells.map(({ row, col }) => state.cellMarks![row][col]),
+      previousCellMarks: relevantCells.map(({ row, col }) => cloneDeep(state.cellMarks![row][col])),
       time: state.solveTimer,
     }
 
@@ -255,7 +255,7 @@ export const puzzleSlice = createSlice({
           cells: relevantCells,
           value: newValue,
           previousDigits: relevantCells.map(({ row, col }) => state.grid![row][col]),
-          previousCellMarks: relevantCells.map(({ row, col }) => state.cellMarks![row][col]),
+          previousCellMarks: relevantCells.map(({ row, col }) => cloneDeep(state.cellMarks![row][col])),
           time: state.solveTimer,
         }
 
