@@ -19,6 +19,7 @@ import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
+import { detectConstraints } from 'src/utils/sudoku'
 
 const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
@@ -124,6 +125,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         message: `Couldn't solve ${variant} puzzle`,
         context: {
           url: exportToLisudokuSolver(constraints),
+          variant: detectConstraints(constraints).variant,
           constraints,
         },
       })
