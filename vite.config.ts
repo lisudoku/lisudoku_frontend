@@ -56,7 +56,10 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       rollupOptions: {
         // Upload sourcemaps on deployment
-        plugins: isProd ? [ honeybadgerRollupPlugin(hbPluginOptions) ] : [],
+        plugins: isProd ? [
+          // Note: removing this step for now as they don't work properly
+          // honeybadgerRollupPlugin(hbPluginOptions)
+        ] : [],
       }
     },
     server: {
