@@ -285,7 +285,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
       ))}
     </ul>
 
-    <p className="mt-2">Finally, there is a {getStepDescription(lastStep, hintLevel, gridSize)}.</p>
+    <p className="mt-2">Finally, there is a <span>{getStepDescription(lastStep, hintLevel, gridSize)}</span>.</p>
   </>
 
   return [ message, false ]
