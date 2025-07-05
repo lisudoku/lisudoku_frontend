@@ -5,6 +5,10 @@ import { snakeCaseKeys } from './json'
 
 export const computeWasmConstraints = (constraints: SudokuConstraints) => {
   const wasmConstraints = snakeCaseKeys(constraints)
+
+  // TODO: proper fix is to make this optional in solver
+  wasmConstraints.fixed_numbers ||= []
+
   // Some puzzles may not have some fields because they didn't exist yet
   wasmConstraints.thermos ||= []
   wasmConstraints.arrows ||= []
