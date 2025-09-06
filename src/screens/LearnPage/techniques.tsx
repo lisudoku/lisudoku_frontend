@@ -525,6 +525,18 @@ const TECHNIQUES: Technique[] = [
     ],
   },
   {
+    id: StepRule.AdhocNakedSet,
+    akas: [ 'Unorthodox naked pairs/triples' ],
+    summary: <>
+      Under certain constraints/variants there are "hidden" (as in "not obvious")
+      sets of cells where all cells within a set are peers.
+
+      This means that we can apply the Naked Sets
+      (e.g. <LinkToTechnique id={StepRule.NakedPairs} />) technique within each set.
+    </>,
+    practicePuzzleIds: [ 'X2vLSy6lGcGaNTVlQ9iY' ],
+  },
+  {
     id: StepRule.NishioForcingChains,
     summary: <>
       Remove candidate X from a cell because putting digit X in it leads to an invalid grid state.

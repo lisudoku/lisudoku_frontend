@@ -88,6 +88,7 @@ export const StepRuleDisplay: { [key in StepRule]: string } = {
   [StepRule.CommonPeerElimination]: 'Common Peer Elimination',
   [StepRule.TurbotFish]: 'Turbot Fish',
   [StepRule.EmptyRectangles]: 'Empty Rectangle',
+  [StepRule.AdhocNakedSet]: 'Adhoc Naked Set',
   [StepRule.NishioForcingChains]: 'Nishio Forcing Chains',
 }
 
@@ -137,6 +138,7 @@ export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
   [StepRule.CommonPeerElimination]: EStepRuleDifficulty.Hard,
   [StepRule.TurbotFish]: EStepRuleDifficulty.Hard,
   [StepRule.EmptyRectangles]: EStepRuleDifficulty.Hard,
+  [StepRule.AdhocNakedSet]: EStepRuleDifficulty.Hard,
   [StepRule.NishioForcingChains]: EStepRuleDifficulty.Hard,
 }
 

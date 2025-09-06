@@ -3511,10 +3511,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-lisudoku-solver@0.1.27:
-  version "0.1.27"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.27.tgz#c8bc6a1364476223989b641e3f0a8c8ce7b9e9de"
-  integrity sha512-k950ifJXiulervIUKvKRbKCS5DTvqzQMcdZ8ByvRRdj+kyHejMCXtlLtGwxXR4FL8Rn7KArYFZ2C4pG4AUrWFw==
+lisudoku-solver@0.1.28:
+  version "0.1.28"
+  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.28.tgz#ddd9d5d3bb39bb449903a2263e0cac22d4d62720"
+  integrity sha512-gJaXNZZGPGTJK/0aqIqjub5/2NLP7K/uXdCJN2/uKTnx21FTnDbxQLPMxJr1P1AJwvVxA/k51lNsn0Wg13ICeA==
 
 lodash-es@^4.17.21:
   version "4.17.21"

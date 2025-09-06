@@ -81,5 +81,6 @@ export enum StepRule {
   CommonPeerEliminationArrow = 'CommonPeerEliminationArrow',
   TurbotFish = 'TurbotFish',
   EmptyRectangles = 'EmptyRectangles',
+  AdhocNakedSet = 'AdhocNakedSet',
   NishioForcingChains = 'NishioForcingChains',
 }

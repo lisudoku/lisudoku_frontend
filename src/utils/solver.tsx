@@ -68,6 +68,8 @@ const areaDisplay = (area: any, gridSize: number) => {
     return 'the grid'
   } else if (area.Cell !== undefined) {
     return `cell ${cellDisplay({ row: area.Cell[0], col: area.Cell[1] })}`
+  } else if (area.Adhoc !== undefined) {
+    return `adhoc set of cells ${area.Adhoc.map((cell: CellPosition) => cellDisplay(cell)).join(', ')}`
   } else {
     throw new Error(`unknown area ${JSON.stringify(area)}`)
   }
