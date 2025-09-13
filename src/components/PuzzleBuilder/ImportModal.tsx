@@ -5,9 +5,10 @@ import Input from 'src/shared/Input';
 import Typography from 'src/shared/Typography';
 import { FORMATS } from 'sudoku-formats';
 
-const LISUDOKU_EXAMPLE_1 = 'https://lisudoku.xyz/e?import=N4Ig5gTglgJgylAXgUxA...'
+const LISUDOKU_EXAMPLE_1 = 'https://lisudoku.xyz/e?import=N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wDYAaETUgd3wAmAL7cAbgEMWSGPgDMokuSo16eJqyHdeAvO1EhJ02XgAswgLrcA5pghwAyhABeJgJzdKACywpy%2BAiIQZjY8QW1%2BIUVgzTw5CN0FTg1Q0wT8c2SY0IBWdLwc6JCOfP0LC2EgA%3D'
 const LISUDOKU_EXAMPLE_2 = 'https://lisudoku.xyz/p/4pyPjYdnlzJyUvFPVToy'
-const FPUZZLES_EXAMPLE = 'https://www.f-puzzles.com/?load=N4IgzglgXgpiB...'
+const FPUZZLES_EXAMPLE = 'https://f-puzzles.com/?load=N4IgzglgXgpiBcBOANCA5gJwgEwQbT2AF9ljSSzKLryBdZQmq8l54+x1kANwEMAbAK5x4ARlRoI3GADsEAFwzCmK1kQ5tVmug216VGrUbWG1ZyjwHCEAJglTZCpTAO7j+nZw/7atIkA='
+
 const GRID_STRING_EXAMPLE = '0003100002000040'
 
 interface ImportModalProps {
@@ -56,12 +57,12 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
               Works with URL shortener (tinyurl) links too.
             </Typography>
             Examples
-            <ul className="list-disc pl-4">
-              <li><code>{GRID_STRING_EXAMPLE}</code> (4x4 grid string)</li>
-              <li><code>{LISUDOKU_EXAMPLE_1}</code></li>
-              <li><code>{LISUDOKU_EXAMPLE_2}</code></li>
-              <li><code>{FPUZZLES_EXAMPLE}</code></li>
-            </ul>
+            <div className="pl-2 flex flex-col gap-y-2">
+              <Input color="white" value={GRID_STRING_EXAMPLE} disabled />
+              <Input color="white" value={LISUDOKU_EXAMPLE_1} disabled />
+              <Input color="white" value={LISUDOKU_EXAMPLE_2} disabled />
+              <Input color="white" value={FPUZZLES_EXAMPLE} disabled />
+            </div>
           </div>
         </DialogBody>
         <DialogFooter>
