@@ -9,6 +9,8 @@ import browserslist from 'browserslist'
 import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
 import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import manifest from './src/manifest.json'
+import { format } from 'date-fns'
+import pkg from './package.json';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -72,6 +74,9 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: {},
+      __APP_VERSION__: JSON.stringify(format(new Date(), 'yyyy-MM-dd')),
+      __SOLVER_VERSION__: JSON.stringify(pkg.dependencies['lisudoku-solver']),
+      __SUDOKU_FORMATS_VERSION__: JSON.stringify(pkg.dependencies['sudoku-formats']),
     },
   }
 })

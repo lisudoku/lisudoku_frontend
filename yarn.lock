@@ -4552,7 +4552,7 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-sudoku-formats@^1.0.8:
+sudoku-formats@1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.8.tgz#33ad70bfb3c3dca30dd8d41f9bb1d2e4d742365d"
   integrity sha512-wzgOPn2IfPnsSfMT2ZdW4CpTVHMnDiMitA5SggGMKwVeInUf59V6po4v629bUbw5fvj8x+sOsZTohMv4rKF3Bg==
