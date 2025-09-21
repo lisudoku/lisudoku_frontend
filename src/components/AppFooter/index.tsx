@@ -79,9 +79,9 @@ const AppFooter = () => (
         </div>
       </div>
     </div>
-    <div className="flex justify-center gap-3 text-sm">
+    <div className="flex justify-center gap-3 text-xs">
       <div>
-        Last app update: <span>{__APP_VERSION__}</span>
+        App version: <span>{__APP_VERSION__}</span>
       </div>
       <div className="text-gray-600">|</div>
       <div>

@@ -5,7 +5,7 @@ import { isHeadlessBrowser } from 'src/utils/misc'
 export const honeybadger = Honeybadger.configure({
   apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
   environment: import.meta.env.PROD ? 'production' : 'development',
-  revision: 'main',
+  revision: __APP_VERSION__,
 })
 
 const IGNORE_HEADLESS_ALERTS = [

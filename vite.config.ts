@@ -1,4 +1,4 @@
-import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
+// import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: {},
-      __APP_VERSION__: JSON.stringify(format(new Date(), 'yyyy-MM-dd')),
+      __APP_VERSION__: JSON.stringify(format(new Date(), 'yyyy-MM-dd HHmm')),
       __SOLVER_VERSION__: JSON.stringify(pkg.dependencies['lisudoku-solver']),
       __SUDOKU_FORMATS_VERSION__: JSON.stringify(pkg.dependencies['sudoku-formats']),
     },
