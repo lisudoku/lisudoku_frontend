@@ -608,6 +608,11 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints): CellPos
     } else {
       return constraints.extraRegions![area.Region - constraints.regions.length]
     }
+  } else if (area.Cell !== undefined) {
+    return [{
+      row: area.Cell[0],
+      col: area.Cell[1],
+    }]
   } else if (area.Palindrome !== undefined) {
     return constraints.palindromes?.[area.Palindrome] ?? []
   } else if (area === 'PrimaryDiagonal') {

@@ -14,6 +14,7 @@ export type SudokuLogicalSolveResult = {
   solution_type: SolutionType
   solution?: Grid
   steps?: SolutionStep[]
+  invalid_state_reason?: InvalidStateReason
 }
 
 export enum SolutionType {
@@ -28,7 +29,7 @@ export type SolutionStep = {
   values: number[]
   areas: any[]
   affected_cells: CellPosition[]
-  invalid_state_reason: InvalidStateReason
+  invalid_state_reason?: InvalidStateReason
 }
 
 export type InvalidStateReason = {

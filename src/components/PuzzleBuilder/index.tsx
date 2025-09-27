@@ -14,22 +14,23 @@ import Radio from 'src/shared/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/shared/Button'
 import PuzzleActions from './PuzzleActions'
-import { ConstraintType, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellPosition, ConstraintType, Grid, SudokuConstraints } from 'src/types/sudoku'
 import Input from 'src/shared/Input'
 import Typography from 'src/shared/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
-import { SolverType } from 'src/types/wasm'
+import { SolutionType, SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { defaultConstraints, detectConstraints, ensureDefaultRegions } from 'src/utils/sudoku';
+import { defaultConstraints, detectConstraints, ensureDefaultRegions, getAreaCells } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
 import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
 import { alert } from 'src/shared/ConfirmationDialog';
+import { CellHighlight } from '../Puzzle/SudokuGridGraphics';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -127,8 +128,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const cellMarks = useSelector(state => state.builder.cellMarks)
   const constraintGrid = useSelector(state => state.builder.constraintGrid!)
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
-  const bruteSolution = useSelector(state => state.builder.bruteSolution?.solution)
-  const logicalSolution = useSelector(state => state.builder.logicalSolution?.solution)
+  const bruteSolution = useSelector(state => state.builder.bruteSolution)
+  const logicalSolution = useSelector(state => state.builder.logicalSolution)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
@@ -203,11 +204,11 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }, [dispatch, takeScreenShot, gridWrapperRef])
 
   // Visualize solutions while building the puzzle
-  const solution = bruteSolution || logicalSolution
+  const solution = bruteSolution?.solution !== undefined ? bruteSolution : logicalSolution
   const usedMarks = useMemo(() => {
     let marks = cloneDeep(cellMarks!)
     if (solution) {
-      solution.forEach((solutionRow, rowIndex) => {
+      solution?.solution?.forEach((solutionRow, rowIndex) => {
         solutionRow.forEach((digit, colIndex) => {
           if (digit !== null && digit !== 0) {
             marks[rowIndex][colIndex].centerMarks = [digit]
@@ -220,6 +221,14 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   if (!constraints) {
     return null
+  }
+
+  let highlightedCells: CellHighlight[] | undefined = undefined
+  if (logicalSolution && logicalSolution.solution_type === SolutionType.None && logicalSolution.invalid_state_reason) {
+    highlightedCells = getAreaCells(logicalSolution.invalid_state_reason.area, constraints).map((areaCell: CellPosition) => ({
+      position: areaCell,
+      color: 'red',
+    }))
   }
 
   let thermos = constraints?.thermos ?? []
@@ -284,6 +293,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             selectedCells={selectedCells}
             checkErrors={constraintType === ConstraintType.FixedNumber}
             onCellClick={onCellClick}
+            highlightedCells={highlightedCells}
           />
         </div>
         <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">

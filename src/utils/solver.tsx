@@ -76,7 +76,7 @@ const areaDisplay = (area: any, gridSize: number) => {
 }
 
 const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
-  const reason = step.invalid_state_reason
+  const reason = step.invalid_state_reason!
   switch (reason.state_type) {
     case InvalidStateType.CellEmpty:
       return `${areaDisplay(reason.area, gridSize)} is empty`
