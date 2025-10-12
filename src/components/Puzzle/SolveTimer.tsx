@@ -133,7 +133,7 @@ const SolveTimer = ({ isSolvedLoading, onIsSolvedLoadingChange }: SolveTimerProp
     )}>
       <Typography variant="h6">
         {solved && <span>Solved in </span>}
-        {formatTimer(solveTimer)}
+        <span>{formatTimer(solveTimer)}</span>
         {solved && (
           <span className="ml-1 absolute animate-expand">
             {getSolvedEmoji(difficulty!, solveTimer)}
