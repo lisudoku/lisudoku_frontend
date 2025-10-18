@@ -21,9 +21,9 @@ import { importPuzzle, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
-import { SolutionType, SolverType } from 'src/types/wasm'
+import { SolutionType, SolverType, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { defaultConstraints, detectConstraints, ensureDefaultRegions, getAreaCells } from 'src/utils/sudoku';
+import { defaultConstraints, detectConstraints, ensureDefaultRegions, getAllCells, getAreaCells } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
@@ -31,12 +31,64 @@ import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
 import { alert } from 'src/shared/ConfirmationDialog';
 import { CellHighlight } from '../Puzzle/SudokuGridGraphics';
+import { isGridStep } from 'src/utils/solver';
+import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
   a.href = image
   a.download = createFileName(extension, name)
   a.click()
+}
+
+const StepRuleDifficultyColor: { [key in EStepRuleDifficulty]: string } = {
+  [EStepRuleDifficulty.Easy]: 'green',
+  [EStepRuleDifficulty.Medium]: 'yellow',
+  [EStepRuleDifficulty.Hard]: 'red',
+}
+
+const getSolutionHighlightedCells = (
+  logicalSolution: SudokuLogicalSolveResult | null,
+  constraints: SudokuConstraints,
+  showSolutionDifficultyHeatmap: boolean,
+): CellHighlight[] | undefined => {
+  if (logicalSolution === null) {
+    return undefined
+  }
+
+  if (logicalSolution.solution_type === SolutionType.None && logicalSolution.invalid_state_reason) {
+    return getAreaCells(logicalSolution.invalid_state_reason.area, constraints).map((areaCell: CellPosition) => ({
+      position: areaCell,
+      color: 'red',
+    }))
+  }
+
+  if (constraints.gridSize === undefined || logicalSolution.solution_type === SolutionType.None || logicalSolution.steps === undefined || !showSolutionDifficultyHeatmap) {
+    return undefined
+  }
+
+  const cellDifficulties: (EStepRuleDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
+  for (const step of logicalSolution.steps) {
+    const difficulty = StepRuleDifficulty[step.rule]
+    const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affected_cells
+    for (const cell of relevantCells) {
+      cellDifficulties[cell.row][cell.col] = Math.max(cellDifficulties[cell.row][cell.col], difficulty)
+    }
+  }
+
+  const highlightedCells: CellHighlight[] | undefined = []
+  for (const cell of getAllCells(constraints.gridSize)) {
+    const difficulty = cellDifficulties[cell.row][cell.col]
+    if (difficulty === -1) {
+      continue
+    }
+    const color = StepRuleDifficultyColor[difficulty]
+    highlightedCells.push({
+      position: cell,
+      color,
+    })
+  }
+  return highlightedCells
 }
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
@@ -115,6 +167,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     }
   }, [dispatch, paramGridSize, admin, importData, runImport, runLogicalSolver])
 
+  const showSolutionDifficultyHeatmap = useSelector(state => state.userData.settings?.solutionDifficultyHeatmap ?? false)
   const setterMode = useSelector(state => state.builder.setterMode)
   const inputActive = useSelector(state => state.builder.inputActive)
   const constraints = useSelector(state => state.builder.constraints)
@@ -223,13 +276,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     return null
   }
 
-  let highlightedCells: CellHighlight[] | undefined = undefined
-  if (logicalSolution && logicalSolution.solution_type === SolutionType.None && logicalSolution.invalid_state_reason) {
-    highlightedCells = getAreaCells(logicalSolution.invalid_state_reason.area, constraints).map((areaCell: CellPosition) => ({
-      position: areaCell,
-      color: 'red',
-    }))
-  }
+  const highlightedCells = getSolutionHighlightedCells(logicalSolution, constraints, showSolutionDifficultyHeatmap)
 
   let thermos = constraints?.thermos ?? []
   if (currentThermo.length > 0) {
@@ -423,7 +470,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col gap-2 grow">
+        <div className="grow">
           <PuzzleActions
             runBruteSolver={runBruteSolver}
             runLogicalSolver={runLogicalSolver}

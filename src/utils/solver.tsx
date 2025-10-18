@@ -235,8 +235,10 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
   }
 }
 
+export const isGridStep = (step: SolutionStep) => GRID_STEPS.includes(step.rule)
+
 const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean, context: object) => {
-  const singleIndex = steps.findIndex(step => GRID_STEPS.includes(step.rule))
+  const singleIndex = steps.findIndex(isGridStep)
 
   if (singleIndex === -1) {
     honeybadger.notify({

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/shared/Button'
@@ -20,6 +20,10 @@ import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
 import { detectConstraints } from 'src/utils/sudoku'
+import Typography from 'src/shared/Typography'
+import { faGear } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { SolverSettings } from './SolverSettings'
 
 const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
@@ -132,8 +136,24 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
     }
   }, [bruteSolution, logicalSolution, variant, constraints, setterMode])
 
+  const [showSolverSettings, setShowSolverSettings] = useState(false)
+
   return (
-    <>
+    <div className="relative flex flex-col gap-2">
+      <SolverSettings
+        open={showSolverSettings}
+        onClose={() => setShowSolverSettings(false)}
+      />
+      <span className="flex items-center justify-between pr-2">
+        <Typography variant="h6">
+          Solution
+        </Typography>
+        <FontAwesomeIcon
+          icon={faGear}
+          className="cursor-pointer"
+          onClick={() => setShowSolverSettings(true)}
+        />
+      </span>
       <Button onClick={handleBruteSolveClick}
               disabled={bruteSolverRunning  || bruteSolution !== null}
       >
@@ -186,7 +206,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
           )}
         </>
       )}
-    </>
+    </div>
   )
 }
 

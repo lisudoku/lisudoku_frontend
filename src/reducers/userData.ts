@@ -11,6 +11,7 @@ export type UserSettings = {
   theme: ThemeOption
   showPeers: boolean
   voiceEnabled: boolean
+  solutionDifficultyHeatmap: boolean
 }
 
 const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -19,6 +20,7 @@ const DEFAULT_USER_SETTINGS: UserSettings = {
   theme: ThemeOption.System,
   showPeers: false,
   voiceEnabled: false,
+  solutionDifficultyHeatmap: false,
 }
 
 type UserDataState = {
@@ -84,6 +86,9 @@ export const userDataSlice = createSlice({
     updateVoiceEnabled(state, action) {
       handleSettingUpdate(state, 'voiceEnabled', action.payload)
     },
+    updateSolutionDifficultyHeatmap(state, action) {
+      handleSettingUpdate(state, 'solutionDifficultyHeatmap', action.payload)
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
@@ -106,6 +111,7 @@ export const userDataSlice = createSlice({
 export const {
   loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
   updateShowTimer, updateCheckErrors, updateTheme, updateShowPeers, updateVoiceEnabled,
+  updateSolutionDifficultyHeatmap,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer
