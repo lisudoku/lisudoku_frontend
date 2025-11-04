@@ -691,15 +691,17 @@ const SudokuConstraintsGraphics = ({
       // Select cells as you drag your mouse over them
       onMouseMove={onMouseMove}
     >
+      {/* The order of rendering the graphics is important! */}
+      {/* This renders elements from the back to the top, so the last items are on top */}
       <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
       <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
+      <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
+      <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
       <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
       <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
       <RenbansGraphics renbans={renbans || []} cellSize={cellSize} />
       <PalindromesGraphics palindromes={palindromes || []} cellSize={cellSize} />
       <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
-      <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
-      <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
       <DiagonalGraphics
         gridSize={gridSize}
         cellSize={cellSize}
