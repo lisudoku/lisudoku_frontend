@@ -14,14 +14,14 @@ import Radio from 'src/shared/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/shared/Button'
 import PuzzleActions from './PuzzleActions'
-import { CellPosition, ConstraintType, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { ConstraintType, Grid } from 'src/types/sudoku'
 import Input from 'src/shared/Input'
 import Typography from 'src/shared/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
-import { SolutionType, SolverType, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { defaultConstraints, detectConstraints, ensureDefaultRegions, getAllCells, getAreaCells } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
@@ -33,6 +33,7 @@ import { alert } from 'src/shared/ConfirmationDialog';
 import { CellHighlight } from '../Puzzle/SudokuGridGraphics';
 import { isGridStep } from 'src/utils/solver';
 import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants';
+import { SudokuLogicalSolveResult, CellPosition, SudokuConstraints } from 'lisudoku-solver';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -56,21 +57,21 @@ const getSolutionHighlightedCells = (
     return undefined
   }
 
-  if (logicalSolution.solution_type === SolutionType.None && logicalSolution.invalid_state_reason) {
-    return getAreaCells(logicalSolution.invalid_state_reason.area, constraints).map((areaCell: CellPosition) => ({
+  if (logicalSolution.solutionType === 'None' && logicalSolution.invalidStateReason) {
+    return getAreaCells(logicalSolution.invalidStateReason.area, constraints).map((areaCell: CellPosition) => ({
       position: areaCell,
       color: 'red',
     }))
   }
 
-  if (constraints.gridSize === undefined || logicalSolution.solution_type === SolutionType.None || logicalSolution.steps === undefined || !showSolutionDifficultyHeatmap) {
+  if (constraints.gridSize === undefined || logicalSolution.solutionType === 'None' || logicalSolution.steps === undefined || !showSolutionDifficultyHeatmap) {
     return undefined
   }
 
   const cellDifficulties: (EStepRuleDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
   for (const step of logicalSolution.steps) {
     const difficulty = StepRuleDifficulty[step.rule]
-    const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affected_cells
+    const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affectedCells
     for (const cell of relevantCells) {
       cellDifficulties[cell.row][cell.col] = Math.max(cellDifficulties[cell.row][cell.col], difficulty)
     }

@@ -1,9 +1,10 @@
 import { ReactElement } from 'react'
 import { isEmpty, sortBy } from 'lodash-es'
 import classNames from 'classnames'
-import { CellMarks, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellMarks, Grid } from 'src/types/sudoku'
 import { CellMarkSets } from 'src/utils/sudoku'
 import { useCellMarkErrors } from '../hooks'
+import { SudokuConstraints } from 'lisudoku-solver'
 
 const computeCenterMarksFontSize = (cellSize: number, markCount: number): number => {
   // markCount * fontWidth = cellSize - padding

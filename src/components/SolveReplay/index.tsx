@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { UserSolution } from 'src/types'
 import SudokuGrid from '../Puzzle/SudokuGrid'
 import { useCellSize } from 'src/utils/misc'
-import { SudokuConstraints } from 'src/types/sudoku'
 import { useGridHistory } from './useGridHistory'
 import SolveSlider from './SolveSlider'
 import NavButtons from './NavButtons'
 import SolveStats from './SolveStats'
+import { SudokuConstraints } from 'lisudoku-solver'
 
 interface SolveReplayProps {
   userSolution: UserSolution

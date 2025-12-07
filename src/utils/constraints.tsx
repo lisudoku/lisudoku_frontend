@@ -5,8 +5,9 @@ import {
   faArrowsLeftRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { SudokuConstraints } from 'lisudoku-solver';
 import { ReactNode } from 'react';
-import { ConstraintType, SudokuConstraints } from 'src/types/sudoku';
+import { ConstraintType } from 'src/types/sudoku';
 
 interface ConstraintDisplayData {
   icon: ReactNode | null

@@ -2,9 +2,10 @@ import {
   difference, differenceWith, flatten, flattenDeep, isEmpty, isEqual, map, max, min, range, sortBy, sumBy, times, uniq, uniqWith, values,
 } from 'lodash-es'
 import {
-  CellMarks, CellPosition, ConstraintType, FixedNumber, Grid, KropkiDotType, Region, SudokuConstraints, SudokuVariant,
+  CellMarks, ConstraintType, Grid, SudokuVariant,
 } from 'src/types/sudoku'
 import { CONSTRAINT_TYPE_VARIANTS, GRID_SIZES } from './constants'
+import { Area, CellPosition, FixedNumber, Region, SudokuConstraints } from 'lisudoku-solver'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -260,7 +261,7 @@ const getExtendedConstraintRegions = (constraints: SudokuConstraints): CellPosit
   for (let col = 0; col < gridSize; col++) {
     regions.push(getColCells(col, gridSize))
   }
-  regions.push(...constraints.regions)
+  regions.push(...(constraints.regions ?? []))
   regions.push(...constraints.extraRegions ?? [])
   regions.push(...map(constraints.killerCages, 'region'))
   if (constraints.primaryDiagonal) {
@@ -478,7 +479,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   // Kropki
   for (const kropkiDot of constraints.kropkiDots ?? []) {
     const { cell1: cell, cell2: peer } = kropkiDot
-    const checkType = kropkiDot.dotType === KropkiDotType.Consecutive ? CheckType.KropkiConsecutive : CheckType.KropkiDouble
+    const checkType = kropkiDot.dotType === 'Consecutive' ? CheckType.KropkiConsecutive : CheckType.KropkiDouble
     checkErrorsBetween(cell, peer, valuesGrid, cellMarks, checkType, gridErrors, cellMarksErrors)
   }
 
@@ -590,32 +591,9 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
 }
 
 // TODO: this is also a duplicate between wasm and js
-export const getAreaCells = (area: any, constraints: SudokuConstraints): CellPosition[] => {
-  if (area.Row !== undefined) {
-    return times(constraints.gridSize, col => ({
-      row: area.Row,
-      col,
-    }))
-  } else if (area.Column !== undefined) {
-    return times(constraints.gridSize, row => ({
-      row,
-      col: area.Column,
-    }))
-  } else if (area.Region !== undefined) {
-    // Assume all extra regions contain grid_size cells
-    if (area.Region < constraints.regions.length) {
-      return constraints.regions[area.Region]
-    } else {
-      return constraints.extraRegions![area.Region - constraints.regions.length]
-    }
-  } else if (area.Cell !== undefined) {
-    return [{
-      row: area.Cell[0],
-      col: area.Cell[1],
-    }]
-  } else if (area.Palindrome !== undefined) {
-    return constraints.palindromes?.[area.Palindrome] ?? []
-  } else if (area === 'PrimaryDiagonal') {
+// TODO: use an exhaustive switch, maybe once I add a linter (not handling 'Grid' and 'Adhoc' atm)
+export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPosition[] => {
+  if (area === 'PrimaryDiagonal') {
     return times(constraints.gridSize, idx => ({
       row: idx,
       col: idx,
@@ -626,6 +604,39 @@ export const getAreaCells = (area: any, constraints: SudokuConstraints): CellPos
       col: constraints.gridSize - 1 - idx,
     }))
   }
+
+  if (typeof area !== 'object') {
+    return []
+  }
+
+  if ('Row' in area) {
+    return times(constraints.gridSize, col => ({
+      row: area.Row,
+      col,
+    }))
+  } else if ('Column' in area) {
+    return times(constraints.gridSize, row => ({
+      row,
+      col: area.Column,
+    }))
+  } else if ('Region' in area) {
+    if (constraints.regions !== undefined) {
+      // Assume all extra regions contain grid_size cells
+      if (area.Region < constraints.regions.length) {
+        return constraints.regions[area.Region]
+      } else {
+        return constraints.extraRegions![area.Region - constraints.regions.length]
+      }
+    }
+  } else if ('Cell' in area) {
+    return [{
+      row: area.Cell[0],
+      col: area.Cell[1],
+    }]
+  } else if ('Palindrome' in area) {
+    return constraints.palindromes?.[area.Palindrome] ?? []
+  }
+
   return []
 }
 
@@ -713,10 +724,10 @@ export const detectConstraints = (constraints: SudokuConstraints | null): Constr
   if (!isEmpty(constraints.killerCages)) {
     constraintTypes.push(ConstraintType.KillerCage)
   }
-  if (constraints.kropkiDots?.some(({ dotType }) => dotType === KropkiDotType.Consecutive)) {
+  if (constraints.kropkiDots?.some(({ dotType }) => dotType === 'Consecutive')) {
     constraintTypes.push(ConstraintType.KropkiConsecutive)
   }
-  if (constraints.kropkiDots?.some(({ dotType }) => dotType === KropkiDotType.Double)) {
+  if (constraints.kropkiDots?.some(({ dotType }) => dotType === 'Double')) {
     constraintTypes.push(ConstraintType.KropkiDouble)
   }
   if (constraints.kropkiNegative) {

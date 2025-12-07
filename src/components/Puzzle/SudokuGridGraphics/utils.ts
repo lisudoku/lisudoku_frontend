@@ -1,6 +1,6 @@
+import { CellPosition } from 'lisudoku-solver'
 import { inRange } from 'lodash-es'
 import { MouseEvent, useCallback } from 'react'
-import { CellPosition } from 'src/types/sudoku'
 
 export const useOnGridClick = (
   cellSize: number,

@@ -1,7 +1,7 @@
-import { SudokuConstraints } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChessKnight, faChessKing, faBolt } from '@fortawesome/free-solid-svg-icons'
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
+import { SudokuConstraints } from 'lisudoku-solver'
 
 const PuzzleCardIcons = ({ constraints }: { constraints: SudokuConstraints }) => (
   <div className="flex gap-x-1">

@@ -1,13 +1,13 @@
 import { difference, flatten, intersection, last, uniqBy, values as _values } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
-import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
-import { InvalidStateType, SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { CellMarks, Grid } from 'src/types/sudoku'
 import { GRID_STEPS, StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
+import { Area, CellPosition, FixedNumber, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
   const { gridSize, fixedNumbers } = constraints
@@ -37,38 +37,45 @@ const cellDisplay = (cell: CellPosition) => (
   `R${cell.row + 1}C${cell.col + 1}`
 )
 
-const areaDisplay = (area: any, gridSize: number) => {
-  if (area.Row !== undefined) {
+// TODO: use an exhaustive switch, maybe once I add a linter
+const areaDisplay = (area: Area, gridSize: number): string => {
+  if (area === 'PrimaryDiagonal') {
+    return 'the negative diagonal'
+  } else if (area === 'SecondaryDiagonal') {
+    return 'the positive diagonal'
+  } else if (area === 'Grid') {
+    return 'the grid'
+  }
+
+  if (typeof area !== 'object') {
+    return ''
+  }
+
+  if ('Row' in area) {
     return `row ${area.Row + 1}`
-  } else if (area.Column !== undefined) {
+  } else if ('Column' in area) {
     return `column ${area.Column + 1}`
-  } else if (area.Region !== undefined) {
+  } else if ('Region' in area) {
     if (area.Region >= gridSize) {
       return `extra region ${area.Region - gridSize + 1}`
     } else {
       return `box ${area.Region + 1}`
     }
-  } else if (area.Thermo !== undefined) {
+  } else if ('Thermo' in area) {
     return 'a thermometer'
-  } else if (area.KillerCage !== undefined) {
+  } else if ('KillerCage' in area) {
     return 'a killer cage'
-  } else if (area.KropkiDot !== undefined) {
+  } else if ('KropkiDot' in area) {
     return 'a kropki dot pair'
-  } else if (area === 'PrimaryDiagonal') {
-    return 'the negative diagonal'
-  } else if (area === 'SecondaryDiagonal') {
-    return 'the positive diagonal'
-  } else if (area.Arrow !== undefined) {
+  } else if ('Arrow' in area) {
     return 'an arrow'
-  } else if (area.Renban !== undefined) {
+  } else if ('Renban' in area) {
     return 'a renban'
-  } else if (area.Palindrome !== undefined) {
+  } else if ('Palindrome' in area) {
     return 'a palindrome'
-  } else if (area === 'Grid') {
-    return 'the grid'
-  } else if (area.Cell !== undefined) {
+  } else if ('Cell' in area) {
     return `cell ${cellDisplay({ row: area.Cell[0], col: area.Cell[1] })}`
-  } else if (area.Adhoc !== undefined) {
+  } else if ('Adhoc' in area) {
     return `adhoc set of cells ${area.Adhoc.map((cell: CellPosition) => cellDisplay(cell)).join(', ')}`
   } else {
     throw new Error(`unknown area ${JSON.stringify(area)}`)
@@ -76,19 +83,19 @@ const areaDisplay = (area: any, gridSize: number) => {
 }
 
 const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
-  const reason = step.invalid_state_reason!
-  switch (reason.state_type) {
-    case InvalidStateType.CellEmpty:
+  const reason = step.invalidStateReason!
+  switch (reason.stateType) {
+    case 'CellEmpty':
       return `${areaDisplay(reason.area, gridSize)} is empty`
-    case InvalidStateType.CellInvalidValue:
+    case 'CellInvalidValue':
       return `${areaDisplay(reason.area, gridSize)} has invalid digit ${reason.values[0]}`
-    case InvalidStateType.CellNoCandidates:
+    case 'CellNoCandidates':
       return `${areaDisplay(reason.area, gridSize)} has no candidates left`
-    case InvalidStateType.AreaValueConflict:
+    case 'AreaValueConflict':
       return `${areaDisplay(reason.area, gridSize)} has multiple ${reason.values[0]} digits`
-    case InvalidStateType.AreaConstraint:
+    case 'AreaConstraint':
       return `${areaDisplay(reason.area, gridSize)} constraints are not satisfied`
-    case InvalidStateType.AreaCandidates:
+    case 'AreaCandidates':
       return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, gridSize)}`
   }
 }
@@ -96,7 +103,7 @@ const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
 const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number) => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
-  const affectedCells = step.affected_cells.map(cell => cellDisplay(cell)).join(', ')
+  const affectedCells = step.affectedCells.map(cell => cellDisplay(cell)).join(', ')
   const values = [...step.values].sort().join(', ')
 
   const applyGridStepHint = (text: string) => {
@@ -107,60 +114,60 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
   }
 
   switch (step.rule) {
-    case StepRule.HiddenSingle: {
+    case 'HiddenSingle': {
       const areaMessage = areaDisplay(step.areas[0], gridSize)
       return applyGridStepHint(` in ${areaMessage} on cell ${cellDisplay(step.cells[0])}`)
     }
-    case StepRule.NakedSingle:
-    case StepRule.Thermo:
-    case StepRule.PalindromeValues:
+    case 'NakedSingle':
+    case 'Thermo':
+    case 'PalindromeValues':
       return applyGridStepHint(` on cell ${cellDisplay(step.cells[0])}`)
-    case StepRule.Candidates:
+    case 'Candidates':
       return ' for all cells'
-    case StepRule.HiddenPairs:
-    case StepRule.HiddenTriples: {
+    case 'HiddenPairs':
+    case 'HiddenTriples': {
       const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` in ${areaMessage} on cells ${cells} to only keep ${values}`
     }
-    case StepRule.XWing: {
+    case 'XWing': {
       const areaDisplays = step.areas.map(area => areaDisplay(area, gridSize))
       return ` on cells ${cells} (${areaDisplays[0]} and ${areaDisplays[1]}) ` +
         `to remove ${values} from ${affectedCells} (${areaDisplays[2]} and ${areaDisplays[3]})`
     }
-    case StepRule.XYWing:
+    case 'XYWing':
       const zValue = step.values[2]
       return ` on cells ${cells} to remove ${zValue} from ${affectedCells}`
-    case StepRule.CommonPeerElimination: {
+    case 'CommonPeerElimination': {
       const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` to remove value ${values} from ${affectedCells} because it ` +
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
     // TODO: KropkiAdvancedCandidates + because it would eliminate all candidates from ${cells}
-    case StepRule.CommonPeerEliminationKropki: {
+    case 'CommonPeerEliminationKropki': {
       const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` to remove ${values} from ${affectedCells} because all chain combinations in ${areaMessage} would eliminate them`
     }
     // TODO: ArrowAdvancedCandidates + because it would eliminate all candidates from ${cells}
-    case StepRule.CommonPeerEliminationArrow: {
+    case 'CommonPeerEliminationArrow': {
       const areaMessage = areaDisplay(step.areas[0], gridSize)
       return ` to remove ${values} from ${affectedCells} because all arrow combinations in ${areaMessage} would eliminate them`
     }
-    case StepRule.TurbotFish:
+    case 'TurbotFish':
       return ` on strong links ${cellDisplays[0]}-${cellDisplays[1]} and ` +
         `${cellDisplays[2]}-${cellDisplays[3]}. Because ${cellDisplays[0]} and ${cellDisplays[2]} ` +
         `see each other, at least one of ${cellDisplays[1]} and ${cellDisplays[3]} will be ${values}, so remove ` +
         `${values} from cells ${affectedCells}.`
-    case StepRule.TopBottomCandidates: {
-      const ascending = step.areas[0].Row + 1 === step.values[0]
-      const otherValue = (ascending === (step.areas[0].Row < step.areas[1].Row)) ? step.values[0] + 1 : step.values[0] - 1
+    case 'TopBottomCandidates': {
+      const ascending = (step.areas[0] as any).Row + 1 === step.values[0]
+      const otherValue = (ascending === ((step.areas[0] as any).Row < (step.areas[1] as any).Row)) ? step.values[0] + 1 : step.values[0] - 1
       return ` in ${areaDisplay(step.areas[0], gridSize)} to remove ${values} from ${affectedCells} because ` +
-        `${step.affected_cells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
+        `${step.affectedCells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
         `on ${areaDisplay(step.areas[1], gridSize)}`
     }
-    case StepRule.EmptyRectangles:
+    case 'EmptyRectangles':
       return ` in ${areaDisplay(step.areas[0], gridSize)} that sees strong link ` +
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
-    case StepRule.NishioForcingChains:
+    case 'NishioForcingChains':
       return ` Remove ${values} from cell ${affectedCells} because then ${computeInvalidStateReason(step, gridSize)}`;
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
@@ -168,8 +175,6 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
 
       // Some techniques don't have cells (e.g. killer cage, kropki chains)
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
-
-      // ????
 
       return `${areaMessage}${cellsMessage} to remove ${values} from ${affectedCells}`
   }
@@ -214,24 +219,24 @@ const cellsDoNotContainSet = (cells: CellPosition[], values: number[], cellMarks
 
 const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
   switch (step.rule) {
-    case StepRule.Candidates:
+    case 'Candidates':
       return true
-    case StepRule.HiddenSingle:
-    case StepRule.NakedSingle:
-    case StepRule.Thermo:
-    case StepRule.PalindromeValues:
+    case 'HiddenSingle':
+    case 'NakedSingle':
+    case 'Thermo':
+    case 'PalindromeValues':
       return false
-    case StepRule.HiddenPairs:
-    case StepRule.HiddenTriples:
+    case 'HiddenPairs':
+    case 'HiddenTriples':
       return cellsOnlyContainCandidates(step.cells, step.values, cellMarks)
-    case StepRule.XYWing:
+    case 'XYWing':
       const zValue = step.values[2]
-      return cellsDoNotContainCandidates(step.affected_cells, [ zValue ], cellMarks)
-    case StepRule.CommonPeerEliminationKropki:
-    case StepRule.CommonPeerEliminationArrow:
-      return cellsDoNotContainSet(step.affected_cells, step.values, cellMarks)
+      return cellsDoNotContainCandidates(step.affectedCells, [ zValue ], cellMarks)
+    case 'CommonPeerEliminationKropki':
+    case 'CommonPeerEliminationArrow':
+      return cellsDoNotContainSet(step.affectedCells, step.values, cellMarks)
     default:
-      return cellsDoNotContainCandidates(step.affected_cells, step.values, cellMarks)
+      return cellsDoNotContainCandidates(step.affectedCells, step.values, cellMarks)
   }
 }
 
@@ -302,7 +307,7 @@ export const computeHintContent = (
   if (!solution) {
     return [ '', false ]
   }
-  if (solution.solution_type === SolutionType.None) {
+  if (solution.solutionType === 'None') {
     return [
       "You're on the wrong track 😳 You made a mistake somewhere along the way 😞",
       false,

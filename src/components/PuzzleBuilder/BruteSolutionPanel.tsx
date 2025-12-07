@@ -1,4 +1,4 @@
-import { SudokuBruteSolveResult } from 'src/types/wasm'
+import { SudokuBruteSolveResult } from 'lisudoku-solver'
 import SolutionPanel from './SolutionPanel'
 
 const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelProps) => (
@@ -7,9 +7,9 @@ const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelPr
       'Running...'
     ) : solution === null ? (
       ''
-    ) : solution.solution_count === 0 ? (
+    ) : solution.solutionCount === 0 ? (
       'No solutions 🙁'
-    ) : solution.solution_count === 2 ? (
+    ) : solution.solutionCount === 2 ? (
       'Multiple solutions 😢'
     ) : (
       'Unique solution 🎉'

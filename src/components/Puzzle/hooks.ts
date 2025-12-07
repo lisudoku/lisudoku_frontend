@@ -1,6 +1,7 @@
+import { CellPosition, FixedNumber, SudokuConstraints } from 'lisudoku-solver'
 import { inRange, isEmpty, isEqual, last, pullAllWith, uniqBy } from 'lodash-es'
 import { useEffect, useCallback, useMemo } from 'react'
-import { CellMarks, CellPosition, FixedNumber, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { CellMarks, Grid } from 'src/types/sudoku'
 import { computeErrors, computeFixedNumbersGrid, getAreaCells, getCellPeers } from 'src/utils/sudoku'
 import { useSelector, useDispatch } from 'src/hooks'
 import {
@@ -15,7 +16,6 @@ import {
 import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
 import { CellHighlight } from './SudokuGridGraphics'
-import { StepRule } from 'src/types/wasm'
 import { Theme, useTheme } from '../ThemeProvider'
 import { confirm } from 'src/shared/ConfirmationDialog'
 
@@ -309,16 +309,16 @@ export const useCellHighlights = () => {
     const otherCells = step.cells.slice(1)
 
     switch (step?.rule) {
-      case StepRule.NakedSingle: {
+      case 'NakedSingle': {
         cellHighlights.push({
           position: cell,
           color: cellColor,
         })
         break
       }
-      case StepRule.HiddenSingle:
-      case StepRule.Thermo:
-      case StepRule.PalindromeValues: {
+      case 'HiddenSingle':
+      case 'Thermo':
+      case 'PalindromeValues': {
         cellHighlights = getAreaCells(area, constraints).map((areaCell: CellPosition) => ({
           position: areaCell,
           color: areaColor,

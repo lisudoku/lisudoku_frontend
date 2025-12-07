@@ -1,5 +1,5 @@
+import { Rule } from 'lisudoku-solver'
 import { ReactNode } from 'react'
-import { StepRule } from 'src/types/wasm'
 
 export type ExternalResource = {
   name: string
@@ -7,7 +7,7 @@ export type ExternalResource = {
 }
 
 export type Technique = {
-  id: StepRule
+  id: Rule
   akas?: string[]
   summary: ReactNode
   externalResources?: ExternalResource[]

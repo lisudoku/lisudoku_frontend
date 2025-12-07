@@ -1,19 +1,19 @@
+import { Rule } from 'lisudoku-solver'
 import { groupBy } from 'lodash-es'
 import { Link } from 'react-router-dom'
 import ExternalLink from 'src/components/ExternalLink'
-import { StepRule } from 'src/types/wasm'
 import { StepRuleDifficulty, StepRuleDisplay } from 'src/utils/constants'
 import { Technique } from './types'
 
 const HOUSE = <ExternalLink url="https://www.sudopedia.org/wiki/House">house</ExternalLink>
 
-const LinkToTechnique = ({ id }: { id: StepRule }) => (
+const LinkToTechnique = ({ id }: { id: Rule }) => (
   <Link to={`/learn#${id}`}>{StepRuleDisplay[id]}</Link>
 )
 
 const TECHNIQUES: Technique[] = [
   {
-    id: StepRule.HiddenSingle,
+    id: 'HiddenSingle',
     akas: [ 'Last Remaining Cell', 'Pinned Digit' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) you can only put digit X in only one of the cells, so put it there.
@@ -39,7 +39,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'EieojFK9AdYIi-a6rgDc', 'vmZ4ApDalmLPZWeAF46n' ],
   },
   {
-    id: StepRule.NakedSingle,
+    id: 'NakedSingle',
     akas: [ 'Obvious Single', 'The Last Possible Number', 'Forced Digit', 'Sole Candidate' ],
     summary: 'A cell has only one possible digit, so write it in.',
     externalResources: [
@@ -63,7 +63,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'nF4pF8Orna9Oi-0uPE-0', 'DwbYLJrG7EHbCA0jEzFj' ],
   },
   {
-    id: StepRule.Candidates,
+    id: 'Candidates',
     akas: [ 'Pencil marks', 'Notes' ],
     summary: 'Write all the possible values in each cell.',
     externalResources: [
@@ -74,7 +74,7 @@ const TECHNIQUES: Technique[] = [
     ],
   },
   {
-    id: StepRule.HiddenPairs,
+    id: 'HiddenPairs',
     akas: [ 'Last 2 Remaining Cells' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) you can only put digits X and Y in two of the cells,
@@ -101,7 +101,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'GxTywFE7fBXPGskVg7D5', 'bHjg-8DIkr4IqljiFeQ5' ],
   },
   {
-    id: StepRule.NakedPairs,
+    id: 'NakedPairs',
     akas: [ 'Obvious Pairs' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) two cells can only contain digits X and Y, so you can remove them
@@ -128,7 +128,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '4_zKMu9oIek4v4BYDaYK', '0ia3B_nKWJnnFXm-6Tfg' ],
   },
   {
-    id: StepRule.LockedCandidatesPairs,
+    id: 'LockedCandidatesPairs',
     akas: [ 'Intersection Removal', 'Line-Box Interaction', 'Pointing Pairs', 'Claiming/Box-Line Reduction' ],
     summary: <>
       In a row/column/box A, there are two candidate cells for digit X. If there is another
@@ -157,7 +157,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '9glG1HW6b_anCo2nNKS7', '0km-feHHbCzUtT7cgJI4', '0kncvSKSbAFIUWCWfDF5', 'QwA-W4OAZBU3NF6VnKzX' ],
   },
   {
-    id: StepRule.HiddenTriples,
+    id: 'HiddenTriples',
     akas: [ 'Last 3 Remaining Cells' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) you can only put digits X, Y and Z in three of the cells,
@@ -184,7 +184,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'r1fjs-dBjm8ZPXbE7fPg' ],
   },
   {
-    id: StepRule.NakedTriples,
+    id: 'NakedTriples',
     akas: [ 'Obvious Triples' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) three cells can only contain digits X, Y and Z, so you can
@@ -211,7 +211,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'tduyFLYnpdgGN1JD-9hE', 'V_uw0INLBbl8erdXXoaz' ],
   },
   {
-    id: StepRule.LockedCandidatesTriples,
+    id: 'LockedCandidatesTriples',
     akas: [ 'Intersection Removal', 'Line-Box Interaction', 'Pointing Pairs', 'Claiming/Box-Line Reduction' ],
     summary: <>
       In a row/column/box A, there are three candidate cells for digit X. If there is another
@@ -241,12 +241,12 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'o2vQ_rNgcAq55N8S4btx' ],
   },
   {
-    id: StepRule.CommonPeerElimination,
+    id: 'CommonPeerElimination',
     summary: <>
       Putting digit X in a cell eliminates X as a candidate from another {HOUSE},
       so it's not a valid candidate for that cell.
       <br />
-      This technique is the general version of <LinkToTechnique id={StepRule.LockedCandidatesPairs} />.
+      This technique is the general version of <LinkToTechnique id="LockedCandidatesPairs" />.
 
       It is more common in variants like Anti Knight and Diagonal
       because Classic has more specialized techniques.
@@ -260,7 +260,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '14FeIMjH-nu0fHvYWBUd', 'A_WvQ-kOkByeH1UeP5Ry', 'st6h2L23wpISdgeQC27a' ],
   },
   {
-    id: StepRule.XWing,
+    id: 'XWing',
     summary: <>
       Find rows where digit X is a candidate in only two cells. If there is a pair of rows
       where the cells are in the same two columns, remove X as a candidate from all other
@@ -289,7 +289,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'yIqroHNVqFVQIxvihKYa', 'p2sm-XRlR1M-tNxEfYT1' ],
   },
   {
-    id: StepRule.XYWing,
+    id: 'XYWing',
     akas: [ 'Y-Wing', 'Bent Triples' ],
     summary: <>
       Cell with candidates XY sees two cells with candidates XZ and YZ.
@@ -312,7 +312,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'DuujC8eA4PiPKDYTn5hX' ]
   },
   {
-    id: StepRule.Thermo,
+    id: 'Thermo',
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
@@ -326,11 +326,11 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'QpWV8gGnJ3bDSfVboe6n' ],
   },
   {
-    id: StepRule.ThermoCandidates,
+    id: 'ThermoCandidates',
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
-      Same as <LinkToTechnique id={StepRule.Thermo} />, but we use it to remove candidates. You can
+      Same as <LinkToTechnique id="Thermo" />, but we use it to remove candidates. You can
       remove any candidates from a cell that are not between the lowest and the highest valid candidate.
       <br />
       Example: The bulb cell has candidates 2,3. The next cell has candidates 2,3,5 and you can remove 2.
@@ -338,7 +338,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'ZiKD2zQKk97LamntZ32w' ],
   },
   {
-    id: StepRule.PalindromeValues,
+    id: 'PalindromeValues',
     summary: <>
       Only applies to Palindrome puzzles.
       <br/>
@@ -348,7 +348,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [],
   },
   {
-    id: StepRule.PalindromeCandidates,
+    id: 'PalindromeCandidates',
     summary: <>
       Only applies to Palindrome puzzles.
       <br/>
@@ -358,7 +358,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [],
   },
   {
-    id: StepRule.Kropki,
+    id: 'Kropki',
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
@@ -368,20 +368,20 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'LlBlSN4rx4NZ1mfruv4n' ],
   },
   {
-    id: StepRule.KropkiChainCandidates,
+    id: 'KropkiChainCandidates',
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
-      Same as <LinkToTechnique id={StepRule.Kropki} />, but apply for a chain of cells
+      Same as <LinkToTechnique id="Kropki" />, but apply for a chain of cells
       linked by dots in the same {HOUSE}.
     </>,
     practicePuzzleIds: [ 'rGhrOQVXJS7LiV4VpRm2' ],
   },
   {
-    id: StepRule.KropkiAdvancedCandidates,
+    id: 'KropkiAdvancedCandidates',
     summary: <>
       Only applies to Kropki puzzles.
-      It is a variation of <LinkToTechnique id={StepRule.KropkiChainCandidates} /> where we look deeper
+      It is a variation of <LinkToTechnique id="KropkiChainCandidates" /> where we look deeper
       into the consequences.
       <br/>
       If one chain combination eliminates all candidates from a cell, remove the combination as a candidate.
@@ -389,17 +389,17 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'F2mvNvtEFlNrEkGK-5fG', '4rWU4qvNQNH02XsKFrPY' ],
   },
   {
-    id: StepRule.CommonPeerEliminationKropki,
+    id: 'CommonPeerEliminationKropki',
     summary: <>
       Only applies to Kropki puzzles.
-      It is a combination of <LinkToTechnique id={StepRule.CommonPeerElimination} /> and
-      {' '}<LinkToTechnique id={StepRule.KropkiChainCandidates} />.
+      It is a combination of <LinkToTechnique id="CommonPeerElimination" /> and
+      {' '}<LinkToTechnique id="KropkiChainCandidates" />.
       <br/>
       If all chain combinations eliminate X from cell Y then eliminate it.
     </>,
   },
   {
-    id: StepRule.KillerCandidates,
+    id: 'KillerCandidates',
     akas: [ 'Sum Elimination' ],
     summary: <>
       Only applies to Killer puzzles.
@@ -416,7 +416,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '76ilIbjv_xxEEoeI6p1l' ],
   },
   {
-    id: StepRule.Killer45,
+    id: 'Killer45',
     akas: [ 'Rule of 45' ],
     summary: <>
       Only applies to Killer puzzles.
@@ -437,7 +437,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'rkwWa3AEg_lMValqbdDp' ],
   },
   {
-    id: StepRule.ArrowCandidates,
+    id: 'ArrowCandidates',
     summary: <>
       Only applies to Arrow puzzles.
       <br/>
@@ -446,27 +446,27 @@ const TECHNIQUES: Technique[] = [
     </>,
   },
   {
-    id: StepRule.ArrowAdvancedCandidates,
+    id: 'ArrowAdvancedCandidates',
     summary: <>
       Only applies to Arrow puzzles.
-      It is a variation of <LinkToTechnique id={StepRule.ArrowCandidates} /> where we look deeper
+      It is a variation of <LinkToTechnique id="ArrowCandidates" /> where we look deeper
       into the consequences.
       <br/>
       If one arrow combination eliminates all candidates from a cell, remove the combination as a candidate.
     </>,
   },
   {
-    id: StepRule.CommonPeerEliminationArrow,
+    id: 'CommonPeerEliminationArrow',
     summary: <>
       Only applies to Arrow puzzles.
-      It is a combination of <LinkToTechnique id={StepRule.CommonPeerElimination} /> and
-      {' '}<LinkToTechnique id={StepRule.ArrowCandidates} />.
+      It is a combination of <LinkToTechnique id="CommonPeerElimination" /> and
+      {' '}<LinkToTechnique id="ArrowCandidates" />.
       <br/>
       If all arrow combinations eliminate X from cell Y then eliminate it.
     </>,
   },
   {
-    id: StepRule.RenbanCandidates,
+    id: 'RenbanCandidates',
     summary: <>
       Only applies to Renban puzzles.
       <br/>
@@ -475,7 +475,7 @@ const TECHNIQUES: Technique[] = [
     </>,
   },
   {
-    id: StepRule.TurbotFish,
+    id: 'TurbotFish',
     summary: <>
       For a digit X there are 2 strong links (A-B, C-D) and one of their ends see each other
       (let's assume they are A and B).
@@ -498,14 +498,14 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '_Zm0aj0rpHD8tCYTCdZU' ],
   },
   {
-    id: StepRule.TopBottomCandidates,
+    id: 'TopBottomCandidates',
     summary: <>
       For each row X we track the cells with candidate X where the sequence 1 to X can arrive on.
       For the decreasing sequence on row X we track digit 10-X.
     </>,
   },
   {
-    id: StepRule.EmptyRectangles,
+    id: 'EmptyRectangles',
     summary: <>
       In a box, each of digit X's candidate cells are either on row R or col C.
     </>,
@@ -525,19 +525,19 @@ const TECHNIQUES: Technique[] = [
     ],
   },
   {
-    id: StepRule.AdhocNakedSet,
+    id: 'AdhocNakedSet',
     akas: [ 'Unorthodox naked pairs/triples' ],
     summary: <>
       Under certain constraints/variants there are "hidden" (as in "not obvious")
       sets of cells where all cells within a set are peers.
 
       This means that we can apply the Naked Sets
-      (e.g. <LinkToTechnique id={StepRule.NakedPairs} />) technique within each set.
+      (e.g. <LinkToTechnique id="NakedPairs" />) technique within each set.
     </>,
     practicePuzzleIds: [ 'X2vLSy6lGcGaNTVlQ9iY' ],
   },
   {
-    id: StepRule.NishioForcingChains,
+    id: 'NishioForcingChains',
     summary: <>
       Remove candidate X from a cell because putting digit X in it leads to an invalid grid state.
     </>,

@@ -1,9 +1,9 @@
 import { cloneDeep, differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
-import { CellMarks, CellPosition, Grid, Puzzle } from 'src/types/sudoku'
+import type { CellPosition, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import { CellMarks, Grid, Puzzle } from 'src/types/sudoku'
 import { computeFixedNumbersGrid, defaultConstraints, getAllCells } from 'src/utils/sudoku'
-import { SudokuLogicalSolveResult } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { ActionType } from 'src/types'
 
@@ -335,7 +335,7 @@ export const puzzleSlice = createSlice({
     changeHintSolution(state, action) {
       state.controls.hintSolution = action.payload
       state.controls.lastHintTimer = state.solveTimer
-      if (state.controls.hintSolution && state.controls.hintSolution.solution_type !== 'None') {
+      if (state.controls.hintSolution && state.controls.hintSolution.solutionType !== 'None') {
         if (state.controls.hintLevel === null) {
           state.controls.hintLevel = HintLevel.Small
         } else if (state.controls.hintLevel === HintLevel.Small) {

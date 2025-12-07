@@ -1,8 +1,9 @@
 import { Card, CardBody } from 'src/shared/Card'
 import Typography from 'src/shared/Typography'
-import { ConstraintType, SudokuConstraints } from 'src/types/sudoku'
+import { ConstraintType } from 'src/types/sudoku'
 import { detectConstraints } from 'src/utils/sudoku'
 import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'
+import { SudokuConstraints } from 'lisudoku-solver'
 
 const computeRules = (constraints: SudokuConstraints) => {
   const rules = []

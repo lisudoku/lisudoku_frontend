@@ -8,7 +8,6 @@ import {
   changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution,
   errorAddPuzzle, requestAddPuzzle, responseAddPuzzle,
 } from 'src/reducers/builder'
-import { SolutionType } from 'src/types/wasm'
 import { Puzzle, SudokuDifficulty } from 'src/types/sudoku'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
 import VariantSelect from 'src/components/Puzzle/VariantSelect'
@@ -44,8 +43,8 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const userIsAdmin = useSelector(state => state.userData.admin)
 
   const addPuzzleEnabled = (
-    logicalSolution?.solution_type === SolutionType.Full &&
-    bruteSolution?.solution_count === 1
+    logicalSolution?.solutionType === 'Full' &&
+    bruteSolution?.solutionCount === 1
   )
 
   const handleBruteSolveClick = useCallback(() => {
@@ -119,9 +118,9 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId, author])
 
   useEffect(() => {
-    if (bruteSolution?.solution_count === 1 &&
+    if (bruteSolution?.solutionCount === 1 &&
         logicalSolution &&
-        logicalSolution.solution_type !== SolutionType.Full &&
+        logicalSolution.solutionType !== 'Full' &&
         !setterMode &&
         constraints) {
       honeybadger.notify({

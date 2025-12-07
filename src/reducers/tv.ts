@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { CellMarks, CellPosition, Grid, SudokuConstraints, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
+import { CellMarks, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { camelCaseKeys } from 'src/utils/json'
 
 export type TvPuzzle = {

@@ -1,4 +1,5 @@
-import { CellPosition, FixedNumber, Puzzle, SudokuVariant } from './sudoku'
+import { CellPosition, FixedNumber } from 'lisudoku-solver';
+import { Puzzle, SudokuVariant } from './sudoku'
 
 export type ExtendedPuzzle = Puzzle & {
   solved: boolean;

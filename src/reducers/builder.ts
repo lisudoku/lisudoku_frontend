@@ -5,17 +5,17 @@ import {
   pull, pullAllWith, remove, sortBy, uniqWith, xorWith,
 } from 'lodash-es'
 import {
-  Arrow,
-  CellMarks,
-  CellPosition, ConstraintKeyType, ConstraintType, FixedNumber, Grid, KillerCage, KropkiDot, KropkiDotType,
-  Palindrome,
-  Region, Renban, SudokuConstraints, SudokuDifficulty, SudokuVariant, Thermo,
+  CellMarks, ConstraintKeyType, ConstraintType, Grid,
+  SudokuDifficulty, SudokuVariant,
 } from 'src/types/sudoku'
-import { SolverType, SudokuBruteSolveResult, SudokuLogicalSolveResult } from 'src/types/wasm'
+import { SolverType } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
 import { defaultConstraints, detectConstraints, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
 import { InputMode } from './puzzle'
+import {
+  Arrow, CellPosition, FixedNumber, KillerCage, KropkiDot, KropkiDotType, Palindrome, Region, Renban, SudokuBruteSolveResult, SudokuConstraints, SudokuLogicalSolveResult, Thermo,
+} from 'lisudoku-solver'
 
 export enum ArrowConstraintType {
   Circle = 'arrow-circle',
@@ -282,7 +282,7 @@ export const builderSlice = createSlice({
       const gridSize = state.constraints!.gridSize
       switch (state.constraintType) {
         case ConstraintType.Regions:
-          state.constraintGrid = regionsToRegionGrid(gridSize, state.constraints!.regions)
+          state.constraintGrid = regionsToRegionGrid(gridSize, state.constraints!.regions ?? [])
           break
         case ConstraintType.Arrow:
           state.arrowConstraintType = ArrowConstraintType.Circle
@@ -401,8 +401,8 @@ export const builderSlice = createSlice({
             Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
             'Cells need to be adjacent'
           )
-          const dotType = state.constraintType === ConstraintType.KropkiConsecutive ? KropkiDotType.Consecutive
-                                                                                    : KropkiDotType.Double
+          const dotType: KropkiDotType =
+            state.constraintType === ConstraintType.KropkiConsecutive ? 'Consecutive' : 'Double'
           const kropkiDot: KropkiDot = {
             dotType,
             cell1: cells[0],

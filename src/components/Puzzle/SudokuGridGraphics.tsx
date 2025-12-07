@@ -1,7 +1,8 @@
-import React, { ReactElement, MouseEvent, useCallback, SVGProps } from 'react'
+import { Arrow, CellPosition, KillerCage, KropkiDot, Region, Renban, SudokuConstraints, Thermo } from 'lisudoku-solver'
+import React, { ReactElement, SVGProps } from 'react'
 import classNames from 'classnames'
-import { compact, inRange, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
-import { Arrow, CellMarks, CellPosition, Grid, KillerCage, KropkiDot, KropkiDotType, Region, Renban, SudokuConstraints, Thermo } from 'src/types/sudoku'
+import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
+import { CellMarks, Grid } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
 import { useGridErrors, useFixedNumbersGrid } from './hooks'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
@@ -555,7 +556,7 @@ const KropkiGraphics = ({ kropkiDots, cellSize }: KropkiGraphicsProps) => {
   const circles: KropkiCircle[] = kropkiDots.map(kropkiDot => ({
     x: 1 + (kropkiDot.cell1.col + kropkiDot.cell2.col + 1) / 2 * cellSize,
     y: 1 + (kropkiDot.cell1.row + kropkiDot.cell2.row + 1) / 2 * cellSize,
-    fill: kropkiDot.dotType === KropkiDotType.Consecutive ? 'white' : 'black',
+    fill: kropkiDot.dotType === 'Consecutive' ? 'white' : 'black',
   }))
 
   return (
@@ -707,7 +708,7 @@ const SudokuConstraintsGraphics = ({
         secondary={constraints.secondaryDiagonal}
       />
       <GridGraphics gridSize={gridSize} cellSize={cellSize} />
-      <BordersGraphics gridSize={gridSize} regions={regions} cellSize={cellSize} />
+      <BordersGraphics gridSize={gridSize} regions={regions ?? []} cellSize={cellSize} />
       <BorderHighlightsGraphics gridSize={gridSize} cellSize={cellSize} color={borderHighlightColor} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
       <CornerMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />

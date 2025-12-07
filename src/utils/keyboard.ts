@@ -1,6 +1,6 @@
+import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { inRange, isEmpty, last } from 'lodash-es'
 import { useEffect } from 'react'
-import { CellPosition, SudokuConstraints } from 'src/types/sudoku'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]

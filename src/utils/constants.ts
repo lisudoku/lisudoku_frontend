@@ -1,7 +1,7 @@
+import { Rule } from 'lisudoku-solver'
 import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { TrainerTechnique } from 'src/types'
 import { ConstraintType, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import { StepRule } from 'src/types/wasm'
 
 export const GRID_SIZES = [ 4, 6, 9 ]
 
@@ -56,40 +56,40 @@ export const SudokuDifficultyDisplay: { [key in SudokuDifficulty]: string } = {
 
 export const SudokuDifficultyRank = mapValues(invert(values(SudokuDifficulty)), toInteger)
 
-export const StepRuleDisplay: { [key in StepRule]: string } = {
-  [StepRule.HiddenSingle]: 'Hidden Single',
-  [StepRule.NakedSingle]: 'Naked Single',
-  [StepRule.Thermo]: 'Thermo Single',
-  [StepRule.PalindromeValues]: 'Palindrome Values',
-  [StepRule.Candidates]: 'Candidates',
-  [StepRule.ThermoCandidates]: 'Thermo Candidates',
-  [StepRule.KillerCandidates]: 'Killer Cage Candidates',
-  [StepRule.ArrowCandidates]: 'Arrow Candidates',
-  [StepRule.RenbanCandidates]: 'Renban Candidates',
-  [StepRule.PalindromeCandidates]: 'Palindrome Candidates',
-  [StepRule.ArrowAdvancedCandidates]: 'Arrow Advanced Candidates',
-  [StepRule.KropkiAdvancedCandidates]: 'Kropki Dot Chain Advanced Logic',
-  [StepRule.Killer45]: 'Killer Sum Rule',
-  [StepRule.Kropki]: 'Kropki Dot Pair Logic',
-  [StepRule.KropkiChainCandidates]: 'Kropki Dot Chain Logic',
-  [StepRule.TopBottomCandidates]: 'Top-Bottom Candidates',
-  [StepRule.LockedCandidatesPairs]: 'Locked Candidate Pairs',
-  [StepRule.NakedPairs]: 'Naked Pairs',
-  [StepRule.HiddenPairs]: 'Hidden Pairs',
-  [StepRule.CommonPeerEliminationKropki]: 'Common Peer Elimination (Kropki)',
-  [StepRule.CommonPeerEliminationArrow]: 'Common Peer Elimination (Arrow)',
-  [StepRule.LockedCandidatesTriples]: 'Locked Candidate Triples',
-  [StepRule.NakedTriples]: 'Naked Triples',
-  [StepRule.HiddenTriples]: 'Hidden Triples',
-  [StepRule.XWing]: 'X-Wing',
-  [StepRule.YWing]: 'Y-Wing',
-  [StepRule.XYWing]: 'XY-Wing',
-  [StepRule.Swordfish]: 'Swordfish',
-  [StepRule.CommonPeerElimination]: 'Common Peer Elimination',
-  [StepRule.TurbotFish]: 'Turbot Fish',
-  [StepRule.EmptyRectangles]: 'Empty Rectangle',
-  [StepRule.AdhocNakedSet]: 'Adhoc Naked Set',
-  [StepRule.NishioForcingChains]: 'Nishio Forcing Chains',
+export const StepRuleDisplay: { [key in Rule]: string } = {
+  HiddenSingle: 'Hidden Single',
+  NakedSingle: 'Naked Single',
+  Thermo: 'Thermo Single',
+  PalindromeValues: 'Palindrome Values',
+  Candidates: 'Candidates',
+  ThermoCandidates: 'Thermo Candidates',
+  KillerCandidates: 'Killer Cage Candidates',
+  ArrowCandidates: 'Arrow Candidates',
+  RenbanCandidates: 'Renban Candidates',
+  PalindromeCandidates: 'Palindrome Candidates',
+  ArrowAdvancedCandidates: 'Arrow Advanced Candidates',
+  KropkiAdvancedCandidates: 'Kropki Dot Chain Advanced Logic',
+  Killer45: 'Killer Sum Rule',
+  Kropki: 'Kropki Dot Pair Logic',
+  KropkiChainCandidates: 'Kropki Dot Chain Logic',
+  TopBottomCandidates: 'Top-Bottom Candidates',
+  LockedCandidatesPairs: 'Locked Candidate Pairs',
+  NakedPairs: 'Naked Pairs',
+  HiddenPairs: 'Hidden Pairs',
+  CommonPeerEliminationKropki: 'Common Peer Elimination (Kropki)',
+  CommonPeerEliminationArrow: 'Common Peer Elimination (Arrow)',
+  LockedCandidatesTriples: 'Locked Candidate Triples',
+  NakedTriples: 'Naked Triples',
+  HiddenTriples: 'Hidden Triples',
+  XWing: 'X-Wing',
+  XYWing: 'XY-Wing',
+  Swordfish: 'Swordfish',
+  CommonPeerElimination: 'Common Peer Elimination',
+  TurbotFish: 'Turbot Fish',
+  EmptyRectangles: 'Empty Rectangle',
+  AdhocNakedSet: 'Adhoc Naked Set',
+  NishioForcingChains: 'Nishio Forcing Chains',
+  PhistomefelRing: 'Phistomefel Ring',
 }
 
 export const enum EStepRuleDifficulty {
@@ -104,42 +104,42 @@ export const StepRuleDifficultyDisplay: { [key in EStepRuleDifficulty]: string }
   [EStepRuleDifficulty.Hard]: 'Hard',
 }
 
-export const StepRuleDifficulty: { [key in StepRule]: EStepRuleDifficulty } = {
-  [StepRule.HiddenSingle]: EStepRuleDifficulty.Easy,
-  [StepRule.NakedSingle]: EStepRuleDifficulty.Easy,
-  [StepRule.Thermo]: EStepRuleDifficulty.Easy,
-  [StepRule.PalindromeValues]: EStepRuleDifficulty.Easy,
+export const StepRuleDifficulty: { [key in Rule]: EStepRuleDifficulty } = {
+  HiddenSingle: EStepRuleDifficulty.Easy,
+  NakedSingle: EStepRuleDifficulty.Easy,
+  Thermo: EStepRuleDifficulty.Easy,
+  PalindromeValues: EStepRuleDifficulty.Easy,
 
-  [StepRule.Candidates]: EStepRuleDifficulty.Medium,
-  [StepRule.ThermoCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.KillerCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.ArrowCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.RenbanCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.PalindromeCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.ArrowAdvancedCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.Killer45]: EStepRuleDifficulty.Medium,
-  [StepRule.Kropki]: EStepRuleDifficulty.Medium,
-  [StepRule.KropkiChainCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.KropkiAdvancedCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.TopBottomCandidates]: EStepRuleDifficulty.Medium,
-  [StepRule.LockedCandidatesPairs]: EStepRuleDifficulty.Medium,
-  [StepRule.NakedPairs]: EStepRuleDifficulty.Medium,
-  [StepRule.HiddenPairs]: EStepRuleDifficulty.Medium,
+  Candidates: EStepRuleDifficulty.Medium,
+  ThermoCandidates: EStepRuleDifficulty.Medium,
+  KillerCandidates: EStepRuleDifficulty.Medium,
+  ArrowCandidates: EStepRuleDifficulty.Medium,
+  RenbanCandidates: EStepRuleDifficulty.Medium,
+  PalindromeCandidates: EStepRuleDifficulty.Medium,
+  ArrowAdvancedCandidates: EStepRuleDifficulty.Medium,
+  Killer45: EStepRuleDifficulty.Medium,
+  Kropki: EStepRuleDifficulty.Medium,
+  KropkiChainCandidates: EStepRuleDifficulty.Medium,
+  KropkiAdvancedCandidates: EStepRuleDifficulty.Medium,
+  TopBottomCandidates: EStepRuleDifficulty.Medium,
+  LockedCandidatesPairs: EStepRuleDifficulty.Medium,
+  NakedPairs: EStepRuleDifficulty.Medium,
+  HiddenPairs: EStepRuleDifficulty.Medium,
 
-  [StepRule.CommonPeerEliminationKropki]: EStepRuleDifficulty.Hard,
-  [StepRule.CommonPeerEliminationArrow]: EStepRuleDifficulty.Hard,
-  [StepRule.LockedCandidatesTriples]: EStepRuleDifficulty.Hard,
-  [StepRule.NakedTriples]: EStepRuleDifficulty.Hard,
-  [StepRule.HiddenTriples]: EStepRuleDifficulty.Hard,
-  [StepRule.XWing]: EStepRuleDifficulty.Hard,
-  [StepRule.YWing]: EStepRuleDifficulty.Hard,
-  [StepRule.XYWing]: EStepRuleDifficulty.Hard,
-  [StepRule.Swordfish]: EStepRuleDifficulty.Hard,
-  [StepRule.CommonPeerElimination]: EStepRuleDifficulty.Hard,
-  [StepRule.TurbotFish]: EStepRuleDifficulty.Hard,
-  [StepRule.EmptyRectangles]: EStepRuleDifficulty.Hard,
-  [StepRule.AdhocNakedSet]: EStepRuleDifficulty.Hard,
-  [StepRule.NishioForcingChains]: EStepRuleDifficulty.Hard,
+  CommonPeerEliminationKropki: EStepRuleDifficulty.Hard,
+  CommonPeerEliminationArrow: EStepRuleDifficulty.Hard,
+  LockedCandidatesTriples: EStepRuleDifficulty.Hard,
+  NakedTriples: EStepRuleDifficulty.Hard,
+  HiddenTriples: EStepRuleDifficulty.Hard,
+  XWing: EStepRuleDifficulty.Hard,
+  XYWing: EStepRuleDifficulty.Hard,
+  Swordfish: EStepRuleDifficulty.Hard,
+  CommonPeerElimination: EStepRuleDifficulty.Hard,
+  TurbotFish: EStepRuleDifficulty.Hard,
+  EmptyRectangles: EStepRuleDifficulty.Hard,
+  AdhocNakedSet: EStepRuleDifficulty.Hard,
+  NishioForcingChains: EStepRuleDifficulty.Hard,
+  PhistomefelRing: EStepRuleDifficulty.Hard,
 }
 
 export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {
@@ -170,4 +170,4 @@ export const CONSTRAINT_TYPE_VARIANTS: { [key in ConstraintType]: SudokuVariant 
   [ConstraintType.TopBottom]: SudokuVariant.TopBottom,
 }
 
-export const GRID_STEPS = [StepRule.HiddenSingle, StepRule.NakedSingle, StepRule.Thermo, StepRule.PalindromeValues]
+export const GRID_STEPS: Rule[] = ['HiddenSingle', 'NakedSingle', 'Thermo', 'PalindromeValues']

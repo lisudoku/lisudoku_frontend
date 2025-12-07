@@ -1,7 +1,8 @@
 import axios from 'axios'
 import axiosThrottle from 'axios-request-throttle'
+import { CellPosition, FixedNumber } from 'lisudoku-solver'
 import { ActionType, TrainerTechnique } from 'src/types'
-import { CellPosition, FixedNumber, Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { Grid, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 axios.defaults.baseURL = `${import.meta.env.VITE_API_BASE_URL}/api`
 

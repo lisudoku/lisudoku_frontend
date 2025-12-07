@@ -6,7 +6,6 @@ import Typography from '../../shared/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
-import { SolutionType } from 'src/types/wasm'
 import { computeHintContent } from 'src/utils/solver'
 import { scrollToTop } from 'src/utils/misc'
 
@@ -58,7 +57,7 @@ const useComputeHintElement = () => {
         {!error && (
           <>
             <p className="mt-3 pb-2 text-xs"><em>Click on each technique to learn how to apply them.</em></p>
-            {hintLevel === HintLevel.Small && solution.solution_type !== SolutionType.None && (
+            {hintLevel === HintLevel.Small && solution.solutionType !== 'None' && (
               <p className="text-xs">
                 <em>
                   <span>Still confused? Check out the{' '}</span>

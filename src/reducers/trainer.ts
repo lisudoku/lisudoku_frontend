@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { isEqual } from 'lodash-es'
 import { TrainerPuzzle, TrainerTechnique } from 'src/types'
-import { CellPosition, Grid, SudokuConstraints } from 'src/types/sudoku'
+import { Grid } from 'src/types/sudoku'
 import {
   ensureDefaultRegions, gridSizeFromString, gridStringToFixedNumbers, gridStringToGrid,
 } from 'src/utils/sudoku'

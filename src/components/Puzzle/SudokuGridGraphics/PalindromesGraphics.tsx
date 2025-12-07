@@ -1,4 +1,4 @@
-import { Palindrome } from 'src/types/sudoku'
+import { Palindrome } from 'lisudoku-solver'
 
 const PalindromeGraphics = ({ palindrome, cellSize }: { palindrome: Palindrome, cellSize: number }) => {
   const half = cellSize / 2

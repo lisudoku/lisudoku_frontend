@@ -1,14 +1,13 @@
+import { Rule, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { max, orderBy, sumBy, toPairs } from 'lodash-es'
 import Typography from 'src/shared/Typography'
 import SolutionPanel from './SolutionPanel'
 import { HintLevel } from 'src/reducers/puzzle'
-import { SudokuConstraints } from 'src/types/sudoku'
-import { SolutionStep, SolutionType, StepRule, SudokuLogicalSolveResult } from 'src/types/wasm'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay, EStepRuleDifficulty } from 'src/utils/constants'
 import { getStepDescription } from 'src/utils/solver'
 
 const groupStepsByType = (steps: SolutionStep[]) => {
-  const groups: { [key in StepRule]?: number } = {}
+  const groups: { [key in Rule]?: number } = {}
   for (const step of steps) {
     groups[step.rule] ||= 0
     groups[step.rule]! += 1
@@ -17,7 +16,7 @@ const groupStepsByType = (steps: SolutionStep[]) => {
   return orderBy(
     toPairs(groups),
     [
-      group => StepRuleDifficulty[group[0] as StepRule],
+      group => StepRuleDifficulty[group[0] as Rule],
       1
     ],
     ['desc', 'desc']
@@ -87,14 +86,14 @@ const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMod
 
   return (
     <>
-      {solution.solution_type === SolutionType.None ? (
+      {solution.solutionType === 'None' ? (
         <Typography variant="paragraph">There are no solutions 🙁</Typography>
-      ) : solution.solution_type === SolutionType.Full ? (
+      ) : solution.solutionType === 'Full' ? (
         <Typography variant="paragraph">Found a solution 🎉</Typography>
       ) : (
         <Typography variant="paragraph">Didn't find a full solution 😢</Typography>
       )}
-      {solution.solution_type !== SolutionType.None && (
+      {solution.solutionType !== 'None' && (
         setterMode ? (
           <>
             <Typography variant="paragraph">

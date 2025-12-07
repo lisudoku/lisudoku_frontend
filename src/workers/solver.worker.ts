@@ -1,17 +1,15 @@
 /* eslint-disable no-restricted-globals */
-import { wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
+import { type SudokuBruteSolveResult, SudokuConstraints, type SudokuLogicalSolveResult, wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
 import { SolverType } from 'src/types/wasm';
-import { computeWasmConstraints } from 'src/utils/wasm'
 
-self.onmessage = function(e: any) {
+self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
-  const wasmConstraints = computeWasmConstraints(constraints)
-  console.info('Running solver', solverType, wasmConstraints)
-  let solution
+  console.info('Running solver', solverType, constraints)
+  let solution: SudokuBruteSolveResult | SudokuLogicalSolveResult
   if (solverType === SolverType.Brute) {
-    solution = wasm_brute_solve(wasmConstraints)
+    solution = wasm_brute_solve(constraints)
   } else {
-    solution = wasm_logical_solve(wasmConstraints)
+    solution = wasm_logical_solve(constraints)
   }
   self.postMessage(solution)
 }

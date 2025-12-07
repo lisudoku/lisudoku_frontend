@@ -1,5 +1,5 @@
+import { SudokuConstraints } from 'lisudoku-solver'
 import { useLocation } from 'react-router-dom'
-import { SudokuConstraints } from 'src/types/sudoku'
 import { decodeSudoku, encodeSudoku, SudokuDataFormat, TransformOutput, transformSudoku } from 'sudoku-formats'
 import { LisudokuConstraints } from 'sudoku-formats/dist/formats/lisudoku'
 

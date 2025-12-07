@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from 'react';
 import Button from 'src/shared/Button';
 import Input from 'src/shared/Input';
 import Radio from 'src/shared/Radio';
-import { SudokuConstraints } from 'src/types/sudoku';
 import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
 import { honeybadger } from '../HoneybadgerProvider';
 import { detectConstraints, isGridString } from 'src/utils/sudoku';
+import { SudokuConstraints } from 'lisudoku-solver';
 
 interface CopiableInputProps {
   url?: string
