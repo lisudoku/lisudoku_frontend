@@ -4,8 +4,8 @@ import ExternalLink from 'src/components/ExternalLink'
 import { StepRuleDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl, pluralize } from 'src/utils/misc'
 import { Technique } from './types'
-import { Card, CardBody } from 'src/shared/Card'
-import Typography from 'src/shared/Typography'
+import { Card, CardBody } from 'src/design_system/Card'
+import Typography from 'src/design_system/Typography'
 
 const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
   const { id, akas, summary, externalResources, practicePuzzleIds } = technique

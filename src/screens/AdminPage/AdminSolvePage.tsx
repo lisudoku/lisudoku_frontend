@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
-import Typography from 'src/shared/Typography'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
+import Typography from 'src/design_system/Typography'
 import SolveReplay from 'src/components/SolveReplay'
 import { useSolve } from 'src/utils/solves'
 

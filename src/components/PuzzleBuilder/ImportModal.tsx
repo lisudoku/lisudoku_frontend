@@ -1,8 +1,8 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
 import { useState } from 'react';
-import Button from 'src/shared/Button';
-import Input from 'src/shared/Input';
-import Typography from 'src/shared/Typography';
+import Button from 'src/design_system/Button';
+import Input from 'src/design_system/Input';
+import Typography from 'src/design_system/Typography';
 import { FORMATS } from 'sudoku-formats';
 
 const LISUDOKU_EXAMPLE_1 = 'https://lisudoku.xyz/e?import=N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wDYAaETUgd3wAmAL7cAbgEMWSGPgDMokuSo16eJqyHdeAvO1EhJ02XgAswgLrcA5pghwAyhABeJgJzdKACywpy%2BAiIQZjY8QW1%2BIUVgzTw5CN0FTg1Q0wT8c2SY0IBWdLwc6JCOfP0LC2EgA%3D'

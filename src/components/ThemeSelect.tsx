@@ -1,5 +1,5 @@
 import { values } from 'lodash-es'
-import { Option, Select } from '../shared/Select'
+import { Option, Select } from '../design_system/Select'
 import { useDispatch } from 'src/hooks'
 import { useCallback } from 'react'
 import { updateTheme } from 'src/reducers/userData'

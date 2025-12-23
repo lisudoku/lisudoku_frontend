@@ -2,14 +2,14 @@ import { orderBy } from 'lodash-es'
 import { formatISO9075, parseISO } from 'date-fns'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Button from 'src/shared/Button'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
-import Typography from 'src/shared/Typography'
+import Button from 'src/design_system/Button'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
+import Typography from 'src/design_system/Typography'
 import { useDispatch, useSelector } from 'src/hooks'
 import { deletedCompetition, receiveCompetitions } from 'src/reducers/competitions'
 import { deleteCompetition, fetchAllCompetitions } from 'src/utils/apiService'
 import AddCompetitionForm from './AddCompetitionForm'
-import { confirm } from 'src/shared/ConfirmationDialog'
+import { confirm } from 'src/design_system/ConfirmationDialog'
 
 const CompetitionsPage = () => {
   const [ loading, setLoading ] = useState(true)

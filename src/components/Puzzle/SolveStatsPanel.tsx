@@ -1,7 +1,7 @@
 import { isNil } from 'lodash-es'
 import { useSelector } from 'src/hooks'
-import Alert from '../../shared/Alert'
-import Typography from 'src/shared/Typography';
+import Alert from '../../design_system/Alert'
+import Typography from 'src/design_system/Typography';
 import { formatTimer } from 'src/utils/sudoku';
 
 // https://leancrew.com/all-this/2020/06/ordinal-numerals-and-javascript/

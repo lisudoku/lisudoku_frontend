@@ -7,7 +7,7 @@ import { requestSolved, responseSolved, changePaused, updateTimer } from 'src/re
 import { requestPuzzleCheck } from 'src/utils/apiService'
 import { checkSolved } from 'src/utils/wasm'
 import { formatTimer, gridIsFull } from 'src/utils/sudoku'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePause, faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { SudokuDifficulty } from 'src/types/sudoku'

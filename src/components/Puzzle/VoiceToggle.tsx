@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import Switch from '../../shared/Switch'
+import Switch from '../../design_system/Switch'
 import { updateVoiceEnabled } from 'src/reducers/userData'
 import { honeybadger } from '../HoneybadgerProvider'
-import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
+import { Popover, PopoverContent, PopoverHandler } from 'src/design_system/Popover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 
 const VoiceToggle = () => {
   const dispatch = useDispatch()

@@ -9,6 +9,7 @@ import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
 import { Area, CellPosition, FixedNumber, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 
+// Integrates grid contents into constraints' fixed_numbers
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
   const { gridSize, fixedNumbers } = constraints
   const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
@@ -100,7 +101,7 @@ const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
   }
 }
 
-const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number) => {
+const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number): string => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
   const affectedCells = step.affectedCells.map(cell => cellDisplay(cell)).join(', ')

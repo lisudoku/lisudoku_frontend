@@ -1,7 +1,7 @@
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { useCallback } from 'react'
 import SudokuConstraintsGraphics, { CellHighlight } from './SudokuGridGraphics'
-import LoadingSpinner from '../../shared/LoadingSpinner'
+import LoadingSpinner from '../../design_system/LoadingSpinner'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'

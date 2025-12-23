@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { groupBy, mapValues, sortBy, toPairs } from 'lodash-es'
 import PuzzleCard from './PuzzleCard'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import { responsePuzzles } from 'src/reducers/admin'
 import { fetchAllPuzzles } from 'src/utils/apiService'
 import {

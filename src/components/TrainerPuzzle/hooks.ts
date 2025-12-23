@@ -3,7 +3,7 @@ import { isEqual, uniqWith } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
 import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';
-import { confirm } from 'src/shared/ConfirmationDialog';
+import { confirm } from 'src/design_system/ConfirmationDialog';
 import { Grid } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';

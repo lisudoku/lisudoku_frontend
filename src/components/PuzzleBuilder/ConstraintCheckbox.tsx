@@ -1,8 +1,8 @@
 import { ChangeEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { changeConstraintValue } from 'src/reducers/builder'
-import Checkbox from 'src/shared/Checkbox'
-import Tooltip from 'src/shared/Tooltip'
+import Checkbox from 'src/design_system/Checkbox'
+import Tooltip from 'src/design_system/Tooltip'
 import { ConstraintKeyType, ConstraintType } from 'src/types/sudoku'
 import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'
 

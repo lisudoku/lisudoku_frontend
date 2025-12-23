@@ -1,5 +1,5 @@
 import PageMeta from 'src/components/PageMeta'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 
 const AboutPage = () => (
   <>

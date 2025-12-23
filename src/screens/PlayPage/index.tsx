@@ -12,7 +12,7 @@ import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { clearPuzzle, receivedPuzzle, requestedPuzzle } from '../../reducers/puzzle'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import ErrorPage from 'src/components/ErrorPage'
 import { useSolvedPuzzleIds } from 'src/utils/solves'
 

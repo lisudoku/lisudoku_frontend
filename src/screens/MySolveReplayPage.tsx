@@ -2,8 +2,8 @@ import { Link, useParams } from 'react-router-dom'
 import ErrorPage from 'src/components/ErrorPage'
 import PageMeta from 'src/components/PageMeta'
 import SolveReplay from 'src/components/SolveReplay'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
-import Typography from 'src/shared/Typography'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
+import Typography from 'src/design_system/Typography'
 import { useSolve } from 'src/utils/solves'
 
 const MySolveReplayPage = () => {

@@ -2,7 +2,7 @@ import { orderBy } from 'lodash-es'
 import PageMeta from 'src/components/PageMeta'
 import SolvesTable from 'src/components/SolvesTable'
 import { useSelector } from 'src/hooks'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 
 const MySolvesPage = () => {
   const solvedPuzzles = useSelector(state => state.userData.solvedPuzzles)

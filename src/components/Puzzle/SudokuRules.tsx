@@ -1,5 +1,5 @@
-import { Card, CardBody } from 'src/shared/Card'
-import Typography from 'src/shared/Typography'
+import { Card, CardBody } from 'src/design_system/Card'
+import Typography from 'src/design_system/Typography'
 import { ConstraintType } from 'src/types/sudoku'
 import { detectConstraints } from 'src/utils/sudoku'
 import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'

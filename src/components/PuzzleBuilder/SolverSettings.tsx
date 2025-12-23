@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { updateSolutionDifficultyHeatmap } from 'src/reducers/userData'
-import Alert from 'src/shared/Alert'
-import Switch from 'src/shared/Switch'
-import Typography from 'src/shared/Typography'
+import Alert from 'src/design_system/Alert'
+import Switch from 'src/design_system/Switch'
+import Typography from 'src/design_system/Typography'
 
 interface SolverSettingsProps {
   open: boolean

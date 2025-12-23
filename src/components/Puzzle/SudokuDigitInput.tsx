@@ -1,6 +1,6 @@
 import { times } from 'lodash-es'
 import classNames from 'classnames'
-import Button from '../../shared/Button'
+import Button from '../../design_system/Button'
 
 type SudokuDigitInputProps = {
   gridSize: number

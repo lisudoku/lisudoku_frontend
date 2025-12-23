@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Card, CardBody } from 'src/shared/Card'
+import { Card, CardBody } from 'src/design_system/Card'
 import { useSelector } from 'src/hooks'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import SudokuRules from './SudokuRules'

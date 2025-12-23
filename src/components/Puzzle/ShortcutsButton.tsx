@@ -1,7 +1,7 @@
 import {
   Popover, PopoverHandler, PopoverContent,
-} from 'src/shared/Popover'
-import Button from '../../shared/Button'
+} from 'src/design_system/Popover'
+import Button from '../../design_system/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons'
 

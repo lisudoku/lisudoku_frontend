@@ -1,6 +1,6 @@
 import { ReactSliderProps } from 'react-slider'
 import classNames from 'classnames'
-import Slider from '../../shared/Slider'
+import Slider from '../../design_system/Slider'
 import { HistoryStep } from './useGridHistory'
 
 interface SolveSlider extends Pick<ReactSliderProps, 'value' | 'onChange'> {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
-import Button from 'src/shared/Button';
-import Input from 'src/shared/Input';
-import Typography from 'src/shared/Typography';
+import Button from 'src/design_system/Button';
+import Input from 'src/design_system/Input';
+import Typography from 'src/design_system/Typography';
 import { honeybadger } from '../HoneybadgerProvider';
 
 const SUDOKU_VISION_API_ENDPOINT = 'https://vision.lisudoku.xyz/parse_sudoku_image'

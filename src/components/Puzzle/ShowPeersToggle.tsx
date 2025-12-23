@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import Switch from '../../shared/Switch'
+import Switch from '../../design_system/Switch'
 import { updateShowPeers } from 'src/reducers/userData'
 
 const ShowPeersToggle = () => {

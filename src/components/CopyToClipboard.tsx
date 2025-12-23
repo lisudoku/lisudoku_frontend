@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { ReactElement } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import { isFunction } from 'lodash-es'
-import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
+import { Popover, PopoverContent, PopoverHandler } from 'src/design_system/Popover'
 
 const CopyToClipboard = ({ children, text, className, onCopy }: CopyToClipboardProps) => {
   const [ open, setOpen ] = useState(false)

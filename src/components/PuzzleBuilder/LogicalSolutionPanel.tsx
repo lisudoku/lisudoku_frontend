@@ -1,6 +1,6 @@
 import { Rule, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { max, orderBy, sumBy, toPairs } from 'lodash-es'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import SolutionPanel from './SolutionPanel'
 import { HintLevel } from 'src/reducers/puzzle'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay, EStepRuleDifficulty } from 'src/utils/constants'

@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import { useCallback, useContext } from 'react'
 import { useSelector } from 'src/hooks'
-import { Popover, PopoverContent, PopoverHandler } from 'src/shared/Popover'
+import { Popover, PopoverContent, PopoverHandler } from 'src/design_system/Popover'
 import { VoiceContext } from './VoiceProvider'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
 
 const VoicePanel = () => {
   const voiceEnabled = useSelector(state => state.userData.settings?.voiceEnabled ?? false)

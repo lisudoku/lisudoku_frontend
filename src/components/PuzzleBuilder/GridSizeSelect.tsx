@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Option, Select } from 'src/shared/Select'
+import { Option, Select } from 'src/design_system/Select'
 import { useDispatch, useSelector } from 'src/hooks'
 import { initPuzzle } from 'src/reducers/builder'
 import { GRID_SIZES } from 'src/utils/constants'

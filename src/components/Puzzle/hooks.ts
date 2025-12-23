@@ -17,7 +17,7 @@ import { useWebsocket } from 'src/utils/websocket'
 import { TvMessageType } from 'src/screens/TvPage/hooks'
 import { CellHighlight } from './SudokuGridGraphics'
 import { Theme, useTheme } from '../ThemeProvider'
-import { confirm } from 'src/shared/ConfirmationDialog'
+import { confirm } from 'src/design_system/ConfirmationDialog'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]

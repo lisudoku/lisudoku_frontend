@@ -1,5 +1,5 @@
 import { values } from 'lodash-es'
-import { Select, Option } from '../../shared/Select'
+import { Select, Option } from '../../design_system/Select'
 import { TrainerTechniqueDisplay } from 'src/utils/constants'
 import { TrainerTechnique } from 'src/types'
 

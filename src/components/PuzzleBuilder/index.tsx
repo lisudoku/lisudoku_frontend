@@ -10,13 +10,13 @@ import {
   changeSelectedCell,
   initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
-import Radio from 'src/shared/Radio'
+import Radio from 'src/design_system/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
-import Button from 'src/shared/Button'
+import Button from 'src/design_system/Button'
 import PuzzleActions from './PuzzleActions'
 import { ConstraintType, Grid } from 'src/types/sudoku'
-import Input from 'src/shared/Input'
-import Typography from 'src/shared/Typography'
+import Input from 'src/design_system/Input'
+import Typography from 'src/design_system/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
 import GridSizeSelect from './GridSizeSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -29,7 +29,7 @@ import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
 import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
-import { alert } from 'src/shared/ConfirmationDialog';
+import { alert } from 'src/design_system/ConfirmationDialog';
 import { CellHighlight } from '../Puzzle/SudokuGridGraphics';
 import { isGridStep } from 'src/utils/solver';
 import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants';

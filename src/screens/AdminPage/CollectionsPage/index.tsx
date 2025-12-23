@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Button from 'src/shared/Button'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
-import Typography from 'src/shared/Typography'
+import Button from 'src/design_system/Button'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
+import Typography from 'src/design_system/Typography'
 import AddPuzzleCollectionForm from './AddPuzzleCollectionForm'
 import { useDispatch, useSelector } from 'src/hooks'
 import { deletedPuzzleCollection, responsePuzzleCollections } from 'src/reducers/collections'
 import { deletePuzzleCollection, fetchAllCollections } from 'src/utils/apiService'
-import { confirm } from 'src/shared/ConfirmationDialog'
+import { confirm } from 'src/design_system/ConfirmationDialog'
 
 const CollectionsPage = () => {
   const [ loading, setLoading ] = useState(true)

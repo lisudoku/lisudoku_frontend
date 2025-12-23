@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { Form, Field } from 'react-final-form'
 import { FormApi } from 'final-form'
-import Button from 'src/shared/Button'
+import Button from 'src/design_system/Button'
 import { useDispatch, useSelector } from 'src/hooks'
 import { createdCompetition } from 'src/reducers/competitions'
 import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { CompetitionInput, createCompetition } from 'src/utils/apiService'
-import Input from 'src/shared/Input'
+import Input from 'src/design_system/Input'
 
 const AddCompetitionForm = () => {
   const dispatch = useDispatch()

@@ -1,6 +1,6 @@
 import { formatISO9075, parseISO } from 'date-fns/esm'
 import { Link } from 'react-router-dom'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import { UserSolution } from 'src/types'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'

@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'src/hooks'
 import { Form, Field } from 'react-final-form'
 import { FORM_ERROR } from 'final-form'
-import Button from 'src/shared/Button'
-import LoadingSpinner from 'src/shared/LoadingSpinner'
-import Input from 'src/shared/Input'
+import Button from 'src/design_system/Button'
+import LoadingSpinner from 'src/design_system/LoadingSpinner'
+import Input from 'src/design_system/Input'
 import { PuzzleCollection } from 'src/types'
 import {
   apiUpdatePuzzleCollection, fetchPuzzleCollection, PuzzleCollectionInput,

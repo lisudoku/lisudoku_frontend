@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
-import Button from 'src/shared/Button'
-import Input from 'src/shared/Input'
+import Button from 'src/design_system/Button'
+import Input from 'src/design_system/Input'
 import {
   changeAuthor,
   changeDifficulty, changeSourceCollectionId, clearBruteSolution, clearLogicalSolution,
@@ -19,7 +19,7 @@ import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
 import { detectConstraints } from 'src/utils/sudoku'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'

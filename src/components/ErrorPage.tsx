@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 
 const ErrorPage = ({ children = <>Something went wrong</> }: { children?: ReactNode }) => (
   <div className="w-full pt-20 text-center">

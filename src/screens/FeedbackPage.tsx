@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react'
-import Button from 'src/shared/Button'
+import Button from 'src/design_system/Button'
 import PageMeta from 'src/components/PageMeta'
-import Textarea from 'src/shared/Textarea'
+import Textarea from 'src/design_system/Textarea'
 import ErrorPage from 'src/components/ErrorPage'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { useSelector } from 'src/hooks'
-import Input from 'src/shared/Input'
-import { alert } from 'src/shared/ConfirmationDialog'
+import Input from 'src/design_system/Input'
+import { alert } from 'src/design_system/ConfirmationDialog'
 
 const FeedbackPage = () => {
   const [feedback, setFeedback] = useState('')

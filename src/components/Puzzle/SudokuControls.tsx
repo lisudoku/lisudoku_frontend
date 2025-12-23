@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser } from '@fortawesome/free-solid-svg-icons'
-import Button from '../../shared/Button'
+import Button from '../../design_system/Button'
 import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
@@ -10,7 +10,7 @@ import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
 import SolveStatsPanel from './SolveStatsPanel'
 import VoicePanel from '../voice/VoicePanel'
-import { confirm } from 'src/shared/ConfirmationDialog'
+import { confirm } from 'src/design_system/ConfirmationDialog'
 
 const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
   const dispatch = useDispatch()

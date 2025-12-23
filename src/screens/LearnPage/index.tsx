@@ -1,7 +1,7 @@
 import { map } from 'lodash-es'
 import { useLocation } from 'react-router-dom'
 import TechniqueCard from './TechniqueCard'
-import Typography from 'src/shared/Typography'
+import Typography from 'src/design_system/Typography'
 import PageMeta from 'src/components/PageMeta'
 import { TECHNIQUES_BY_DIFFICULTY } from './techniques'
 import { Technique } from './types'

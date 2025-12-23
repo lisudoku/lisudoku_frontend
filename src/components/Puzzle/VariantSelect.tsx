@@ -1,5 +1,5 @@
 import { values } from 'lodash-es'
-import { Select, Option } from '../../shared/Select'
+import { Select, Option } from '../../design_system/Select'
 import { SudokuVariant } from 'src/types/sudoku'
 import { ACTIVE_VARIANTS, SudokuVariantDisplay } from 'src/utils/constants'
 

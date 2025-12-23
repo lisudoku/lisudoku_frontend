@@ -1,8 +1,8 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
 import { useCallback, useMemo, useState } from 'react';
-import Button from 'src/shared/Button';
-import Input from 'src/shared/Input';
-import Radio from 'src/shared/Radio';
+import Button from 'src/design_system/Button';
+import Input from 'src/design_system/Input';
+import Radio from 'src/design_system/Radio';
 import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';

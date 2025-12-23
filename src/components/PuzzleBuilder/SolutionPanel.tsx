@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import Alert from '../../shared/Alert'
+import Alert from '../../design_system/Alert'
 
 const CloseButton = ({ onClick }: { onClick?: () => void }) => (
   <div onClick={onClick} className="font-light text-xs cursor-pointer self-center">Clear</div>
