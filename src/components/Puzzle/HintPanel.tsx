@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import Alert from '../../design_system/Alert'
 import Tooltip from '../../design_system/Tooltip'
@@ -8,6 +8,7 @@ import { faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
 import { computeHintContent } from 'src/utils/solver'
 import { scrollToTop } from 'src/utils/misc'
+import { honeybadger } from 'src/components/HoneybadgerProvider'
 
 const useComputeHintElement = () => {
   const dispatch = useDispatch()
@@ -19,11 +20,7 @@ const useComputeHintElement = () => {
   const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
   const publicId = useSelector(state => state.puzzle.data?.publicId)
   const grid = useSelector(state => state.puzzle.grid)
-  const context = useMemo(() => ({
-    isExternal,
-    publicId,
-    grid,
-  }), [isExternal, publicId, grid])
+  const actions = useSelector(state => state.puzzle.controls.actions)
 
   const handleBigHintClick = useCallback(() => {
     dispatch(changeHintLevel(HintLevel.Big))
@@ -31,10 +28,24 @@ const useComputeHintElement = () => {
 
   const [ message, filteredSteps, error ] = useMemo(
     () => gridSize === undefined ? [] : computeHintContent(
-      solution, hintLevel!, cellMarks, gridSize, isExternal, context
+      solution, hintLevel!, cellMarks, gridSize, isExternal
     ),
-    [solution, hintLevel, cellMarks, gridSize, isExternal, context]
+    [solution, hintLevel, cellMarks, gridSize, isExternal]
   )
+
+  const context = useMemo(() => ({
+    isExternal,
+    publicId,
+    grid,
+  }), [isExternal, publicId, grid])
+
+  const isAtPuzzleBeginning = actions.length < 3
+  useEffect(() => {
+    honeybadger.notify({
+      name: isAtPuzzleBeginning ? 'No hint at puzzle beginning!' : 'No hint',
+      context,
+    })
+  }, [context, isAtPuzzleBeginning])
 
   if (solution === null) {
     return <></>

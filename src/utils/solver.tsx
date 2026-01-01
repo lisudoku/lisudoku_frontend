@@ -5,7 +5,6 @@ import { CellMarks, Grid } from 'src/types/sudoku'
 import { GRID_STEPS, StepRuleDisplay } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
 import { Area, CellPosition, FixedNumber, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 
@@ -243,17 +242,10 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
 
 export const isGridStep = (step: SolutionStep) => GRID_STEPS.includes(step.rule)
 
-const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean, context: object) => {
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean) => {
   const singleIndex = steps.findIndex(isGridStep)
 
   if (singleIndex === -1) {
-    honeybadger.notify({
-      name: 'No hint',
-      context: {
-        steps,
-        ...context
-      },
-    })
     let message
     if (isExternal) {
       message = <>
@@ -303,7 +295,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
 
 export const computeHintContent = (
   solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, cellMarks: CellMarks[][],
-  gridSize: number, isExternal: boolean, context: object,
+  gridSize: number, isExternal: boolean,
 ) => {
   if (!solution) {
     return [ '', false ]
@@ -319,7 +311,7 @@ export const computeHintContent = (
   const steps = solution.steps!.filter(step => !isRedundantStep(step, cellMarks));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
-  const [ message, error ] = computeHintText(steps, hintLevel, gridSize, isExternal, context)
+  const [ message, error ] = computeHintText(steps, hintLevel, gridSize, isExternal)
 
   return [ message, filteredSteps, error ]
 }
