@@ -24,12 +24,13 @@ const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const cellSize = 90 / Math.sqrt(gridSize)
 
   const id = puzzle.id!
+  const publicId = puzzle.publicId!
   const handleDelete = useCallback(async () => {
-    if (await confirm(`Are you sure you want to delete puzzle ${id} ?`)) {
+    if (await confirm(`Are you sure you want to delete puzzle #${id} (${publicId})?`)) {
       dispatch(deletePuzzle(id))
       apiDeletePuzzle(id, userToken!).catch(() => alert('Error'))
     }
-  }, [dispatch, id, userToken])
+  }, [dispatch, id, publicId, userToken])
 
   return (
     <div className="flex flex-col items-center text-primary">
