@@ -26,7 +26,7 @@ const useComputeHintElement = () => {
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
-  const [ message, filteredSteps, error ] = useMemo(
+  const [ hintMessage, filteredSteps, hintError ] = useMemo(
     () => gridSize === undefined ? [] : computeHintContent(
       solution, hintLevel!, cellMarks, gridSize, isExternal
     ),
@@ -41,11 +41,14 @@ const useComputeHintElement = () => {
 
   const isAtPuzzleBeginning = actions.length < 3
   useEffect(() => {
+    if (!hintError) {
+      return
+    }
     honeybadger.notify({
       name: isAtPuzzleBeginning ? 'No hint at puzzle beginning!' : 'No hint',
       context,
     })
-  }, [context, isAtPuzzleBeginning])
+  }, [hintError, context, isAtPuzzleBeginning])
 
   if (solution === null) {
     return <></>
@@ -55,7 +58,7 @@ const useComputeHintElement = () => {
     <>
       <Typography variant="h3" className="pb-2 text-primary">
         {hintLevel !== null ? `${hintLevel} hint` : 'Hint'}{' '}
-        {filteredSteps && !error && (
+        {filteredSteps && !hintError && (
           <span className="relative top-[1px]">
             <Tooltip content="Some steps were removed assuming your pencil marks are correct" placement="bottom">
               <FontAwesomeIcon icon={faCircleExclamation} size="xs" color="yellow" />
@@ -64,8 +67,8 @@ const useComputeHintElement = () => {
         )}
       </Typography>
       <div className="antialiased font-sans text-sm font-light leading-normal text-primary">
-        <span>{message}</span>
-        {!error && (
+        <span>{hintMessage}</span>
+        {!hintError && (
           <>
             <p className="mt-3 pb-2 text-xs"><em>Click on each technique to learn how to apply them.</em></p>
             {hintLevel === HintLevel.Small && solution.solutionType !== 'None' && (

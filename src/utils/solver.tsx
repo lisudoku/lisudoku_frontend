@@ -261,12 +261,12 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
         We received a notification and will fix it.
       </>
     }
-    return [ message, true ]
+    return [ message, true ] as const
   }
 
   if (singleIndex === 0) {
     const step = steps[0]
-    return [ <>There is a <span>{getStepDescription(step, hintLevel, gridSize)}</span>.</>, false ]
+    return [ <>There is a <span>{getStepDescription(step, hintLevel, gridSize)}</span>.</>, false ] as const
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)
@@ -290,7 +290,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
     <p className="mt-2">Finally, there is a <span>{getStepDescription(lastStep, hintLevel, gridSize)}</span>.</p>
   </>
 
-  return [ message, false ]
+  return [ message, false ] as const
 }
 
 export const computeHintContent = (
@@ -298,14 +298,14 @@ export const computeHintContent = (
   gridSize: number, isExternal: boolean,
 ) => {
   if (!solution) {
-    return [ '', false ]
+    return [ '', false, false ] as const
   }
   if (solution.solutionType === 'None') {
     return [
       "You're on the wrong track 😳 You made a mistake somewhere along the way 😞",
       false,
       true,
-    ]
+    ] as const
   }
 
   const steps = solution.steps!.filter(step => !isRedundantStep(step, cellMarks));
@@ -313,5 +313,5 @@ export const computeHintContent = (
 
   const [ message, error ] = computeHintText(steps, hintLevel, gridSize, isExternal)
 
-  return [ message, filteredSteps, error ]
+  return [ message, filteredSteps, error ] as const
 }
