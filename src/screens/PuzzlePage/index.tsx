@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { parseISO, differenceInSeconds } from 'date-fns'
@@ -16,7 +17,7 @@ const PuzzlePage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [ error, setError ] = useState(false)
+  const [ errorCode, setErrorCode ] = useState<number | null>(null)
   const [ pageLoading, setPageLoading ] = useState(true)
   const [ puzzleLoading, setPuzzleLoading ] = useState(false)
 
@@ -30,7 +31,7 @@ const PuzzlePage = () => {
   const persistedDifficulty = puzzleData?.difficulty
 
   useEffect(() => {
-    if (puzzleLoading || error) {
+    if (puzzleLoading || errorCode) {
       return
     }
     // Note: external puzzles will have an undefined id, so no issues
@@ -41,14 +42,14 @@ const PuzzlePage = () => {
       fetchPuzzleByPublicId(id!, userToken).then(data => {
         dispatch(receivedPuzzle(data))
         dispatch(updateDifficulty(data.difficulty))
-      }).catch(() => {
-        setError(true)
+      }).catch((error: AxiosError) => {
+        setErrorCode(error.response?.status ?? 500)
       }).finally(() => {
         setPuzzleLoading(false)
       })
     }
     setPageLoading(false)
-  }, [dispatch, userToken, id, persistedId, puzzleLoading, error, solved, lastUpdate])
+  }, [dispatch, userToken, id, persistedId, puzzleLoading, errorCode, solved, lastUpdate])
 
   const previousRefreshKey = useRef(refreshKey)
   useEffect(() => {
@@ -63,8 +64,10 @@ const PuzzlePage = () => {
       <PageMeta title={`Puzzle ${id}`}
                 url={`https://lisudoku.xyz/p/${id}`}
                 description="Solve a specific puzzle" />
-      {error ? (
-        <ErrorPage />
+      {errorCode ? (
+        <ErrorPage>
+          {errorCode === 404 ? 'Puzzle not found' : undefined}
+        </ErrorPage>
       ) : (pageLoading || puzzleLoading || !puzzleData) ? (
         <LoadingSpinner fullPage />
       ) : (
