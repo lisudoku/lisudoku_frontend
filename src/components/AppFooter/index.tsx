@@ -80,15 +80,15 @@ const AppFooter = () => (
       </div>
     </div>
     <div className="flex justify-center gap-3 text-xs">
-      <div>
+      <div className="text-center">
         App version: <span>{__APP_VERSION__}</span>
       </div>
       <div className="text-gray-600">|</div>
-      <div>
+      <div className="text-center">
         Solver version: <span>{__SOLVER_VERSION__}</span>
       </div>
       <div className="text-gray-600">|</div>
-      <div>
+      <div className="text-center">
         Sudoku formats version: <span>{__SUDOKU_FORMATS_VERSION__}</span>
       </div>
     </div>
