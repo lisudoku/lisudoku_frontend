@@ -591,9 +591,11 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
 }
 
 // TODO: this is also a duplicate between wasm and js
-// TODO: use an exhaustive switch, maybe once I add a linter (not handling 'Grid' and 'Adhoc' atm)
+// TODO: either use wasm version or refactor to use lookup functions
 export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPosition[] => {
-  if (area === 'PrimaryDiagonal') {
+  if (area === 'Grid') {
+    return getAllCells(constraints.gridSize)
+  } else if (area === 'PrimaryDiagonal') {
     return times(constraints.gridSize, idx => ({
       row: idx,
       col: idx,
@@ -606,7 +608,8 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
   }
 
   if (typeof area !== 'object') {
-    return []
+    const _exhaustive: never = area
+    return _exhaustive
   }
 
   if ('Row' in area) {
@@ -627,6 +630,8 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
       } else {
         return constraints.extraRegions![area.Region - constraints.regions.length]
       }
+    } else {
+      throw Error('no regions in constraints')
     }
   } else if ('Cell' in area) {
     return [{
@@ -635,9 +640,30 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
     }]
   } else if ('Palindrome' in area) {
     return constraints.palindromes?.[area.Palindrome] ?? []
+  } else if ('Thermo' in area) {
+    return constraints.thermos?.[area.Thermo] ?? []
+  } else if ('Arrow' in area) {
+    if (constraints.arrows === undefined) {
+      throw Error('no arrows in constraints')
+    }
+    const arrow = constraints.arrows[area.Arrow]
+    return [...arrow.arrowCells, ...arrow.circleCells]
+  } else if ('Renban' in area) {
+    return constraints.renbans?.[area.Renban] ?? []
+  } else if ('KropkiDot' in area) {
+    if (constraints.kropkiDots === undefined) {
+      throw Error('no kropki dots in constraints')
+    }
+    const kropkiDot = constraints.kropkiDots[area.KropkiDot]
+    return [kropkiDot.cell1, kropkiDot.cell2]
+  } else if ('KillerCage' in area) {
+    return constraints.killerCages?.[area.KillerCage].region ?? []
+  } else if ('Adhoc' in area) {
+    return area.Adhoc
   }
 
-  return []
+  const _exhaustive: never = area
+  return _exhaustive
 }
 
 export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition): CellPosition[] => {
