@@ -50,11 +50,11 @@ export const SudokuControls = ({ isSolvedLoading }: SudokuControlsProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-2 md:gap-4">
+    <div className="flex flex-col gap-2 md:gap-4 mt-3 md:mt-0">
       <div className="relative flex flex-col gap-2 md:gap-4">
         <SolveStatsPanel />
         <VoicePanel />
-        <div className="w-full md:w-64 mt-3 mb-3 md:my-0">
+        <div className="w-full md:w-64 mb-3 md:my-0">
           <SudokuDigitInput
             gridSize={gridSize}
             disabled={!controlEnabled}
