@@ -4,11 +4,12 @@ import classNames from 'classnames'
 import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { getAllCells } from 'src/utils/sudoku'
-import { useGridErrors, useFixedNumbersGrid } from './hooks'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
 import { CornerMarksGraphics, CellCornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
 import PalindromesGraphics from './SudokuGridGraphics/PalindromesGraphics'
+import { useGridErrors } from './hooks/useGridErrors'
+import { useFixedNumbersGrid } from './hooks/useFixedNumbersGrid'
 
 export type CellHighlight = {
   position: CellPosition

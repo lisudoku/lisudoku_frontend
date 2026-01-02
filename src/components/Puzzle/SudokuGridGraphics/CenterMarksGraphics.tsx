@@ -3,8 +3,8 @@ import { isEmpty, sortBy } from 'lodash-es'
 import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { CellMarkSets } from 'src/utils/sudoku'
-import { useCellMarkErrors } from '../hooks'
 import { SudokuConstraints } from 'lisudoku-solver'
+import { useCellMarkErrors } from '../hooks/useCellMarkErrors'
 
 const computeCenterMarksFontSize = (cellSize: number, markCount: number): number => {
   // markCount * fontWidth = cellSize - padding

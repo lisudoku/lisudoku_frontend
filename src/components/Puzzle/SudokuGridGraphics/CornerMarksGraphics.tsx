@@ -3,8 +3,8 @@ import { isEmpty, sortBy } from 'lodash-es'
 import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { CellMarkSets } from 'src/utils/sudoku'
-import { useCellMarkErrors } from '../hooks'
 import { SudokuConstraints } from 'lisudoku-solver'
+import { useCellMarkErrors } from '../hooks/useCellMarkErrors'
 
 const CORNER_POSITIONS = [ 1, 3, 7, 9, 2, 8, 4, 6, 5 ]
 

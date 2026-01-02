@@ -1,18 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRotateLeft, faArrowRotateRight, faDeleteLeft, faEraser } from '@fortawesome/free-solid-svg-icons'
 import Button from '../../design_system/Button'
-import { useControlCallbacks, useKeyboardHandler } from './hooks'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import SolveTimer from './SolveTimer'
+import { SolveTimer } from './SolveTimer'
 import { changePaused, InputMode } from 'src/reducers/puzzle'
 import HintButton from './HintButton'
 import SudokuDigitInput from './SudokuDigitInput'
 import SolveStatsPanel from './SolveStatsPanel'
 import VoicePanel from '../voice/VoicePanel'
 import { confirm } from 'src/design_system/ConfirmationDialog'
+import { useControlCallbacks } from './hooks/useControlCallbacks'
+import { useKeyboardHandler } from './hooks/useKeyboardHandler'
 
-const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuControlsProps) => {
+interface SudokuControlsProps {
+  isSolvedLoading: boolean
+}
+
+export const SudokuControls = ({ isSolvedLoading }: SudokuControlsProps) => {
   const dispatch = useDispatch()
   const isExternal = useSelector(state => state.puzzle.data?.isExternal)
   const constraints = useSelector(state => state.puzzle.data?.constraints)
@@ -49,7 +54,7 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
       <div className="relative flex flex-col gap-2 md:gap-4">
         <SolveStatsPanel />
         <VoicePanel />
-        <div className="w-full md:w-64 mt-2 md:mt-0">
+        <div className="w-full md:w-64 mt-3 mb-3 md:my-0">
           <SudokuDigitInput
             gridSize={gridSize}
             disabled={!controlEnabled}
@@ -57,77 +62,81 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
           />
         </div>
         <div className="flex gap-1 justify-between md:justify-center">
-          <Button color={inputMode === InputMode.Numbers ? 'green' : 'blue-gray'}
-                  disabled={!controlEnabled}
-                  onClick={onNumbersActive}
-                  className="grow shrink basis-0 py-0 text-xl"
-                  title="Digits"
+          <Button
+            color="blue-gray"
+            size="sm"
+            disabled={!controlEnabled}
+            onClick={() => {
+              ({
+                [InputMode.Numbers]: onCornerMarksActive,
+                [InputMode.CornerMarks]: onCenterMarksActive,
+                [InputMode.CenterMarks]: onNumbersActive,
+              })[inputMode]()
+            }}
+            className="grow shrink basis-0 py-1 text-xl"
+            title="Input mode"
           >
-            #
-          </Button>
-          <Button color={inputMode === InputMode.CornerMarks ? 'green' : 'blue-gray'}
-                  disabled={!controlEnabled}
-                  onClick={onCornerMarksActive}
-                  className="grow shrink basis-0 py-1"
-                  title="Corner pencilmarks"
-          >
-            <div className="relative h-full">
-              <div className="absolute top-0 left-1/3 md:left-1/4">1</div>
-              <div className="absolute top-0 right-1/3 md:right-1/4">2</div>
-              <div className="absolute bottom-0 left-1/3 md:left-1/4">3</div>
+            <div className="size-8 mx-auto border-2 border-primary">
+              {inputMode === InputMode.Numbers ? (
+                <div className="text-2xl/[inherit]">7</div>
+              ) : inputMode === InputMode.CornerMarks ? (
+                <div className="relative h-full text-xs">
+                  <div className="absolute top-0 left-[2px]">1</div>
+                  <div className="absolute top-0 right-[2px]">2</div>
+                  <div className="absolute bottom-0 left-[2px]">3</div>
+                </div>
+              ) : (
+                <div className="text-base/[inherit]">123</div>
+              )}
             </div>
           </Button>
-          <Button color={inputMode === InputMode.CenterMarks ? 'green' : 'blue-gray'}
-                  disabled={!controlEnabled}
-                  onClick={onCenterMarksActive}
-                  className="grow shrink basis-0 text-lg"
-                  title="Center pencilmarks"
-          >
-            123
-          </Button>
-        </div>
-        <div className="flex gap-1 justify-between md:justify-center">
-          <Button color="blue-gray"
-                  size="md"
-                  disabled={!controlEnabled}
-                  onClick={handleDelete}
-                  className="grow shrink basis-0"
-                  title="Delete"
+          <Button
+            color="blue-gray"
+            size="sm"
+            disabled={!controlEnabled}
+            onClick={handleDelete}
+            className="grow shrink basis-0"
+            title="Delete"
           >
             <FontAwesomeIcon icon={faDeleteLeft} />
           </Button>
-          <Button color="blue-gray"
-                  size="md"
-                  disabled={!controlEnabled || !undoActive}
-                  onClick={onUndo}
-                  className="grow shrink basis-0"
-                  title="Undo"
+          <Button
+            color="blue-gray"
+            size="sm"
+            disabled={!controlEnabled || !undoActive}
+            onClick={onUndo}
+            className="grow shrink basis-0"
+            title="Undo"
           >
             <FontAwesomeIcon icon={faArrowRotateLeft} />
           </Button>
-          <Button color="blue-gray"
-                  size="md"
-                  disabled={!controlEnabled || !redoActive}
-                  onClick={onRedo}
-                  className="grow shrink basis-0"
-                  title="Redo"
+          <Button
+            color="blue-gray"
+            size="sm"
+            disabled={!controlEnabled || !redoActive}
+            onClick={onRedo}
+            className="grow shrink basis-0"
+            title="Redo"
           >
             <FontAwesomeIcon icon={faArrowRotateRight} />
           </Button>
-          <Button color="blue-gray"
-                  size="md"
-                  disabled={!controlEnabled}
-                  onClick={handleReset}
-                  className="grow shrink basis-0"
-                  title="Reset"
+          {/* TODO: Removed full reset for now, revisit later */}
+          {/* <Button
+            color="blue-gray"
+            size="sm"
+            disabled={!controlEnabled}
+            onClick={handleReset}
+            className="grow shrink basis-0 hidden md:block"
+            title="Reset"
           >
             <FontAwesomeIcon icon={faEraser} />
-          </Button>
+          </Button> */}
         </div>
       </div>
       <div className="w-full flex flex-col gap-2">
-        <SolveTimer isSolvedLoading={isSolvedLoading}
-                    onIsSolvedLoadingChange={onIsSolvedLoadingChange} />
+        <div className="hidden md:flex w-full rounded border border-primary px-3 py-1 justify-center select-none">
+          <SolveTimer />
+        </div>
         {!isExternal && (
           <>
             <HintButton />
@@ -144,10 +153,3 @@ const SudokuControls = ({ isSolvedLoading, onIsSolvedLoadingChange }: SudokuCont
     </div>
   )
 }
-
-type SudokuControlsProps = {
-  isSolvedLoading: boolean
-  onIsSolvedLoadingChange: Function
-}
-
-export default SudokuControls
