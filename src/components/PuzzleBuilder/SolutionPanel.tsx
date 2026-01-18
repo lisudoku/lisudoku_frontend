@@ -1,20 +1,24 @@
-import { ReactElement } from 'react'
-import Alert from '../../design_system/Alert'
+import { ReactNode } from 'react'
 
 const CloseButton = ({ onClick }: { onClick?: () => void }) => (
-  <div onClick={onClick} className="font-light text-xs cursor-pointer self-center">Clear</div>
+  <div onClick={onClick} className="font-light text-xs cursor-pointer">Clear</div>
 )
 
 const SolutionPanel = ({ children, className, onClear }: SolutionPanelProps) => (
-  <Alert open
-         className={`rounded py-2 text-primary ${className ?? ''}`}
-         action={onClear && <CloseButton onClick={onClear} />}>
-    {children}
-  </Alert>
+  <div className={`rounded text-primary min-h-10 bg-tertiary justify-between flex flex-col ${className ?? ''}`}>
+    <div className="flex-1 overflow-y-auto pl-3 py-2">
+      {children}
+    </div>
+    {onClear && (
+      <div className="flex items-center justify-center bg-secondary/50 shrink-0 h-[30px]">
+        <CloseButton onClick={onClear} />
+      </div>
+    )}
+  </div>
 )
 
 type SolutionPanelProps = {
-  children: ReactElement | string
+  children: ReactNode
   className?: string
   onClear?: () => void
 }

@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { cloneDeep, inRange } from 'lodash-es'
 import classNames from 'classnames'
 import { useScreenshot, createFileName } from 'use-react-screenshot';
+import { SudokuConstraints, SolutionStep } from 'lisudoku-solver';
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
@@ -14,7 +15,7 @@ import Radio from 'src/design_system/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/design_system/Button'
 import PuzzleActions from './PuzzleActions'
-import { ConstraintType, Grid } from 'src/types/sudoku'
+import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import Input from 'src/design_system/Input'
 import Typography from 'src/design_system/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
@@ -23,73 +24,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
-import { defaultConstraints, detectConstraints, ensureDefaultRegions, getAllCells, getAreaCells } from 'src/utils/sudoku';
+import { defaultConstraints, detectConstraints, ensureDefaultRegions } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
 import ImportImageModal from './ImportImageModal';
 import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
 import { alert } from 'src/design_system/ConfirmationDialog';
-import { CellHighlight } from '../Puzzle/SudokuGridGraphics';
-import { isGridStep } from 'src/utils/solver';
-import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants';
-import { SudokuLogicalSolveResult, CellPosition, SudokuConstraints } from 'lisudoku-solver';
+import { useSolutionCellHighlights } from './hooks/useSolutionCellHighlights';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
   a.href = image
   a.download = createFileName(extension, name)
   a.click()
-}
-
-const StepRuleDifficultyColor: { [key in EStepRuleDifficulty]: string } = {
-  [EStepRuleDifficulty.Easy]: 'green',
-  [EStepRuleDifficulty.Medium]: 'yellow',
-  [EStepRuleDifficulty.Hard]: 'red',
-}
-
-const getSolutionHighlightedCells = (
-  logicalSolution: SudokuLogicalSolveResult | null,
-  constraints: SudokuConstraints,
-  showSolutionDifficultyHeatmap: boolean,
-): CellHighlight[] | undefined => {
-  if (logicalSolution === null) {
-    return undefined
-  }
-
-  if (logicalSolution.solutionType === 'None' && logicalSolution.invalidStateReason) {
-    return getAreaCells(logicalSolution.invalidStateReason.area, constraints).map((areaCell: CellPosition) => ({
-      position: areaCell,
-      color: 'red',
-    }))
-  }
-
-  if (constraints.gridSize === undefined || logicalSolution.solutionType === 'None' || logicalSolution.steps === undefined || !showSolutionDifficultyHeatmap) {
-    return undefined
-  }
-
-  const cellDifficulties: (EStepRuleDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
-  for (const step of logicalSolution.steps) {
-    const difficulty = StepRuleDifficulty[step.rule]
-    const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affectedCells
-    for (const cell of relevantCells) {
-      cellDifficulties[cell.row][cell.col] = Math.max(cellDifficulties[cell.row][cell.col], difficulty)
-    }
-  }
-
-  const highlightedCells: CellHighlight[] | undefined = []
-  for (const cell of getAllCells(constraints.gridSize)) {
-    const difficulty = cellDifficulties[cell.row][cell.col]
-    if (difficulty === -1) {
-      continue
-    }
-    const color = StepRuleDifficultyColor[difficulty]
-    highlightedCells.push({
-      position: cell,
-      color,
-    })
-  }
-  return highlightedCells
 }
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
@@ -184,6 +132,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const killerSum = useSelector(state => state.builder.killerSum ?? '')
   const bruteSolution = useSelector(state => state.builder.bruteSolution)
   const logicalSolution = useSelector(state => state.builder.logicalSolution)
+  const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
@@ -193,6 +142,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   }, [gridSize, setterMode])
 
   const { onCellClick } = useControlCallbacks()
+
   useKeyboardHandler(!inputActive && !importOpen && !importImageOpen)
 
   const handleInputFocus = useCallback(() => {
@@ -257,27 +207,42 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     }, 1)
   }, [dispatch, takeScreenShot, gridWrapperRef])
 
-  // Visualize solutions while building the puzzle
-  const solution = bruteSolution?.solution !== undefined ? bruteSolution : logicalSolution
-  const usedMarks = useMemo(() => {
-    let marks = cloneDeep(cellMarks!)
-    if (solution) {
-      solution?.solution?.forEach((solutionRow, rowIndex) => {
-        solutionRow.forEach((digit, colIndex) => {
-          if (digit !== null && digit !== 0) {
-            marks[rowIndex][colIndex].centerMarks = [digit]
-          }
-        })
-      })
+  let grid: Grid | undefined = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+  let usedMarks: CellMarks[][] | undefined
+
+  // Always prioritize logical solution (or specify why otherwise)
+  if (logicalSolution !== null && logicalSolutionStepIndex !== null) {
+    let selectedStep: SolutionStep | undefined
+    if (logicalSolutionStepIndex === logicalSolution.steps.length) {
+      selectedStep = logicalSolution.steps[logicalSolution.steps.length - 1]
+    } else if (logicalSolutionStepIndex !== -1) {
+      selectedStep = logicalSolution.steps[logicalSolutionStepIndex]
     }
-    return marks
-  }, [cellMarks, solution])
+    if (selectedStep !== undefined) {
+      grid = selectedStep.grid
+      usedMarks = selectedStep.candidates?.map(row => row.map(cellCandidates => ({ cornerMarks: cellCandidates })))
+    }
+  } else if (bruteSolution?.solution) {
+    grid = bruteSolution?.solution
+  } else if (cellMarks !== null) {
+    usedMarks = cloneDeep(cellMarks)
+  }
+
+  const cellHighlights = useSolutionCellHighlights({
+    logicalSolution,
+    constraints,
+    showSolutionDifficultyHeatmap,
+    logicalSolutionStepIndex,
+  })
 
   if (!constraints) {
     return null
   }
 
-  const highlightedCells = getSolutionHighlightedCells(logicalSolution, constraints, showSolutionDifficultyHeatmap)
+  const hideSelectedCells = logicalSolution &&
+    logicalSolutionStepIndex !== -1 &&
+    logicalSolutionStepIndex !== logicalSolution.steps.length
+  const displayedSelectedCells = hideSelectedCells ? [] : selectedCells
 
   let thermos = constraints?.thermos ?? []
   if (currentThermo.length > 0) {
@@ -303,9 +268,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     renbans,
     palindromes,
   }
-
-  // Not really used, but SudokuGrid needs them... there are better solutions
-  const grid: Grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
 
   let usedGrid = grid
   if (constraintType === ConstraintType.Regions) {
@@ -338,10 +300,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             constraints={constraintPreview}
             grid={usedGrid}
             cellMarks={usedMarks}
-            selectedCells={selectedCells}
+            selectedCells={displayedSelectedCells}
             checkErrors={constraintType === ConstraintType.FixedNumber}
             onCellClick={onCellClick}
-            highlightedCells={highlightedCells}
+            cellHighlights={cellHighlights}
           />
         </div>
         <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">

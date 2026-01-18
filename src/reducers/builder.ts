@@ -36,6 +36,7 @@ type BuilderState = {
   cellMarks: CellMarks[][] | null
   bruteSolution: SudokuBruteSolveResult | null
   logicalSolution: SudokuLogicalSolveResult | null
+  logicalSolutionStepIndex: number | null
   setterMode: boolean
   bruteSolverRunning: boolean
   logicalSolverRunning: boolean
@@ -125,6 +126,7 @@ export const builderSlice = createSlice({
     bruteSolverRunning: false,
     logicalSolution: null,
     logicalSolverRunning: false,
+    logicalSolutionStepIndex: null,
     setterMode: false,
     sourceName: '',
     sourceUrl: '',
@@ -526,7 +528,12 @@ export const builderSlice = createSlice({
       } else {
         state.logicalSolution = action.payload.solution
         state.logicalSolverRunning = false
+        // Setting index to the extra step after the last real step
+        state.logicalSolutionStepIndex = action.payload.solution.steps.length
       }
+    },
+    changeLogicalSolutionStepIndex(state, action) {
+      state.logicalSolutionStepIndex = action.payload
     },
     errorSolution(state, action) {
       if (action.payload === SolverType.Brute) {
@@ -626,7 +633,7 @@ export const {
   toggleCornerMarksActive, changeSelectedCellCornerMarks,
   changeConstraintValue, changeKillerSum,
   changeInputActive, changeSourceCollectionId, changeSelectedCellConstraint,
-  clearBruteSolution, clearLogicalSolution, changeAuthor,
+  clearBruteSolution, clearLogicalSolution, changeAuthor, changeLogicalSolutionStepIndex,
 } = builderSlice.actions
 
 export default builderSlice.reducer

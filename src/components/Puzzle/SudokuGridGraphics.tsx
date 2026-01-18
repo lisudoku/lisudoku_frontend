@@ -671,7 +671,7 @@ type CellHighlightsProps = {
 
 const SudokuConstraintsGraphics = ({
   cellSize, constraints, cellMarks, grid, checkErrors, selectedCells,
-  onCellClick, highlightedCells, borderHighlightColor,
+  onCellClick, cellHighlights, borderHighlightColor,
 }: SudokuConstraintsGraphicsProps) => {
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
@@ -717,7 +717,7 @@ const SudokuConstraintsGraphics = ({
       <CornerMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
       <CenterMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
       <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
-      <CellHighlights cells={highlightedCells || []} cellSize={cellSize} killerActive={killerActive} />
+      <CellHighlights cells={cellHighlights || []} cellSize={cellSize} killerActive={killerActive} />
     </svg>
   )
 }
@@ -730,7 +730,7 @@ type SudokuConstraintsGraphicsProps = {
   checkErrors: boolean
   selectedCells?: CellPosition[]
   onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
-  highlightedCells?: CellHighlight[]
+  cellHighlights?: CellHighlight[]
   borderHighlightColor?: string
 }
 

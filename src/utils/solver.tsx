@@ -2,11 +2,12 @@ import { difference, flatten, intersection, last, uniqBy, values as _values } fr
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, Grid } from 'src/types/sudoku'
-import { GRID_STEPS, StepRuleDisplay } from './constants'
+import { GRID_STEPS } from './constants'
 import { pluralize } from './misc'
 import { computeFixedNumbersGrid, getAllCells } from './sudoku'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
 import { Area, CellPosition, FixedNumber, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import { StepDescription } from 'src/components/solver/StepDescription'
 
 // Integrates grid contents into constraints' fixed_numbers
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
@@ -100,7 +101,8 @@ const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
   }
 }
 
-const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number): string => {
+// TODO: refactor
+export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number): string => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
   const affectedCells = step.affectedCells.map(cell => cellDisplay(cell)).join(', ')
@@ -180,22 +182,6 @@ const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSiz
   }
 }
 
-export const getStepDescription = (step: SolutionStep, hintLevel: HintLevel, gridSize: number) => {
-  let hint = <b>
-    <ExternalLink url={`/learn#${step.rule}`}>
-      {StepRuleDisplay[step.rule]}
-    </ExternalLink>
-  </b>
-
-  if (hintLevel !== HintLevel.Small) {
-    return <>
-      {hint} {getBigStepExplanation(step, hintLevel, gridSize)}
-    </>
-  }
-
-  return hint
-}
-
 const cellsDoNotContainCandidates = (cells: CellPosition[], values: number[], cellMarks: CellMarks[][]) => (
   cells.every(({ row, col }) => {
     const marks = flatten(_values(cellMarks[row][col]))
@@ -266,7 +252,14 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
 
   if (singleIndex === 0) {
     const step = steps[0]
-    return [ <>There is a <span>{getStepDescription(step, hintLevel, gridSize)}</span>.</>, false ] as const
+    return [
+      <>
+        There is a{' '}
+        <StepDescription step={step} hintLevel={hintLevel} gridSize={gridSize} />
+        .
+      </>,
+      false
+    ] as const
   }
 
   let relevantSteps = steps.slice(0, singleIndex + 1)
@@ -282,12 +275,15 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
     <ul className="list-disc list-inside">
       {candidateSteps.map((step, index) => (
         <li key={index}>
-          {getStepDescription(step, hintLevel, gridSize)}
+          <StepDescription step={step} hintLevel={hintLevel} gridSize={gridSize} />
         </li>
       ))}
     </ul>
 
-    <p className="mt-2">Finally, there is a <span>{getStepDescription(lastStep, hintLevel, gridSize)}</span>.</p>
+    <p className="mt-2">
+      Finally, there is a{' '}
+      <StepDescription step={lastStep} hintLevel={hintLevel} gridSize={gridSize} />
+      .</p>
   </>
 
   return [ message, false ] as const

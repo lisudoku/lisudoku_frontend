@@ -9,7 +9,7 @@ import { useCellSize } from 'src/utils/misc'
 
 const SudokuGrid = ({
   constraints, grid, cellMarks, selectedCells, checkErrors = false, loading, onCellClick,
-  cellSize: propsCellSize, highlightedCells, borderHighlightColor,
+  cellSize: propsCellSize, cellHighlights, borderHighlightColor,
   paused, onUnpause,
 }: SudokuGridProps) => {
   const computedCellSize = useCellSize(constraints.gridSize)
@@ -28,7 +28,7 @@ const SudokuGrid = ({
           checkErrors={checkErrors}
           selectedCells={selectedCells}
           onCellClick={onCellClick}
-          highlightedCells={highlightedCells}
+          cellHighlights={cellHighlights}
           borderHighlightColor={borderHighlightColor}
         />
         {(loading || paused) && (
@@ -62,7 +62,7 @@ export type SudokuGridProps = {
   cellSize?: number
   paused?: boolean
   onUnpause?: Function
-  highlightedCells?: CellHighlight[]
+  cellHighlights?: CellHighlight[]
   borderHighlightColor?: string
 }
 

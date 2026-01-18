@@ -106,7 +106,7 @@ const PuzzleComponent = () => {
           onCellClick={onSelectedCellChange}
           paused={paused}
           onUnpause={handlePauseClick}
-          highlightedCells={cellHighlights}
+          cellHighlights={cellHighlights}
           borderHighlightColor={borderHighlightColor}
         />
       </div>

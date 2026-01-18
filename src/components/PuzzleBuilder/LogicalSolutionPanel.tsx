@@ -1,10 +1,12 @@
+import { useCallback } from 'react'
 import { Rule, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { max, orderBy, sumBy, toPairs } from 'lodash-es'
 import Typography from 'src/design_system/Typography'
 import SolutionPanel from './SolutionPanel'
-import { HintLevel } from 'src/reducers/puzzle'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay, EStepRuleDifficulty } from 'src/utils/constants'
-import { getStepDescription } from 'src/utils/solver'
+import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
+import { useDispatch, useSelector } from 'src/hooks'
+import { changeLogicalSolutionStepIndex } from 'src/reducers/builder'
 
 const groupStepsByType = (steps: SolutionStep[]) => {
   const groups: { [key in Rule]?: number } = {}
@@ -77,6 +79,13 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
 }
 
 const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMode }: LogicalSolutionPanelContentProps) => {
+  const dispatch = useDispatch()
+  const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
+
+  const handleStepClick = useCallback((stepIndex: number) => {
+    dispatch(changeLogicalSolutionStepIndex(stepIndex))
+  }, [dispatch])
+
   if (running) {
     return <Typography variant="paragraph">Running...</Typography>
   }
@@ -87,41 +96,40 @@ const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMod
   return (
     <>
       {solution.solutionType === 'None' ? (
-        <Typography variant="paragraph">There are no solutions 🙁</Typography>
+        <Typography variant="paragraph">
+          This puzzle has no solutions 🙁
+          {solution.steps.length > 0 && ' here is why'}
+        </Typography>
       ) : solution.solutionType === 'Full' ? (
         <Typography variant="paragraph">Found a solution 🎉</Typography>
       ) : (
-        <Typography variant="paragraph">Didn't find a full solution 😢</Typography>
+        <Typography variant="paragraph">Didn't find a full solution, but made some progress</Typography>
       )}
-      {solution.solutionType !== 'None' && (
-        setterMode ? (
-          <>
-            <Typography variant="paragraph">
-              Step count = {solution.steps!.length}
-            </Typography>
-            <ul className="list-disc list-inside">
-              {groupStepsByType(solution.steps!).map(([ rule, count ]) => (
-                <li key={rule} className="font-light">{`${rule} x ${count}`}</li>
-              ))}
-            </ul>
-            <Typography variant="paragraph">
-              Difficutly by rule rank - {estimateDifficultyByRules(solution.steps!)}
-            </Typography>
-            <Typography variant="paragraph">
-              Difficutly by given cells - {estimateDifficultyByConstraints(constraints)}
-            </Typography>
-          </>
-        ) : (
-          <>
-            <ol className="list-decimal list-inside">
-              {solution.steps!.map((step: SolutionStep, index: number) => (
-                <li key={index}>
-                  {getStepDescription(step, HintLevel.Full, constraints.gridSize)}
-                </li>
-              ))}
-            </ol>
-          </>
-        )
+      {setterMode ? (
+        <>
+          <Typography variant="paragraph">
+            Step count = {solution.steps.length}
+          </Typography>
+          <ul className="list-disc list-inside">
+            {groupStepsByType(solution.steps).map(([ rule, count ]) => (
+              <li key={rule} className="font-light">{`${rule} x ${count}`}</li>
+            ))}
+          </ul>
+          <Typography variant="paragraph">
+            Difficutly by rule rank - {estimateDifficultyByRules(solution.steps)}
+          </Typography>
+          <Typography variant="paragraph">
+            Difficutly by given cells - {estimateDifficultyByConstraints(constraints)}
+          </Typography>
+        </>
+      ) : (
+        <LogicalSolutionSteps
+          gridSize={constraints.gridSize}
+          steps={solution.steps}
+          solutionType={solution.solutionType}
+          selectedStepIndex={logicalSolutionStepIndex ?? Infinity}
+          onStepClick={handleStepClick}
+        />
       )}
     </>
   )
@@ -136,11 +144,16 @@ type LogicalSolutionPanelContentProps = {
 
 const LogicalSolutionPanel = ({ solution, constraints, running, setterMode, onClear }: LogicalSolutionPanelProps) => {
   return (
-    <SolutionPanel className="max-h-96" onClear={solution !== null ? onClear : undefined}>
-      <LogicalSolutionPanelContent solution={solution}
-                                   constraints={constraints}
-                                   running={running}
-                                   setterMode={setterMode} />
+    <SolutionPanel
+      className="max-h-96"
+      onClear={solution !== null ? onClear : undefined}
+    >
+      <LogicalSolutionPanelContent
+        solution={solution}
+        constraints={constraints}
+        running={running}
+        setterMode={setterMode}
+      />
     </SolutionPanel>
   )
 }

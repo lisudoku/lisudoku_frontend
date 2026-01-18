@@ -2,7 +2,7 @@ import { SudokuBruteSolveResult } from 'lisudoku-solver'
 import SolutionPanel from './SolutionPanel'
 
 const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelProps) => (
-  <SolutionPanel className="h-10" onClear={solution !== null ? onClear : undefined}>
+  <SolutionPanel onClear={solution !== null ? onClear : undefined}>
     {running ? (
       'Running...'
     ) : solution === null ? (

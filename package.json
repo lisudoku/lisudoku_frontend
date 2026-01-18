@@ -20,7 +20,7 @@
     "date-fns": "^2.29.3",
     "final-form": "^4.20.7",
     "html2canvas": "^1.4.1",
-    "lisudoku-solver": "0.1.29",
+    "lisudoku-solver": "0.1.31",
     "lodash-es": "^4.17.21",
     "lz-string": "^1.4.4",
     "microphone-stream": "^6.0.1",
