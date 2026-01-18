@@ -54,7 +54,7 @@ export const useSolutionCellHighlights = ({
     }))
   }
 
-  let cellDifficultyHighlights: CellHighlight[] | undefined = []
+  let cellDifficultyHighlights: CellHighlight[] = []
   if (
     showSolutionDifficultyHeatmap &&
     logicalSolution !== null &&

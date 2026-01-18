@@ -33,7 +33,7 @@ const TrainerPuzzleComponent = () => {
           grid={grid}
           selectedCells={selectedCells}
           onCellClick={onSelectedCellChange}
-          highlightedCells={cellHighlights}
+          cellHighlights={cellHighlights}
         />
       </div>
       <div className="order-2 md:order-3 w-full md:w-fit md:pl-5">
