@@ -13,6 +13,7 @@ import ShowTimerToggle from './ShowTimerToggle'
 import CheckErrorsToggle from './CheckErrorsToggle'
 import ShowPeersToggle from './ShowPeersToggle'
 import VoiceToggle from './VoiceToggle'
+import { ShowSplitInputModesToggle } from './ShowSplitInputModesToggle'
 
 const SudokuMisc = () => {
   const navigate = useNavigate()
@@ -70,6 +71,9 @@ const SudokuMisc = () => {
           </div>
           <div className="mt-1">
             <VoiceToggle />
+          </div>
+          <div className="mt-1">
+            <ShowSplitInputModesToggle />
           </div>
           {sourceCollectionId && (
             <div className="flex flex-col mt-2 w-full md:w-fit">

@@ -22,6 +22,7 @@ export const SudokuControls = ({ isSolvedLoading }: SudokuControlsProps) => {
   const isExternal = useSelector(state => state.puzzle.data?.isExternal)
   const constraints = useSelector(state => state.puzzle.data?.constraints)
   const solved = useSelector(state => state.puzzle.solved)
+  const showSplitInputModes = useSelector(state => state.userData.settings?.showSplitInputModes ?? false)
   const gridSize = constraints?.gridSize
 
   const {
@@ -61,35 +62,82 @@ export const SudokuControls = ({ isSolvedLoading }: SudokuControlsProps) => {
             onClick={onSelectedCellDigitInput}
           />
         </div>
-        <div className="flex gap-1 justify-between md:justify-center">
-          <Button
-            color="blue-gray"
-            size="sm"
-            disabled={!controlEnabled}
-            onClick={() => {
-              ({
-                [InputMode.Numbers]: onCornerMarksActive,
-                [InputMode.CornerMarks]: onCenterMarksActive,
-                [InputMode.CenterMarks]: onNumbersActive,
-              })[inputMode]()
-            }}
-            className="grow shrink basis-0 py-1 text-xl"
-            title="Input mode"
-          >
-            <div className="size-8 mx-auto border-2 border-primary">
-              {inputMode === InputMode.Numbers ? (
+        {showSplitInputModes && (
+          // TODO: de-duplicate input mode buttons between the 2 setting values
+          <div className="flex gap-1 justify-between md:justify-center h-10">
+            <Button
+              color={inputMode === InputMode.Numbers ? 'green' : 'blue-gray'}
+              size="sm"
+              disabled={!controlEnabled}
+              onClick={onNumbersActive}
+              className="grow shrink basis-0 py-0 text-xl"
+              title="Digits"
+            >
+              <div className="size-8 mx-auto border-2 border-primary">
                 <div className="text-2xl/[inherit]">7</div>
-              ) : inputMode === InputMode.CornerMarks ? (
+              </div>
+            </Button>
+            <Button
+              color={inputMode === InputMode.CornerMarks ? 'green' : 'blue-gray'}
+              size="sm"
+              disabled={!controlEnabled}
+              onClick={onCornerMarksActive}
+              className="grow shrink basis-0 py-0 text-xl"
+              title="Corner pencilmarks"
+            >
+              <div className="size-8 mx-auto border-2 border-primary">
                 <div className="relative h-full text-xs">
                   <div className="absolute top-0 left-[2px]">1</div>
                   <div className="absolute top-0 right-[2px]">2</div>
                   <div className="absolute bottom-0 left-[2px]">3</div>
                 </div>
-              ) : (
+              </div>
+            </Button>
+            <Button
+              color={inputMode === InputMode.CenterMarks ? 'green' : 'blue-gray'}
+              size="sm"
+              disabled={!controlEnabled}
+              onClick={onCenterMarksActive}
+              className="grow shrink basis-0 py-0 text-xl"
+              title="Center pencilmarks"
+            >
+              <div className="size-8 mx-auto border-2 border-primary">
                 <div className="text-base/[inherit]">123</div>
-              )}
-            </div>
-          </Button>
+              </div>
+            </Button>
+          </div>
+        )}
+        <div className="flex gap-1 justify-between md:justify-center">
+          {!showSplitInputModes && (
+            <Button
+              color="blue-gray"
+              size="sm"
+              disabled={!controlEnabled}
+              onClick={() => {
+                ({
+                  [InputMode.Numbers]: onCornerMarksActive,
+                  [InputMode.CornerMarks]: onCenterMarksActive,
+                  [InputMode.CenterMarks]: onNumbersActive,
+                })[inputMode]()
+              }}
+              className="grow shrink basis-0 py-1 text-xl"
+              title="Input mode"
+            >
+              <div className="size-8 mx-auto border-2 border-primary">
+                {inputMode === InputMode.Numbers ? (
+                  <div className="text-2xl/[inherit]">7</div>
+                ) : inputMode === InputMode.CornerMarks ? (
+                  <div className="relative h-full text-xs">
+                    <div className="absolute top-0 left-[2px]">1</div>
+                    <div className="absolute top-0 right-[2px]">2</div>
+                    <div className="absolute bottom-0 left-[2px]">3</div>
+                  </div>
+                ) : (
+                  <div className="text-base/[inherit]">123</div>
+                )}
+              </div>
+            </Button>
+          )}
           <Button
             color="blue-gray"
             size="sm"

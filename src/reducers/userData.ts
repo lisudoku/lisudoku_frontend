@@ -12,6 +12,7 @@ export type UserSettings = {
   showPeers: boolean
   voiceEnabled: boolean
   solutionDifficultyHeatmap: boolean
+  showSplitInputModes: boolean
 }
 
 const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -21,6 +22,7 @@ const DEFAULT_USER_SETTINGS: UserSettings = {
   showPeers: false,
   voiceEnabled: false,
   solutionDifficultyHeatmap: false,
+  showSplitInputModes: false,
 }
 
 type UserDataState = {
@@ -89,6 +91,9 @@ export const userDataSlice = createSlice({
     updateSolutionDifficultyHeatmap(state, action) {
       handleSettingUpdate(state, 'solutionDifficultyHeatmap', action.payload)
     },
+    updateShowSplitInputModes(state, action) {
+      handleSettingUpdate(state, 'showSplitInputModes', action.payload)
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(responseSolved, (state, action) => {
@@ -111,7 +116,7 @@ export const userDataSlice = createSlice({
 export const {
   loginSuccess, clearLoginData, updateDifficulty, receiveActiveCompetitions,
   updateShowTimer, updateCheckErrors, updateTheme, updateShowPeers, updateVoiceEnabled,
-  updateSolutionDifficultyHeatmap,
+  updateSolutionDifficultyHeatmap, updateShowSplitInputModes,
 } = userDataSlice.actions
 
 export default userDataSlice.reducer
