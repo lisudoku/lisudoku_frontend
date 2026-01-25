@@ -129,6 +129,8 @@ const markUpdate = (state: PuzzleState) => {
   state.lastUpdate = formatISO(new Date())
   state.lastUpdateTimer = state.solveTimer
   state.solved = null
+  state.controls.hintSolution = null
+  state.controls.hintLevel = null
 }
 
 const clearUpdate = (state: PuzzleState) => {
@@ -178,9 +180,7 @@ export const puzzleSlice = createSlice({
       state.controls.selectedCells = []
       state.controls.actions = []
       state.controls.actionIndex = -1
-      state.controls.hintSolution = null
       state.controls.lastHintTimer = null
-      state.controls.hintLevel = null
       state.controls.paused = false
       state.controls.inputMode = InputMode.Numbers;
 
@@ -321,6 +321,7 @@ export const puzzleSlice = createSlice({
         state.cellMarks![cell.row][cell.col] = userAction.previousCellMarks[index]
       })
       state.controls.actionIndex--
+      markUpdate(state)
     },
     redoAction(state) {
       if (state.controls.actionIndex + 1 >= state.controls.actions.length) {
@@ -331,6 +332,7 @@ export const puzzleSlice = createSlice({
       const userAction: UserAction = state.controls.actions[actionIndex]
       state.controls.selectedCells = userAction.cells
       performAction(state, userAction)
+      markUpdate(state)
     },
     changeHintSolution(state, action) {
       state.controls.hintSolution = action.payload
