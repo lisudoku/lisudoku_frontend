@@ -27,7 +27,8 @@ export const SolveTimer = () => {
   const solveTimer = useSelector(state => state.puzzle.solveTimer)
   const solved = useSelector(state => state.puzzle.solved)
   const paused = useSelector(state => state.puzzle.controls.paused)
-  const showTimer = useSelector(state => state.userData.settings?.showTimer)
+  // TODO: make proper fix so we don't have to coordinate default values in different places
+  const showTimer = useSelector(state => state.userData.settings?.showTimer ?? true)
 
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(!paused))
