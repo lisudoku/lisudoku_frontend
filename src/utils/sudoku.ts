@@ -5,7 +5,7 @@ import {
   CellMarks, ConstraintType, Grid, SudokuVariant,
 } from 'src/types/sudoku'
 import { CONSTRAINT_TYPE_VARIANTS, GRID_SIZES } from './constants'
-import { Area, CellPosition, FixedNumber, Region, SudokuConstraints } from 'lisudoku-solver'
+import { Area, CellPosition, FixedNumber, KropkiDot, Region, SudokuConstraints } from 'lisudoku-solver'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -484,6 +484,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   }
 
   if (constraints.kropkiNegative) {
+    // TODO: use getKropkiNegativeDots here
     const gridToKropkiDots: CellPosition[][][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
     for (const kropkiDot of constraints.kropkiDots ?? []) {
       const { cell1, cell2 } = kropkiDot
@@ -590,6 +591,36 @@ const getAdjacentPeers = (cell: CellPosition, gridSize: number) => {
   return peers
 }
 
+// TODO: find a cleaner approach instead of copying the solver logic
+// Reference: https://github.com/lisudoku/lisudoku_solver/blob/b6a583d9ce253edd1be4179b9152e4c092d9e0eb/src/solver.rs#L153
+const getKropkiNegativeDots = (area: Area, constraints: SudokuConstraints): KropkiDot[] => {
+  const negativeDots: KropkiDot[] = []
+  const gridSize = constraints.gridSize
+  const gridToKropkiDots: CellPosition[][][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => []))
+  for (const kropkiDot of constraints.kropkiDots ?? []) {
+    const { cell1, cell2 } = kropkiDot
+    gridToKropkiDots[cell1.row][cell1.col].push(cell2)
+    gridToKropkiDots[cell2.row][cell2.col].push(cell1)
+  }
+  const cells = getAllCells(gridSize)
+  for (const cell of cells) {
+    const peers = getAdjacentPeers(cell, gridSize)
+    const dotPeers = gridToKropkiDots[cell.row][cell.col]
+    const negativePeers = differenceWith(peers, dotPeers, isEqual)
+
+    for (const peer of negativePeers) {
+      negativeDots.push({
+        cell1: cell,
+        cell2: peer,
+        dotType: 'Negative',
+      })
+      gridToKropkiDots[cell.row][cell.col].push(peer)
+      gridToKropkiDots[peer.row][peer.col].push(cell)
+    }
+  }
+  return negativeDots
+}
+
 // TODO: this is also a duplicate between wasm and js
 // TODO: either use wasm version or refactor to use lookup functions
 export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPosition[] => {
@@ -655,6 +686,15 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
       throw Error('no kropki dots in constraints')
     }
     const kropkiDot = constraints.kropkiDots[area.KropkiDot]
+    if (area.KropkiDot >= constraints.kropkiDots.length) {
+      if (!constraints.kropkiNegative) {
+        throw Error('Invalid kropki dot index')
+      }
+      let index = area.KropkiDot - constraints.kropkiDots.length
+      const negativeDots = getKropkiNegativeDots(area, constraints)
+      const kropkiDot = negativeDots[index]
+      return [kropkiDot.cell1, kropkiDot.cell2]
+    }
     return [kropkiDot.cell1, kropkiDot.cell2]
   } else if ('KillerCage' in area) {
     return constraints.killerCages?.[area.KillerCage].region ?? []
