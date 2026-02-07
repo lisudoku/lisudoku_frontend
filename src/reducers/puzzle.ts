@@ -138,6 +138,8 @@ const clearUpdate = (state: PuzzleState) => {
   state.lastUpdateTimer = null
   state.solved = null
   state.controls.actions = []
+  state.controls.hintSolution = null
+  state.controls.hintLevel = null
 }
 
 export const puzzleSlice = createSlice({
