@@ -39,7 +39,7 @@ const useComputeHintElement = () => {
     grid,
   }), [isExternal, publicId, grid])
 
-  const isAtPuzzleBeginning = actions.length < 3
+  const isAtPuzzleBeginning = actions.length <= 1
   useEffect(() => {
     if (!hintError) {
       return
