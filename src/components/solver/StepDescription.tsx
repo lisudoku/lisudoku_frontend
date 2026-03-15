@@ -16,7 +16,9 @@ export const StepDescription = (
     {hintLevel !== HintLevel.Small && (
       <>
         {' '}
-        {getBigStepExplanation(step, hintLevel, gridSize)}
+        <span>
+          {getBigStepExplanation(step, hintLevel, gridSize)}
+        </span>
       </>
     )}
   </>
