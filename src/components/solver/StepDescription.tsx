@@ -7,19 +7,17 @@ import ExternalLink from '../ExternalLink';
 export const StepDescription = (
   { step, hintLevel, gridSize }: { step: SolutionStep, hintLevel: HintLevel, gridSize: number }
 ) => (
-  <>
+  <span>
     <b>
       <ExternalLink url={`/learn#${step.rule}`}>
         {StepRuleDisplay[step.rule]}
       </ExternalLink>
     </b>
     {hintLevel !== HintLevel.Small && (
-      <>
+      <span>
         {' '}
-        <span>
-          {getBigStepExplanation(step, hintLevel, gridSize)}
-        </span>
-      </>
+        {getBigStepExplanation(step, hintLevel, gridSize)}
+      </span>
     )}
-  </>
+  </span>
 )
