@@ -29,9 +29,11 @@ const hiddenSingleHighlighter: Highlighter = ({ step: { areas, cells } }) => (
 const techniqueHighlighters: Record<Rule, Highlighter> = {
   // no candidates, single: 2100300000000000
   // with candidates, also pairs: N4IgpgbmB2DCYBsEGcQC4DaoDGB7B6AjADQgBOuA7ugAwC%2BxO%2B6AzKRdWvYyHgWiXJV0AJgZN%2BbIZzEBdUgDMAlgA8wAEwByAVwC2AIzBlUmUAAdcyJQBcluaOgnoArO2FpnDEBACGCbWCi4iAWVrb2jrzMaCJunNzefgEuwaE2dg5oTlxxKaS%2B%2FoFoACyplukRWVH8NLloLF4FyTFlYRmRfC51DflJRaU8aeGZ2bXStI19RK0VI9Vd41yThawzwx3RrouEy8078iAA5mRK6gDKSgBeRQBspLjq6vBIJljzJd3BnTF1njzfxV%2BX2isUWDVkdCAA%3D
-  NakedSingle: ({ step: { cells, areas } }) => [
+  NakedSingle: ({ step: { cells, areas }, constraints }) => [
     cellToCustomGraphicsItem(cells[0]),
-    ...(areas.length > 0 ? [areaToCustomGraphicsItem(areas[0])] : []),
+    // With candidates we get 0 areas, without candidates we get all necessary areas
+    // ...(areas.length > 0 ? areas.map(area => areaToCustomGraphicsItem(area)) : []),
+    ...getUniqueAreasCells(areas, constraints).map(cell => cellToCustomGraphicsItem(cell, 'area')),
   ],
   // 0100000000100000
   HiddenSingle: hiddenSingleHighlighter,
