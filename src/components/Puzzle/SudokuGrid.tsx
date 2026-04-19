@@ -1,15 +1,16 @@
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { useCallback } from 'react'
-import SudokuConstraintsGraphics, { CellHighlight } from './SudokuGridGraphics'
+import SudokuConstraintsGraphics from './SudokuGridGraphics'
 import LoadingSpinner from '../../design_system/LoadingSpinner'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { useCellSize } from 'src/utils/misc'
+import { CustomGraphicsItem } from './SudokuGridGraphics/CustomGraphics/CustomGraphics'
 
 const SudokuGrid = ({
   constraints, grid, cellMarks, selectedCells, checkErrors = false, loading, onCellClick,
-  cellSize: propsCellSize, cellHighlights, borderHighlightColor,
+  cellSize: propsCellSize, customGraphics, borderHighlightColor,
   paused, onUnpause,
 }: SudokuGridProps) => {
   const computedCellSize = useCellSize(constraints.gridSize)
@@ -28,7 +29,7 @@ const SudokuGrid = ({
           checkErrors={checkErrors}
           selectedCells={selectedCells}
           onCellClick={onCellClick}
-          cellHighlights={cellHighlights}
+          customGraphics={customGraphics}
           borderHighlightColor={borderHighlightColor}
         />
         {(loading || paused) && (
@@ -62,7 +63,7 @@ export type SudokuGridProps = {
   cellSize?: number
   paused?: boolean
   onUnpause?: Function
-  cellHighlights?: CellHighlight[]
+  customGraphics?: CustomGraphicsItem[]
   borderHighlightColor?: string
 }
 

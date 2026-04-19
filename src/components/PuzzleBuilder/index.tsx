@@ -31,7 +31,7 @@ import ImportImageModal from './ImportImageModal';
 import ConstraintRadio from './ConstraintRadio';
 import ConstraintCheckbox from './ConstraintCheckbox';
 import { alert } from 'src/design_system/ConfirmationDialog';
-import { useSolutionCellHighlights } from './hooks/useSolutionCellHighlights';
+import { useSolutionCustomGraphics } from './hooks/useSolutionCustomGraphics';
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -228,7 +228,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     usedMarks = cloneDeep(cellMarks)
   }
 
-  const cellHighlights = useSolutionCellHighlights({
+  const customGraphics = useSolutionCustomGraphics({
     logicalSolution,
     constraints,
     showSolutionDifficultyHeatmap,
@@ -303,7 +303,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             selectedCells={displayedSelectedCells}
             checkErrors={constraintType === ConstraintType.FixedNumber}
             onCellClick={onCellClick}
-            cellHighlights={cellHighlights}
+            customGraphics={customGraphics}
           />
         </div>
         <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">

@@ -12,7 +12,7 @@ import { useTimerTick } from './hooks/useTimerTIck'
 import { usePauseOnBlur } from './hooks/usePauseOnBlur'
 import { useCheckSolvedState } from './hooks/useCheckSolvedState'
 import { useTvPlayerWebsocket } from './hooks/useTvPlayerWebsocket'
-import { useCellHighlights } from './hooks/useCellHighlights'
+import { useCustomGraphics } from './hooks/useCustomGraphics'
 import { useControlCallbacks } from './hooks/useControlCallbacks'
 import { PuzzleHeader } from './PuzzleHeader'
 
@@ -48,7 +48,7 @@ const PuzzleComponent = () => {
 
   useTvPlayerWebsocket()
 
-  const cellHighlights = useCellHighlights()
+  const customGraphics = useCustomGraphics()
 
   const handlePauseClick = useCallback(() => {
     dispatch(changePaused(false))
@@ -106,7 +106,7 @@ const PuzzleComponent = () => {
           onCellClick={onSelectedCellChange}
           paused={paused}
           onUnpause={handlePauseClick}
-          cellHighlights={cellHighlights}
+          customGraphics={customGraphics}
           borderHighlightColor={borderHighlightColor}
         />
       </div>

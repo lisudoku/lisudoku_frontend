@@ -11,7 +11,7 @@ export interface HistoryStep extends Required<Pick<SudokuGridProps, 'grid' | 'ce
   isBad: boolean
 }
 
-export const useGridHistory = (gridSize: number, steps: UserSolutionStep[]) => (
+export const useGridHistory = (gridSize: number, steps: UserSolutionStep[]) : HistoryStep[] => (
   useMemo(() => {
     const history: HistoryStep[] = [{
       grid: Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)),

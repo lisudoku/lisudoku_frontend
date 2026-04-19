@@ -6,6 +6,9 @@ const OnlineStatusMonitor = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    if (!import.meta.env.PROD) {
+      return;
+    }
     const handleOnline = () => dispatch(updateIsOnline(true))
     window.addEventListener('online', handleOnline)
     const handleOffline = () => dispatch(updateIsOnline(false))
