@@ -9,6 +9,8 @@ import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puz
 import { computeHintContent } from 'src/utils/solver'
 import { scrollToTop } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import'
+import { gridToFixedNumbers } from 'src/utils/sudoku'
 
 const useComputeHintElement = () => {
   const dispatch = useDispatch()
@@ -16,7 +18,7 @@ const useComputeHintElement = () => {
   const solution = useSelector(state => state.puzzle.controls.hintSolution)
   const hintLevel = useSelector(state => state.puzzle.controls.hintLevel)
   const cellMarks = useSelector(state => state.puzzle.cellMarks!)
-  const gridSize = useSelector(state => state.puzzle.data?.constraints.gridSize)
+  const constraints = useSelector(state => state.puzzle.data?.constraints)
   const isExternal = useSelector(state => !!state.puzzle.data?.isExternal)
   const publicId = useSelector(state => state.puzzle.data?.publicId)
   const grid = useSelector(state => state.puzzle.grid)
@@ -26,6 +28,7 @@ const useComputeHintElement = () => {
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
+  const gridSize = constraints?.gridSize
   const [ hintMessage, filteredSteps, hintError ] = useMemo(
     () => gridSize === undefined ? [] : computeHintContent(
       solution, hintLevel!, cellMarks, gridSize, isExternal
@@ -36,8 +39,13 @@ const useComputeHintElement = () => {
   const context = useMemo(() => ({
     isExternal,
     publicId,
-    grid,
-  }), [isExternal, publicId, grid])
+    puzzle_url: constraints ? exportToLisudokuSolver(constraints) : undefined,
+    puzzle_state_url: constraints ? exportToLisudokuPuzzle({
+      ...constraints,
+      fixedNumbers: grid ? gridToFixedNumbers(grid) : constraints.fixedNumbers,
+    }) : undefined,
+    solution_type: solution?.solutionType,
+  }), [isExternal, publicId, grid, constraints, solution])
 
   const isAtPuzzleBeginning = actions.length <= 1
   useEffect(() => {
