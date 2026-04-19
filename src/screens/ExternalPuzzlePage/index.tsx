@@ -69,7 +69,7 @@ const ExternalPuzzlePage = () => {
                 description="Solve an external puzzle" />
       {error ? (
         <ErrorPage />
-      ) : (puzzleLoading) ? (
+      ) : puzzleLoading ? (
         <LoadingSpinner fullPage />
       ) : (
         <Puzzle />

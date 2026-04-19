@@ -4,13 +4,14 @@ import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
 interface PuzzleHeaderProps {
   variant: SudokuVariant
-  difficulty: SudokuDifficulty
+  difficulty?: SudokuDifficulty
 }
 
 export const PuzzleHeader = ({ variant, difficulty }: PuzzleHeaderProps) => (
   <div className="md:hidden pb-1 flex justify-between">
     <div>
-      {`${SudokuVariantDisplay[variant]} - ${SudokuDifficultyDisplay[difficulty]}`}
+      {SudokuVariantDisplay[variant]}
+      {difficulty !== undefined && `- ${SudokuDifficultyDisplay[difficulty]}`}
     </div>
     <div>
       <SolveTimer />

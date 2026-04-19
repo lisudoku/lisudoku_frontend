@@ -1,11 +1,11 @@
 import { useEffect, useMemo } from 'react'
 import { omit } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
-import { gridIsFull } from 'src/utils/sudoku'
+import { gridIsFull, gridToFixedNumbers } from 'src/utils/sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { UserSolution } from 'src/types'
 import { camelCaseKeys } from 'src/utils/json'
-import { exportToLisudokuSolver } from 'src/utils/import'
+import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import'
 import { checkSolved } from 'src/utils/wasm'
 import { requestPuzzleCheck } from 'src/utils/apiService'
 import { requestSolved, responseSolved } from 'src/reducers/puzzle'
@@ -42,8 +42,11 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
         name: 'Full grid unsolved',
         context: {
           id,
-          url: exportToLisudokuSolver(constraints),
-          grid,
+          puzzle_url: exportToLisudokuSolver(constraints),
+          error_state_url: exportToLisudokuPuzzle({
+            ...constraints,
+            fixedNumbers: gridToFixedNumbers(grid),
+          }),
         },
       })
       dispatch(responseSolved({

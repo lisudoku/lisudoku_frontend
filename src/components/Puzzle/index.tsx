@@ -85,7 +85,7 @@ const PuzzleComponent = () => {
 
   useTimerTick(isSolvedLoading)
 
-  if (constraints === undefined || variant === undefined || difficulty === undefined) {
+  if (constraints === undefined || variant === undefined) {
     return null
   }
 

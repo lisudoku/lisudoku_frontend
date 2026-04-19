@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import type { CellPosition, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { CellMarks, Grid, Puzzle } from 'src/types/sudoku'
-import { computeFixedNumbersGrid, defaultConstraints, getAllCells } from 'src/utils/sudoku'
+import { computeFixedNumbersGrid, defaultConstraints, detectConstraints, getAllCells } from 'src/utils/sudoku'
 import { camelCaseKeys } from 'src/utils/json'
 import { ActionType } from 'src/types'
 
@@ -173,6 +173,9 @@ export const puzzleSlice = createSlice({
       puzzleData.constraints = {
         ...defaultConstraints(puzzleData.constraints.gridSize),
         ...puzzleData.constraints,
+      }
+      if (puzzleData.variant === undefined) {
+        puzzleData.variant = detectConstraints(puzzleData.constraints).variant
       }
       state.data = puzzleData
       state.solved = null
