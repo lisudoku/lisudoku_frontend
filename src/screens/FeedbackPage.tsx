@@ -43,7 +43,7 @@ const FeedbackPage = () => {
         <div className="flex flex-col gap-3">
           <Input
             label="Email (optional, only if you want a response)"
-            color="white"
+            color="primary"
             value={email}
             onChange={(value: string) => setEmail(value)}
           />

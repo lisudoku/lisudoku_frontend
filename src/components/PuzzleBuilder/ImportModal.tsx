@@ -48,7 +48,7 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
       <form onSubmit={onSubmit}>
         <DialogHeader className="text-primary">Import puzzle</DialogHeader>
         <DialogBody className="text-primary flex flex-col gap-3">
-          <Input color="white" label="Enter puzzle data here" value={input} onChange={setInput} />
+          <Input color="primary" label="Enter puzzle data here" value={input} onChange={setInput} />
           <div>
             <Typography>
               Valid formats: {sources}.
@@ -58,10 +58,10 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
             </Typography>
             Examples
             <div className="pl-2 flex flex-col gap-y-2">
-              <Input color="white" value={GRID_STRING_EXAMPLE} disabled />
-              <Input color="white" value={LISUDOKU_EXAMPLE_1} disabled />
-              <Input color="white" value={LISUDOKU_EXAMPLE_2} disabled />
-              <Input color="white" value={FPUZZLES_EXAMPLE} disabled />
+              <Input color="primary" value={GRID_STRING_EXAMPLE} disabled />
+              <Input color="primary" value={LISUDOKU_EXAMPLE_1} disabled />
+              <Input color="primary" value={LISUDOKU_EXAMPLE_2} disabled />
+              <Input color="primary" value={FPUZZLES_EXAMPLE} disabled />
             </div>
           </div>
         </DialogBody>

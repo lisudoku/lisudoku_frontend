@@ -1,4 +1,5 @@
 import { Input as MuiInput } from '@material-tailwind/react/components/Input'
+import classNames from 'classnames'
 import { useCallback } from 'react'
 
 const EXTRA_CLASSES  = '!text-primary disabled:bg-secondary disabled:text-primary'
@@ -19,7 +20,15 @@ const Input = ({ onChange: propsOnChange, className, containerProps, ...props }:
   return (
     <MuiInput 
       color="cyan"
-      className={`${EXTRA_CLASSES} ${className ?? ''}`}
+      className={classNames(EXTRA_CLASSES, className, {
+        'focus:border-primary': props.color === 'primary',
+      })}
+      labelProps={{
+        className: classNames({
+          [EXTRA_CLASSES]: Boolean(props.color),
+          'focus:border-primary peer-focus:before:!border-primary peer-focus:after:!border-primary': props.color === 'primary',
+        }),
+      }}
       containerProps={{
         ...containerProps,
         className: `${CONTAINER_CLASSES} ${containerProps?.className ?? ''}`,
