@@ -1,21 +1,19 @@
 import { Arrow, CellPosition, KillerCage, KropkiDot, Region, Renban, SudokuConstraints, Thermo } from 'lisudoku-solver'
-import React, { ReactElement, SVGProps } from 'react'
+import { ReactElement, SVGProps } from 'react'
 import classNames from 'classnames'
-import { compact, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
+import { groupBy, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
 import { CellMarks, Grid } from 'src/types/sudoku'
-import { getAllCells } from 'src/utils/sudoku'
+import { CellMarkSets, getAllCells } from 'src/utils/sudoku'
 import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
-import { CornerMarksGraphics, CellCornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
+import { CornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
 import PalindromesGraphics from './SudokuGridGraphics/PalindromesGraphics'
 import { useGridErrors } from './hooks/useGridErrors'
 import { useFixedNumbersGrid } from './hooks/useFixedNumbersGrid'
-
-export type CellHighlight = {
-  position: CellPosition
-  value?: number
-  color: string
-}
+import { CustomGraphics, CustomGraphicsCornerMarks, CustomGraphicsItem } from './SudokuGridGraphics/CustomGraphics/CustomGraphics'
+import { HighlightedCell } from './SudokuGridGraphics/HighlightedCell'
+import { Theme, useTheme } from '../ThemeProvider'
+import { useCellMarkErrors } from './hooks/useCellMarkErrors'
 
 type Border = {
   x1: number
@@ -386,24 +384,6 @@ type GridGraphicsProps = {
   cellSize: number
 }
 
-const HighlightedCell = ({ cellSize, cell, className, style }: HighlightedCellProps) => (
-  <rect
-    x={3 + cellSize * cell.col}
-    y={3 + cellSize * cell.row}
-    width={cellSize - 4}
-    height={cellSize - 4}
-    className={className}
-    style={style}
-  />
-)
-
-type HighlightedCellProps = {
-  cell: CellPosition
-  cellSize: number
-  className?: string
-  style?: React.CSSProperties
-}
-
 const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsProps) => (
   <>
     {selectedCells?.map((selectedCell: CellPosition, index: number) => (
@@ -640,39 +620,15 @@ type EvenGraphicsProps = {
   cells: CellPosition[]
 }
 
-const CellHighlights = ({ cells, cellSize, killerActive }: CellHighlightsProps) => (
-  <g className="cell-highlights font-bold">
-    {cells.map((cell, index) => (
-      <React.Fragment key={index}>
-        <HighlightedCell
-          cell={cell.position}
-          cellSize={cellSize}
-          className="opacity-40"
-          style={{ fill: cell.color, stroke: cell.color }}
-        />
-        <CellCornerMarksGraphics
-          row={cell.position.row}
-          col={cell.position.col}
-          cornerMarks={compact([cell.value])}
-          killerActive={killerActive}
-          cellSize={cellSize}
-          cellClassName="fill-digit-fixed stroke-none"
-        />
-      </React.Fragment>
-    ))}
-  </g>
-)
-
-type CellHighlightsProps = {
-  cellSize: number
-  cells: CellHighlight[]
-  killerActive: boolean
-}
-
 const SudokuConstraintsGraphics = ({
   cellSize, constraints, cellMarks, grid, checkErrors, selectedCells,
-  onCellClick, cellHighlights, borderHighlightColor,
+  onCellClick, customGraphics, borderHighlightColor,
 }: SudokuConstraintsGraphicsProps) => {
+  // TODO: maybe extract this to not be dependend on the theme?
+  const { theme } = useTheme()
+  const defaultAreaColor = theme === Theme.Light ? 'grey' : 'lightgray'
+  const defaultCellColor = theme === Theme.Light ? 'green' : 'lightgreen'
+
   const {
     gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
     oddCells, evenCells, renbans, palindromes,
@@ -681,6 +637,16 @@ const SudokuConstraintsGraphics = ({
   const onMouseMove = useOnMouseMove(cellSize, gridSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
   const killerActive = !isEmpty(killerCages)
+
+  // TODO: think about merging cellMarksErrors with custom graphics
+  const cellMarksErrors: CellMarkSets[][] = useCellMarkErrors(checkErrors, constraints, grid, cellMarks)
+
+  // TODO: add common props to a context instead
+  // Examples: gridSize, cellSize, fixedNumbersGrid, areaColor, cellColor
+
+  const customGraphicsByType = groupBy(customGraphics, 'type')
+  const cellHighlightCustomGraphics = customGraphicsByType['area-highlight'] ?? []
+  const cornerMarksCustomGraphics = customGraphicsByType['corner-marks'] as CustomGraphicsCornerMarks[] ?? []
 
   return (
     <svg
@@ -695,6 +661,13 @@ const SudokuConstraintsGraphics = ({
     >
       {/* The order of rendering the graphics is important! */}
       {/* This renders elements from the back to the top, so the last items are on top */}
+      <CustomGraphics
+        items={cellHighlightCustomGraphics}
+        cellSize={cellSize}
+        constraints={constraints}
+        defaultAreaColor={defaultAreaColor}
+        defaultCellColor={defaultCellColor}
+      />
       <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
       <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
       <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
@@ -714,10 +687,26 @@ const SudokuConstraintsGraphics = ({
       <BordersGraphics gridSize={gridSize} regions={regions ?? []} cellSize={cellSize} />
       <BorderHighlightsGraphics gridSize={gridSize} cellSize={cellSize} color={borderHighlightColor} />
       <DigitGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
-      <CornerMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} killerActive={killerActive} checkErrors={checkErrors} />
-      <CenterMarksGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
+      <CornerMarksGraphics
+        cellSize={cellSize}
+        constraints={constraints}
+        cellMarks={cellMarks}
+        grid={grid}
+        fixedNumbersGrid={fixedNumbersGrid}
+        killerActive={killerActive}
+        cellMarksErrors={cellMarksErrors}
+        customGraphics={cornerMarksCustomGraphics}
+        theme={theme}
+      />
+      <CenterMarksGraphics
+        cellSize={cellSize}
+        constraints={constraints}
+        cellMarks={cellMarks}
+        grid={grid}
+        fixedNumbersGrid={fixedNumbersGrid}
+        cellMarksErrors={cellMarksErrors}
+      />
       <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
-      <CellHighlights cells={cellHighlights || []} cellSize={cellSize} killerActive={killerActive} />
     </svg>
   )
 }
@@ -730,7 +719,7 @@ type SudokuConstraintsGraphicsProps = {
   checkErrors: boolean
   selectedCells?: CellPosition[]
   onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
-  cellHighlights?: CellHighlight[]
+  customGraphics?: CustomGraphicsItem[]
   borderHighlightColor?: string
 }
 

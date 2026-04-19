@@ -12,7 +12,7 @@ interface LogicalSolutionsStepsProps {
 }
 
 const finalStepLabel: Record<SolutionType, string> = {
-  Full: 'Puzzle finished',
+  Full: 'Puzzle solved',
   Partial: 'Got stuck here',
   None: 'Reached an invalid state',
 }

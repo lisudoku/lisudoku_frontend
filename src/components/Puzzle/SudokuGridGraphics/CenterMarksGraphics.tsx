@@ -48,9 +48,9 @@ type CellCenterMarksGraphicsProps = {
   cellSize: number
 }
 
-const CenterMarksGraphics = ({ cellSize, constraints, cellMarks, grid, fixedNumbersGrid, checkErrors }: centerMarksGraphicsProps) => {
-  const cellMarksErrors: CellMarkSets[][] = useCellMarkErrors(checkErrors, constraints, grid, cellMarks)
-
+const CenterMarksGraphics = ({
+  cellSize, cellMarks, grid, fixedNumbersGrid, cellMarksErrors,
+}: CenterMarksGraphicsProps) => {
   if (!cellMarks) {
     return null
   }
@@ -70,7 +70,7 @@ const CenterMarksGraphics = ({ cellSize, constraints, cellMarks, grid, fixedNumb
           row={row}
           col={col}
           centerMarks={colCellMarks.centerMarks!}
-          cellMarksErrors={checkErrors ? cellMarksErrors[row][col] : undefined}
+          cellMarksErrors={cellMarksErrors?.[row][col]}
           cellSize={cellSize}
           key={col + row * rowCellMarks.length}
         />
@@ -85,13 +85,13 @@ const CenterMarksGraphics = ({ cellSize, constraints, cellMarks, grid, fixedNumb
   )
 }
 
-type centerMarksGraphicsProps = {
+type CenterMarksGraphicsProps = {
   constraints: SudokuConstraints
   cellMarks?: CellMarks[][]
   grid?: Grid
   fixedNumbersGrid: Grid
   cellSize: number
-  checkErrors: boolean
+  cellMarksErrors: CellMarkSets[][]
 }
 
 export default CenterMarksGraphics

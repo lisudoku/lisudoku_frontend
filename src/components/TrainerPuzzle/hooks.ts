@@ -7,6 +7,8 @@ import { confirm } from 'src/design_system/ConfirmationDialog';
 import { Grid } from 'src/types/sudoku';
 import { requestTrainerPuzzleCheck } from 'src/utils/apiService';
 import { SudokuEventCallbacks, useKeyboardHandler } from 'src/utils/keyboard';
+import { CustomGraphicsCornerMarks, CustomGraphicsItem } from '../Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics';
+import { cellToCustomGraphicsItem } from '../Puzzle/SudokuGridGraphics/CustomGraphics/utils';
 
 interface TrainerControlCallbacks extends SudokuEventCallbacks {
   onNextPuzzle: () => void
@@ -63,18 +65,23 @@ export const useTrainerKeyboardHandler: () => void = () => {
   useKeyboardHandler({ constraints, selectedCells, callbacks })
 }
 
-export const useCellHighlights = (finished: boolean, success: boolean, solutions: FixedNumber[] | undefined, grid: Grid | undefined) => {
-  const cellHighlights = useMemo(() => {
+export const useCustomGraphics = (
+  finished: boolean, success: boolean, solutions: FixedNumber[] | undefined, grid: Grid | undefined
+): CustomGraphicsItem[] =>
+  useMemo(() => {
     if (!finished || solutions === undefined) {
       return []
     }
+    // Note: we need unique because some solution cells can fit into multiple categories
     return uniqWith(solutions, (a, b) => isEqual(a.position, b.position))
       .filter(({ position: { row, col }}) => !success || !grid![row][col])
-      .map(fixedNumber => ({
-        position: fixedNumber.position,
-        color: success ? 'lightgreen' : 'red',
-        value: fixedNumber.value,
-      }))
+      .flatMap(fixedNumber => [
+        cellToCustomGraphicsItem(fixedNumber.position, success ? 'lightgreen' : 'red'),
+        {
+          type: 'corner-marks',
+          cell: fixedNumber.position,
+          values: [fixedNumber.value],
+          showExtraValues: true,
+        } satisfies CustomGraphicsCornerMarks,
+      ])
   }, [finished, success, solutions, grid])
-  return cellHighlights
-}

@@ -540,6 +540,11 @@ export const getAllCells = (gridSize: number) => {
   return cells
 }
 
+export const isCellArea = (area: Area) => {
+  if (typeof area !== 'object') return false
+  return 'Cell' in area
+}
+
 const KNIGHT_ROW_DELTA = [ 1, 2, -1, -2, 1, 2, -1, -2 ]
 const KNIGHT_COL_DELTA = [ 2, 1, 2, 1, -2, -1, -2, -1 ]
 const getKnightPeers = (cell: CellPosition, gridSize: number) => {
