@@ -6,11 +6,10 @@ import Typography from '../../design_system/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
-import { computeHintContent } from 'src/utils/solver'
+import { combineConstraintsWithGrid, computeHintContent } from 'src/utils/solver'
 import { scrollToTop } from 'src/utils/misc'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import'
-import { gridToFixedNumbers } from 'src/utils/sudoku'
 
 const useComputeHintElement = () => {
   const dispatch = useDispatch()
@@ -40,10 +39,9 @@ const useComputeHintElement = () => {
     isExternal,
     publicId,
     puzzle_url: constraints ? exportToLisudokuSolver(constraints) : undefined,
-    puzzle_state_url: constraints ? exportToLisudokuPuzzle({
-      ...constraints,
-      fixedNumbers: grid ? gridToFixedNumbers(grid) : constraints.fixedNumbers,
-    }) : undefined,
+    puzzle_state_url: constraints && grid ? exportToLisudokuPuzzle(
+      combineConstraintsWithGrid(constraints, grid)
+    ) : undefined,
     solution_type: solution?.solutionType,
   }), [isExternal, publicId, grid, constraints, solution])
 

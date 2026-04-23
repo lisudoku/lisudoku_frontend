@@ -1,36 +1,23 @@
-import { difference, flatten, intersection, last, uniqBy, values as _values } from 'lodash-es'
+import { difference, flatten, intersection, last, uniqBy, values as _values, uniqWith, isEqual } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { GRID_STEPS } from './constants'
 import { pluralize } from './misc'
-import { computeFixedNumbersGrid, getAllCells } from './sudoku'
+import { gridToFixedNumbers } from './sudoku'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
-import { Area, CellPosition, FixedNumber, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import type { Area, CellPosition, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { StepDescription } from 'src/components/solver/StepDescription'
 
 // Integrates grid contents into constraints' fixed_numbers
 export const combineConstraintsWithGrid = (constraints: SudokuConstraints, grid: Grid) => {
-  const { gridSize, fixedNumbers } = constraints
-  const fixedNumbersGrid = computeFixedNumbersGrid(gridSize, fixedNumbers)
-  const extraFixedNumbers: FixedNumber[] = []
-  getAllCells(gridSize).forEach((cell: CellPosition) => {
-    const fixedNumber = fixedNumbersGrid[cell.row][cell.col]
-    const gridValue = grid[cell.row][cell.col]
-    if (fixedNumber === null && gridValue !== null) {
-      extraFixedNumbers.push({
-        position: cell,
-        value: gridValue,
-      })
-    }
-  })
-
+  const gridFixedNumbers = gridToFixedNumbers(grid)
   return {
     ...constraints,
-    fixedNumbers: [
+    fixedNumbers: uniqWith([
       ...constraints.fixedNumbers ?? [],
-      ...extraFixedNumbers,
-    ]
+      ...gridFixedNumbers,
+    ], (a, b) => isEqual(a.position, b.position))
   }
 }
 

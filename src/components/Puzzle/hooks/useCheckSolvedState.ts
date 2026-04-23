@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { omit } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
-import { gridIsFull, gridToFixedNumbers } from 'src/utils/sudoku'
+import { gridIsFull } from 'src/utils/sudoku'
 import { honeybadger } from 'src/components/HoneybadgerProvider'
 import { UserSolution } from 'src/types'
 import { camelCaseKeys } from 'src/utils/json'
@@ -9,6 +9,7 @@ import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import
 import { checkSolved } from 'src/utils/wasm'
 import { requestPuzzleCheck } from 'src/utils/apiService'
 import { requestSolved, responseSolved } from 'src/reducers/puzzle'
+import { combineConstraintsWithGrid } from 'src/utils/solver'
 
 export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => void) => {
   const dispatch = useDispatch()
@@ -43,10 +44,9 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
         context: {
           id,
           puzzle_url: exportToLisudokuSolver(constraints),
-          error_state_url: exportToLisudokuPuzzle({
-            ...constraints,
-            fixedNumbers: gridToFixedNumbers(grid),
-          }),
+          error_state_url: exportToLisudokuPuzzle(
+            combineConstraintsWithGrid(constraints, grid)
+          ),
         },
       })
       dispatch(responseSolved({
