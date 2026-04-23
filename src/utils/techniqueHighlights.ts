@@ -217,4 +217,4 @@ export const useStepCustomGraphics = (
     }
 
     return getStepCustomGraphics(context)
-  }, [step, constraints])
+  }, [step, constraints, disabled])
