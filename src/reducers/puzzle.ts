@@ -348,10 +348,16 @@ export const puzzleSlice = createSlice({
         } else if (state.controls.hintLevel === HintLevel.Small) {
           state.controls.hintLevel = HintLevel.Big
         }
+        if (state.controls.hintLevel === HintLevel.Big) {
+          state.controls.selectedCells = []
+        }
       }
     },
     changeHintLevel(state, action) {
       state.controls.hintLevel = action.payload
+      if (state.controls.hintLevel === HintLevel.Big) {
+        state.controls.selectedCells = []
+      }
     },
     changePaused(state, action) {
       state.controls.paused = action.payload

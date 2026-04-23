@@ -34,6 +34,7 @@ const HintButton = () => {
     }
     if (!disabled) {
       const fullConstraints = combineConstraintsWithGrid(constraints, grid)
+      // TODO: shouldn't recompute hint from small to large hint
       const solution = logicalHint(fullConstraints)
       dispatch(changeHintSolution(solution))
     }
