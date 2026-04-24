@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 const EXTRA_CLASSES  = '!text-primary disabled:bg-secondary disabled:text-primary'
 const CONTAINER_CLASSES = 'min-w-0'
 
-const Input = ({ onChange: propsOnChange, className, containerProps, ...props }: any) => {
+const Input = ({ onChange: propsOnChange, className, containerProps, color, ...props }: any) => {
   const propsType = props.type
   const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue
@@ -19,14 +19,14 @@ const Input = ({ onChange: propsOnChange, className, containerProps, ...props }:
 
   return (
     <MuiInput 
-      color="cyan"
+      color={color !== 'primary' ? (color ?? 'cyan') : undefined}
       className={classNames(EXTRA_CLASSES, className, {
-        'focus:border-primary': props.color === 'primary',
+        'focus:border-primary': color === 'primary',
       })}
       labelProps={{
         className: classNames({
-          [EXTRA_CLASSES]: Boolean(props.color),
-          'focus:border-primary peer-focus:before:!border-primary peer-focus:after:!border-primary': props.color === 'primary',
+          [EXTRA_CLASSES]: Boolean(color),
+          'focus:border-primary peer-focus:before:!border-primary peer-focus:after:!border-primary': color === 'primary',
         }),
       }}
       containerProps={{
