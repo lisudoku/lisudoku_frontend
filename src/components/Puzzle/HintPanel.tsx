@@ -27,12 +27,11 @@ const useComputeHintElement = () => {
     dispatch(changeHintLevel(HintLevel.Big))
   }, [dispatch])
 
-  const gridSize = constraints?.gridSize
   const [ hintMessage, filteredSteps, hintError ] = useMemo(
-    () => gridSize === undefined ? [] : computeHintContent(
-      solution, hintLevel!, cellMarks, gridSize, isExternal
+    () => constraints === undefined ? [] : computeHintContent(
+      solution, hintLevel!, cellMarks, constraints, isExternal
     ),
-    [solution, hintLevel, cellMarks, gridSize, isExternal]
+    [solution, hintLevel, cellMarks, constraints, isExternal]
   )
 
   const context = useMemo(() => ({

@@ -26,7 +26,7 @@ const cellDisplay = (cell: CellPosition) => (
 )
 
 // TODO: use an exhaustive switch, maybe once I add a linter
-const areaDisplay = (area: Area, gridSize: number): string => {
+const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
   if (area === 'PrimaryDiagonal') {
     return 'the negative diagonal'
   } else if (area === 'SecondaryDiagonal') {
@@ -44,8 +44,8 @@ const areaDisplay = (area: Area, gridSize: number): string => {
   } else if ('Column' in area) {
     return `column ${area.Column + 1}`
   } else if ('Region' in area) {
-    if (area.Region >= gridSize) {
-      return `extra region ${area.Region - gridSize + 1}`
+    if (area.Region >= constraints.gridSize) {
+      return `extra region ${area.Region - constraints.gridSize + 1}`
     } else {
       return `box ${area.Region + 1}`
     }
@@ -54,7 +54,8 @@ const areaDisplay = (area: Area, gridSize: number): string => {
   } else if ('KillerCage' in area) {
     return 'a killer cage'
   } else if ('KropkiDot' in area) {
-    return 'a kropki dot pair'
+    const isNegative = constraints.kropkiNegative && area.KropkiDot >= (constraints.kropkiDots?.length ?? 0)
+    return `a ${isNegative ? 'negative ' : ''}kropki dot pair`
   } else if ('Arrow' in area) {
     return 'an arrow'
   } else if ('Renban' in area) {
@@ -70,26 +71,26 @@ const areaDisplay = (area: Area, gridSize: number): string => {
   }
 }
 
-const computeInvalidStateReason = (step: SolutionStep, gridSize: number) => {
+const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstraints) => {
   const reason = step.invalidStateReason!
   switch (reason.stateType) {
     case 'CellEmpty':
-      return `${areaDisplay(reason.area, gridSize)} is empty`
+      return `${areaDisplay(reason.area, constraints)} is empty`
     case 'CellInvalidValue':
-      return `${areaDisplay(reason.area, gridSize)} has invalid digit ${reason.values[0]}`
+      return `${areaDisplay(reason.area, constraints)} has invalid digit ${reason.values[0]}`
     case 'CellNoCandidates':
-      return `${areaDisplay(reason.area, gridSize)} has no candidates left`
+      return `${areaDisplay(reason.area, constraints)} has no candidates left`
     case 'AreaValueConflict':
-      return `${areaDisplay(reason.area, gridSize)} has multiple ${reason.values[0]} digits`
+      return `${areaDisplay(reason.area, constraints)} has multiple ${reason.values[0]} digits`
     case 'AreaConstraint':
-      return `${areaDisplay(reason.area, gridSize)} constraints are not satisfied`
+      return `${areaDisplay(reason.area, constraints)} constraints are not satisfied`
     case 'AreaCandidates':
-      return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, gridSize)}`
+      return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, constraints)}`
   }
 }
 
 // TODO: refactor
-export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, gridSize: number): string => {
+export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, constraints: SudokuConstraints): string => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
   const affectedCells = step.affectedCells.map(cell => cellDisplay(cell)).join(', ')
@@ -104,7 +105,7 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
 
   switch (step.rule) {
     case 'HiddenSingle': {
-      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      const areaMessage = areaDisplay(step.areas[0], constraints)
       return applyGridStepHint(` in ${areaMessage} on cell ${cellDisplay(step.cells[0])}`)
     }
     case 'NakedSingle':
@@ -115,11 +116,11 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
       return ' for all cells'
     case 'HiddenPairs':
     case 'HiddenTriples': {
-      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      const areaMessage = areaDisplay(step.areas[0], constraints)
       return ` in ${areaMessage} on cells ${cells} to only keep ${values}`
     }
     case 'XWing': {
-      const areaDisplays = step.areas.map(area => areaDisplay(area, gridSize))
+      const areaDisplays = step.areas.map(area => areaDisplay(area, constraints))
       return ` on cells ${cells} (${areaDisplays[0]} and ${areaDisplays[1]}) ` +
         `to remove ${values} from ${affectedCells} (${areaDisplays[2]} and ${areaDisplays[3]})`
     }
@@ -127,18 +128,18 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
       const zValue = step.values[2]
       return ` on cells ${cells} to remove ${zValue} from ${affectedCells}`
     case 'CommonPeerElimination': {
-      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      const areaMessage = areaDisplay(step.areas[0], constraints)
       return ` to remove value ${values} from ${affectedCells} because it ` +
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
     // TODO: KropkiAdvancedCandidates + because it would eliminate all candidates from ${cells}
     case 'CommonPeerEliminationKropki': {
-      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      const areaMessage = areaDisplay(step.areas[0], constraints)
       return ` to remove ${values} from ${affectedCells} because all chain combinations in ${areaMessage} would eliminate them`
     }
     // TODO: ArrowAdvancedCandidates + because it would eliminate all candidates from ${cells}
     case 'CommonPeerEliminationArrow': {
-      const areaMessage = areaDisplay(step.areas[0], gridSize)
+      const areaMessage = areaDisplay(step.areas[0], constraints)
       return ` to remove ${values} from ${affectedCells} because all arrow combinations in ${areaMessage} would eliminate them`
     }
     case 'TurbotFish':
@@ -149,18 +150,18 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
     case 'TopBottomCandidates': {
       const ascending = (step.areas[0] as any).Row + 1 === step.values[0]
       const otherValue = (ascending === ((step.areas[0] as any).Row < (step.areas[1] as any).Row)) ? step.values[0] + 1 : step.values[0] - 1
-      return ` in ${areaDisplay(step.areas[0], gridSize)} to remove ${values} from ${affectedCells} because ` +
+      return ` in ${areaDisplay(step.areas[0], constraints)} to remove ${values} from ${affectedCells} because ` +
         `${step.affectedCells.length !== 1 ? 'they' : 'it'} can't be linked with digit ${otherValue} ` +
-        `on ${areaDisplay(step.areas[1], gridSize)}`
+        `on ${areaDisplay(step.areas[1], constraints)}`
     }
     case 'EmptyRectangles':
-      return ` in ${areaDisplay(step.areas[0], gridSize)} that sees strong link ` +
+      return ` in ${areaDisplay(step.areas[0], constraints)} that sees strong link ` +
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
     case 'NishioForcingChains':
-      return ` Remove ${values} from cell ${affectedCells} because then ${computeInvalidStateReason(step, gridSize)}`;
+      return ` Remove ${values} from cell ${affectedCells} because then ${computeInvalidStateReason(step, constraints)}`;
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
-      const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], gridSize)}` : ''
+      const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], constraints)}` : ''
 
       // Some techniques don't have cells (e.g. killer cage, kropki chains)
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
@@ -215,7 +216,7 @@ const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
 
 export const isGridStep = (step: SolutionStep) => GRID_STEPS.includes(step.rule)
 
-const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: number, isExternal: boolean) => {
+const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, constraints: SudokuConstraints, isExternal: boolean) => {
   const singleIndex = steps.findIndex(isGridStep)
 
   if (singleIndex === -1) {
@@ -242,7 +243,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
     return [
       <>
         There is a{' '}
-        <StepDescription step={step} hintLevel={hintLevel} gridSize={gridSize} />
+        <StepDescription step={step} hintLevel={hintLevel} constraints={constraints} />
         .
       </>,
       false
@@ -262,14 +263,14 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
     <ul className="list-disc list-inside">
       {candidateSteps.map((step, index) => (
         <li key={index}>
-          <StepDescription step={step} hintLevel={hintLevel} gridSize={gridSize} />
+          <StepDescription step={step} hintLevel={hintLevel} constraints={constraints} />
         </li>
       ))}
     </ul>
 
     <p className="mt-2">
       Finally, there is a{' '}
-      <StepDescription step={lastStep} hintLevel={hintLevel} gridSize={gridSize} />
+      <StepDescription step={lastStep} hintLevel={hintLevel} constraints={constraints} />
       .</p>
   </>
 
@@ -278,7 +279,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, gridSize: 
 
 export const computeHintContent = (
   solution: SudokuLogicalSolveResult | null, hintLevel: HintLevel, cellMarks: CellMarks[][],
-  gridSize: number, isExternal: boolean,
+  constraints: SudokuConstraints, isExternal: boolean,
 ) => {
   if (!solution) {
     return [ '', false, false ] as const
@@ -294,7 +295,7 @@ export const computeHintContent = (
   const steps = solution.steps!.filter(step => !isRedundantStep(step, cellMarks));
   const filteredSteps = steps.length < solution.steps!.length - 1
 
-  const [ message, error ] = computeHintText(steps, hintLevel, gridSize, isExternal)
+  const [ message, error ] = computeHintText(steps, hintLevel, constraints, isExternal)
 
   return [ message, filteredSteps, error ] as const
 }

@@ -1,10 +1,10 @@
-import { SolutionStep } from 'lisudoku-solver';
+import type { SolutionStep, SudokuConstraints } from 'lisudoku-solver';
 import { StepRuleDisplay } from 'src/utils/constants';
 import { HintLevel } from 'src/reducers/puzzle';
 import { getBigStepExplanation } from 'src/utils/solver';
 
 export const StepDescription = (
-  { step, hintLevel, gridSize }: { step: SolutionStep, hintLevel: HintLevel, gridSize: number }
+  { step, hintLevel, constraints }: { step: SolutionStep, hintLevel: HintLevel, constraints: SudokuConstraints }
 ) => (
   <span>
     <b>
@@ -15,7 +15,7 @@ export const StepDescription = (
     {hintLevel !== HintLevel.Small && (
       <span>
         {' '}
-        {getBigStepExplanation(step, hintLevel, gridSize)}
+        {getBigStepExplanation(step, hintLevel, constraints)}
       </span>
     )}
   </span>

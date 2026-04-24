@@ -124,7 +124,7 @@ const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMod
         </>
       ) : (
         <LogicalSolutionSteps
-          gridSize={constraints.gridSize}
+          constraints={constraints}
           steps={solution.steps}
           solutionType={solution.solutionType}
           selectedStepIndex={logicalSolutionStepIndex ?? Infinity}

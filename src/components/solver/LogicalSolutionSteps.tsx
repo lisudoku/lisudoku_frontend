@@ -1,10 +1,10 @@
-import { SolutionStep, SolutionType } from 'lisudoku-solver'
+import type { SolutionStep, SolutionType, SudokuConstraints } from 'lisudoku-solver'
 import { HintLevel } from 'src/reducers/puzzle'
 import { StepDescription } from './StepDescription'
 import { LogicalSolutionStep } from './LogicalSolutionStep'
 
 interface LogicalSolutionsStepsProps {
-  gridSize: number
+  constraints: SudokuConstraints
   steps: SolutionStep[]
   solutionType: SolutionType
   selectedStepIndex: number
@@ -18,7 +18,7 @@ const finalStepLabel: Record<SolutionType, string> = {
 }
 
 export const LogicalSolutionSteps = (
-  { gridSize, steps, solutionType, selectedStepIndex, onStepClick }: LogicalSolutionsStepsProps
+  { constraints, steps, solutionType, selectedStepIndex, onStepClick }: LogicalSolutionsStepsProps
 ) => (
   <ol>
     <LogicalSolutionStep
@@ -35,7 +35,7 @@ export const LogicalSolutionSteps = (
         selected={selectedStepIndex === index}
         onClick={onStepClick}
       >
-        <StepDescription step={step} hintLevel={HintLevel.Full} gridSize={gridSize} />
+        <StepDescription step={step} hintLevel={HintLevel.Full} constraints={constraints} />
       </LogicalSolutionStep>
     ))}
     <LogicalSolutionStep
