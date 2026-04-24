@@ -82,7 +82,7 @@ export const StepRuleDisplay: { [key in Rule]: string } = {
   NakedTriples: 'Naked Triples',
   HiddenTriples: 'Hidden Triples',
   XWing: 'X-Wing',
-  XYWing: 'XY-Wing',
+  XYWing: 'Y-Wing',
   Swordfish: 'Swordfish',
   CommonPeerElimination: 'Common Peer Elimination',
   TurbotFish: 'Turbot Fish',

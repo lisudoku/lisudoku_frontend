@@ -290,7 +290,7 @@ const TECHNIQUES: Technique[] = [
   },
   {
     id: 'XYWing',
-    akas: [ 'Y-Wing', 'Bent Triples' ],
+    akas: [ 'XY-Wing', 'Bent Triples' ],
     summary: <>
       Cell with candidates XY sees two cells with candidates XZ and YZ.
       Remove Z as a candidate from every cell that sees both cells XZ and YZ.
