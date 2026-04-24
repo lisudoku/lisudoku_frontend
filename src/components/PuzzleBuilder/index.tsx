@@ -23,7 +23,7 @@ import GridSizeSelect from './GridSizeSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { defaultConstraints, detectConstraints, ensureDefaultRegions } from 'src/utils/sudoku';
 import ExportModal from './ExportModal';
 import ImportModal from './ImportModal';
@@ -57,7 +57,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     if (result.error !== undefined) {
       await alert(result.error)
       if (url.length > 0 && !admin) {
-        honeybadger.notify({
+        sendHbAlert({
           name: 'Puzzle import error',
           context: {
             url,
@@ -70,7 +70,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       if (result.warning !== undefined) {
         await alert(`Puzzle imported partially. ${result.warning}`)
         if (!admin) {
-          honeybadger.notify({
+          sendHbAlert({
             name: 'Puzzle import warning',
             context: {
               url,
@@ -84,7 +84,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             ...defaultConstraints(result.constraints.gridSize),
             ...result.constraints,
           }
-          honeybadger.notify({
+          sendHbAlert({
             name: 'Puzzle import success',
             context: {
               url,

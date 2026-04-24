@@ -8,7 +8,7 @@ import { faCircleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { changeHintLevel, changeHintSolution, HintLevel } from 'src/reducers/puzzle'
 import { combineConstraintsWithGrid, computeHintContent } from 'src/utils/solver'
 import { scrollToTop } from 'src/utils/misc'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import'
 
 const useComputeHintElement = () => {
@@ -50,7 +50,7 @@ const useComputeHintElement = () => {
     if (!hintError) {
       return
     }
-    honeybadger.notify({
+    sendHbAlert({
       name: isAtPuzzleBeginning ? 'No hint at puzzle beginning!' : 'No hint',
       context,
     })

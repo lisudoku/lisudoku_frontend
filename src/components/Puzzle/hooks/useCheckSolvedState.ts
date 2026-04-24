@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react'
-import { omit } from 'lodash-es'
+import { omit, throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { gridIsFull } from 'src/utils/sudoku'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { UserSolution } from 'src/types'
 import { camelCaseKeys } from 'src/utils/json'
 import { exportToLisudokuPuzzle, exportToLisudokuSolver } from 'src/utils/import'
@@ -10,6 +10,9 @@ import { checkSolved } from 'src/utils/wasm'
 import { requestPuzzleCheck } from 'src/utils/apiService'
 import { requestSolved, responseSolved } from 'src/reducers/puzzle'
 import { combineConstraintsWithGrid } from 'src/utils/solver'
+
+// TODO: consider a more general approach if it's an issue in other places too
+const sendHbAlertThrottled = throttle(sendHbAlert, 10_000)
 
 export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => void) => {
   const dispatch = useDispatch()
@@ -39,7 +42,7 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
     // Check locally if it's correct first
     const { solved: localSolved } = checkSolved(constraints, grid)
     if (!localSolved) {
-      honeybadger.notify({
+      sendHbAlertThrottled({
         name: 'Full grid unsolved',
         context: {
           id,

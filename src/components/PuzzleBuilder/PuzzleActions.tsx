@@ -16,7 +16,7 @@ import LogicalSolutionPanel from './LogicalSolutionPanel'
 import BruteSolutionPanel from './BruteSolutionPanel'
 import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
 import { detectConstraints } from 'src/utils/sudoku'
 import Typography from 'src/design_system/Typography'
@@ -49,7 +49,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
 
   const handleBruteSolveClick = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
-      honeybadger.notify({
+      sendHbAlert({
         name: 'Running brute solver',
         context: {
           url: exportToLisudokuSolver(constraints),
@@ -63,7 +63,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
 
   const handleLogicalSolveClick = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
-      honeybadger.notify({
+      sendHbAlert({
         name: 'Running logical solver',
         context: {
           url: exportToLisudokuSolver(constraints),
@@ -123,7 +123,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         logicalSolution.solutionType !== 'Full' &&
         !setterMode &&
         constraints) {
-      honeybadger.notify({
+      sendHbAlert({
         name: 'Unsolved puzzle',
         message: `Couldn't solve ${variant} puzzle`,
         context: {

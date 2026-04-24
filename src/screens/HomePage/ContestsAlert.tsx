@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { receiveActiveCompetitions } from 'src/reducers/userData'
 import { Competition } from 'src/types'
 import { fetchActiveCompetitions } from 'src/utils/apiService'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 
 const ContestsAlert = () => {
   const dispatch = useDispatch()
@@ -48,7 +48,7 @@ const ContestAlert = ({ competition }: { competition: Competition }) => {
       target="_blank"
       rel="noopener noreferrer"
       className="underline"
-      onClick={() => honeybadger.notify({
+      onClick={() => sendHbAlert({
         name: 'Contest link clicked',
         context: {
           url,

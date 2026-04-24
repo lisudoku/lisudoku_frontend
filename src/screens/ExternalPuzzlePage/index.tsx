@@ -7,7 +7,7 @@ import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import { importPuzzle, ImportResult, useImportParam } from 'src/utils/import'
 import { receivedPuzzle } from 'src/reducers/puzzle'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { isHeadlessBrowser } from 'src/utils/misc'
 
 const ExternalPuzzlePage = () => {
@@ -39,7 +39,7 @@ const ExternalPuzzlePage = () => {
       importPuzzle(importData).then((result: ImportResult) => {
         if (result.error) {
           setError(true)
-          honeybadger.notify({
+          sendHbAlert({
             name: 'External puzzle import error',
             context: {
               importData,

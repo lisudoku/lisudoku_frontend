@@ -6,7 +6,7 @@ import Radio from 'src/design_system/Radio';
 import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
-import { honeybadger } from '../HoneybadgerProvider';
+import { sendHbAlert } from '../HoneybadgerProvider';
 import { detectConstraints, isGridString } from 'src/utils/sudoku';
 import { SudokuConstraints } from 'lisudoku-solver';
 
@@ -47,7 +47,7 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
   const { url, dataString, error } = transformResult
 
   if (error !== undefined) {
-    honeybadger.notify({
+    sendHbAlert({
       name: 'Puzzle export error',
       context: {
         result: transformResult,
@@ -57,7 +57,7 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
   }
 
   const onCopy = useCallback((url: string) => {
-    honeybadger.notify({
+    sendHbAlert({
       name: 'Puzzle export copy',
       context: {
         url,

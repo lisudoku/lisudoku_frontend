@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Honeybadger, HoneybadgerErrorBoundary } from '@honeybadger-io/react'
 import { isHeadlessBrowser } from 'src/utils/misc'
 
-export const honeybadger = Honeybadger.configure({
+const honeybadger = Honeybadger.configure({
   apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
   environment: import.meta.env.PROD ? 'production' : 'development',
   revision: __APP_VERSION__,
@@ -19,6 +19,10 @@ honeybadger.beforeNotify((notice) => {
   }
   return true
 })
+
+export const sendHbAlert = honeybadger.notify.bind(honeybadger)
+
+export const sendHbAlertAsync = honeybadger.notifyAsync.bind(honeybadger)
 
 const HoneybadgerProvider = ({ children }: { children: ReactElement }) => (
   <HoneybadgerErrorBoundary honeybadger={honeybadger}>

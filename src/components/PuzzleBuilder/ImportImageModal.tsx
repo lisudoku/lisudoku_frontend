@@ -3,7 +3,7 @@ import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwi
 import Button from 'src/design_system/Button';
 import Input from 'src/design_system/Input';
 import Typography from 'src/design_system/Typography';
-import { honeybadger } from '../HoneybadgerProvider';
+import { sendHbAlert } from '../HoneybadgerProvider';
 
 const SUDOKU_VISION_API_ENDPOINT = 'https://vision.lisudoku.xyz/parse_sudoku_image'
 // const SUDOKU_VISION_API_ENDPOINT = 'http://localhost:8080/parse_sudoku_image'
@@ -60,7 +60,7 @@ const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModa
       const requestParams = new URLSearchParams(
         formData as unknown as Record<string, string>,
       ).toString();
-      honeybadger.notify({
+      sendHbAlert({
         name: 'Attempted import puzzle from image',
         context: {
           request: requestParams,

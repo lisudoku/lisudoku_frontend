@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import Switch from '../../design_system/Switch'
 import { updateVoiceEnabled } from 'src/reducers/userData'
-import { honeybadger } from '../HoneybadgerProvider'
+import { sendHbAlert } from '../HoneybadgerProvider'
 import { Popover, PopoverContent, PopoverHandler } from 'src/design_system/Popover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
@@ -15,7 +15,7 @@ const VoiceToggle = () => {
   const handleSwitchChange = useCallback((checked: boolean) => {
     dispatch(updateVoiceEnabled(checked))
     if (checked) {
-      honeybadger.notify({
+      sendHbAlert({
         name: 'Voice mode activated',
       })
     }

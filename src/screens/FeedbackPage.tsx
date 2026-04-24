@@ -3,7 +3,7 @@ import Button from 'src/design_system/Button'
 import PageMeta from 'src/components/PageMeta'
 import Textarea from 'src/design_system/Textarea'
 import ErrorPage from 'src/components/ErrorPage'
-import { honeybadger } from 'src/components/HoneybadgerProvider'
+import { sendHbAlertAsync } from 'src/components/HoneybadgerProvider'
 import { useSelector } from 'src/hooks'
 import Input from 'src/design_system/Input'
 import { alert } from 'src/design_system/ConfirmationDialog'
@@ -16,7 +16,7 @@ const FeedbackPage = () => {
 
   const handleSubmit = useCallback(() => {
     setSubmitting(true)
-    honeybadger.notifyAsync({
+    sendHbAlertAsync({
       name: 'Feedback',
       context: {
         feedback,
