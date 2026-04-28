@@ -202,6 +202,14 @@ export const useSolver = (solverType: SolverType) => {
         console.error(e)
       }
       worker.onmessage = ({ data }) => {
+        // Hack to make hot reload work with query param import, probably a code smell
+        if (data === 'init') {
+          worker.postMessage({
+            solverType,
+            constraints,
+          })
+          return
+        }
         resolve(data)
       }
       worker.postMessage({
