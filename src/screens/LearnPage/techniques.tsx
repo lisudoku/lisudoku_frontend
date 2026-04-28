@@ -507,7 +507,10 @@ const TECHNIQUES: Technique[] = [
   {
     id: 'EmptyRectangles',
     summary: <>
-      In a box, each of digit X's candidate cells are either on row R or col C.
+      In a box, each of digit X's candidate cells are either on row R or column C.
+      <br/>
+      If row R sees a strong link then we can eliminate X from the cell on column C that sees the strong link.
+      Same logic applies with R and C swapped.
     </>,
     externalResources: [
       {

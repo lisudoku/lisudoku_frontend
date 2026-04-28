@@ -90,6 +90,7 @@ const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstr
 }
 
 // TODO: refactor
+// TODO: feels like explanations and highlights should live together
 export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, constraints: SudokuConstraints): string => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
   const cells = cellDisplays.join(', ')
@@ -132,7 +133,10 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
       return ` to remove value ${values} from ${affectedCells} because it ` +
         `would eliminate it as candidate from ${areaMessage} (cells ${cells})`
     }
-    // TODO: KropkiAdvancedCandidates + because it would eliminate all candidates from ${cells}
+    case 'KropkiAdvancedCandidates':
+      // TODO: show which cell will become invalid when we have that data
+      return ` in ${step.areas.length === 1 ? areaDisplay(step.areas[0], constraints) : 'a chain of kropki pairs'} to remove ${values} from ${affectedCells} because ` +
+        `its combinations eliminate all candidates from a cell`
     case 'CommonPeerEliminationKropki': {
       const areaMessage = areaDisplay(step.areas[0], constraints)
       return ` to remove ${values} from ${affectedCells} because all chain combinations in ${areaMessage} would eliminate them`
@@ -159,6 +163,11 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${values} from ${affectedCells}`
     case 'NishioForcingChains':
       return ` Remove ${values} from cell ${affectedCells} because then ${computeInvalidStateReason(step, constraints)}`;
+    case 'Killer45':
+      const cell = step.affectedCells[0]
+      const remainingCandidates = step.candidates![cell.row][cell.col].filter((value) => !step.values.includes(value))
+      const verb = remainingCandidates.length === 1 ? `only keep ${remainingCandidates[0]} in` : `remove ${values} from`
+      return ` in ${areaDisplay(step.areas[0], constraints)} to ${verb} ${affectedCells}`
     default:
       // Some techniques don't have areas (e.g. XY-Wing)
       const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], constraints)}` : ''
