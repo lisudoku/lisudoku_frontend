@@ -110,7 +110,7 @@ export const CONSTRAINTS_DISPLAY: { [key in ConstraintType]: ConstraintDisplayDa
     label: 'Killer',
     icon: (
       <svg height={13} width={13} className="inline-block">
-        <rect x="0" y="0" width="100%" height="100%" fill="transparent" stroke="white" strokeDasharray="2" />
+        <rect x="0" y="0" width="100%" height="100%" fill="transparent" stroke="currentColor" strokeDasharray="2" />
       </svg>
     ),
     description: () => <>

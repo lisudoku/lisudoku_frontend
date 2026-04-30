@@ -1,7 +1,9 @@
 import { Rule } from 'lisudoku-solver'
 import { invert, mapValues, toInteger, values } from 'lodash-es'
+import { ReactNode } from 'react'
 import { TrainerTechnique } from 'src/types'
 import { ConstraintType, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
+import { CONSTRAINTS_DISPLAY } from './constraints'
 
 export const GRID_SIZES = [ 4, 6, 9 ]
 
@@ -41,6 +43,27 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
   [SudokuVariant.Renban]: 'Renban',
   [SudokuVariant.Palindrome]: 'Palindrome',
   [SudokuVariant.Mixed]: 'Mixed',
+}
+
+export const SudokuVariantIcon: Record<SudokuVariant, ReactNode> = {
+  [SudokuVariant.Classic]: null,
+  [SudokuVariant.Killer]: CONSTRAINTS_DISPLAY[ConstraintType.KillerCage].icon,
+  [SudokuVariant.Thermo]: CONSTRAINTS_DISPLAY[ConstraintType.Thermo].icon,
+  [SudokuVariant.Arrow]: CONSTRAINTS_DISPLAY[ConstraintType.Arrow].icon,
+  [SudokuVariant.Irregular]: '┏┛',
+  [SudokuVariant.Kropki]: CONSTRAINTS_DISPLAY[ConstraintType.KropkiConsecutive].icon,
+  [SudokuVariant.TopBottom]: CONSTRAINTS_DISPLAY[ConstraintType.TopBottom].icon,
+  [SudokuVariant.Diagonal]: CONSTRAINTS_DISPLAY[ConstraintType.Diagonals].icon,
+  [SudokuVariant.AntiKnight]: CONSTRAINTS_DISPLAY[ConstraintType.AntiKnight].icon,
+  [SudokuVariant.AntiKing]: CONSTRAINTS_DISPLAY[ConstraintType.AntiKing].icon,
+  [SudokuVariant.ExtraRegions]: CONSTRAINTS_DISPLAY[ConstraintType.ExtraRegions].icon,
+  [SudokuVariant.OddEven]: [
+    CONSTRAINTS_DISPLAY[ConstraintType.Odd].icon,
+    CONSTRAINTS_DISPLAY[ConstraintType.Even].icon,
+  ],
+  [SudokuVariant.Renban]: CONSTRAINTS_DISPLAY[ConstraintType.Renban].icon,
+  [SudokuVariant.Palindrome]: CONSTRAINTS_DISPLAY[ConstraintType.Palindrome].icon,
+  [SudokuVariant.Mixed]: '❓',
 }
 
 export const SudokuVariantRank = mapValues(invert(values(SudokuVariant)), toInteger)
