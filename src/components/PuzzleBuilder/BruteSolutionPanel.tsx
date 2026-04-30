@@ -1,26 +1,31 @@
 import { SudokuBruteSolveResult } from 'lisudoku-solver'
 import SolutionPanel from './SolutionPanel'
 
-const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelProps) => (
-  <SolutionPanel onClear={solution !== null ? onClear : undefined}>
-    {running ? (
-      'Running...'
-    ) : solution === null ? (
-      ''
-    ) : solution.solutionCount === 0 ? (
-      'No solutions 🙁'
-    ) : solution.solutionCount === 2 ? (
-      'Multiple solutions 😢'
-    ) : (
-      'Unique solution 🎉'
-    )}
-  </SolutionPanel>
-)
-
-type BruteSolutionPanelProps = {
+interface BruteSolutionPanelProps {
   running: boolean
   solution: SudokuBruteSolveResult | null
   onClear: () => void
 }
 
-export default BruteSolutionPanel
+export const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelProps) => (
+  <SolutionPanel>
+    <SolutionPanel.Body>
+      {running ? (
+        'Running...'
+      ) : solution === null ? (
+        ''
+      ) : solution.solutionCount === 0 ? (
+        'No solutions 🙁'
+      ) : solution.solutionCount === 2 ? (
+        'Multiple solutions 😢'
+      ) : (
+        'Unique solution 🎉'
+      )}
+    </SolutionPanel.Body>
+    {solution !== null && (
+      <SolutionPanel.Footer className="h-[30px]">
+        <SolutionPanel.ClearButton onClick={onClear} />
+      </SolutionPanel.Footer>
+    )}
+  </SolutionPanel>
+)

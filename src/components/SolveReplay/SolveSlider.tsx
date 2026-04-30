@@ -1,13 +1,13 @@
 import { ReactSliderProps } from 'react-slider'
 import classNames from 'classnames'
-import Slider from '../../design_system/Slider'
+import { Slider } from '../../design_system/Slider'
 import { HistoryStep } from './useGridHistory'
 
-interface SolveSlider extends Pick<ReactSliderProps, 'value' | 'onChange'> {
+interface SolveSliderProps extends Pick<ReactSliderProps, 'value' | 'onChange'> {
   history: HistoryStep[]
 }
 
-const SolveSlider = ({ history, value, onChange }: SolveSlider) => (
+const SolveSlider = ({ history, value, onChange }: SolveSliderProps) => (
   <Slider
     marks
     min={0}

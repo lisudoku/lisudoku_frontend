@@ -1,23 +1,21 @@
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import type { IconDefinition, SizeProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 interface NavButtonProps {
   onClick: () => void
   disabled: boolean
   icon: IconDefinition
+  size: SizeProp
 }
 
-const NavButton = ({ icon, onClick, disabled }: NavButtonProps) => (
+export const NavButton = ({ onClick, disabled, ...props }: NavButtonProps) => (
   <button
     onClick={onClick}
     disabled={disabled}
   >
     <FontAwesomeIcon
-      icon={icon}
       color={disabled ? 'gray' : undefined}
-      size="3x"
+      {...props}
     />
   </button>
 )
-
-export default NavButton

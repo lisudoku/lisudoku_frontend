@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { ReactNode } from 'react'
+import { forwardRef, type ReactNode } from 'react'
 
 interface LogicalSolutionStepProps {
   stepIndex: number
@@ -8,17 +8,19 @@ interface LogicalSolutionStepProps {
   children: ReactNode
 }
 
-export const LogicalSolutionStep = (
-  { stepIndex, selected, onClick, children }: LogicalSolutionStepProps
+export const LogicalSolutionStep = forwardRef<HTMLLIElement, LogicalSolutionStepProps>((
+  { stepIndex, selected, onClick, children },
+  ref
 ) => (
   <li
     className={classNames('p-1 hover:bg-secondary/25 cursor-pointer', {
       '!bg-secondary': selected,
     })}
     onClick={() => onClick(stepIndex)}
+    ref={ref}
   >
       <span>{stepIndex + 1}</span>
       .{' '}
       {children}
   </li>
-)
+))

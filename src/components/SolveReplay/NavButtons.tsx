@@ -1,7 +1,7 @@
 import {
   faBackwardFast, faBackwardStep, faForwardFast, faForwardStep, faPauseCircle, faPlayCircle,
 } from '@fortawesome/free-solid-svg-icons'
-import NavButton from './NavButton'
+import { NavButton } from '../NavButton'
 import { HistoryStep } from './useGridHistory'
 
 interface NavButtonsProps {
@@ -18,6 +18,7 @@ const NavButtons = (
   <div className="flex gap-3 md:gap-8 w-full justify-center">
     <NavButton
       icon={faBackwardFast}
+      size="3x"
       onClick={() => {
         onCurrentStepIndexChange(0)
         onIsPlayingChange(false)
@@ -26,6 +27,7 @@ const NavButtons = (
     />
     <NavButton
       icon={faBackwardStep}
+      size="3x"
       onClick={() => {
         onCurrentStepIndexChange(x => x - 1)
         onIsPlayingChange(false)
@@ -34,6 +36,7 @@ const NavButtons = (
     />
     {!isPlaying && (
       <NavButton
+        size="3x"
         icon={faPlayCircle}
         onClick={() => onIsPlayingChange(true)}
         disabled={currentStepIndex === history.length - 1}
@@ -42,12 +45,14 @@ const NavButtons = (
     {isPlaying && (
       <NavButton
         icon={faPauseCircle}
+        size="3x"
         onClick={() => onIsPlayingChange(false)}
         disabled={false}
       />
     )}
     <NavButton
       icon={faForwardStep}
+      size="3x"
       onClick={() => {
         onCurrentStepIndexChange(x => x + 1)
         onIsPlayingChange(false)
@@ -56,6 +61,7 @@ const NavButtons = (
     />
     <NavButton
       icon={faForwardFast}
+      size="3x"
       onClick={() => {
         onCurrentStepIndexChange(history.length - 1)
         onIsPlayingChange(false)
