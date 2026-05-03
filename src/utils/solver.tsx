@@ -25,7 +25,7 @@ const cellDisplay = (cell: CellPosition) => (
   `R${cell.row + 1}C${cell.col + 1}`
 )
 
-// TODO: use an exhaustive switch, maybe once I add a linter
+// Returns how to refer to given area in hints and solver steps.
 const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
   if (area === 'PrimaryDiagonal') {
     return 'the negative diagonal'
@@ -36,7 +36,8 @@ const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
   }
 
   if (typeof area !== 'object') {
-    return ''
+    const _exhaustive: never = area
+    return _exhaustive
   }
 
   if ('Row' in area) {
@@ -66,9 +67,10 @@ const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
     return `cell ${cellDisplay({ row: area.Cell[0], col: area.Cell[1] })}`
   } else if ('Adhoc' in area) {
     return `adhoc set of cells ${area.Adhoc.map((cell: CellPosition) => cellDisplay(cell)).join(', ')}`
-  } else {
-    throw new Error(`unknown area ${JSON.stringify(area)}`)
   }
+
+  const _exhaustive: never = area
+  return _exhaustive
 }
 
 const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstraints) => {
