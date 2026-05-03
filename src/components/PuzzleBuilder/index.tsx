@@ -52,7 +52,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const runBruteSolver = useSolver(SolverType.Brute)
   const runLogicalSolver = useSolver(SolverType.Logical)
 
-  const runImport = useCallback(async (url: string): Promise<SudokuConstraints | undefined> => {
+  const runImport = useCallback(async (url: string): Promise<SudokuConstraints | void> => {
     const result = await importPuzzle(url)
     if (result.error !== undefined) {
       await alert(result.error)

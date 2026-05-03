@@ -43,7 +43,7 @@ const CompetitionEditPage = () => {
     })
   }, [id, userToken])
 
-  const onSubmit = useCallback(async (values: Record<string, any>) => {
+  const onSubmit = useCallback(async (values: Record<string, any>): Promise<any> => {
     const competition: CompetitionInput = {
       name: values.name,
       url: values.url,

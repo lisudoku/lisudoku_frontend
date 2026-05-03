@@ -37,7 +37,7 @@ const PuzzleEditPage = () => {
     })
   }, [id, userToken])
 
-  const onSubmit = useCallback(async (values: Record<string, any>) => {
+  const onSubmit = useCallback(async (values: Record<string, any>): Promise<any> => {
     const puzzle = values as PuzzleFormData
     const result = await apiUpdatePuzzle(id, puzzle, userToken)
 

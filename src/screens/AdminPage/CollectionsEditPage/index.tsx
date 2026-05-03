@@ -24,7 +24,7 @@ const CollectionsEditPage = () => {
     })
   }, [id, userToken])
 
-  const onSubmit = useCallback(async (values: Record<string, any>) => {
+  const onSubmit = useCallback(async (values: Record<string, any>): Promise<any> => {
     const puzzleCollection: PuzzleCollectionInput = {
       name: values.name,
       url: values.url,

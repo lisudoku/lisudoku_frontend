@@ -13,7 +13,7 @@ const LoginPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const onSubmit = useCallback(async (values: Record<string, any>) => {
+  const onSubmit = useCallback(async (values: Record<string, any>): Promise<any> => {
     const result = await login(values as LoginData)
 
     if (result.error) {

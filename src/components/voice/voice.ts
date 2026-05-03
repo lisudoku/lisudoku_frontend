@@ -47,7 +47,7 @@ export interface VoiceHandlers {
   onCenterMarksActive?: () => void
 }
 
-type InputProcessor = (text: string) => string | undefined
+type InputProcessor = (text: string) => string | void
 
 export class Voice {
   private model?: Model
@@ -183,7 +183,7 @@ export class Voice {
     } while (foundMatch)
   }
 
-  handleRowColInput(text: string) {
+  handleRowColInput(text: string): string | void {
     const matches = []
 
     const match1 = text.match(/^row (\w+) column (\w+)/)
@@ -206,7 +206,7 @@ export class Voice {
     }
   }
 
-  handleDigitInput(text: string) {
+  handleDigitInput(text: string): string | void {
     const words = []
 
     const firstWord = text.split(' ')[0]
@@ -226,7 +226,7 @@ export class Voice {
     }
   }
 
-  handleDeleteInput(text: string) {
+  handleDeleteInput(text: string): string | void {
     const firstWord = text.split(' ')[0]
     if (firstWord === 'delete' || firstWord === 'remove') {
       setTimeout(voice => voice.handlers?.onSelectedCellValueChange?.(null), 0, this)
@@ -234,7 +234,7 @@ export class Voice {
     }
   }
 
-  handleMoveInput(text: string) {
+  handleMoveInput(text: string): string | void {
     const words = []
 
     const firstWord = text.split(' ')[0]
@@ -255,7 +255,7 @@ export class Voice {
     }
   }
 
-  handleUndoInput(text: string) {
+  handleUndoInput(text: string): string | void {
     const firstWord = text.split(' ')[0]
     if (firstWord === 'undo') {
       setTimeout(voice => voice.handlers?.onUndo?.(), 0, this)
@@ -263,7 +263,7 @@ export class Voice {
     }
   }
 
-  handleRedoInput(text: string) {
+  handleRedoInput(text: string): string | void {
     const firstWord = text.split(' ')[0]
     if (firstWord === 'redo') {
       setTimeout(voice => voice.handlers?.onRedo?.(), 0, this)
@@ -271,7 +271,7 @@ export class Voice {
     }
   }
 
-  handleNumbersModeInput(text: string) {
+  handleNumbersModeInput(text: string): string | void {
     const firstWord = text.split(' ')[0]
     if (firstWord === 'digit' || firstWord === 'number') {
       setTimeout(voice => voice.handlers?.onNumbersActive?.(), 0, this)
@@ -279,7 +279,7 @@ export class Voice {
     }
   }
 
-  handleCornerMarksModeInput(text: string) {
+  handleCornerMarksModeInput(text: string): string | void {
     const match = text.match(/^corner( (pencilmark|pencil mark|pencil|mark))?/)
     if (match === null) {
       return
@@ -289,7 +289,7 @@ export class Voice {
     return match[0]
   }
 
-  handleCenterMarksModeInput(text: string) {
+  handleCenterMarksModeInput(text: string): string | void {
     const match = text.match(/^center( (pencilmark|pencil mark|pencil|mark))?/)
     if (match === null) {
       return
