@@ -122,7 +122,8 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         logicalSolution &&
         logicalSolution.solutionType !== 'Full' &&
         !setterMode &&
-        constraints) {
+        constraints &&
+        !userIsAdmin) {
       sendHbAlert({
         name: 'Unsolved puzzle',
         message: `Couldn't solve ${variant} puzzle`,
@@ -132,7 +133,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         },
       })
     }
-  }, [bruteSolution, logicalSolution, variant, constraints, setterMode])
+  }, [bruteSolution, logicalSolution, variant, constraints, setterMode, userIsAdmin])
 
   const [showSolverSettings, setShowSolverSettings] = useState(false)
 
