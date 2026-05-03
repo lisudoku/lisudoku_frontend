@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/design_system/Button'
@@ -23,6 +24,10 @@ import Typography from 'src/design_system/Typography'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'
+
+// TODO: consider a more general approach if it's an issue in other places too
+// Alert about running solver every 5 mins
+const sendHbAlertThrottled = throttle(sendHbAlert, 300_000)
 
 const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
@@ -49,7 +54,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
 
   const handleBruteSolveClick = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
-      sendHbAlert({
+      sendHbAlertThrottled({
         name: 'Running brute solver',
         context: {
           url: exportToLisudokuSolver(constraints),
@@ -63,7 +68,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
 
   const handleLogicalSolveClick = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
-      sendHbAlert({
+      sendHbAlertThrottled({
         name: 'Running logical solver',
         context: {
           url: exportToLisudokuSolver(constraints),
