@@ -63,7 +63,6 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
         url,
         variant: detectConstraints(constraints).variant,
         result: transformResult,
-        constraints,
       },
     })
   }, [transformResult, constraints])

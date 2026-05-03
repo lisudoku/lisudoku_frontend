@@ -59,7 +59,6 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         context: {
           url: exportToLisudokuSolver(constraints),
           variant,
-          constraints,
         },
       })
     }
@@ -73,7 +72,6 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         context: {
           url: exportToLisudokuSolver(constraints),
           variant,
-          constraints,
         },
       })
     }
