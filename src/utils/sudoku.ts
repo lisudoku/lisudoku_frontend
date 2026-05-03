@@ -6,6 +6,7 @@ import {
 } from 'src/types/sudoku'
 import { CONSTRAINT_TYPE_VARIANTS, GRID_SIZES } from './constants'
 import { Area, CellPosition, FixedNumber, KropkiDot, Region, SudokuConstraints } from 'lisudoku-solver'
+import { exhaustiveGuard } from './misc'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -644,8 +645,7 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
   }
 
   if (typeof area !== 'object') {
-    const _exhaustive: never = area
-    return _exhaustive
+    return exhaustiveGuard(area)
   }
 
   if ('Row' in area) {
@@ -707,8 +707,7 @@ export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPo
     return area.Adhoc
   }
 
-  const _exhaustive: never = area
-  return _exhaustive
+  return exhaustiveGuard(area)
 }
 
 export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition): CellPosition[] => {

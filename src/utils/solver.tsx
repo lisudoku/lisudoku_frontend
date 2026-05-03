@@ -3,7 +3,7 @@ import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { GRID_STEPS } from './constants'
-import { pluralize } from './misc'
+import { exhaustiveGuard, pluralize } from './misc'
 import { gridToFixedNumbers } from './sudoku'
 import { DISCORD_INVITE_URL } from 'src/components/AppFooter/DiscordIcon'
 import type { Area, CellPosition, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
@@ -36,8 +36,7 @@ const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
   }
 
   if (typeof area !== 'object') {
-    const _exhaustive: never = area
-    return _exhaustive
+    return exhaustiveGuard(area)
   }
 
   if ('Row' in area) {
@@ -69,8 +68,7 @@ const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
     return `adhoc set of cells ${area.Adhoc.map((cell: CellPosition) => cellDisplay(cell)).join(', ')}`
   }
 
-  const _exhaustive: never = area
-  return _exhaustive
+  return exhaustiveGuard(area)
 }
 
 const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstraints) => {
@@ -88,10 +86,11 @@ const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstr
       return `${areaDisplay(reason.area, constraints)} constraints are not satisfied`
     case 'AreaCandidates':
       return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, constraints)}`
+    default:
+      return exhaustiveGuard(reason.stateType)
   }
 }
 
-// TODO: refactor
 // TODO: feels like explanations and highlights should live together
 export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, constraints: SudokuConstraints): string => {
   const cellDisplays = step.cells.map(cell => cellDisplay(cell))
@@ -170,7 +169,21 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
       const remainingCandidates = step.candidates![cell.row][cell.col].filter((value) => !step.values.includes(value))
       const verb = remainingCandidates.length === 1 ? `only keep ${remainingCandidates[0]} in` : `remove ${values} from`
       return ` in ${areaDisplay(step.areas[0], constraints)} to ${verb} ${affectedCells}`
-    default:
+    case 'AdhocNakedSet':
+    case 'ArrowAdvancedCandidates':
+    case 'ArrowCandidates':
+    case 'KillerCandidates':
+    case 'Kropki':
+    case 'KropkiChainCandidates':
+    case 'LockedCandidatesPairs':
+    case 'LockedCandidatesTriples':
+    case 'NakedPairs':
+    case 'NakedTriples':
+    case 'PalindromeCandidates':
+    case 'PhistomefelRing':
+    case 'RenbanCandidates':
+    case 'Swordfish':
+    case 'ThermoCandidates':
       // Some techniques don't have areas (e.g. XY-Wing)
       const areaMessage = step.areas.length > 0 ? ` in ${areaDisplay(step.areas[0], constraints)}` : ''
 
@@ -178,6 +191,8 @@ export const getBigStepExplanation = (step: SolutionStep, hintLevel: HintLevel, 
       const cellsMessage = cells.length > 0 ? ` on ${pluralize(cells.length, 'cell')} ${cells}` : ''
 
       return `${areaMessage}${cellsMessage} to remove ${values} from ${affectedCells}`
+    default:
+      return exhaustiveGuard(step.rule)
   }
 }
 
