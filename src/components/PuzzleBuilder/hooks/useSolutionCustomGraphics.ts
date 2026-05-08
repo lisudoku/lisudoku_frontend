@@ -1,13 +1,12 @@
-import { CellPosition, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import { SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { inRange } from 'lodash-es'
 import { useMemo } from 'react'
 import { CustomGraphicsAreaHighlight, CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { cellToCustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/utils'
-// import { CellHighlight } from 'src/components/Puzzle/SudokuGridGraphics'
 import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants'
 import { isGridStep } from 'src/utils/solver'
+import { useStepCustomGraphics } from 'src/utils/stepsLogic/hooks'
 import { getAllCells, getAreaCells } from 'src/utils/sudoku'
-import { useStepCustomGraphics } from 'src/utils/techniqueHighlights'
 
 const StepRuleDifficultyColor: { [key in EStepRuleDifficulty]: string } = {
   [EStepRuleDifficulty.Easy]: 'green',

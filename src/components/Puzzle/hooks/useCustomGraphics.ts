@@ -3,9 +3,9 @@ import { useMemo } from 'react'
 import { useSelector } from 'src/hooks'
 import { HintLevel } from 'src/reducers/puzzle'
 import { getCellPeers } from 'src/utils/sudoku'
-import { useStepCustomGraphics } from 'src/utils/techniqueHighlights'
 import type { CustomGraphicsAreaHighlight, CustomGraphicsItem } from '../SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { cellToCustomGraphicsItem } from '../SudokuGridGraphics/CustomGraphics/utils'
+import { useStepCustomGraphics } from 'src/utils/stepsLogic/hooks'
 
 export const useCustomGraphics = () : CustomGraphicsItem[] => {
   const constraints = useSelector(state => state.puzzle.data?.constraints)
