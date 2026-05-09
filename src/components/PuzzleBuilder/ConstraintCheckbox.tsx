@@ -4,7 +4,7 @@ import { changeConstraintValue } from 'src/reducers/builder'
 import Checkbox from 'src/design_system/Checkbox'
 import Tooltip from 'src/design_system/Tooltip'
 import { ConstraintKeyType, ConstraintType } from 'src/types/sudoku'
-import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'
+import { ConstraintsDisplay } from 'src/utils/constraints'
 
 interface ConstraintCheckboxProps {
   id: ConstraintType
@@ -23,7 +23,7 @@ const ConstraintCheckbox = ({ id, keyField, ...props }: ConstraintCheckboxProps)
     return null
   }
 
-  const { label, description, icon } = CONSTRAINTS_DISPLAY[id]
+  const { label, description, icon } = ConstraintsDisplay[id]
 
   return (
     <Checkbox

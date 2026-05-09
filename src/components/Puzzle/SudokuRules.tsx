@@ -2,12 +2,12 @@ import { Card, CardBody } from 'src/design_system/Card'
 import Typography from 'src/design_system/Typography'
 import { ConstraintType } from 'src/types/sudoku'
 import { detectConstraints } from 'src/utils/sudoku'
-import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'
+import { ConstraintsDisplay } from 'src/utils/constraints'
 import { SudokuConstraints } from 'lisudoku-solver'
 
 const computeRules = (constraints: SudokuConstraints) => {
   const rules = []
-  rules.push(CONSTRAINTS_DISPLAY[ConstraintType.FixedNumber].description(constraints))
+  rules.push(ConstraintsDisplay[ConstraintType.FixedNumber].description(constraints))
 
   const constraintTypes = detectConstraints(constraints).constraintTypes
 
@@ -26,13 +26,13 @@ const computeRules = (constraints: SudokuConstraints) => {
   }
 
   const displayedConstraintTypes = constraintTypes.filter(
-    constraintType => CONSTRAINTS_DISPLAY[constraintType].icon !== null
+    constraintType => ConstraintsDisplay[constraintType].icon !== null
   )
 
   rules.push(...displayedConstraintTypes.map(constraintType => (
     <>
-      {CONSTRAINTS_DISPLAY[constraintType].icon}{' '}
-      {CONSTRAINTS_DISPLAY[constraintType].description(constraints)}
+      {ConstraintsDisplay[constraintType].icon}{' '}
+      {ConstraintsDisplay[constraintType].description(constraints)}
     </>
   )))
 

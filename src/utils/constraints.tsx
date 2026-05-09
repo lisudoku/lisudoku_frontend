@@ -15,7 +15,7 @@ interface ConstraintDisplayData {
   description: (constraints: SudokuConstraints) => ReactNode
 }
 
-export const CONSTRAINTS_DISPLAY: { [key in ConstraintType]: ConstraintDisplayData } = {
+export const ConstraintsDisplay: Record<ConstraintType, ConstraintDisplayData> = {
   [ConstraintType.FixedNumber]: {
     icon: null,
     label: 'Given digit',

@@ -5,7 +5,7 @@ import { changeConstraintType } from 'src/reducers/builder'
 import Radio from 'src/design_system/Radio'
 import Tooltip from 'src/design_system/Tooltip'
 import { ConstraintType } from 'src/types/sudoku'
-import { CONSTRAINTS_DISPLAY } from 'src/utils/constraints'
+import { ConstraintsDisplay } from 'src/utils/constraints'
 
 interface ConstraintRadioProps {
   id: ConstraintType
@@ -25,7 +25,7 @@ const ConstraintRadio = ({ id, ...props }: ConstraintRadioProps) => {
     return null
   }
 
-  const { label, description, icon } = CONSTRAINTS_DISPLAY[id]
+  const { label, description, icon } = ConstraintsDisplay[id]
 
   return (
     <Radio
