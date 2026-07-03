@@ -138,8 +138,8 @@ const stepsLogic: Record<Rule, StepLogic> = {
   Killer45: {
     description: ({ step: { areas, values, affectedCells, candidates }, constraints, valuesDisplay, affectedCellsDisplay }) => {
       const cell = affectedCells[0]
-      const remainingCandidates = candidates![cell.row][cell.col].filter((value) => !values.includes(value))
-      const verb = remainingCandidates.length === 1 ? `only keep ${remainingCandidates[0]} in` : `remove ${valuesDisplay} from`
+      const remainingCandidates = candidates?.[cell.row][cell.col].filter((value) => !values.includes(value))
+      const verb = remainingCandidates && remainingCandidates.length === 1 ? `only keep ${remainingCandidates[0]} in` : `remove ${valuesDisplay} from`
       return ` in ${areaDisplay(areas[0], constraints)} to ${verb} ${affectedCellsDisplay}`
     },
     highlights: ({ step: { areas, affectedCells } }) => [
