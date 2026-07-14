@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { cloneDeep, inRange } from 'lodash-es'
-import classNames from 'classnames'
+import { cloneDeep } from 'lodash-es'
 import { useScreenshot, createFileName } from 'use-react-screenshot';
 import { SudokuConstraints, SolutionStep } from 'lisudoku-solver';
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
-  addConstraint, ArrowConstraintType, changeArrowConstraintType, changeInputActive, changeKillerSum,
+  addConstraint, changeArrowConstraintType, changeInputActive, changeKillerSum,
   changeSelectedCell,
   initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
@@ -24,14 +23,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { sendHbAlert } from 'src/components/HoneybadgerProvider'
-import { defaultConstraints, detectConstraints, ensureDefaultRegions } from 'src/utils/sudoku';
-import ExportModal from './ExportModal';
-import ImportModal from './ImportModal';
-import ImportImageModal from './ImportImageModal';
-import ConstraintRadio from './ConstraintRadio';
-import ConstraintCheckbox from './ConstraintCheckbox';
-import { alert } from 'src/design_system/ConfirmationDialog';
-import { useSolutionCustomGraphics } from './hooks/useSolutionCustomGraphics';
+import { defaultConstraints, ensureDefaultRegions } from 'src/utils/sudoku'
+import ExportModal from './ExportModal'
+import ImportModal from './ImportModal'
+import ImportImageModal from './ImportImageModal'
+import ConstraintRadio from './ConstraintRadio'
+import ConstraintCheckbox from './ConstraintCheckbox'
+import { alert } from 'src/design_system/ConfirmationDialog'
+import { useSolutionCustomGraphics } from './hooks/useSolutionCustomGraphics'
+import { detectConstraints } from 'src/constraints/utils'
+import { constraintDefinitions } from 'src/constraints/definitions'
+import { ArrowConstraintType } from 'src/constraints/editorState'
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -120,16 +122,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const setterMode = useSelector(state => state.builder.setterMode)
   const inputActive = useSelector(state => state.builder.inputActive)
   const constraints = useSelector(state => state.builder.constraints)
-  const selectedCells = useSelector(state => state.builder.selectedCells)
-  const constraintType = useSelector(state => state.builder.constraintType)
-  const arrowConstraintType = useSelector(state => state.builder.arrowConstraintType)
-  const currentThermo = useSelector(state => state.builder.currentThermo)
-  const currentArrow = useSelector(state => state.builder.currentArrow)
-  const currentRenban = useSelector(state => state.builder.currentRenban)
-  const currentPalindrome = useSelector(state => state.builder.currentPalindrome)
+  const editorState = useSelector(state => state.builder.constraintEditorState)
   const cellMarks = useSelector(state => state.builder.cellMarks)
-  const constraintGrid = useSelector(state => state.builder.constraintGrid!)
-  const killerSum = useSelector(state => state.builder.killerSum ?? '')
+  const committedConstraints = useSelector(state => state.builder.committedConstraints)
+  const killerSum = useSelector(state => state.builder.constraintEditorState.killerSum ?? '')
   const bruteSolution = useSelector(state => state.builder.bruteSolution)
   const logicalSolution = useSelector(state => state.builder.logicalSolution)
   const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
@@ -152,22 +148,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     dispatch(changeInputActive(false))
   }, [dispatch])
 
-  const handleArrowConstraintTypeChange = useCallback((id: string) => {
-    dispatch(changeArrowConstraintType(id))
-  }, [dispatch])
-
-  const handleConstraintAdd = useCallback(() => {
-    dispatch(addConstraint())
-  }, [dispatch])
-
-  const handleKillerSumChange = useCallback((sum: number | null) => {
-    dispatch(changeKillerSum(sum))
-  }, [dispatch])
-
-  const handleImportClick = useCallback(() => {
-    setImportOpen(true)
-  }, [])
-
   const handleImportConfirm = useCallback(async (url: string) => {
     const result = await runImport(url)
     if (result) {
@@ -175,20 +155,12 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     }
   }, [runImport])
 
-  const handleExportClick = useCallback(() => {
-    setExportOpen(true)
-  }, [])
-
   const gridWrapperRef = useRef<HTMLDivElement>(null)
 
   const [_image, takeScreenShot] = useScreenshot({
     type: 'image/png',
     quality: 1.0,
   })
-
-  const handleImportImageClick = useCallback(() => {
-    setImportImageOpen(true)
-  }, [])
 
   const handleImportImageSuccess = useCallback(async (gridString: string) => {
     // TODO: Maybe don't send a HB alert? Leave in for now...
@@ -235,44 +207,23 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     logicalSolutionStepIndex,
   })
 
-  if (!constraints) {
+  if (!constraints || !committedConstraints) {
     return null
   }
 
   const hideSelectedCells = logicalSolution &&
     logicalSolutionStepIndex !== -1 &&
     logicalSolutionStepIndex !== logicalSolution.steps.length
-  const displayedSelectedCells = hideSelectedCells ? [] : selectedCells
+  const displayedSelectedCells = hideSelectedCells ? [] : editorState.selectedCells
 
-  let thermos = constraints?.thermos ?? []
-  if (currentThermo.length > 0) {
-    thermos = [ ...thermos, currentThermo ]
-  }
-  let arrows = constraints?.arrows ?? []
-  if (currentArrow.arrowCells.length > 0 || currentArrow.circleCells.length > 0) {
-    arrows = [ ...arrows, currentArrow ]
-  }
-  let renbans = constraints?.renbans ?? []
-  if (currentRenban.length > 0) {
-    renbans = [ ...renbans, currentRenban ]
-  }
-  let palindromes = constraints?.palindromes ?? []
-  if (currentPalindrome.length > 0) {
-    palindromes = [ ...palindromes, currentPalindrome ]
-  }
-
-  const constraintPreview = {
-    ...constraints,
-    thermos,
-    arrows,
-    renbans,
-    palindromes,
-  }
-
+  let constraintPreview = constraints
   let usedGrid = grid
-  if (constraintType === ConstraintType.Regions) {
-    usedGrid = constraintGrid
-    constraintPreview.fixedNumbers = []
+  if (editorState.type === ConstraintType.Regions) {
+    usedGrid = editorState.regionsGrid
+    constraintPreview = {
+      ...constraintPreview,
+      fixedNumbers: [],
+    }
   }
 
   return (
@@ -285,7 +236,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       <ExportModal
         open={exportOpen}
         onClose={() => setExportOpen(false)}
-        constraints={constraints}
+        constraints={committedConstraints}
       />
       <ImportImageModal
         open={importImageOpen}
@@ -296,15 +247,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
         {/* wrap the grid so we can screenshot it using the ref */}
         <div ref={gridWrapperRef} className="bg-primary">
-          <SudokuGrid
-            constraints={constraintPreview}
-            grid={usedGrid}
-            cellMarks={usedMarks}
-            selectedCells={displayedSelectedCells}
-            checkErrors={constraintType === ConstraintType.FixedNumber}
-            onCellClick={onCellClick}
-            customGraphics={customGraphics}
-          />
+          {constraintPreview && (
+            <SudokuGrid
+              constraints={constraintPreview}
+              grid={usedGrid}
+              cellMarks={usedMarks}
+              selectedCells={displayedSelectedCells}
+              checkErrors={editorState.type !== ConstraintType.Regions}
+              onCellClick={onCellClick}
+              customGraphics={customGraphics}
+            />
+          )}
         </div>
         <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
           <div className="flex flex-col">
@@ -319,20 +272,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               </div>
               <ConstraintRadio id={ConstraintType.FixedNumber} />
               <ConstraintRadio id={ConstraintType.Regions} />
-              <ConstraintRadio
-                id={ConstraintType.Thermo}
-                labelProps={{ className: classNames({
-                  'text-red-600': currentThermo.length === 1 || currentThermo.length > gridSize!,
-                  'text-green-600': inRange(currentThermo.length, 2, gridSize! + 1),
-                })}}
-              />
-              <ConstraintRadio
-                id={ConstraintType.Arrow}
-                labelProps={{ className: classNames({
-                  'text-red-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length === 0,
-                  'text-green-600': currentArrow.circleCells.length > 0 && currentArrow.arrowCells.length > 0,
-                })}}
-              />
+              <ConstraintRadio id={ConstraintType.Thermo} />
+              <ConstraintRadio id={ConstraintType.Arrow} />
               <ConstraintRadio id={ConstraintType.ExtraRegions} />
               <ConstraintRadio id={ConstraintType.KillerCage} />
               <ConstraintRadio id={ConstraintType.KropkiConsecutive} />
@@ -342,16 +283,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               <ConstraintRadio id={ConstraintType.Renban} />
               <ConstraintRadio id={ConstraintType.Palindrome} />
               <div className="flex flex-col w-full mt-2 gap-y-1">
-                {constraintType === ConstraintType.KillerCage && (
-                  <Input label="Sum"
-                        type="number"
-                        value={killerSum}
-                        onChange={handleKillerSumChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
+                {editorState.type === ConstraintType.KillerCage && (
+                  <Input
+                    label="Sum"
+                    type="number"
+                    value={killerSum}
+                    onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                   />
                 )}
-                {constraintType === ConstraintType.Arrow && (
+                {editorState.type === ConstraintType.Arrow && (
                   <>
                     <Typography variant="h6">
                       Arrow constraint
@@ -361,25 +303,23 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                         name="arrow-build-item"
                         id={ArrowConstraintType.Circle}
                         label="Circle"
-                        checked={arrowConstraintType === ArrowConstraintType.Circle}
-                        onChange={handleArrowConstraintTypeChange}
+                        checked={editorState.arrowConstraintType === ArrowConstraintType.Circle}
+                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
                       />
                       <Radio
                         name="arrow-build-item"
                         id={ArrowConstraintType.Arrow}
                         label="Arrow"
-                        checked={arrowConstraintType === ArrowConstraintType.Arrow}
-                        onChange={handleArrowConstraintTypeChange}
+                        checked={editorState.arrowConstraintType === ArrowConstraintType.Arrow}
+                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
                       />
                     </div>
                   </>
                 )}
-                {[ConstraintType.Thermo, ConstraintType.Regions, ConstraintType.KillerCage,
-                  ConstraintType.KropkiConsecutive, ConstraintType.KropkiDouble,
-                  ConstraintType.ExtraRegions, ConstraintType.Arrow, ConstraintType.Renban,
-                  ConstraintType.Palindrome,
-                ].includes(constraintType) && (
-                  <Button onClick={handleConstraintAdd}>Add</Button>
+                {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
+                  <Button onClick={() => dispatch(addConstraint())}>
+                    {editorState.type === ConstraintType.Regions ? 'Set' : 'Add'}
+                  </Button>
                 )}
               </div>
             </div>
@@ -413,17 +353,17 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           </div>
           <hr />
           <div className="flex w-full mt-2 gap-x-1">
-            <Button className="w-1/2" variant="outlined" onClick={handleImportClick}>
+            <Button className="w-1/2" variant="outlined" onClick={() => setImportOpen(true)}>
               <FontAwesomeIcon icon={faDownload} />{' '}
               Import
             </Button>
-            <Button className="w-1/2" variant="outlined" onClick={handleExportClick}>
+            <Button className="w-1/2" variant="outlined" onClick={() => setExportOpen(true)}>
               <FontAwesomeIcon icon={faUpload} />{' '}
               Export
             </Button>
           </div>
           <div className="flex w-full gap-x-1">
-            <Button className="w-1/2" variant="outlined" onClick={handleImportImageClick}>
+            <Button className="w-1/2" variant="outlined" onClick={() => setImportImageOpen(true)}>
               <FontAwesomeIcon icon={faDownload} />{' '}
               Import image
             </Button>

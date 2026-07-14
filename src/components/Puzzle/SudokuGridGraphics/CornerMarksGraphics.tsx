@@ -4,9 +4,9 @@ import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { CellMarkSets, getAllCells } from 'src/utils/sudoku'
 import { SudokuConstraints } from 'lisudoku-solver'
-import { useCellMarkErrors } from '../hooks/useCellMarkErrors'
 import { CustomGraphicsCornerMarks } from './CustomGraphics/CustomGraphics'
 import { Theme } from 'src/components/ThemeProvider'
+import { CellErrors } from 'src/constraints/types'
 
 const CORNER_POSITIONS = [ 1, 3, 7, 9, 2, 8, 4, 6, 5 ]
 
@@ -14,8 +14,20 @@ const computeCornerMarksFontSize = (cellSize: number) => (
   cellSize * 3 / 14
 )
 
+interface CellCornerMarksGraphicsProps {
+  row: number
+  col: number
+  cornerMarks: number[]
+  errors: CellErrors
+  cellSize: number
+  killerActive: boolean
+  cellClassName?: string
+  cellStyle?: React.CSSProperties
+  customGraphicsItem?: CustomGraphicsCornerMarks
+}
+
 const CellCornerMarksGraphics = ({
-  row, col, cornerMarks, cellMarksErrors, cellSize, killerActive, cellClassName, cellStyle, customGraphicsItem,
+  row, col, cornerMarks, errors, cellSize, killerActive, cellClassName, cellStyle, customGraphicsItem,
 }: CellCornerMarksGraphicsProps) => {
   const marksPaddingX = (killerActive ? 3 : 0)
   const marksPaddingY = (killerActive ? 16 : 0)
@@ -31,7 +43,7 @@ const CellCornerMarksGraphics = ({
   return (
     <>
       {sortBy(cornerMarks).map((value, index) => {
-        const hasError = cellMarksErrors?.cornerMarks?.has(value) ?? false
+        const hasError = errors?.includes(value) ?? false
         const markRow = Math.floor((CORNER_POSITIONS[index] - 1) / 3)
         const markCol = (CORNER_POSITIONS[index] - 1) % 3
         const x = col * cellSize + 1 + markCol * marksColumnWidth + marksPaddingX + marksColumnWidth / 2 - marksFontWidth / 2
@@ -68,21 +80,21 @@ const CellCornerMarksGraphics = ({
   )
 }
 
-type CellCornerMarksGraphicsProps = {
-  row: number
-  col: number
-  cornerMarks: number[]
-  cellMarksErrors?: CellMarkSets
+interface CornerMarksGraphicsProps {
+  constraints: SudokuConstraints
+  cellMarks?: CellMarks[][]
+  grid?: Grid
+  fixedNumbersGrid: Grid
   cellSize: number
   killerActive: boolean
-  cellClassName?: string
-  cellStyle?: React.CSSProperties
-  customGraphicsItem?: CustomGraphicsCornerMarks
+  errorGrid?: CellErrors[][]
+  customGraphics: CustomGraphicsCornerMarks[]
+  theme: Theme
 }
 
 const CornerMarksGraphics = ({
   cellSize, constraints, cellMarks, grid, fixedNumbersGrid, killerActive,
-  cellMarksErrors, customGraphics, theme,
+  errorGrid, customGraphics, theme,
 }: CornerMarksGraphicsProps) => {
   const marksFontSize = computeCornerMarksFontSize(cellSize)
 
@@ -110,7 +122,7 @@ const CornerMarksGraphics = ({
         row={row}
         col={col}
         cornerMarks={cornerMarks!}
-        cellMarksErrors={cellMarksErrors?.[row][col]}
+        errors={errorGrid?.[row][col]}
         killerActive={killerActive}
         cellSize={cellSize}
         customGraphicsItem={cellCustomGraphics[0]}
@@ -128,18 +140,6 @@ const CornerMarksGraphics = ({
       {cornerMarkElements}
     </g>
   )
-}
-
-type CornerMarksGraphicsProps = {
-  constraints: SudokuConstraints
-  cellMarks?: CellMarks[][]
-  grid?: Grid
-  fixedNumbersGrid: Grid
-  cellSize: number
-  killerActive: boolean
-  cellMarksErrors: CellMarkSets[][]
-  customGraphics: CustomGraphicsCornerMarks[]
-  theme: Theme
 }
 
 export { CornerMarksGraphics, CellCornerMarksGraphics }

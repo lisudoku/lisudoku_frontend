@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import useInterval from 'react-useinterval'
 import classNames from 'classnames'
-import PuzzleCardIcons from '../AdminPage/PuzzlesPage/PuzzleCardIcons'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import { getDurationShort, useCellSize } from 'src/utils/misc'
 import { differenceInSeconds, parseISO } from 'date-fns'
 import { TvPuzzle } from 'src/reducers/tv'
+import { PuzzleCardIcons } from 'src/components/PuzzleCardIcons'
 
 const TvPuzzleCardDescription = ({ puzzle }: { puzzle: TvPuzzle }) => {
   const [ now, setNow ] = useState<Date>(new Date())

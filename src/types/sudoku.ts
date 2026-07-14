@@ -2,7 +2,7 @@ import { SudokuConstraints } from 'lisudoku-solver'
 
 export type Grid = (number | null)[][]
 
-export type CellMarks = {
+export interface CellMarks {
   cornerMarks?: number[]
   centerMarks?: number[]
 }
@@ -36,7 +36,7 @@ export enum SudokuDifficulty {
 
 type BooleanConstraints = |
   'primaryDiagonal' | 'secondaryDiagonal' | 'antiKnight' | 'antiKing' | 'kropkiNegative' | 'topBottom'
-export type ConstraintKeyType = keyof Pick<SudokuConstraints, BooleanConstraints>
+export type BooleanConstraintKeyType = keyof Pick<SudokuConstraints, BooleanConstraints>
 
 export enum ConstraintType {
   FixedNumber = 'fixed_number',
@@ -48,7 +48,6 @@ export enum ConstraintType {
   Palindrome = 'palindrome',
   PrimaryDiagonal = 'primary_diagonal',
   SecondaryDiagonal = 'secondary_diagonal',
-  Diagonals = 'diagonals',
   AntiKnight = 'anti_knight',
   AntiKing = 'anti_king',
   KillerCage = 'killer_cage',
@@ -60,7 +59,7 @@ export enum ConstraintType {
   TopBottom = 'top_bottom',
 }
 
-export type Puzzle = {
+export interface Puzzle {
   id?: string
   variant?: SudokuVariant
   difficulty?: SudokuDifficulty

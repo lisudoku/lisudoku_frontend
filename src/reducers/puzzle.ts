@@ -3,9 +3,10 @@ import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import type { CellPosition, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { CellMarks, Grid, Puzzle } from 'src/types/sudoku'
-import { computeFixedNumbersGrid, defaultConstraints, detectConstraints, getAllCells } from 'src/utils/sudoku'
+import { computeFixedNumbersGrid, defaultConstraints, getAllCells } from 'src/utils/sudoku'
 import { camelCaseKeys } from 'src/utils/json'
 import { ActionType } from 'src/types'
+import { detectConstraints } from 'src/constraints/utils'
 
 export enum HintLevel {
   Small = 'Small',

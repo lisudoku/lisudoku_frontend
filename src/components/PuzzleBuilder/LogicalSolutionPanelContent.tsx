@@ -1,8 +1,8 @@
 import type { Rule, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
-import { max, orderBy, sumBy, toPairs } from 'lodash-es'
+import { max, orderBy, toPairs } from 'lodash-es'
 import Typography from 'src/design_system/Typography'
 import { useSelector } from 'src/hooks'
-import { EStepRuleDifficulty, StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
+import { StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
 
 interface LogicalSolutionPanelContentProps {
@@ -29,48 +29,6 @@ const groupStepsByType = (steps: SolutionStep[]) => {
     ],
     ['desc', 'desc']
   )
-}
-
-const estimateDifficultyByConstraints = (constraints: SudokuConstraints) => {
-  const gridSize = constraints.gridSize
-  if (gridSize === 4 || gridSize === 6) {
-    return StepRuleDifficultyDisplay[EStepRuleDifficulty.Easy]
-  }
-
-  let nonEmptyCells = constraints.fixedNumbers?.length ?? 0
-  nonEmptyCells += sumBy(constraints.thermos, 'length') / 3
-  nonEmptyCells += sumBy(constraints.arrows, 'length') / 3
-  nonEmptyCells += sumBy(constraints.renbans, 'length') / 3
-  if (constraints.primaryDiagonal) {
-    nonEmptyCells += 3
-  }
-  if (constraints.secondaryDiagonal) {
-    nonEmptyCells += 3
-  }
-  if (constraints.antiKnight) {
-    nonEmptyCells += constraints.gridSize
-  }
-  if (constraints.antiKing) {
-    nonEmptyCells += constraints.gridSize * 3 / 2
-  }
-  nonEmptyCells += sumBy(constraints.killerCages, 'region.length') / 3
-  nonEmptyCells += constraints.kropkiDots?.length ?? 0 / 2
-  nonEmptyCells += constraints.extraRegions?.length ?? 0 * 2
-  nonEmptyCells += constraints.oddCells?.length ?? 0 / 2
-  nonEmptyCells += constraints.evenCells?.length ?? 0 / 2
-  if (constraints.topBottom) {
-    nonEmptyCells += constraints.gridSize
-  }
-
-  if (nonEmptyCells >= 30) {
-    return StepRuleDifficultyDisplay[EStepRuleDifficulty.Easy]
-  } else if (nonEmptyCells >= 23) {
-    return StepRuleDifficultyDisplay[EStepRuleDifficulty.Medium]
-  } else if (nonEmptyCells >= 18) {
-    return StepRuleDifficultyDisplay[EStepRuleDifficulty.Hard]
-  } else {
-    return 'too hard!!!'
-  }
 }
 
 const estimateDifficultyByRules = (steps: SolutionStep[]) => {
@@ -118,9 +76,6 @@ export const LogicalSolutionPanelContent = ({ solution, constraints, running, se
           </ul>
           <Typography variant="paragraph">
             Difficutly by rule rank - {estimateDifficultyByRules(solution.steps)}
-          </Typography>
-          <Typography variant="paragraph">
-            Difficutly by given cells - {estimateDifficultyByConstraints(constraints)}
           </Typography>
         </>
       ) : (

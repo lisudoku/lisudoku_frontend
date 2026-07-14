@@ -3,10 +3,11 @@ import { compact, uniq } from 'lodash-es'
 import { useSelector } from 'src/hooks'
 import { UserSolution } from 'src/types'
 import { Puzzle, SudokuVariant } from 'src/types/sudoku'
-import { detectConstraints } from './sudoku'
-import { CONSTRAINT_TYPE_VARIANTS, SudokuVariantDisplay } from './constants'
+import { SudokuVariantDisplay } from './constants'
 import { fetchUserSolution } from './apiService'
 import { camelCaseKeys } from './json'
+import { detectConstraints } from '../constraints/utils'
+import { constraintDefinitions } from 'src/constraints/definitions'
 
 export const useSolve = (id: string) => {
   const [loading, setLoading] = useState(true)
@@ -21,8 +22,11 @@ export const useSolve = (id: string) => {
     }
     const { constraintTypes, variant } = detectConstraints(puzzleConstraints)
     if (variant === SudokuVariant.Mixed) {
-      return uniq(constraintTypes.map(
-        constraintType => SudokuVariantDisplay[CONSTRAINT_TYPE_VARIANTS[constraintType]])
+      return uniq(
+        constraintTypes
+          .map(constraintType => constraintDefinitions[constraintType].variant({ constraints: puzzleConstraints }))
+          .filter(variant => variant !== SudokuVariant.Classic)
+          .map(variant => SudokuVariantDisplay[variant])
       ).join(', ')
     }
     return SudokuVariantDisplay[variant]

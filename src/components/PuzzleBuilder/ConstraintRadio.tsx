@@ -5,7 +5,8 @@ import { changeConstraintType } from 'src/reducers/builder'
 import Radio from 'src/design_system/Radio'
 import Tooltip from 'src/design_system/Tooltip'
 import { ConstraintType } from 'src/types/sudoku'
-import { ConstraintsDisplay } from 'src/utils/constraints'
+import { constraintDefinitions } from 'src/constraints/definitions'
+import classNames from 'classnames'
 
 interface ConstraintRadioProps {
   id: ConstraintType
@@ -15,17 +16,24 @@ interface ConstraintRadioProps {
 const ConstraintRadio = ({ id, ...props }: ConstraintRadioProps) => {
   const dispatch = useDispatch()
   const constraints = useSelector(state => state.builder.constraints)
-  const checkedConstraint = useSelector(state => state.builder.constraintType)
+  const editorState = useSelector(state => state.builder.constraintEditorState)
 
   const handleConstraintChange = useCallback((id: string) => {
     dispatch(changeConstraintType(id))
   }, [dispatch])
 
+  const { label, description, icon, validateCurrentConstraint } = constraintDefinitions[id]
+  let validationResult
+  if (editorState.type === id && constraints) {
+    validationResult = validateCurrentConstraint({
+      editorState,
+      constraints,
+    })
+  }
+
   if (!constraints) {
     return null
   }
-
-  const { label, description, icon } = ConstraintsDisplay[id]
 
   return (
     <Radio
@@ -36,7 +44,7 @@ const ConstraintRadio = ({ id, ...props }: ConstraintRadioProps) => {
           <>
             {' '}
             <Tooltip
-              content={description(constraints)}
+              content={description({ constraints })}
               placement="bottom"
             >
               {icon}
@@ -44,8 +52,14 @@ const ConstraintRadio = ({ id, ...props }: ConstraintRadioProps) => {
           </>
         )}
       </>}
-      checked={checkedConstraint === id}
+      checked={editorState.type === id}
       onChange={handleConstraintChange}
+      labelProps={{
+        className: classNames({
+          'text-red-600': validationResult?.type === 'error',
+          'text-green-600': validationResult?.type === 'success',
+        })
+      }}
       {...props}
     />
   )

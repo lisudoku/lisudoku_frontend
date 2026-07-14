@@ -1,43 +1,21 @@
 import { Card, CardBody } from 'src/design_system/Card'
 import Typography from 'src/design_system/Typography'
-import { ConstraintType } from 'src/types/sudoku'
-import { detectConstraints } from 'src/utils/sudoku'
-import { ConstraintsDisplay } from 'src/utils/constraints'
-import { SudokuConstraints } from 'lisudoku-solver'
+import { detectNormalizedConstraintPresentations } from 'src/constraints/utils'
+import type { SudokuConstraints } from 'lisudoku-solver'
+import type { ReactNode } from 'react'
 
-const computeRules = (constraints: SudokuConstraints) => {
-  const rules = []
-  rules.push(ConstraintsDisplay[ConstraintType.FixedNumber].description(constraints))
-
-  const constraintTypes = detectConstraints(constraints).constraintTypes
-
-  // Combine diagonals into a single rule
-  if (constraintTypes.includes(ConstraintType.PrimaryDiagonal) &&
-      constraintTypes.includes(ConstraintType.SecondaryDiagonal)) {
-    constraintTypes.splice(
-      constraintTypes.findIndex(constraintType => constraintType === ConstraintType.SecondaryDiagonal),
-      1,
-    )
-    constraintTypes.splice(
-      constraintTypes.findIndex(constraintType => constraintType === ConstraintType.PrimaryDiagonal),
-      1,
-      ConstraintType.Diagonals,
-    )
-  }
-
-  const displayedConstraintTypes = constraintTypes.filter(
-    constraintType => ConstraintsDisplay[constraintType].icon !== null
-  )
-
-  rules.push(...displayedConstraintTypes.map(constraintType => (
-    <>
-      {ConstraintsDisplay[constraintType].icon}{' '}
-      {ConstraintsDisplay[constraintType].description(constraints)}
-    </>
-  )))
-
-  return rules
-}
+const computeRules = (constraints: SudokuConstraints): ReactNode[] => (
+  [
+    ...detectNormalizedConstraintPresentations(constraints)
+      .filter(({ description }) => description !== null)
+      .map(({ icon, description }) => (
+        <>
+          {icon}{' '}
+          {description!({ constraints })}
+        </>
+      ))
+  ]
+)
 
 const SudokuRules = ({ constraints }: { constraints: SudokuConstraints }) => (
   <>

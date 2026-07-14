@@ -69,8 +69,8 @@ export const useControlCallbacks = () => {
 
 export const useKeyboardHandler = (digitsActive = true) => {
   const constraints = useSelector(state => state.builder.constraints)
-  const selectedCells = useSelector(state => state.builder.selectedCells)
-  const constraintType = useSelector(state => state.builder.constraintType)
+  const selectedCells = useSelector(state => state.builder.constraintEditorState.selectedCells)
+  const constraintType = useSelector(state => state.builder.constraintEditorState.type)
   const inputMode = useSelector(state => state.builder.inputMode)
 
   const gridSize = constraints?.gridSize ?? 9

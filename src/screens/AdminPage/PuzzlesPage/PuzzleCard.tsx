@@ -8,9 +8,9 @@ import { apiDeletePuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
-import PuzzleCardIcons from './PuzzleCardIcons'
 import { alert, confirm } from 'src/design_system/ConfirmationDialog'
 import { useSolvedPuzzleIds } from 'src/utils/solves'
+import { PuzzleCardIcons } from 'src/components/PuzzleCardIcons'
 
 const PuzzleCard = ({ puzzle }: { puzzle: ExtendedPuzzle }) => {
   const dispatch = useDispatch()

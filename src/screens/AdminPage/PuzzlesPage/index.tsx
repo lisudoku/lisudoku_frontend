@@ -6,7 +6,7 @@ import Typography from 'src/design_system/Typography'
 import { responsePuzzles } from 'src/reducers/admin'
 import { fetchAllPuzzles } from 'src/utils/apiService'
 import {
-  SudokuDifficultyDisplay, SudokuDifficultyRank, SudokuVariantDisplay, SudokuVariantRank,
+  SudokuDifficultyDisplay, SudokuDifficultyRank, SudokuVariantDisplay, SudokuVariantIcon, SudokuVariantRank,
 } from 'src/utils/constants'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { ExtendedPuzzle } from 'src/types'
@@ -47,6 +47,8 @@ const PuzzlesPage = () => {
             {variantGroups.map(([difficulty, puzzles]) => (
               <div key={variant + difficulty} >
                 <Typography variant="h4">
+                  {SudokuVariantIcon[variant as SudokuVariant]}
+                  {' '}
                   {`${SudokuVariantDisplay[variant as SudokuVariant]} - ${SudokuDifficultyDisplay[difficulty as SudokuDifficulty]} (${puzzles.length})`}
                 </Typography>
                 <div className="flex flex-wrap p-5 pt-2 gap-4">

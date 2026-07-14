@@ -7,8 +7,9 @@ import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
 import CopyToClipboard from '../CopyToClipboard';
 import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
 import { sendHbAlert } from '../HoneybadgerProvider';
-import { detectConstraints, isGridString } from 'src/utils/sudoku';
+import { isGridString } from 'src/utils/sudoku';
 import { SudokuConstraints } from 'lisudoku-solver';
+import { detectConstraints } from 'src/constraints/utils';
 
 interface CopiableInputProps {
   url?: string
