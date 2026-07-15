@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { changeConstraintValue } from 'src/reducers/builder'
 import Checkbox from 'src/design_system/Checkbox'
 import Tooltip from 'src/design_system/Tooltip'
-import { ConstraintKeyType, ConstraintType } from 'src/types/sudoku'
-import { ConstraintsDisplay } from 'src/utils/constraints'
+import { BooleanConstraintKeyType, ConstraintType } from 'src/types/sudoku'
+import { constraintDefinitions } from 'src/constraints/definitions'
 
 interface ConstraintCheckboxProps {
   id: ConstraintType
-  keyField: ConstraintKeyType
+  keyField: BooleanConstraintKeyType
 }
 
 const ConstraintCheckbox = ({ id, keyField, ...props }: ConstraintCheckboxProps) => {
@@ -23,18 +23,18 @@ const ConstraintCheckbox = ({ id, keyField, ...props }: ConstraintCheckboxProps)
     return null
   }
 
-  const { label, description, icon } = ConstraintsDisplay[id]
+  const { label, description, icon } = constraintDefinitions[id]
 
   return (
     <Checkbox
       id={id}
       label={<>
         {label}
-        {icon && (
+        {icon && description !== null && (
           <>
             {' '}
             <Tooltip
-              content={description(constraints)}
+              content={description({ constraints })}
               placement="bottom"
             >
               {icon}

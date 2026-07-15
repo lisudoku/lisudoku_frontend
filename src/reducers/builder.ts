@@ -1,37 +1,38 @@
 import { createSlice } from '@reduxjs/toolkit'
 import {
+  cloneDeep,
   compact,
-  differenceWith, find, findIndex, isEmpty, isEqual,
-  pull, pullAllWith, remove, sortBy, uniqWith, xorWith,
+  differenceWith, isEmpty, isEqual,
+  pull, pullAllWith, uniqWith, xorWith,
 } from 'lodash-es'
 import {
-  CellMarks, ConstraintKeyType, ConstraintType, Grid,
+  CellMarks, BooleanConstraintKeyType, ConstraintType,
   SudokuDifficulty, SudokuVariant,
 } from 'src/types/sudoku'
 import { SolverType } from 'src/types/wasm'
 import { camelCaseKeys } from 'src/utils/json'
 import { assert } from 'src/utils/misc'
-import { defaultConstraints, detectConstraints, regionGridToRegions, regionsToRegionGrid } from 'src/utils/sudoku'
+import { defaultConstraints, regionsToRegionGrid } from 'src/utils/sudoku'
 import { InputMode } from './puzzle'
-import {
-  Arrow, CellPosition, FixedNumber, KillerCage, KropkiDot, KropkiDotType, Palindrome, Region, Renban, SudokuBruteSolveResult, SudokuConstraints, SudokuLogicalSolveResult, Thermo,
+import type {
+  CellPosition, FixedNumber, SudokuBruteSolveResult, SudokuConstraints, SudokuLogicalSolveResult,
 } from 'lisudoku-solver'
-
-export enum ArrowConstraintType {
-  Circle = 'arrow-circle',
-  Arrow = 'arrow-arrow',
-}
+import { detectConstraints } from 'src/constraints/utils'
+import { constraintDefinitions } from 'src/constraints/definitions'
+import { ArrowConstraintType, ConstraintEditorState } from 'src/constraints/editorState'
 
 // TODO: split into separate reducers
 type BuilderState = {
   inputActive: boolean
   sourceCollectionId: string
   author: string
+  // Stable and valid puzzle constraints
+  committedConstraints: SudokuConstraints | null
+  // Draft constraints with added in progress constraint
   constraints: SudokuConstraints | null
+  constraintEditorState: ConstraintEditorState
   variant: SudokuVariant
   difficulty: SudokuDifficulty
-  constraintType: ConstraintType
-  arrowConstraintType: ArrowConstraintType
   inputMode: InputMode
   cellMarks: CellMarks[][] | null
   bruteSolution: SudokuBruteSolveResult | null
@@ -42,13 +43,6 @@ type BuilderState = {
   logicalSolverRunning: boolean
   puzzlePublicId: string | null
   puzzleAdding: boolean
-  selectedCells: CellPosition[]
-  currentThermo: Thermo
-  currentArrow: Arrow
-  currentRenban: Renban
-  currentPalindrome: Palindrome
-  constraintGrid: Grid | null
-  killerSum: number | null
   manualChange: boolean
 }
 
@@ -60,53 +54,25 @@ const defaultDifficulty = (gridSize: number) => {
   }
 }
 
-const areAdjacent8 = (cell1: CellPosition, cell2: CellPosition) => {
-  return Math.abs(cell1.row - cell2.row) <= 1 &&
-         Math.abs(cell1.col - cell2.col) <= 1
-}
-
-const areAdjacent4 = (cell1: CellPosition, cell2: CellPosition) => {
-  return Math.abs(cell1.row - cell2.row) + Math.abs(cell1.col - cell2.col) === 1
-}
-
-const isCellInPath = (thermo: Thermo, cell: CellPosition) => (
-  thermo.find(thermoCell => isEqual(thermoCell, cell))
-)
-
-const expandsPath = (path: CellPosition[], cell: CellPosition) => {
-  if (path.length === 0) {
-    return true
-  }
-
-  if (isCellInPath(path, cell)) {
-    return false
-  }
-
-  const lastCell = path[path.length - 1]
-  return areAdjacent8(lastCell, cell)
-}
-
-const expandsArea = (area: CellPosition[], cell: CellPosition, areAdjacent: (c1: CellPosition, c2: CellPosition) => boolean) => {
-  if (area.length === 0) {
-    return true
-  }
-
-  if (isCellInPath(area, cell)) {
-    return false
-  }
-
-  return area.some(areaCell => areAdjacent(areaCell, cell))
-}
-
-const expandsArea4 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent4)
-
-const expandsArea8 = (area: CellPosition[], cell: CellPosition) => expandsArea(area, cell, areAdjacent8)
-
 const handleConstraintChange = (state: BuilderState) => {
-  state.variant = detectConstraints(state.constraints).variant
+  state.variant = detectConstraints(state.committedConstraints).variant
   state.bruteSolution = null
   state.logicalSolution = null
   state.manualChange = true
+}
+
+const clearEditorState = (state: BuilderState) => {
+  state.constraintEditorState = {
+    type: state.constraintEditorState.type,
+    selectedCells: [],
+    arrowConstraintType: ArrowConstraintType.Circle,
+  }
+  if (state.constraintEditorState.type === ConstraintType.Regions && state.constraints !== null) {
+    state.constraintEditorState.regionsGrid = regionsToRegionGrid(
+      state.constraints.gridSize,
+      state.constraints.regions ?? [],
+    )
+  }
 }
 
 export const builderSlice = createSlice({
@@ -118,8 +84,6 @@ export const builderSlice = createSlice({
     constraints: null,
     variant: SudokuVariant.Classic,
     difficulty: SudokuDifficulty.Easy9x9,
-    constraintType: ConstraintType.FixedNumber,
-    arrowConstraintType: ArrowConstraintType.Circle,
     inputMode: InputMode.Numbers,
     cellMarks: null,
     bruteSolution: null,
@@ -132,28 +96,25 @@ export const builderSlice = createSlice({
     sourceUrl: '',
     puzzlePublicId: null,
     puzzleAdding: false,
-    selectedCells: [],
-    currentThermo: [],
-    currentArrow: {
-      circleCells: [],
-      arrowCells: [],
+    committedConstraints: null,
+    constraintEditorState: {
+      type: ConstraintType.FixedNumber,
+      selectedCells: [],
+      arrowConstraintType: ArrowConstraintType.Circle,
     },
-    currentRenban: [],
-    currentPalindrome: [],
-    killerSum: null,
     constraintGrid: null,
     manualChange: false,
   } as BuilderState,
   reducers: {
     initPuzzle(state, action) {
       const gridSize = Number.parseInt(action.payload.gridSize)
-      state.constraints = defaultConstraints(gridSize)
+      state.committedConstraints = defaultConstraints(gridSize)
+      state.constraints = cloneDeep(state.committedConstraints)
       if (action.payload.setterMode !== undefined) {
         state.setterMode = action.payload.setterMode
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
-      state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
       state.manualChange = false
@@ -161,14 +122,14 @@ export const builderSlice = createSlice({
     receivedPuzzle(state, action) {
       const constraints: Partial<SudokuConstraints> = camelCaseKeys(action.payload)
       const gridSize = constraints.gridSize!
-      state.constraints = {
+      state.committedConstraints = {
         ...defaultConstraints(gridSize),
         ...constraints,
       }
+      state.constraints = cloneDeep(state.committedConstraints)
       state.difficulty = defaultDifficulty(gridSize)
       state.variant = detectConstraints(state.constraints).variant
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
-      state.constraintGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
       state.bruteSolution = null
       state.logicalSolution = null
       state.manualChange = false
@@ -177,142 +138,60 @@ export const builderSlice = createSlice({
       const { cell, ctrl, isClick } = action.payload
       if (ctrl) {
         if (isClick) {
-          state.selectedCells = xorWith(state.selectedCells, [ cell ], isEqual)
+          state.constraintEditorState.selectedCells = xorWith(state.constraintEditorState.selectedCells, [ cell ], isEqual)
         } else {
-          state.selectedCells = uniqWith([ ...state.selectedCells, cell ], isEqual)
+          state.constraintEditorState.selectedCells = uniqWith([ ...state.constraintEditorState.selectedCells, cell ], isEqual)
         }
       } else {
         // Passing a null cell will clear the selection
-        state.selectedCells = compact([ cell ])
+        state.constraintEditorState.selectedCells = compact([ cell ])
       }
 
-      let anyConstraintsChanged = false
-      for (const selectedCell of state.selectedCells) {
-        const isSelectedCell = (cell: CellPosition) => isEqual(cell, selectedCell)
+      if (state.constraints) {
+        const { expandCurrentConstraintAtCell } = constraintDefinitions[state.constraintEditorState.type]
+        const isSelectedCell = (otherCell: CellPosition) => isEqual(otherCell, cell)
+        const constraintChanged = expandCurrentConstraintAtCell({
+          constraints: state.constraints,
+          cell,
+          isSelectedCell,
+          editorState: state.constraintEditorState,
+        })
 
-        let constraintChanged = true
-        switch (state.constraintType) {
-          case ConstraintType.Thermo: {
-            if (expandsPath(state.currentThermo, cell)) {
-              state.currentThermo.push(cell)
-            }
-            break
-          }
-          case ConstraintType.Arrow: {
-            if (state.arrowConstraintType === ArrowConstraintType.Circle) {
-              if (expandsArea4(state.currentArrow.circleCells, cell) && !find(state.currentArrow.arrowCells, cell)) {
-                state.currentArrow.circleCells.push(cell)
-              }
-            } else {
-              if (
-                state.currentArrow.circleCells.length > 0 &&
-                !find(state.currentArrow.circleCells, cell) &&
-                (
-                  (
-                    state.currentArrow.arrowCells.length > 0 &&
-                    expandsPath(state.currentArrow.arrowCells, cell)
-                  ) ||
-                  (
-                    state.currentArrow.arrowCells.length === 0 &&
-                    expandsArea8(state.currentArrow.circleCells, cell)
-                  )
-                )
-              ) {
-                state.currentArrow.arrowCells.push(cell)
-              }
-            }
-            break
-          }
-          case ConstraintType.Odd: {
-            if (!state.constraints?.oddCells?.find(isSelectedCell) &&
-                !state.constraints?.evenCells?.find(isSelectedCell)
-            ) {
-              state.constraints!.oddCells?.push(selectedCell)
-            }
-            break
-          }
-          case ConstraintType.Even: {
-            if (!state.constraints?.oddCells?.find(isSelectedCell) &&
-                !state.constraints?.evenCells?.find(isSelectedCell)
-            ) {
-              state.constraints!.evenCells?.push(selectedCell)
-            }
-            break
-          }
-          case ConstraintType.Renban: {
-            if (
-              state.currentRenban.length === 0 ||
-              !find(state.currentRenban, cell) &&
-              expandsArea8(state.currentRenban, cell)
-            ) {
-              state.currentRenban.push(cell)
-            }
-            break
-          }
-          case ConstraintType.Palindrome: {
-            if (
-              state.currentPalindrome.length === 0 ||
-              !find(state.currentPalindrome, cell) &&
-              expandsArea8(state.currentPalindrome, cell)
-            ) {
-              state.currentPalindrome.push(cell)
-            }
-            break
-          }
-          default:
-            constraintChanged = false
+        if (constraintChanged) {
+          handleConstraintChange(state)
         }
-
-        anyConstraintsChanged ||= constraintChanged
-      }
-
-      if (anyConstraintsChanged) {
-        handleConstraintChange(state)
       }
     },
     changeConstraintType(state, action) {
-      state.constraintType = action.payload
-      state.selectedCells = []
-      state.currentThermo = []
-      state.currentArrow = {
-        circleCells: [],
-        arrowCells: [],
-      }
-      state.currentRenban = []
-      state.currentPalindrome = []
-
-      const gridSize = state.constraints!.gridSize
-      switch (state.constraintType) {
-        case ConstraintType.Regions:
-          state.constraintGrid = regionsToRegionGrid(gridSize, state.constraints!.regions ?? [])
-          break
-        case ConstraintType.Arrow:
-          state.arrowConstraintType = ArrowConstraintType.Circle
-          break
-      }
-
+      state.constraintEditorState.type = action.payload
+      state.constraints = cloneDeep(state.committedConstraints)
+      clearEditorState(state)
       handleConstraintChange(state)
     },
     changeArrowConstraintType(state, action) {
-      state.arrowConstraintType = action.payload
+      state.constraintEditorState.arrowConstraintType = action.payload
     },
     changeSelectedCellValue(state, action) {
-      switch (state.constraintType) {
+      switch (state.constraintEditorState.type) {
         case ConstraintType.FixedNumber: {
-          const fixedNumbers = state.selectedCells.map((selectedCell: CellPosition) => ({
+          if (!state.committedConstraints) {
+            break
+          }
+          const fixedNumbers = state.constraintEditorState.selectedCells.map((selectedCell: CellPosition) => ({
             position: selectedCell,
             value: action.payload,
           }))
           const areAllExisting = isEmpty(differenceWith(
-            fixedNumbers, state.constraints!.fixedNumbers ?? [], isEqual
+            fixedNumbers, state.committedConstraints.fixedNumbers ?? [], isEqual
           ))
           const isEqualPosition = (fn1: FixedNumber, fn2: FixedNumber) => (
             isEqual(fn1.position, fn2.position)
           )
-          pullAllWith(state.constraints!.fixedNumbers ?? [], fixedNumbers, isEqualPosition)
+          pullAllWith(state.committedConstraints.fixedNumbers ?? [], fixedNumbers, isEqualPosition)
           if (!areAllExisting) {
-            state.constraints!.fixedNumbers?.push(...fixedNumbers)
+            state.committedConstraints.fixedNumbers?.push(...fixedNumbers)
           }
+          state.constraints = cloneDeep(state.committedConstraints)
           break
         }
       }
@@ -320,195 +199,53 @@ export const builderSlice = createSlice({
       handleConstraintChange(state)
     },
     addConstraint(state) {
-      const gridSize = state.constraints!.gridSize
+      if (state.constraints) {
+        const {
+          validateCurrentConstraint, prepareCurrentConstraint,
+        } = constraintDefinitions[state.constraintEditorState.type]
 
-      switch (state.constraintType) {
-        case ConstraintType.Thermo: {
-          assert(state.currentThermo.length > 0, 'Click on a cell to start a thermo.')
-          assert(
-            state.currentThermo.length > 1,
-            'Thermo is too short. Click on other cells to expand it.'
-          )
-          assert(
-            state.currentThermo.length <= state.constraints!.gridSize,
-            'Thermo is too long. Delete it with Backspace.'
-          )
-          state.constraints!.thermos!.push(state.currentThermo)
-          state.currentThermo = []
-          break
+        const constraintCtx = {
+          editorState: state.constraintEditorState,
+          constraints: state.constraints,
         }
-        case ConstraintType.Arrow: {
-          assert(
-            state.currentArrow.circleCells.length > 0,
-            'Arrow element has no circle part. Click on any cell to create it.'
-          )
-          assert(
-            state.currentArrow.arrowCells.length > 0,
-            'Arrow element has no arrow part. Click on any cell next to the circle to start it.'
-          )
-          state.constraints!.arrows!.push(state.currentArrow)
-          state.currentArrow = {
-            circleCells: [],
-            arrowCells: [],
+        const validationResult = validateCurrentConstraint(constraintCtx)
+
+        assert(validationResult.type !== 'error', validationResult.message)
+
+        const changes = prepareCurrentConstraint(constraintCtx)
+        if (changes !== null) {
+          if (changes.newConstraints !== undefined) {
+            state.constraints = changes.newConstraints
           }
-          break
-        }
-        case ConstraintType.Renban: {
-          assert(state.currentRenban.length > 0, 'Click on a cell to start a renban line.')
-          assert(
-            state.currentRenban.length > 1,
-            'Renban line is too short. Click on other cells to expand it.'
-          )
-          assert(
-            state.currentRenban.length <= state.constraints!.gridSize,
-            'Renban line is too long. Delete it with Backspace.'
-          )
-          state.constraints!.renbans!.push(state.currentRenban)
-          state.currentRenban = []
-          break
-        }
-        case ConstraintType.Regions: {
-          const regions: Region[] = regionGridToRegions(gridSize, state.constraintGrid!)
-          state.constraints!.regions = regions
-          break
-        }
-        case ConstraintType.ExtraRegions: {
-          const region: Region = sortBy(state.selectedCells, [ 'row', 'col' ])
-          assert(
-            region.length === gridSize,
-            `Extra region must be of size ${gridSize}. Select multiple cells with Shift + Click.`
-          )
-          state.constraints!.extraRegions?.push(region)
-          break
-        }
-        case ConstraintType.KillerCage: {
-          assert(
-            !isEmpty(state.selectedCells),
-            'Select at least one cell. You can select multiple cells with Shift + Click.'
-          )
-          const region: Region = sortBy(state.selectedCells, [ 'row', 'col' ])
-          const killerCage: KillerCage = {
-            sum: state.killerSum!,
-            region,
+          if (changes.newEditorState !== undefined) {
+            state.constraintEditorState = changes.newEditorState
           }
-          state.constraints!.killerCages!.push(killerCage)
-          state.killerSum = null
-          break
-        }
-        case ConstraintType.KropkiConsecutive:
-        case ConstraintType.KropkiDouble: {
-          const cells: CellPosition[] = sortBy(state.selectedCells, [ 'row', 'col' ])
-          assert(cells.length === 2, 'Select exactly 2 cells with Shift + Click.')
-          assert(
-            Math.abs(cells[0].row - cells[1].row) + Math.abs(cells[0].col - cells[1].col) === 1,
-            'Cells need to be adjacent'
-          )
-          const dotType: KropkiDotType =
-            state.constraintType === ConstraintType.KropkiConsecutive ? 'Consecutive' : 'Double'
-          const kropkiDot: KropkiDot = {
-            dotType,
-            cell1: cells[0],
-            cell2: cells[1],
-          }
-          const existingDot = state.constraints!.kropkiDots?.find(dot => (
-            isEqual(dot.cell1, kropkiDot.cell1) && isEqual(dot.cell2, kropkiDot.cell2)
-          ))
-          if (!existingDot) {
-            state.constraints!.kropkiDots!.push(kropkiDot)
-          }
-          break
-        }
-        case ConstraintType.Palindrome: {
-          assert(state.currentPalindrome.length > 0, 'Click on a cell to start a palindrome line.')
-          assert(
-            state.currentPalindrome.length > 1,
-            'Palindrome line is too short. Click on other cells to expand it.'
-          )
-          state.constraints!.palindromes!.push(state.currentPalindrome)
-          state.currentPalindrome = []
-          break
         }
       }
 
+      state.committedConstraints = cloneDeep(state.constraints)
+
+      clearEditorState(state)
       handleConstraintChange(state)
     },
     deleteConstraint(state) {
-      for (const cell of state.selectedCells) {
-        state.cellMarks![cell.row][cell.col] = {}
-
-        const isSelectedCell = (areaCell: CellPosition) => isEqual(areaCell, cell)
-
-        // Fixed numbers
-        remove(
-          state.constraints!.fixedNumbers ?? [],
-          (existingFixedNumber: FixedNumber) => isEqual(existingFixedNumber.position, cell)
-        )
-
-        // Thermo
-        if (state.currentThermo.find(isSelectedCell)) {
-          state.currentThermo = []
+      for (const cell of state.constraintEditorState.selectedCells) {
+        if (state.cellMarks) {
+          state.cellMarks[cell.row][cell.col] = {}
         }
-
-        const thermoIndex = findIndex(state.constraints!.thermos, (thermo: Thermo) => thermo.some(isSelectedCell))
-        if (thermoIndex !== -1) {
-          state.constraints!.thermos?.splice(thermoIndex, 1)
-        }
-
-        // Arrow
-        if (state.currentArrow.circleCells.find(isSelectedCell) || state.currentArrow.arrowCells.find(isSelectedCell)) {
-          state.currentArrow = {
-            circleCells: [],
-            arrowCells: [],
+        if (state.committedConstraints) {
+          for (const { removeConstraintsAtCell } of Object.values(constraintDefinitions)) {
+            const isSelectedCell = (otherCell: CellPosition) => isEqual(otherCell, cell)
+            removeConstraintsAtCell({
+              constraints: state.committedConstraints,
+              cell,
+              isSelectedCell,
+            })
           }
         }
-
-        const arrowIndex = findIndex(state.constraints!.arrows, (arrow: Arrow) => (
-          arrow.circleCells.some(isSelectedCell) || arrow.arrowCells.some(isSelectedCell)
-        ))
-        if (arrowIndex !== -1) {
-          state.constraints!.arrows?.splice(arrowIndex, 1)
-        }
-
-        // Renban
-        if (state.currentRenban.find(isSelectedCell)) {
-          state.currentRenban = []
-        }
-
-        const renbanIndex = findIndex(state.constraints!.renbans, (renban: Renban) => renban.some(isSelectedCell))
-        if (renbanIndex !== -1) {
-          state.constraints!.renbans?.splice(renbanIndex, 1)
-        }
-
-        // Palindrome
-        if (state.currentPalindrome.find(isSelectedCell)) {
-          state.currentPalindrome = []
-        }
-
-        const palindromeIndex = findIndex(state.constraints!.palindromes, (palindrome: Palindrome) => palindrome.some(isSelectedCell))
-        if (palindromeIndex !== -1) {
-          state.constraints!.palindromes?.splice(palindromeIndex, 1)
-        }
-
-        // Killer
-        const killerIndex = findIndex(state.constraints!.killerCages, (killerCage: KillerCage) => killerCage.region.some(isSelectedCell))
-        if (killerIndex !== -1) {
-          state.constraints!.killerCages?.splice(killerIndex, 1)
-        }
-
-        // Kropki
-        remove(state.constraints!.kropkiDots ?? [], kropkiDot => (
-          isEqual(kropkiDot.cell1, cell) || isEqual(kropkiDot.cell2, cell)
-        ))
-
-        // Extra Regions
-        const regionIndex = findIndex(state.constraints!.extraRegions, (extraRegion: Region) => extraRegion.some(isSelectedCell))
-        if (regionIndex !== -1) {
-          state.constraints!.extraRegions?.splice(regionIndex, 1)
-        }
-
-        // Odd Even
-        remove(state.constraints!.oddCells ?? [], isSelectedCell)
-        remove(state.constraints!.evenCells ?? [], isSelectedCell)
+        state.constraints = cloneDeep(state.committedConstraints)
+        // We always delete the draft constraints so we need to reset the index
+        state.constraintEditorState.targetIndex = undefined
       }
 
       handleConstraintChange(state)
@@ -566,19 +303,19 @@ export const builderSlice = createSlice({
     },
     changeSelectedCellCornerMarks(state, action) {
       const value = action.payload
-      const selectedCells: CellPosition[] = state.selectedCells
+      const selectedCells = state.constraintEditorState.selectedCells
       const areAllExisting = selectedCells.every(({ row, col }: CellPosition) => (
         state.cellMarks![row][col]?.cornerMarks?.includes(value)
       ))
 
-      for (const { row, col } of state.selectedCells) {
+      for (const { row, col } of selectedCells) {
         if (state.cellMarks![row][col]?.cornerMarks !== undefined) {
           pull(state.cellMarks![row][col]!.cornerMarks!, value)
         }
       }
 
       if (!areAllExisting) {
-        for (const { row, col } of state.selectedCells) {
+        for (const { row, col } of selectedCells) {
           if (state.cellMarks![row][col].cornerMarks === undefined) {
             state.cellMarks![row][col].cornerMarks = []
           }
@@ -587,24 +324,25 @@ export const builderSlice = createSlice({
       }
     },
     changeSelectedCellConstraint(state, action) {
-      if (isEmpty(state.selectedCells)) {
+      if (isEmpty(state.constraintEditorState.selectedCells)) {
         return
       }
-      switch (state.constraintType) {
-        case ConstraintType.Regions: {
-          for (const { row, col } of state.selectedCells) {
-            const value = action.payload
-            state.constraintGrid![row][col] = value
-          }
+      if (state.constraintEditorState.type === ConstraintType.Regions) {
+        for (const { row, col } of state.constraintEditorState.selectedCells) {
+          const value = action.payload
+          state.constraintEditorState.regionsGrid![row][col] = value
         }
       }
     },
-    changeConstraintValue(state, { payload: { key, value } }: { payload: { key: ConstraintKeyType, value: boolean } }) {
-      state.constraints![key] = value
-      handleConstraintChange(state)
+    changeConstraintValue(state, { payload: { key, value } }: { payload: { key: BooleanConstraintKeyType, value: boolean } }) {
+      if (state.committedConstraints) {
+        state.committedConstraints[key] = value
+        state.constraints = cloneDeep(state.committedConstraints)
+        handleConstraintChange(state)
+      }
     },
     changeKillerSum(state, action) {
-      state.killerSum = action.payload
+      state.constraintEditorState.killerSum = action.payload
       handleConstraintChange(state)
     },
     changeSourceCollectionId(state, action) {

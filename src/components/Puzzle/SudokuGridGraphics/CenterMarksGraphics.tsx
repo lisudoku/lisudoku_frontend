@@ -2,9 +2,8 @@ import { ReactElement } from 'react'
 import { isEmpty, sortBy } from 'lodash-es'
 import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
-import { CellMarkSets } from 'src/utils/sudoku'
 import { SudokuConstraints } from 'lisudoku-solver'
-import { useCellMarkErrors } from '../hooks/useCellMarkErrors'
+import { CellErrors } from 'src/constraints/types'
 
 const computeCenterMarksFontSize = (cellSize: number, markCount: number): number => {
   // markCount * fontWidth = cellSize - padding
@@ -15,7 +14,15 @@ const computeCenterMarksFontSize = (cellSize: number, markCount: number): number
   return (cellSize - padding) / Math.max(3, markCount) * 3 / 2
 }
 
-const CellCenterMarksGraphics = ({ row, col, centerMarks, cellMarksErrors, cellSize }: CellCenterMarksGraphicsProps) => {
+interface CellCenterMarksGraphicsProps {
+  row: number
+  col: number
+  centerMarks: number[]
+  errors: CellErrors
+  cellSize: number
+}
+
+const CellCenterMarksGraphics = ({ row, col, centerMarks, errors, cellSize }: CellCenterMarksGraphicsProps) => {
   const centerMarksFontSize = computeCenterMarksFontSize(cellSize, centerMarks.length)
 
   const x = col * cellSize + 1 + cellSize / 2
@@ -32,7 +39,7 @@ const CellCenterMarksGraphics = ({ row, col, centerMarks, cellMarksErrors, cellS
       dy="+0.32em"
     >
       {sortBy(centerMarks).map(value => (
-        <tspan key={value} className={classNames({'fill-digit-error': cellMarksErrors?.centerMarks?.has(value) })}>
+        <tspan key={value} className={classNames({'fill-digit-error': errors?.includes(value) })}>
           {value}
         </tspan>
       ))}
@@ -40,16 +47,17 @@ const CellCenterMarksGraphics = ({ row, col, centerMarks, cellMarksErrors, cellS
   )
 }
 
-type CellCenterMarksGraphicsProps = {
-  row: number
-  col: number
-  centerMarks: number[]
-  cellMarksErrors?: CellMarkSets
+interface CenterMarksGraphicsProps {
+  constraints: SudokuConstraints
+  cellMarks?: CellMarks[][]
+  grid?: Grid
+  fixedNumbersGrid: Grid
   cellSize: number
+  errorGrid?: CellErrors[][]
 }
 
-const CenterMarksGraphics = ({
-  cellSize, cellMarks, grid, fixedNumbersGrid, cellMarksErrors,
+export const CenterMarksGraphics = ({
+  cellSize, cellMarks, grid, fixedNumbersGrid, errorGrid,
 }: CenterMarksGraphicsProps) => {
   if (!cellMarks) {
     return null
@@ -70,7 +78,7 @@ const CenterMarksGraphics = ({
           row={row}
           col={col}
           centerMarks={colCellMarks.centerMarks!}
-          cellMarksErrors={cellMarksErrors?.[row][col]}
+          errors={errorGrid?.[row][col]}
           cellSize={cellSize}
           key={col + row * rowCellMarks.length}
         />
@@ -84,14 +92,3 @@ const CenterMarksGraphics = ({
     </g>
   )
 }
-
-type CenterMarksGraphicsProps = {
-  constraints: SudokuConstraints
-  cellMarks?: CellMarks[][]
-  grid?: Grid
-  fixedNumbersGrid: Grid
-  cellSize: number
-  cellMarksErrors: CellMarkSets[][]
-}
-
-export default CenterMarksGraphics

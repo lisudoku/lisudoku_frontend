@@ -19,11 +19,11 @@ import { apiAddPuzzle } from 'src/utils/apiService'
 import { getPuzzleRelativeUrl } from 'src/utils/misc'
 import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { exportToLisudokuSolver } from 'src/utils/import'
-import { detectConstraints } from 'src/utils/sudoku'
 import Typography from 'src/design_system/Typography'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'
+import { detectConstraints } from 'src/constraints/utils'
 
 // TODO: consider a more general approach if it's an issue in other places too
 // Alert about running solver every 5 mins

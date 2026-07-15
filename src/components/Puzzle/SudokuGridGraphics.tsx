@@ -1,388 +1,59 @@
-import { Arrow, CellPosition, KillerCage, KropkiDot, Region, Renban, SudokuConstraints, Thermo } from 'lisudoku-solver'
-import { ReactElement, SVGProps } from 'react'
+import { Fragment } from 'react'
 import classNames from 'classnames'
-import { groupBy, isEmpty, isNil, maxBy, minBy } from 'lodash-es'
-import { CellMarks, Grid } from 'src/types/sudoku'
-import { CellMarkSets, getAllCells } from 'src/utils/sudoku'
-import CenterMarksGraphics from './SudokuGridGraphics/CenterMarksGraphics'
+import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
+import { groupBy, isEmpty, partition, times } from 'lodash-es'
+import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import { CornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
-import PalindromesGraphics from './SudokuGridGraphics/PalindromesGraphics'
-import { useGridErrors } from './hooks/useGridErrors'
+import { useErrorsGrid } from './hooks/useErrorsGrid'
 import { useFixedNumbersGrid } from './hooks/useFixedNumbersGrid'
 import { CustomGraphics, CustomGraphicsCornerMarks, CustomGraphicsItem } from './SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { HighlightedCell } from './SudokuGridGraphics/HighlightedCell'
 import { Theme, useTheme } from '../ThemeProvider'
-import { useCellMarkErrors } from './hooks/useCellMarkErrors'
+import { constraintDefinitions } from 'src/constraints/definitions'
+import type { ConstraintDefinition } from 'src/constraints/types'
+import { CenterMarksGraphics } from './SudokuGridGraphics/CenterMarksGraphics'
 
-type Border = {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
-}
-
-const OutsideBorderGraphics = ({ gridSize, cellSize }: OutsideBorderGraphicsProps) => (
-  <>
-    <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
-    <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
-    <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
-    <line x1={gridSize * cellSize + 1} y1="0" x2={gridSize * cellSize + 1} y2={gridSize * cellSize + 2} />
-  </>
-)
-
-type OutsideBorderGraphicsProps = {
+interface GridlinesGraphicsProps {
   gridSize: number
   cellSize: number
+  borderHighlightColor?: string
+  theme: Theme
 }
 
-const BordersGraphics = ({ gridSize, regions, cellSize }: BordersGraphicsProps) => {
-  const regionGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
-  regions.forEach((regionCells, regionIndex) => {
-    regionCells.forEach(cell => {
-      regionGrid[cell.row][cell.col] = regionIndex
-    })
-  })
-
-  const borders: Border[] = []
-  const cells = getAllCells(gridSize)
-  cells.forEach(({ row, col }) => {
-    // right border
-    if (col + 1 < gridSize && regionGrid[row][col] !== regionGrid[row][col + 1]) {
-      borders.push({
-        x1: (col + 1) * cellSize + 1,
-        y1: row * cellSize + 1,
-        x2: (col + 1) * cellSize + 1,
-        y2: (row + 1) * cellSize + 1,
-      })
-    }
-    // bottom border
-    if (row + 1 < gridSize && regionGrid[row][col] !== regionGrid[row + 1][col]) {
-      borders.push({
-        x1: col * cellSize + 1,
-        y1: (row + 1) * cellSize + 1,
-        x2: (col + 1) * cellSize + 1,
-        y2: (row + 1) * cellSize + 1,
-      })
-    }
-  })
-
-  return (
-    <g className="regions stroke-cell-border-strong">
-      <OutsideBorderGraphics gridSize={gridSize} cellSize={cellSize} />
-      {borders.map(({ x1, y1, x2, y2 }, index) => (
-        <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
+const GridlinesGraphics = ({ gridSize, cellSize, borderHighlightColor, theme }: GridlinesGraphicsProps) => (
+  <>
+    <g className={classNames('border-highlights', borderHighlightColor ?? 'stroke-cell-border-strong')}>
+      <line x1="0" y1="1" x2={gridSize * cellSize + 2} y2="1" />
+      <line x1="1" y1="0" x2="1" y2={gridSize * cellSize + 2} />
+      <line x1="0" y1={gridSize * cellSize + 1} x2={gridSize * cellSize + 2} y2={gridSize * cellSize + 1} />
+      <line x1={gridSize * cellSize + 1} y1="0" x2={gridSize * cellSize + 1} y2={gridSize * cellSize + 2} />
+    </g>
+    <g className={classNames('grid-lines stroke-cell-border-weak', {
+      'mix-blend-screen': theme === Theme.Dark,
+      'mix-blend-darken': theme === Theme.Light,
+    })}>
+      {times(gridSize - 1).map(row => (
+        <line
+          key={`R${row}`}
+          x1="1"
+          y1={1 + cellSize * (row + 1)}
+          x2={1 + cellSize * gridSize}
+          y2={1 + cellSize * (row + 1)}
+        />
+      ))}
+      {times(gridSize - 1).map(col => (
+        <line
+          key={`C${col}`}
+          x1={1 + cellSize * (col + 1)}
+          y1="1"
+          x2={1 + cellSize * (col + 1)}
+          y2={1 + cellSize * gridSize}
+        />
       ))}
     </g>
-  )
-}
-
-type BordersGraphicsProps = {
-  gridSize: number
-  regions: Region[]
-  cellSize: number
-}
-
-const BorderHighlightsGraphics = ({ gridSize, cellSize, color }: BorderHighlightsGraphicsProps) => {
-  if (color === undefined) {
-    return null
-  }
-
-  return (
-    <g className={classNames('border-highlights', color)}>
-      <OutsideBorderGraphics gridSize={gridSize} cellSize={cellSize} />
-    </g>
-  )
-}
-
-type BorderHighlightsGraphicsProps = {
-  gridSize: number
-  cellSize: number
-  color?: string
-}
-
-const ThermoGraphics = ({ thermo, cellSize }: { thermo: Thermo, cellSize: number }) => {
-  const half = cellSize / 2
-  const strokeWidth = cellSize / 3
-  const bulb = thermo[0]
-  const bulbRadius = Math.floor(half * 21 / 28)
-
-  const points = thermo.map((cell, index) => {
-    let x: number = cell.col * cellSize + half + 1
-    let y: number = cell.row * cellSize + half + 1
-    if (index > 0 && index === thermo.length - 1) {
-      const prevCell = thermo[index - 1]
-      const dirX = Math.sign(cell.col - prevCell.col)
-      const dirY = Math.sign(cell.row - prevCell.row)
-      x += dirX * half / 5
-      y += dirY * half / 5
-    }
-    return `${x},${y}`
-  }).join(' ')
-
-  return (
-    <g className="thermo fill-thermo stroke-thermo opacity-80">
-      <circle cx={bulb.col * cellSize + 1 + half}
-              cy={bulb.row * cellSize + 1 + half}
-              r={bulbRadius} />
-      <polyline
-        points={points}
-        style={{
-          fill: 'none',
-          strokeWidth,
-          strokeLinecap: 'square',
-        }}
-      />
-    </g>
-  )
-}
-
-const ThermosGraphics = ({ thermos, cellSize }: { thermos: Thermo[], cellSize: number }) => (
-  <>
-    {thermos.map((thermo, index) => (
-      <ThermoGraphics key={index} thermo={thermo} cellSize={cellSize} />
-    ))}
   </>
 )
-
-const RenbanGraphics = ({ renban, cellSize }: { renban: Renban, cellSize: number }) => {
-  const half = cellSize / 2
-  const strokeWidth = cellSize / 8
-
-  const points = renban.map((cell) => {
-    let x: number = cell.col * cellSize + half + 1
-    let y: number = cell.row * cellSize + half + 1
-    return `${x},${y}`
-  }).join(' ')
-
-  // Note: Reusing thermo fill color
-
-  return (
-    <g className="renban fill-thermo stroke-thermo opacity-60">
-      <polyline
-        points={points}
-        style={{
-          fill: 'none',
-          strokeWidth,
-          strokeLinecap: 'round',
-        }}
-      />
-    </g>
-  )
-}
-
-const RenbansGraphics = ({ renbans, cellSize }: { renbans: Renban[], cellSize: number }) => (
-  <>
-    {renbans.map((renban, index) => (
-      <RenbanGraphics key={index} renban={renban} cellSize={cellSize} />
-    ))}
-  </>
-)
-
-const ArrowGraphics = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) => {
-  const half = cellSize / 2
-  const strokeWidth = cellSize / 15
-  const margin = strokeWidth / 2
-
-  let circleRect: SVGProps<SVGRectElement> | undefined
-  if (arrow.circleCells.length > 0) {
-    const circleMinRow = minBy(arrow.circleCells, 'row')!.row
-    const circleMaxRow = maxBy(arrow.circleCells, 'row')!.row
-    const circleMinCol = minBy(arrow.circleCells, 'col')!.col
-    const circleMaxCol = maxBy(arrow.circleCells, 'col')!.col
-    circleRect = {
-      x: circleMinCol * cellSize + 1 + strokeWidth / 2 + margin,
-      y: circleMinRow * cellSize + 1 + strokeWidth / 2 + margin,
-      width: (circleMaxCol - circleMinCol + 1) * cellSize - strokeWidth - 2 * margin,
-      height: (circleMaxRow - circleMinRow + 1) * cellSize - strokeWidth - 2 * margin,
-      rx: cellSize / 2,
-      ry: cellSize / 2,
-    }
-  }
-
-  const firstCell = arrow.arrowCells[0]
-  let closestCircleCell
-  if (firstCell) {
-    closestCircleCell = minBy(arrow.circleCells, cell => (
-      (firstCell.row - cell.row) ** 2 + (firstCell.col - cell.col) ** 2
-    ))
-  }
-
-  const lineCells: CellPosition[] = []
-  if (closestCircleCell) {
-    lineCells.push(closestCircleCell)
-  }
-  lineCells.push(...arrow.arrowCells)
-
-  const points = lineCells.map((cell, index) => {
-    let x: number = cell.col * cellSize + half + 1
-    let y: number = cell.row * cellSize + half + 1
-    if (index === 0 && index < lineCells.length - 1) {
-      const nextCell = lineCells[index + 1]
-      const dirX = Math.sign(nextCell.col - cell.col)
-      const dirY = Math.sign(nextCell.row - cell.row)
-      x += dirX * (half - margin)
-      y += dirY * (half - margin)
-      // Diagonal arrow starts need to be longer to be connected to the circle
-      if (dirX !== 0 && dirY !== 0) {
-        x -= dirX * cellSize / 6
-        y -= dirY * cellSize / 6
-      }
-    } else if (index > 0 && index === lineCells.length - 1) {
-      const prevCell = lineCells[index - 1]
-      const dirX = Math.sign(cell.col - prevCell.col)
-      const dirY = Math.sign(cell.row - prevCell.row)
-      x += dirX * half * 1 / 2
-      y += dirY * half * 1 / 2
-    }
-    return {
-      x,
-      y,
-    }
-  })
-
-  // Arrow shape
-  let arrowShapeSvgPoints = ''
-  if (points.length >= 2) {
-    const lastPoint = points[points.length - 1]
-    const prevPoint = points[points.length - 2]
-    const dy = prevPoint.y - lastPoint.y
-    const dx = prevPoint.x - lastPoint.x
-    // -dy because y axis is inverted
-    const angle = Math.atan2(-dy, dx)
-    const arrowLength = half * 3 / 4
-    const angleDelta = Math.PI / 5
-    const leftAngle = angle - angleDelta
-    const leftX = lastPoint.x + Math.cos(leftAngle) * arrowLength
-    const leftY = lastPoint.y - Math.sin(leftAngle) * arrowLength
-    const rightAngle = angle + angleDelta
-    const rightX = lastPoint.x + Math.cos(rightAngle) * arrowLength
-    const rightY = lastPoint.y - Math.sin(rightAngle) * arrowLength
-
-    const arrowShapePoints = [
-      {
-        x: leftX,
-        y: leftY,
-      },
-      lastPoint,
-      {
-        x: rightX,
-        y: rightY,
-      }
-    ]
-    arrowShapeSvgPoints = arrowShapePoints.map(({ x, y }) => `${x},${y}`).join(' ')
-  }
-
-  const svgPoints = points.map(({ x, y }) => `${x},${y}`).join(' ')
-
-  return (
-    <g className="arrow fill-none stroke-arrow opacity-80" style={{
-      strokeWidth,
-    }}>
-      {circleRect && (
-        <rect {...circleRect} />
-      )}
-      <polyline points={svgPoints} />
-      {arrowShapeSvgPoints.length > 0 && (
-        <polyline points={arrowShapeSvgPoints} />
-      )}
-    </g>
-  )
-}
-
-const ArrowsGraphics = ({ arrows, cellSize }: { arrows: Arrow[], cellSize: number }) => (
-  <>
-    {arrows.map((arrow, index) => (
-      <ArrowGraphics key={index} arrow={arrow} cellSize={cellSize} />
-    ))}
-  </>
-)
-
-const DigitGraphics = ({ cellSize, constraints, cellMarks, grid, fixedNumbersGrid, checkErrors }: DigitGraphicsProps) => {
-  const gridSize = constraints.gridSize
-  const errorGrid = useGridErrors(checkErrors, constraints, grid, cellMarks)
-
-  const digitFontSize = cellSize * 9 / 14
-  const digitFontHeight = digitFontSize * 2 / 3
-
-  const digitElements: ReactElement[] = []
-  const cells = getAllCells(gridSize)
-  cells.forEach(({ row, col }) => {
-    const value = fixedNumbersGrid[row][col] || grid?.[row][col]
-    if (!value) {
-      return
-    }
-
-    const x = col * cellSize + 1 + cellSize / 2
-    const y = row * cellSize + 1 + cellSize / 2 + digitFontHeight / 2
-    const key = row * gridSize + col
-
-    const hasError = checkErrors && errorGrid[row][col]
-    const isFixed = !isNil(fixedNumbersGrid[row][col])
-    digitElements.push((
-      <text x={x}
-            y={y}
-            key={key}
-            textAnchor="middle"
-            className={classNames({
-              'fill-digit-unfixed': !hasError && !isFixed,
-              'fill-digit-fixed': !hasError && isFixed,
-              'fill-digit-error': hasError,
-            })}>
-        {value}
-      </text>
-    ))
-  })
-
-  return (
-    <g className="digits font-medium"
-       style={{ stroke: 'none', fontSize: digitFontSize }}>
-      {digitElements}
-    </g>
-  )
-}
-
-type DigitGraphicsProps = {
-  cellSize: number
-  constraints: SudokuConstraints
-  grid?: Grid
-  cellMarks?: CellMarks[][]
-  fixedNumbersGrid: Grid
-  checkErrors: boolean
-}
-
-const GridGraphics = ({ gridSize, cellSize }: GridGraphicsProps) => {
-  const gridLines: Border[] = []
-  for (let row = 0; row < gridSize - 1; row++) {
-    gridLines.push({
-      x1: 1,
-      y1: 1 + cellSize * (row + 1),
-      x2: 1 + cellSize * gridSize,
-      y2: 1 + cellSize * (row + 1),
-    })
-  }
-  for (let col = 0; col < gridSize - 1; col++) {
-    gridLines.push({
-      x1: 1 + cellSize * (col + 1),
-      y1: 1,
-      x2: 1 + cellSize * (col + 1),
-      y2: 1 + cellSize * gridSize,
-    })
-  }
-
-  return (
-    <g className="grid-lines stroke-cell-border-weak">
-      {gridLines.map(({ x1, y1, x2, y2 }, index) => (
-        <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
-      ))}
-    </g>
-  )
-}
-
-type GridGraphicsProps = {
-  gridSize: number
-  cellSize: number
-}
 
 const SelectedCellGraphics = ({ cellSize, selectedCells }: SelectedCellGraphicsProps) => (
   <>
@@ -402,225 +73,58 @@ type SelectedCellGraphicsProps = {
   selectedCells?: CellPosition[]
 }
 
-const DiagonalGraphics = ({ gridSize, cellSize, primary, secondary }: DiagonalGraphicsProps) => (
-  <g className="diagonals stroke-diagonal stroke-[3px]">
-    {primary && (
-      <line x1={1} y1={1} x2={1 + cellSize * gridSize} y2={1 + cellSize * gridSize} />
-    )}
-    {secondary && (
-      <line x1={1} y1={1 + cellSize * gridSize} x2={1 + cellSize * gridSize} y2={1} />
-    )}
-  </g>
+export const graphicsConstraintsOrder = [
+  ConstraintType.ExtraRegions,
+  ConstraintType.Odd,
+  ConstraintType.Even,
+  ConstraintType.KillerCage,
+  ConstraintType.Thermo,
+  ConstraintType.Renban,
+  ConstraintType.Palindrome,
+  ConstraintType.Arrow,
+  ConstraintType.PrimaryDiagonal,
+  ConstraintType.SecondaryDiagonal,
+  ConstraintType.Regions,
+  ConstraintType.FixedNumber,
+  ConstraintType.KropkiConsecutive,
+  ConstraintType.KropkiDouble,
+
+  ConstraintType.AntiKnight,
+  ConstraintType.AntiKing,
+  ConstraintType.KropkiNegative,
+  ConstraintType.TopBottom,
+] as const satisfies ConstraintType[]
+
+const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]) => {
+  if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
+    throw new Error('Constraint order is not exhaustive.')
+  }
+}
+
+assertExhaustiveConstraintOrder(graphicsConstraintsOrder)
+
+const [graphicsConstraintsUnderGridlines, graphicsConstraintsAboveGridlines] = partition(
+  graphicsConstraintsOrder,
+  constraintType => (
+    constraintType !== ConstraintType.KropkiConsecutive && constraintType !== ConstraintType.KropkiDouble
+  ),
 )
 
-type DiagonalGraphicsProps = {
-  gridSize: number
+interface SudokuConstraintsGraphicsProps {
+  constraints: SudokuConstraints
+  cellMarks?: CellMarks[][]
   cellSize: number
-  primary?: boolean
-  secondary?: boolean
+  grid?: Grid
+  checkErrors: boolean
+  selectedCells?: CellPosition[]
+  onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
+  customGraphics?: CustomGraphicsItem[]
+  borderHighlightColor?: string
 }
 
-type KillerSum = {
-  sum: number | null
-  x: number
-  y: number
-}
-
-// TODO: we could use a single polyline per killer cage
-const KillerGraphics = ({ gridSize, cellSize, killerCages }: KillerGraphicsProps) => {
-  const KILLER_PADDING = cellSize / 15
-  const KILLER_SUM_FONT_SIZE = cellSize * 3 / 14
-
-  const cagesGrid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(0))
-  killerCages.forEach((killerCage, killerIndex) => {
-    killerCage.region.forEach(cell => {
-      cagesGrid[cell.row][cell.col] = killerIndex + 1
-    })
-  })
-
-  const borders: Border[] = []
-  const cells = getAllCells(gridSize)
-  cells.forEach(({ row, col }) => {
-    if (cagesGrid[row][col] === 0) {
-      return
-    }
-
-    const ADJACENT_ROW_DELTA = [ 0, 1, 0, -1 ]
-    const ADJACENT_COL_DELTA = [ 1, 0, -1, 0 ]
-    for (let dir = 0; dir < 4; dir++) {
-      const drow = row + ADJACENT_ROW_DELTA[dir]
-      const dcol = col + ADJACENT_COL_DELTA[dir]
-
-      if (cagesGrid[row][col] !== 0 && (
-            drow < 0 || drow >= gridSize || dcol < 0 || dcol >= gridSize ||
-            cagesGrid[row][col] !== cagesGrid[drow][dcol]
-          )
-      ) {
-        borders.push({
-          x1: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
-          y1: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
-          x2: col * cellSize + 1 + KILLER_PADDING + (dcol < col ? 0 : (cellSize - 2 * KILLER_PADDING)),
-          y2: row * cellSize + 1 + KILLER_PADDING + (drow < row ? 0 : (cellSize - 2 * KILLER_PADDING)),
-        })
-      }
-    }
-
-    const DIAGONAL_ROW_DELTA = [ 1, 1, -1, -1 ]
-    const DIAGONAL_COL_DELTA = [ 1, -1, 1, -1 ]
-    for (let dir = 0; dir < 4; dir++) {
-      const drow = row + DIAGONAL_ROW_DELTA[dir]
-      const dcol = col + DIAGONAL_COL_DELTA[dir]
-
-      if (cagesGrid[row][col] !== 0 &&
-          drow >= 0 && drow < gridSize && dcol >= 0 && dcol < gridSize &&
-          cagesGrid[drow][dcol] !== cagesGrid[row][col] &&
-          cagesGrid[row][dcol] === cagesGrid[row][col] &&
-          cagesGrid[drow][col] === cagesGrid[row][col]) {
-        // vertical
-        borders.push({
-          x1: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
-          y1: row * cellSize + 1 + (drow > row ? (cellSize - KILLER_PADDING) : 0),
-          x2: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - 2 * KILLER_PADDING) : 0),
-          y2: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - KILLER_PADDING) : 0),
-        })
-        // horizontal
-        borders.push({
-          x1: col * cellSize + 1 + (dcol > col ? (cellSize - KILLER_PADDING) : 0),
-          y1: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
-          x2: col * cellSize + 1 + KILLER_PADDING + (dcol > col ? (cellSize - KILLER_PADDING) : 0),
-          y2: row * cellSize + 1 + KILLER_PADDING + (drow > row ? (cellSize - 2 * KILLER_PADDING) : 0),
-        })
-      }
-    }
-  })
-
-  const killerSums: KillerSum[] = killerCages.map(killerCage => {
-    const cell = killerCage.region[0]
-    return {
-      sum: killerCage.sum,
-      x: cell.col * cellSize + 1 + 1 + KILLER_PADDING,
-      y: cell.row * cellSize + 1 + KILLER_PADDING,
-    }
-  })
-
-  return (
-    <>
-    <g className="killer-cage-borders stroke-killer stroke-2" style={{ strokeDasharray: cellSize / 10 }}>
-      {borders.map(({ x1, y1, x2, y2 }, index) => (
-        <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
-      ))}
-    </g>
-    <g className="killer-cage-sums stroke-none fill-digit-fixed font-bold" style={{ fontSize: KILLER_SUM_FONT_SIZE }}>
-      {killerSums.map(({ sum, x, y }, index) => (
-        <text key={index} x={x} y={y} dominantBaseline="text-before-edge">{sum}</text>
-      ))}
-    </g>
-    </>
-  )
-}
-
-type KillerGraphicsProps = {
-  gridSize: number
-  cellSize: number
-  killerCages: KillerCage[]
-}
-
-type KropkiCircle = {
-  x: number
-  y: number
-  fill: string
-}
-
-const KropkiGraphics = ({ kropkiDots, cellSize }: KropkiGraphicsProps) => {
-  const KROPKI_CIRCLE_RADIUS = cellSize / 9
-
-  const circles: KropkiCircle[] = kropkiDots.map(kropkiDot => ({
-    x: 1 + (kropkiDot.cell1.col + kropkiDot.cell2.col + 1) / 2 * cellSize,
-    y: 1 + (kropkiDot.cell1.row + kropkiDot.cell2.row + 1) / 2 * cellSize,
-    fill: kropkiDot.dotType === 'Consecutive' ? 'white' : 'black',
-  }))
-
-  return (
-    <g className="kropki-dots stroke-cell-border-strong" strokeWidth="1.5">
-      {circles.map((circle, index) => (
-        <circle key={index}
-                cx={circle.x}
-                cy={circle.y}
-                r={KROPKI_CIRCLE_RADIUS}
-                fill={circle.fill}
-        />
-      ))}
-    </g>
-  )
-}
-
-type KropkiGraphicsProps = {
-  kropkiDots: KropkiDot[]
-  cellSize: number
-}
-
-const ExtraRegionsGraphics = ({ cellSize, extraRegions }: ExtraRegionsGraphicsProps) => (
-  <g className="extra-regions stroke-none fill-extraregion">
-    {extraRegions.flat().map((cell, index) => (
-      <rect x={1 + cellSize * cell.col}
-            y={1 + cellSize * cell.row}
-            width={cellSize}
-            height={cellSize}
-            key={index}
-      />
-    ))}
-  </g>
-)
-
-type ExtraRegionsGraphicsProps = {
-  cellSize: number
-  extraRegions: Region[]
-}
-
-const OddGraphics = ({ cellSize, cells }: OddGraphicsProps) => {
-  const half = cellSize / 2
-  const radius = Math.floor(half * 23 / 28)
-
-  return (
-    <g className="odd-cells fill-oddeven stroke-none">
-      {cells.map((cell, index) => (
-        <circle cx={cell.col * cellSize + 1 + half}
-                cy={cell.row * cellSize + 1 + half}
-                r={radius}
-                key={index} />
-      ))}
-    </g>
-  )
-}
-
-type OddGraphicsProps = {
-  cellSize: number
-  cells: CellPosition[]
-}
-
-const EvenGraphics = ({ cellSize, cells }: EvenGraphicsProps) => {
-  const PADDING = 7
-  const sideLength = cellSize - 2 * PADDING
-
-  return (
-    <g className="even-cells fill-oddeven stroke-none">
-      {cells.map((cell, index) => (
-        <rect x={1 + cellSize * cell.col + PADDING}
-              y={1 + cellSize * cell.row + PADDING}
-              width={sideLength}
-              height={sideLength}
-              key={index} />
-      ))}
-    </g>
-  )
-}
-
-type EvenGraphicsProps = {
-  cellSize: number
-  cells: CellPosition[]
-}
-
-const SudokuConstraintsGraphics = ({
+// For testing puzzle with all constraints
+// N4IghgThD2DuDOIBcBtUkawMIFMA2eiqoAxtHsgBwA0ImyArAL7WnlW31IAsLbFSAOyc4yXqxBkBANhGxkAZiYBdWiQCWEEnhy4CRNJPZIGc5NL5GZZpBYlTkwuqNuWHSGs%2FmvlK2jgA3HAA7PUJkQ3dPLko%2FEBwADwAXCDAAJRwAc3VoYINI4wUbAEY3Y24SsoFTL2RS%2B0KbACYqsWbWk3aGgSLapCVutr6B%2FkYbJVUCgWKbZkGkJtmO3q450aQZvrt1xa3lm22rOptBDt2uU%2FmVl1PlVRAAM3UEnAATADkAVwBbACMcCAGUAAB2g8HUSRywWQ6xqFxYIACYDwnxwyBaElB4MhuRhR1s4wRSJRaP6lixEKhePcThiRORqOQAE5yWDKbikOtoi5YrRiYzXJi2TjoZz8RU%2BhjEQzSbdaJkIOpXgBldQAL1JTNoAGt1AQAVgwJkcEC6FkqcR8bSXAAGDrc7x2%2BbW7z1LmVe7wH51CY6mDA3UAEWgSVNJHweGK1OMDvRCPDBCa0YEsbJtFeIYAKgBPYGkkBYXLwHAkT6QoIgNwRqNi9w2mxOyQRpO14ybLiNjNJHN55AgYOfX46Sv3aCvV5hMPGF1UOLA5HqYKvGDfE0RKbHPq89b1rcdXfw%2BYHlwWO6cEK%2FMB5dewmzb8V3%2FZ7%2BbnHkqe5JAAWAO%2BYJv%2BLhG4OglQ91mubxLh2A53yYIA%3D
+export const SudokuConstraintsGraphics = ({
   cellSize, constraints, cellMarks, grid, checkErrors, selectedCells,
   onCellClick, customGraphics, borderHighlightColor,
 }: SudokuConstraintsGraphicsProps) => {
@@ -629,17 +133,14 @@ const SudokuConstraintsGraphics = ({
   const defaultAreaColor = theme === Theme.Light ? 'grey' : 'lightgray'
   const defaultCellColor = theme === Theme.Light ? 'green' : 'lightgreen'
 
-  const {
-    gridSize, fixedNumbers, regions, thermos, arrows, killerCages, kropkiDots, extraRegions,
-    oddCells, evenCells, renbans, palindromes,
-  } = constraints
+  const { gridSize, fixedNumbers, killerCages } = constraints
   const onGridClick = useOnGridClick(cellSize, gridSize, onCellClick)
   const onMouseMove = useOnMouseMove(cellSize, gridSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
   const killerActive = !isEmpty(killerCages)
 
   // TODO: think about merging cellMarksErrors with custom graphics
-  const cellMarksErrors: CellMarkSets[][] = useCellMarkErrors(checkErrors, constraints, grid, cellMarks)
+  const errorGrid = useErrorsGrid(checkErrors, constraints, grid, cellMarks)
 
   // TODO: add common props to a context instead
   // Examples: gridSize, cellSize, fixedNumbersGrid, areaColor, cellColor
@@ -647,6 +148,15 @@ const SudokuConstraintsGraphics = ({
   const customGraphicsByType = groupBy(customGraphics, 'type')
   const cellHighlightCustomGraphics = customGraphicsByType['area-highlight'] ?? []
   const cornerMarksCustomGraphics = customGraphicsByType['corner-marks'] as CustomGraphicsCornerMarks[] ?? []
+
+  const graphicsCtx: Parameters<ConstraintDefinition['graphics']>[0] = {
+    constraints, gridSize, cellSize, errorGrid, fixedNumbersGrid, grid,
+  }
+  const renderConstraint = (constraintType: ConstraintType) => (
+    <Fragment key={constraintType}>
+      {constraintDefinitions[constraintType].graphics(graphicsCtx)}
+    </Fragment>
+  )
 
   return (
     <svg
@@ -660,7 +170,7 @@ const SudokuConstraintsGraphics = ({
       onMouseMove={onMouseMove}
     >
       {/* The order of rendering the graphics is important! */}
-      {/* This renders elements from the back to the top, so the last items are on top */}
+      {/* This renders elements from the bottom to the top, so the last items are on top */}
       <CustomGraphics
         items={cellHighlightCustomGraphics}
         cellSize={cellSize}
@@ -668,25 +178,19 @@ const SudokuConstraintsGraphics = ({
         defaultAreaColor={defaultAreaColor}
         defaultCellColor={defaultCellColor}
       />
-      <ExtraRegionsGraphics cellSize={cellSize} extraRegions={extraRegions ?? []} />
-      <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
-      <OddGraphics cellSize={cellSize} cells={oddCells ?? []} />
-      <EvenGraphics cellSize={cellSize} cells={evenCells ?? []} />
-      <KillerGraphics killerCages={killerCages || []} gridSize={gridSize} cellSize={cellSize} />
-      <ThermosGraphics thermos={thermos || []} cellSize={cellSize} />
-      <RenbansGraphics renbans={renbans || []} cellSize={cellSize} />
-      <PalindromesGraphics palindromes={palindromes || []} cellSize={cellSize} />
-      <ArrowsGraphics arrows={arrows || []} cellSize={cellSize} />
-      <DiagonalGraphics
+
+      {graphicsConstraintsUnderGridlines.map(renderConstraint)}
+
+      <GridlinesGraphics
         gridSize={gridSize}
         cellSize={cellSize}
-        primary={constraints.primaryDiagonal}
-        secondary={constraints.secondaryDiagonal}
+        borderHighlightColor={borderHighlightColor}
+        theme={theme}
       />
-      <GridGraphics gridSize={gridSize} cellSize={cellSize} />
-      <BordersGraphics gridSize={gridSize} regions={regions ?? []} cellSize={cellSize} />
-      <BorderHighlightsGraphics gridSize={gridSize} cellSize={cellSize} color={borderHighlightColor} />
-      <DigitGraphics cellSize={cellSize} constraints={constraints} cellMarks={cellMarks} grid={grid} fixedNumbersGrid={fixedNumbersGrid} checkErrors={checkErrors} />
+      <SelectedCellGraphics cellSize={cellSize} selectedCells={selectedCells} />
+
+      {graphicsConstraintsAboveGridlines.map(renderConstraint)}
+
       <CornerMarksGraphics
         cellSize={cellSize}
         constraints={constraints}
@@ -694,7 +198,7 @@ const SudokuConstraintsGraphics = ({
         grid={grid}
         fixedNumbersGrid={fixedNumbersGrid}
         killerActive={killerActive}
-        cellMarksErrors={cellMarksErrors}
+        errorGrid={errorGrid}
         customGraphics={cornerMarksCustomGraphics}
         theme={theme}
       />
@@ -704,23 +208,8 @@ const SudokuConstraintsGraphics = ({
         cellMarks={cellMarks}
         grid={grid}
         fixedNumbersGrid={fixedNumbersGrid}
-        cellMarksErrors={cellMarksErrors}
+        errorGrid={errorGrid}
       />
-      <KropkiGraphics kropkiDots={kropkiDots || []} cellSize={cellSize} />
     </svg>
   )
 }
-
-type SudokuConstraintsGraphicsProps = {
-  constraints: SudokuConstraints
-  cellMarks?: CellMarks[][]
-  cellSize: number
-  grid?: Grid
-  checkErrors: boolean
-  selectedCells?: CellPosition[]
-  onCellClick?: (cell: CellPosition, ctrl: boolean, isClick: boolean, doubleClick: boolean) => void
-  customGraphics?: CustomGraphicsItem[]
-  borderHighlightColor?: string
-}
-
-export default SudokuConstraintsGraphics

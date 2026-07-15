@@ -1,9 +1,10 @@
 import { Rule } from 'lisudoku-solver'
 import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { ReactNode } from 'react'
+import { constraintDefinitions } from 'src/constraints/definitions'
+import { diagonalsConstraint } from 'src/constraints/diagonal/diagonals'
 import { TrainerTechnique } from 'src/types'
 import { ConstraintType, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
-import { ConstraintsDisplay } from './constraints'
 
 export const GRID_SIZES = [ 4, 6, 9 ]
 
@@ -47,22 +48,22 @@ export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
 
 export const SudokuVariantIcon: Record<SudokuVariant, ReactNode> = {
   [SudokuVariant.Classic]: null,
-  [SudokuVariant.Killer]: ConstraintsDisplay[ConstraintType.KillerCage].icon,
-  [SudokuVariant.Thermo]: ConstraintsDisplay[ConstraintType.Thermo].icon,
-  [SudokuVariant.Arrow]: ConstraintsDisplay[ConstraintType.Arrow].icon,
+  [SudokuVariant.Killer]: constraintDefinitions[ConstraintType.KillerCage].icon,
+  [SudokuVariant.Thermo]: constraintDefinitions[ConstraintType.Thermo].icon,
+  [SudokuVariant.Arrow]: constraintDefinitions[ConstraintType.Arrow].icon,
   [SudokuVariant.Irregular]: '┏┛',
-  [SudokuVariant.Kropki]: ConstraintsDisplay[ConstraintType.KropkiConsecutive].icon,
-  [SudokuVariant.TopBottom]: ConstraintsDisplay[ConstraintType.TopBottom].icon,
-  [SudokuVariant.Diagonal]: ConstraintsDisplay[ConstraintType.Diagonals].icon,
-  [SudokuVariant.AntiKnight]: ConstraintsDisplay[ConstraintType.AntiKnight].icon,
-  [SudokuVariant.AntiKing]: ConstraintsDisplay[ConstraintType.AntiKing].icon,
-  [SudokuVariant.ExtraRegions]: ConstraintsDisplay[ConstraintType.ExtraRegions].icon,
+  [SudokuVariant.Kropki]: constraintDefinitions[ConstraintType.KropkiConsecutive].icon,
+  [SudokuVariant.TopBottom]: constraintDefinitions[ConstraintType.TopBottom].icon,
+  [SudokuVariant.Diagonal]: diagonalsConstraint.icon,
+  [SudokuVariant.AntiKnight]: constraintDefinitions[ConstraintType.AntiKnight].icon,
+  [SudokuVariant.AntiKing]: constraintDefinitions[ConstraintType.AntiKing].icon,
+  [SudokuVariant.ExtraRegions]: constraintDefinitions[ConstraintType.ExtraRegions].icon,
   [SudokuVariant.OddEven]: [
-    ConstraintsDisplay[ConstraintType.Odd].icon,
-    ConstraintsDisplay[ConstraintType.Even].icon,
+    constraintDefinitions[ConstraintType.Odd].icon,
+    constraintDefinitions[ConstraintType.Even].icon,
   ],
-  [SudokuVariant.Renban]: ConstraintsDisplay[ConstraintType.Renban].icon,
-  [SudokuVariant.Palindrome]: ConstraintsDisplay[ConstraintType.Palindrome].icon,
+  [SudokuVariant.Renban]: constraintDefinitions[ConstraintType.Renban].icon,
+  [SudokuVariant.Palindrome]: constraintDefinitions[ConstraintType.Palindrome].icon,
   [SudokuVariant.Mixed]: '❓',
 }
 
@@ -169,28 +170,6 @@ export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {
   [TrainerTechnique.HiddenSingle]: 'Hidden Single',
   [TrainerTechnique.NakedSingle]: 'Naked Single',
   [TrainerTechnique.Singles]: 'Hidden Single or Naked Single',
-}
-
-export const CONSTRAINT_TYPE_VARIANTS: { [key in ConstraintType]: SudokuVariant } = {
-  [ConstraintType.FixedNumber]: SudokuVariant.Classic,
-  [ConstraintType.Regions]: SudokuVariant.Irregular,
-  [ConstraintType.ExtraRegions]: SudokuVariant.ExtraRegions,
-  [ConstraintType.Thermo]: SudokuVariant.Thermo,
-  [ConstraintType.Arrow]: SudokuVariant.Arrow,
-  [ConstraintType.Renban]: SudokuVariant.Renban,
-  [ConstraintType.Palindrome]: SudokuVariant.Palindrome,
-  [ConstraintType.PrimaryDiagonal]: SudokuVariant.Diagonal,
-  [ConstraintType.SecondaryDiagonal]: SudokuVariant.Diagonal,
-  [ConstraintType.Diagonals]: SudokuVariant.Diagonal,
-  [ConstraintType.AntiKnight]: SudokuVariant.AntiKnight,
-  [ConstraintType.AntiKing]: SudokuVariant.AntiKing,
-  [ConstraintType.KillerCage]: SudokuVariant.Killer,
-  [ConstraintType.KropkiConsecutive]: SudokuVariant.Kropki,
-  [ConstraintType.KropkiDouble]: SudokuVariant.Kropki,
-  [ConstraintType.KropkiNegative]: SudokuVariant.Kropki,
-  [ConstraintType.Odd]: SudokuVariant.OddEven,
-  [ConstraintType.Even]: SudokuVariant.OddEven,
-  [ConstraintType.TopBottom]: SudokuVariant.TopBottom,
 }
 
 export const GRID_STEPS: Rule[] = ['HiddenSingle', 'NakedSingle', 'Thermo', 'PalindromeValues']
