@@ -11,7 +11,7 @@ export const PuzzleHeader = ({ variant, difficulty }: PuzzleHeaderProps) => (
   <div className="md:hidden pb-1 flex justify-between">
     <div>
       {SudokuVariantDisplay[variant]}
-      {difficulty !== undefined && `- ${SudokuDifficultyDisplay[difficulty]}`}
+      {difficulty !== undefined && ` - ${SudokuDifficultyDisplay[difficulty]}`}
     </div>
     <div>
       <SolveTimer />
