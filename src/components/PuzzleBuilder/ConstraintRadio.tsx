@@ -40,7 +40,7 @@ const ConstraintRadio = ({ id, ...props }: ConstraintRadioProps) => {
       id={id}
       label={<>
         {label}
-        {icon && (
+        {icon && description !== null && (
           <>
             {' '}
             <Tooltip

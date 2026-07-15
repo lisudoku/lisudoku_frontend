@@ -217,7 +217,7 @@ export const computeErrors = (checkErrors: boolean, constraints: SudokuConstrain
   const uniqueErrorSets = deduplicateErrorSets(errorResults)
   for (const { cell: { row, col }, errorSet } of uniqueErrorSets) {
     errorsGrid[row][col] ||= []
-    errorsGrid[row][col].push(...errorSet)
+    errorsGrid[row][col]!.push(...errorSet)
   }
 
   return errorsGrid

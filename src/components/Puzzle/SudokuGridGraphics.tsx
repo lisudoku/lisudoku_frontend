@@ -93,7 +93,7 @@ export const graphicsConstraintsOrder = [
   ConstraintType.AntiKing,
   ConstraintType.KropkiNegative,
   ConstraintType.TopBottom,
-] as const satisfies ConstraintType[]
+] as const satisfies readonly ConstraintType[]
 
 const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]) => {
   if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
