@@ -70,7 +70,7 @@ export const singleCellValidateCurrentConstraint: (constraintsToCells: Constrain
       if (editorState.targetIndex === undefined || constraintsToCells(constraints) === undefined) {
         return {
           type: 'info',
-          message: 'No target cell found',
+          message: 'Click on a cell to place the constraint',
         }
       }
 

@@ -56,8 +56,8 @@ export const thermoConstraint: ConstraintDefinition = {
   validateCurrentConstraint: ({ constraints, editorState }) => {
     if (editorState.targetIndex === undefined || constraints.thermos === undefined) {
       return {
-        type: 'unknown',
-        message: 'No thermo found',
+        type: 'info',
+        message: 'Click on a cell to start a thermo.',
       }
     }
 

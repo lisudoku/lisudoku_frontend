@@ -64,8 +64,8 @@ export const renbanConstraint: ConstraintDefinition = {
   validateCurrentConstraint: ({ constraints, editorState }) => {
     if (editorState.targetIndex === undefined || constraints.renbans === undefined) {
       return {
-        type: 'unknown',
-        message: 'No renban found',
+        type: 'info',
+        message: 'Click on a cell to start a renban line.',
       }
     }
 

@@ -69,8 +69,8 @@ export const palindromeConstraint: ConstraintDefinition = {
   validateCurrentConstraint: ({ constraints, editorState }) => {
     if (editorState.targetIndex === undefined || constraints.palindromes === undefined) {
       return {
-        type: 'unknown',
-        message: 'No palindrome found',
+        type: 'info',
+        message: 'Click on a cell to start a palindrome line.',
       }
     }
 

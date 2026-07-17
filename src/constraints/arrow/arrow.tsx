@@ -95,8 +95,8 @@ export const arrowConstraint: ConstraintDefinition = {
   validateCurrentConstraint: ({ constraints, editorState }) => {
     if (editorState.targetIndex === undefined || constraints.arrows === undefined) {
       return {
-        type: 'unknown',
-        message: 'No arrow found',
+        type: 'info',
+        message: 'Arrow has no circle part. Click on any cell to create it.'
       }
     }
 

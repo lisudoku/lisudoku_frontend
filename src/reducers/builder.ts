@@ -210,7 +210,7 @@ export const builderSlice = createSlice({
         }
         const validationResult = validateCurrentConstraint(constraintCtx)
 
-        assert(validationResult.type !== 'error', validationResult.message)
+        assert(validationResult.type !== 'error' && validationResult.type !== 'info', validationResult.message)
 
         const changes = prepareCurrentConstraint(constraintCtx)
         if (changes !== null) {
