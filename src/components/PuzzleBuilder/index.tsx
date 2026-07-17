@@ -260,97 +260,99 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           )}
         </div>
         <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
-          <div className="flex flex-col">
-            <Typography variant="h6">
+          <fieldset className="flex flex-col gap-2">
+            <Typography variant="h6" as="legend">
               Constraints
             </Typography>
-            <div className="flex flex-wrap gap-x-3 pt-3">
-              <div className="w-full ml-1">
-                <div className="w-1/3">
-                  <GridSizeSelect />
+            <div className="flex flex-col">
+              <div className="flex flex-wrap gap-x-3 pt-3">
+                <div className="w-full ml-1">
+                  <div className="w-1/3">
+                    <GridSizeSelect />
+                  </div>
+                </div>
+                <ConstraintRadio id={ConstraintType.FixedNumber} />
+                <ConstraintRadio id={ConstraintType.Regions} />
+                <ConstraintRadio id={ConstraintType.Thermo} />
+                <ConstraintRadio id={ConstraintType.Arrow} />
+                <ConstraintRadio id={ConstraintType.ExtraRegions} />
+                <ConstraintRadio id={ConstraintType.KillerCage} />
+                <ConstraintRadio id={ConstraintType.KropkiConsecutive} />
+                <ConstraintRadio id={ConstraintType.KropkiDouble} />
+                <ConstraintRadio id={ConstraintType.Odd} />
+                <ConstraintRadio id={ConstraintType.Even} />
+                <ConstraintRadio id={ConstraintType.Renban} />
+                <ConstraintRadio id={ConstraintType.Palindrome} />
+                <div className="flex flex-col w-full mt-2 gap-y-1">
+                  {editorState.type === ConstraintType.KillerCage && (
+                    <Input
+                      label="Sum"
+                      type="number"
+                      value={killerSum}
+                      onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
+                      onFocus={handleInputFocus}
+                      onBlur={handleInputBlur}
+                    />
+                  )}
+                  {editorState.type === ConstraintType.Arrow && (
+                    <>
+                      <Typography variant="h6">
+                        Arrow constraint
+                      </Typography>
+                      <div className="flex gap-2">
+                        <Radio
+                          name="arrow-build-item"
+                          id={ArrowConstraintType.Circle}
+                          label="Circle"
+                          checked={editorState.arrowConstraintType === ArrowConstraintType.Circle}
+                          onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
+                        />
+                        <Radio
+                          name="arrow-build-item"
+                          id={ArrowConstraintType.Arrow}
+                          label="Arrow"
+                          checked={editorState.arrowConstraintType === ArrowConstraintType.Arrow}
+                          onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
+                        />
+                      </div>
+                    </>
+                  )}
+                  {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
+                    <Button onClick={() => dispatch(addConstraint())}>
+                      {editorState.type === ConstraintType.Regions ? 'Set' : 'Add'}
+                    </Button>
+                  )}
                 </div>
               </div>
-              <ConstraintRadio id={ConstraintType.FixedNumber} />
-              <ConstraintRadio id={ConstraintType.Regions} />
-              <ConstraintRadio id={ConstraintType.Thermo} />
-              <ConstraintRadio id={ConstraintType.Arrow} />
-              <ConstraintRadio id={ConstraintType.ExtraRegions} />
-              <ConstraintRadio id={ConstraintType.KillerCage} />
-              <ConstraintRadio id={ConstraintType.KropkiConsecutive} />
-              <ConstraintRadio id={ConstraintType.KropkiDouble} />
-              <ConstraintRadio id={ConstraintType.Odd} />
-              <ConstraintRadio id={ConstraintType.Even} />
-              <ConstraintRadio id={ConstraintType.Renban} />
-              <ConstraintRadio id={ConstraintType.Palindrome} />
-              <div className="flex flex-col w-full mt-2 gap-y-1">
-                {editorState.type === ConstraintType.KillerCage && (
-                  <Input
-                    label="Sum"
-                    type="number"
-                    value={killerSum}
-                    onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
-                  />
-                )}
-                {editorState.type === ConstraintType.Arrow && (
-                  <>
-                    <Typography variant="h6">
-                      Arrow constraint
-                    </Typography>
-                    <div className="flex gap-2">
-                      <Radio
-                        name="arrow-build-item"
-                        id={ArrowConstraintType.Circle}
-                        label="Circle"
-                        checked={editorState.arrowConstraintType === ArrowConstraintType.Circle}
-                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
-                      />
-                      <Radio
-                        name="arrow-build-item"
-                        id={ArrowConstraintType.Arrow}
-                        label="Arrow"
-                        checked={editorState.arrowConstraintType === ArrowConstraintType.Arrow}
-                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
-                      />
-                    </div>
-                  </>
-                )}
-                {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
-                  <Button onClick={() => dispatch(addConstraint())}>
-                    {editorState.type === ConstraintType.Regions ? 'Set' : 'Add'}
-                  </Button>
-                )}
-              </div>
             </div>
-          </div>
-          <hr className="border-primary" />
-          <div className="flex flex-wrap gap-x-3">
-            <ConstraintCheckbox
-              id={ConstraintType.PrimaryDiagonal}
-              keyField="primaryDiagonal"
-            />
-            <ConstraintCheckbox
-              id={ConstraintType.SecondaryDiagonal}
-              keyField="secondaryDiagonal"
-            />
-            <ConstraintCheckbox
-              id={ConstraintType.AntiKnight}
-              keyField="antiKnight"
-            />
-            <ConstraintCheckbox
-              id={ConstraintType.AntiKing}
-              keyField="antiKing"
-            />
-            <ConstraintCheckbox
-              id={ConstraintType.KropkiNegative}
-              keyField="kropkiNegative"
-            />
-            <ConstraintCheckbox
-              id={ConstraintType.TopBottom}
-              keyField="topBottom"
-            />
-          </div>
+            <hr className="border-primary" />
+            <div className="flex flex-wrap gap-x-3">
+              <ConstraintCheckbox
+                id={ConstraintType.PrimaryDiagonal}
+                keyField="primaryDiagonal"
+              />
+              <ConstraintCheckbox
+                id={ConstraintType.SecondaryDiagonal}
+                keyField="secondaryDiagonal"
+              />
+              <ConstraintCheckbox
+                id={ConstraintType.AntiKnight}
+                keyField="antiKnight"
+              />
+              <ConstraintCheckbox
+                id={ConstraintType.AntiKing}
+                keyField="antiKing"
+              />
+              <ConstraintCheckbox
+                id={ConstraintType.KropkiNegative}
+                keyField="kropkiNegative"
+              />
+              <ConstraintCheckbox
+                id={ConstraintType.TopBottom}
+                keyField="topBottom"
+              />
+            </div>
+          </fieldset>
           <hr />
           <div className="flex w-full mt-2 gap-x-1">
             <Button className="w-1/2" variant="outlined" onClick={() => setImportOpen(true)}>
