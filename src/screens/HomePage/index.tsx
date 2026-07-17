@@ -2,16 +2,19 @@ import { useSelector } from 'src/hooks'
 import SudokuVariantCard from './SudokuVariantCard'
 import { ACTIVE_VARIANTS } from 'src/utils/constants'
 import ContestsAlert from './ContestsAlert'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 
 const HomePage = () => {
   const difficulty = useSelector(state => state.userData.difficulty)
 
   return (
     <>
-      <PageMeta title="lisudoku - Free Online Sudoku Variants"
-                url="https://lisudoku.xyz"
-                description="Play sudoku variants for free" />
+      <PageMeta
+        title="lisudoku.xyz • Free Online Sudoku Variants"
+        includeTitleBranding={false}
+        url="https://lisudoku.xyz"
+        description="Play free Classic, Thermo, Arrow, Kropki, Renban, Killer, and more Sudoku variants online."
+      />
       <ContestsAlert />
       <div className="p-2">
         <div className="flex flex-wrap mx-auto w-full sm:w-[28.7rem] md:w-[42.8rem] lg:w-[56.8rem] p-1 bg-secondary border rounded border-secondary">

@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { parseISO, differenceInSeconds } from 'date-fns'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
 import ErrorPage from 'src/components/ErrorPage'
@@ -61,9 +61,12 @@ const PuzzlePage = () => {
 
   return (
     <>
-      <PageMeta title={`Puzzle ${id}`}
-                url={`https://lisudoku.xyz/p/${id}`}
-                description="Solve a specific puzzle" />
+      <PageMeta
+        title={`Puzzle ${id}`}
+        url={`https://lisudoku.xyz/p/${id}`}
+        description={`Play the puzzle ${id}`}
+        noIndex
+      />
       {errorCode ? (
         <ErrorPage>
           {errorCode === 404 ? 'Puzzle not found' : undefined}

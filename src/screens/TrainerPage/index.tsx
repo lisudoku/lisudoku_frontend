@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ErrorPage from 'src/components/ErrorPage'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import { useDispatch, useSelector } from 'src/hooks'
 import { receivedTrainerPuzzle, requestedTrainerPuzzle } from 'src/reducers/trainer'
 import { SudokuVariant } from 'src/types/sudoku'
@@ -53,9 +53,12 @@ const TrainerPage = () => {
 
   return (
     <div>
-      <PageMeta title="Lisudoku Trainer"
-                url="https://lisudoku.xyz/trainer"
-                description="Improve your sudoku solving technique with lisudoku trainer" />
+      <PageMeta
+        title="Lisudoku Technique Trainer"
+        url="https://lisudoku.xyz/trainer"
+        description="Practice Sudoku solving techniques with focused
+          puzzles and improve your logical solving skills."
+      />
       {!isOnline ? (
         <ErrorPage>
           Trainer is not available while offline

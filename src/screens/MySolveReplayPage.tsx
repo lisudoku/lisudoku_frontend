@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import ErrorPage from 'src/components/ErrorPage'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import SolveReplay from 'src/components/SolveReplay'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Typography from 'src/design_system/Typography'
@@ -19,6 +19,7 @@ const MySolveReplayPage = () => {
         title={`My Solve ${id}`}
         url={`https://lisudoku.xyz/mysolves/${id}`}
         description="Replay your puzzle solve"
+        noIndex
       />
       {loading ? (
         <LoadingSpinner fullPage />

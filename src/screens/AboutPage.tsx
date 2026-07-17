@@ -1,11 +1,13 @@
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import Typography from 'src/design_system/Typography'
 
 const AboutPage = () => (
   <>
-    <PageMeta title="About lisudoku"
-              url="https://lisudoku.xyz/about"
-              description="Contact information, how to contribute" />
+    <PageMeta
+      title="About Lisudoku"
+      url="https://lisudoku.xyz/about"
+      description="Contact Lisudoku, learn about the project, and find out how to contribute."
+    />
     <div className="p-3">
       <Typography variant="h3">
         Contact

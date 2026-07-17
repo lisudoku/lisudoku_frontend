@@ -1,11 +1,14 @@
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import Typography from 'src/design_system/Typography'
 
 const OfflinePage = () => (
   <div className="px-4 py-3">
-    <PageMeta title="Offline"
-              url="https://lisudoku.xyz/offline"
-              description="Instructions for offline use of the app" />
+    <PageMeta
+      title="Offline"
+      url="https://lisudoku.xyz/offline"
+      description="Instructions for offline use of the app"
+      noIndex
+    />
     <Typography variant="h2">
       Offline
     </Typography>

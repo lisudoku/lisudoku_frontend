@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fromPairs, sortBy } from 'lodash-es'
 import { useSelector } from 'src/hooks'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import { Link, useParams } from 'react-router-dom'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Typography from 'src/design_system/Typography'
@@ -36,9 +36,11 @@ const CollectionPage = () => {
 
   return (
     <>
-      <PageMeta title={puzzleCollection.name}
-                url={`https://lisudoku.xyz/collections/${id}`}
-                description="Collections of puzzles from various sources" />
+      <PageMeta
+        title={puzzleCollection.name}
+        url={`https://lisudoku.xyz/collections/${id}`}
+        description={`Solve ${puzzleCollection.puzzles.length} curated Sudoku puzzles from ${puzzleCollection.name}`}
+      />
 
       <Typography variant="h3">
         {puzzleCollection.name}

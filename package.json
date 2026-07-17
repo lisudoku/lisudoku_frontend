@@ -47,8 +47,9 @@
     "start": "vite dev",
     "build:dev": "tsc && VITE_CJS_IGNORE_WARNING=true vite build --mode development",
     "serve": "vite preview",
+    "gen:sitemap": "node scripts/generate-sitemap.mjs",
     "lint": "eslint src",
-    "build:prod": "yarn build:dev --mode production",
+    "build:prod": "yarn gen:sitemap && yarn build:dev --mode production",
     "deploy": "yarn build:prod && netlify deploy --dir build --prod",
     "analyze": "vite-bundle-visualizer -t sunburst"
   },

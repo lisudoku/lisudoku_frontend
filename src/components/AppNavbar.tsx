@@ -15,28 +15,28 @@ import GitHubIcon from './AppFooter/GitHubIcon'
 
 const ITEMS: any[] = [
   {
-    text: 'Trainer',
-    url: '/trainer',
+    text: 'Solver',
+    url: '/solver',
   },
   {
     text: 'Learn',
     url: '/learn',
   },
   {
+    text: 'Trainer',
+    url: '/trainer',
+  },
+  {
     text: 'TV',
     url: '/tv',
   },
   {
-    text: 'Solver',
-    url: '/solver',
+    text: 'Feedback',
+    url: '/feedback',
   },
   {
     text: 'Offline',
     url: '/offline',
-  },
-  {
-    text: 'Feedback?',
-    url: '/feedback',
   },
 ]
 

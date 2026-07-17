@@ -8,6 +8,7 @@ import Input from 'src/design_system/Input'
 import Typography from 'src/design_system/Typography'
 import { loginSuccess } from 'src/reducers/userData'
 import { useDispatch } from 'src/hooks'
+import { PageMeta } from 'src/components/PageMeta'
 
 const LoginPage = () => {
   const dispatch = useDispatch()
@@ -27,6 +28,12 @@ const LoginPage = () => {
 
   return (
     <div className="container mx-auto w-full lg:w-1/3 md:w-1/2 my-8 bg-secondary py-4 px-8 border border-primary rounded">
+      <PageMeta
+        title="Login"
+        url="https://lisudoku.xyz/login"
+        description="Log In to your Lisudoku account"
+        noIndex
+      />
       <Form
         onSubmit={onSubmit}
         render={({ handleSubmit, submitError, submitting, values }) => (

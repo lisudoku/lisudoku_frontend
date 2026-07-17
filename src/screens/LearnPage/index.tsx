@@ -2,7 +2,7 @@ import { map } from 'lodash-es'
 import { useLocation } from 'react-router-dom'
 import TechniqueCard from './TechniqueCard'
 import Typography from 'src/design_system/Typography'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import { TECHNIQUES_BY_DIFFICULTY } from './techniques'
 import { Technique } from './types'
 import { EStepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
@@ -12,9 +12,12 @@ const LearnPage = () => {
 
   return (
     <div className="px-3">
-      <PageMeta title="Learn Sudoku Solving Techniques"
-                url="https://lisudoku.xyz/learn"
-                description="The list of solving techniques necessary and sufficient for solving our puzzles" />
+      <PageMeta
+        title="Learn Sudoku Techniques & Variants"
+        url="https://lisudoku.xyz/learn"
+        description="Learn logical Sudoku techniques and how
+          to solve Classic, Thermo, Arrow, Kropki, Renban, Killer, and more."
+      />
       <Typography variant="h3">
         <a href="/learn#">Solving Techniques</a>
       </Typography>

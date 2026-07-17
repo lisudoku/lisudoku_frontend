@@ -1,4 +1,4 @@
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import ErrorPage from 'src/components/ErrorPage'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Typography from 'src/design_system/Typography'
@@ -13,9 +13,11 @@ const TvPage = () => {
 
   return (
     <>
-      <PageMeta title="TV"
-                url="https://lisudoku.xyz/tv"
-                description="Watch people solve puzzles in real time" />
+      <PageMeta
+        title="Lisudoku TV"
+        url="https://lisudoku.xyz/tv"
+        description="Watch people solve puzzles in real time"
+      />
       {error ? (
         <ErrorPage>{errorMessage}</ErrorPage>
       ) : loading ? (

@@ -1,5 +1,5 @@
 import { orderBy } from 'lodash-es'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import SolvesTable from 'src/components/SolvesTable'
 import { useSelector } from 'src/hooks'
 import Typography from 'src/design_system/Typography'
@@ -14,6 +14,7 @@ const MySolvesPage = () => {
         title="My Solves"
         url="https://lisudoku.xyz/mysolves"
         description="Replay your solved puzzles"
+        noIndex
       />
       <Typography variant="h3">
         My Solves

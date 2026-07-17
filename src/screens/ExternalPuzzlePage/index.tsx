@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
 import { parseISO, differenceInSeconds } from 'date-fns'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import ErrorPage from 'src/components/ErrorPage'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'
@@ -64,9 +64,12 @@ const ExternalPuzzlePage = () => {
 
   return (
     <>
-      <PageMeta title={`External Puzzle`}
-                url={`https://lisudoku.xyz/e?import=${importData}`}
-                description="Solve an external puzzle" />
+      <PageMeta
+        title="External Puzzle"
+        url={`https://lisudoku.xyz/e?import=${importData}`}
+        description="Solve an external puzzle"
+        noIndex
+      />
       {error ? (
         <ErrorPage />
       ) : puzzleLoading ? (

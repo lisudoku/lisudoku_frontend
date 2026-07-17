@@ -6,7 +6,7 @@ import { parseISO, differenceInHours, differenceInSeconds } from 'date-fns/esm'
 import { AxiosError } from 'axios'
 import { updateDifficulty } from 'src/reducers/userData'
 import { fetchRandomPuzzle } from 'src/utils/apiService'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import Puzzle from 'src/components/Puzzle'
 import EmptyCategory from './EmptyCategory'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
@@ -87,9 +87,10 @@ const PlayPage = () => {
 
   return (
     <>
-      <PageMeta title={`Puzzles - ${variantDisplay} ${difficultyDisplay}`}
-                url={`https://lisudoku.xyz/play/${variant}/${difficulty}`}
-                description="Solve random puzzles from any category"
+      <PageMeta
+        title={`${variantDisplay} Sudoku - ${difficultyDisplay}`}
+        url={`https://lisudoku.xyz/play/${variant}/${difficulty}`}
+        description={`Play free ${difficultyDisplay} ${variantDisplay} Sudoku puzzles online`}
       />
       {errorCode === 404 ? (
         <EmptyCategory variant={variant} difficulty={difficulty} />

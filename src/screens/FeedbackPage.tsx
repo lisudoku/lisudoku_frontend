@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import Button from 'src/design_system/Button'
-import PageMeta from 'src/components/PageMeta'
+import { PageMeta } from 'src/components/PageMeta'
 import Textarea from 'src/design_system/Textarea'
 import ErrorPage from 'src/components/ErrorPage'
 import { sendHbAlertAsync } from 'src/components/HoneybadgerProvider'
@@ -36,9 +36,12 @@ const FeedbackPage = () => {
 
   return (
     <div className="px-4 py-3">
-      <PageMeta title="Feedback"
-                url="https://lisudoku.xyz/feedback"
-                description="Send any feedback :)" />
+      <PageMeta
+        title="Feedback"
+        url="https://lisudoku.xyz/feedback"
+        description="Send any feedback :)"
+        noIndex
+      />
       {isOnline ? (
         <div className="flex flex-col gap-3">
           <Input
