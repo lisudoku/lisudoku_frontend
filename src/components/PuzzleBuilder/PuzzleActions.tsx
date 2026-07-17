@@ -156,24 +156,32 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
           onClick={() => setShowSolverSettings(true)}
         />
       </span>
-      <Button onClick={handleBruteSolveClick}
-              disabled={bruteSolverRunning  || bruteSolution !== null}
+      <Button
+        onClick={handleBruteSolveClick}
+        disabled={bruteSolverRunning  || bruteSolution !== null}
+        aria-label="Run the brute-force Sudoku solver and show whether the solution is unique"
       >
         Brute Force Solve
       </Button>
-      <BruteSolutionPanel running={bruteSolverRunning}
-                          solution={bruteSolution}
-                          onClear={handleBruteSolutionClear} />
-      <Button onClick={handleLogicalSolveClick}
-              disabled={logicalSolverRunning || logicalSolution !== null}
+      <BruteSolutionPanel
+        running={bruteSolverRunning}
+        solution={bruteSolution}
+        onClear={handleBruteSolutionClear}
+      />
+      <Button
+        onClick={handleLogicalSolveClick}
+        disabled={logicalSolverRunning || logicalSolution !== null}
+        aria-label="Run the logical Sudoku solver and show the step-by-step solving steps"
       >
         Logical Solve
       </Button>
-      <LogicalSolutionPanel solution={logicalSolution}
-                            constraints={constraints!}
-                            running={logicalSolverRunning}
-                            setterMode={setterMode}
-                            onClear={handleLogicalSolutionClear} />
+      <LogicalSolutionPanel
+        solution={logicalSolution}
+        constraints={constraints!}
+        running={logicalSolverRunning}
+        setterMode={setterMode}
+        onClear={handleLogicalSolutionClear}
+      />
 
       {setterMode && (
         <>

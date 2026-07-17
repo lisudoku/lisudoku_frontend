@@ -355,21 +355,41 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
           </fieldset>
           <hr />
           <div className="flex w-full mt-2 gap-x-1">
-            <Button className="w-1/2" variant="outlined" onClick={() => setImportOpen(true)}>
+            <Button
+              className="w-1/2"
+              variant="outlined"
+              onClick={() => setImportOpen(true)}
+              aria-label="Import a Sudoku puzzle from a supported format"
+            >
               <FontAwesomeIcon icon={faDownload} />{' '}
               Import
             </Button>
-            <Button className="w-1/2" variant="outlined" onClick={() => setExportOpen(true)}>
+            <Button
+              className="w-1/2"
+              variant="outlined"
+              onClick={() => setExportOpen(true)}
+              aria-label="Export the current Sudoku puzzle to a supported format"
+            >
               <FontAwesomeIcon icon={faUpload} />{' '}
               Export
             </Button>
           </div>
           <div className="flex w-full gap-x-1">
-            <Button className="w-1/2" variant="outlined" onClick={() => setImportImageOpen(true)}>
+            <Button
+              className="w-1/2"
+              variant="outlined"
+              onClick={() => setImportImageOpen(true)}
+              aria-label="Import a Sudoku puzzle from an image"
+            >
               <FontAwesomeIcon icon={faDownload} />{' '}
               Import image
             </Button>
-            <Button className="w-1/2" variant="outlined" onClick={handleExportImageClick}>
+            <Button
+              className="w-1/2"
+              variant="outlined"
+              onClick={handleExportImageClick}
+              aria-label="Export the current Sudoku puzzle to an image"
+            >
               <FontAwesomeIcon icon={faUpload} />{' '}
               Export image
             </Button>
