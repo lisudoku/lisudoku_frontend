@@ -149,8 +149,14 @@ const AppNavbar = ({ admin }: { admin: boolean }) => {
             <>🚀</>
           ) : solveCount < 150 ? (
             <>🚀🚀</>
-          ) : (
+          ) : solveCount < 200 ? (
             <>🚀🚀🚀</>
+          ) : solveCount < 250 ? (
+            <>👽</>
+          ) : solveCount < 300 ? (
+            <>🛸</>
+          ) : (
+            <>🤖</>
           )}
         </>
       )}
