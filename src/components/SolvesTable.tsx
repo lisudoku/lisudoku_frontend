@@ -1,4 +1,5 @@
-import { formatISO9075, parseISO } from 'date-fns/esm'
+import classNames from 'classnames'
+import { formatISO9075, isSameDay, parseISO } from 'date-fns/esm'
 import { Link } from 'react-router-dom'
 import Typography from 'src/design_system/Typography'
 import { UserSolution } from 'src/types'
@@ -33,7 +34,11 @@ const SolvesTable = ({ userSolutions, isAdmin }: SolvesTableProps) => {
       </thead>
       <tbody className="divide-y">
         {userSolutions.map((userSolution, index) => (
-          <tr key={userSolution.id ?? index} className="h-8 divide-x">
+          <tr key={userSolution.id ?? index} className={classNames('h-8 divide-x', {
+            '!border-t-4': userSolution.createdAt && index > 0 && userSolutions[index - 1].createdAt && (
+              !isSameDay(parseISO(userSolution.createdAt), parseISO(userSolutions[index - 1].createdAt!))
+            ),
+          })}>
             {isAdmin && (
               <td className="p-2 text-center">{userSolution.id ?? '-'}</td>
             )}
