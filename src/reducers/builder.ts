@@ -244,8 +244,8 @@ export const builderSlice = createSlice({
           }
         }
         state.constraints = cloneDeep(state.committedConstraints)
-        // We always delete the draft constraints so we need to reset the index
-        state.constraintEditorState.targetIndex = undefined
+        // Note: we always delete existing (non-targetted) draft constraints
+        clearEditorState(state)
       }
 
       handleConstraintChange(state)
@@ -335,9 +335,12 @@ export const builderSlice = createSlice({
       }
     },
     changeConstraintValue(state, { payload: { key, value } }: { payload: { key: BooleanConstraintKeyType, value: boolean } }) {
-      if (state.committedConstraints) {
+      if (state.constraints && state.committedConstraints) {
+        // Note: we are making the change in both draft and committed constraints
+        // because we want to commit the boolean change, but not the other
+        // possibly in progress draft constraint
+        state.constraints[key] = value
         state.committedConstraints[key] = value
-        state.constraints = cloneDeep(state.committedConstraints)
         handleConstraintChange(state)
       }
     },
