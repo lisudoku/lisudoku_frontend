@@ -46,7 +46,7 @@ const useComputeHintElement = () => {
 
   const isAtPuzzleBeginning = actions.length <= 1
   useEffect(() => {
-    if (!hintError) {
+    if (!hintError || (!isAtPuzzleBeginning && context.solution_type !== 'Partial')) {
       return
     }
     sendHbAlert({
