@@ -4,7 +4,7 @@ import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { groupBy, isEmpty, partition, times } from 'lodash-es'
 import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import { CornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
-import { useOnGridClick, useOnMouseMove } from './SudokuGridGraphics/utils'
+import { useGridCellUiEventHandler } from './SudokuGridGraphics/utils'
 import { useErrorsGrid } from './hooks/useErrorsGrid'
 import { useFixedNumbersGrid } from './hooks/useFixedNumbersGrid'
 import { CustomGraphics, CustomGraphicsCornerMarks, CustomGraphicsItem } from './SudokuGridGraphics/CustomGraphics/CustomGraphics'
@@ -134,8 +134,7 @@ export const SudokuConstraintsGraphics = ({
   const defaultCellColor = theme === Theme.Light ? 'green' : 'lightgreen'
 
   const { gridSize, fixedNumbers, killerCages } = constraints
-  const onGridClick = useOnGridClick(cellSize, gridSize, onCellClick)
-  const onMouseMove = useOnMouseMove(cellSize, gridSize, onCellClick)
+  const onGridCellUiEvent = useGridCellUiEventHandler(cellSize, gridSize, onCellClick)
   const fixedNumbersGrid = useFixedNumbersGrid(gridSize, fixedNumbers)
   const killerActive = !isEmpty(killerCages)
 
@@ -162,12 +161,17 @@ export const SudokuConstraintsGraphics = ({
     <svg
       height={gridSize * cellSize + 2}
       width={gridSize * cellSize + 2}
-      className="top-0 left-0 stroke-[2px]"
+      className="top-0 left-0 stroke-[2px] touch-none"
       // Using onMouseDown instead of onClick for the cases when you
       // start the click somewhere and end it in another place.
-      onMouseDown={onGridClick}
+      onMouseDown={onGridCellUiEvent}
       // Select cells as you drag your mouse over them
-      onMouseMove={onMouseMove}
+      onMouseMove={onGridCellUiEvent}
+      // Like onMouseMove but for touch
+      onTouchMove={onGridCellUiEvent}
+      // Treat the start of a touch drag as a click in order to reset
+      // the selected cells (like onMouseDown)
+      onTouchStart={onGridCellUiEvent}
     >
       {/* The order of rendering the graphics is important! */}
       {/* This renders elements from the bottom to the top, so the last items are on top */}
