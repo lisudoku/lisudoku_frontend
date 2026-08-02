@@ -50,7 +50,7 @@
     "gen:sitemap": "node scripts/generate-sitemap.mjs",
     "lint": "eslint src",
     "build:prod": "yarn gen:sitemap && yarn build:dev --mode production",
-    "deploy": "yarn build:prod && netlify deploy --dir build --prod",
+    "deploy": "yarn build:prod && netlify deploy --no-build --dir build --prod",
     "analyze": "vite-bundle-visualizer -t sunburst"
   },
   "eslintConfig": {
