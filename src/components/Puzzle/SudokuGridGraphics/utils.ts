@@ -25,7 +25,7 @@ export const useGridCellUiEventHandler = (
       x = touch.clientX - e.currentTarget.getBoundingClientRect().left
       y = touch.clientY - e.currentTarget.getBoundingClientRect().top
     } else {
-      // We only care about single left clicks
+      // We only care about mouse movement when its button is pressed
       if (e.buttons !== 1) {
         return
       }
