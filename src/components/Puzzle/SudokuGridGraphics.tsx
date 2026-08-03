@@ -171,9 +171,10 @@ export const SudokuConstraintsGraphics = ({
       onTouchMove={onGridCellUiEvent}
       // Treat the start of a touch drag as a click in order to reset
       // the selected cells (like onMouseDown)
-      // Note: commented out to make it easier for mobile users to
+      // TODO: would like to make it easier for mobile users to
       // simultaneously select disjoint sets of cells
-      // onTouchStart={onGridCellUiEvent}
+      // (while also making single click work)
+      onTouchStart={onGridCellUiEvent}
     >
       {/* The order of rendering the graphics is important! */}
       {/* This renders elements from the bottom to the top, so the last items are on top */}
