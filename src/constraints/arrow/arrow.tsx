@@ -4,7 +4,6 @@ import type { CellErrorSet, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { arrowGraphics } from './graphics'
 import { ensureTargetItem, expandsArea4, expandsArea8, expandsPath } from '../utils'
-import type { Arrow } from 'lisudoku-solver'
 import { find, findIndex, sortBy, sumBy } from 'lodash-es'
 import { ArrowConstraintType } from '../editorState'
 
@@ -96,7 +95,7 @@ export const arrowConstraint: ConstraintDefinition = {
     if (editorState.targetIndex === undefined || constraints.arrows === undefined) {
       return {
         type: 'info',
-        message: 'Arrow has no circle part. Click on any cell to create it.'
+        message: noCirclePartErrorMessage(editorState.arrowConstraintType),
       }
     }
 
@@ -105,14 +104,14 @@ export const arrowConstraint: ConstraintDefinition = {
     if (currentArrow.circleCells.length === 0) {
       return {
         type: 'info',
-        message: 'Arrow has no circle part. Click on any cell to create it.'
+        message: noCirclePartErrorMessage(editorState.arrowConstraintType),
       }
     }
 
     if (currentArrow.arrowCells.length === 0) {
       return {
         type: 'error',
-        message: 'Arrow has no arrow part. Click on any cell next to the circle to start it.',
+        message: noArrowPartErrorMessage(editorState.arrowConstraintType),
       }
     }
 
@@ -122,4 +121,18 @@ export const arrowConstraint: ConstraintDefinition = {
     }
   },
   prepareCurrentConstraint: () => null,
+}
+
+const noCirclePartErrorMessage = (arrowConstraintType: ArrowConstraintType) => {
+  const switchRadiosMessage = arrowConstraintType === ArrowConstraintType.Arrow
+    ? 'Select the Circle radio button under "Arrow constraint". '
+    : ''
+  return `Arrow constraint has no circle part. ${switchRadiosMessage}Click on any cell to create it.`
+}
+
+const noArrowPartErrorMessage = (arrowConstraintType: ArrowConstraintType) => {
+  const switchRadiosMessage = arrowConstraintType === ArrowConstraintType.Circle
+    ? 'Select the Arrow radio button under "Arrow constraint". '
+    : ''
+  return `Arrow constraint has no arrow part. ${switchRadiosMessage}Click on any cell next to the circle to start it.`
 }
