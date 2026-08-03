@@ -161,7 +161,7 @@ export const SudokuConstraintsGraphics = ({
     <svg
       height={gridSize * cellSize + 2}
       width={gridSize * cellSize + 2}
-      className="top-0 left-0 stroke-[2px] touch-none"
+      className="top-0 left-0 stroke-[2px]"
       // Using onMouseDown instead of onClick for the cases when you
       // start the click somewhere and end it in another place.
       onMouseDown={onGridCellUiEvent}
