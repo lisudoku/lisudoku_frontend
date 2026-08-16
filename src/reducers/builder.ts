@@ -229,7 +229,8 @@ export const builderSlice = createSlice({
       handleConstraintChange(state)
     },
     deleteConstraint(state) {
-      for (const cell of state.constraintEditorState.selectedCells) {
+      const selectedCells = state.constraintEditorState.selectedCells
+      for (const cell of selectedCells) {
         if (state.cellMarks) {
           state.cellMarks[cell.row][cell.col] = {}
         }
@@ -244,9 +245,12 @@ export const builderSlice = createSlice({
           }
         }
         state.constraints = cloneDeep(state.committedConstraints)
-        // Note: we always delete existing (non-targetted) draft constraints
-        clearEditorState(state)
       }
+
+      // Note: we always delete existing (non-targetted) draft constraints
+      clearEditorState(state)
+      // Keep existing selected cells
+      state.constraintEditorState.selectedCells = selectedCells
 
       handleConstraintChange(state)
     },
