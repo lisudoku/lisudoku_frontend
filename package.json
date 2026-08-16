@@ -51,6 +51,7 @@
     "lint": "eslint src",
     "build:prod": "yarn gen:sitemap && yarn build:dev --mode production",
     "deploy": "yarn build:prod && netlify deploy --no-build --dir build --prod",
+    "deploy:preview": "yarn build:prod && netlify deploy --no-build --dir build",
     "analyze": "vite-bundle-visualizer -t sunburst"
   },
   "eslintConfig": {
