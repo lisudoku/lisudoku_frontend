@@ -4,7 +4,7 @@ import type { CellErrorSet, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { arrowGraphics } from './graphics'
 import { ensureTargetItem, expandsArea4, expandsArea8, expandsPath } from '../utils'
-import { find, findIndex, sortBy, sumBy } from 'lodash-es'
+import { cloneDeep, find, findIndex, sortBy, sumBy } from 'lodash-es'
 import { ArrowConstraintType } from '../editorState'
 
 export const arrowConstraint: ConstraintDefinition = {
@@ -120,7 +120,24 @@ export const arrowConstraint: ConstraintDefinition = {
       message: 'Current arrow is valid',
     }
   },
-  prepareCurrentConstraint: () => null,
+  prepareCurrentConstraint: ({ constraints, editorState }) => {
+    if (editorState.targetIndex === undefined || constraints.arrows === undefined) {
+      return null
+    }
+
+    const arrows = cloneDeep(constraints.arrows)
+    arrows[editorState.targetIndex] = {
+      ...arrows[editorState.targetIndex],
+      circleCells: sortBy(arrows[editorState.targetIndex].circleCells, [ 'row', 'col' ])
+    }
+
+    return {
+      newConstraints: {
+        ...constraints,
+        arrows,
+      }
+    }
+  },
 }
 
 const noCirclePartErrorMessage = (arrowConstraintType: ArrowConstraintType) => {
