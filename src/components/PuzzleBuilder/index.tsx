@@ -6,7 +6,7 @@ import { SudokuConstraints, SolutionStep } from 'lisudoku-solver';
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
-  addConstraint, changeArrowConstraintType, changeInputActive, changeKillerSum,
+  changeArrowConstraintType, changeInputActive, changeKillerSum,
   changeSelectedCell,
   initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
@@ -34,6 +34,7 @@ import { useSolutionCustomGraphics } from './hooks/useSolutionCustomGraphics'
 import { detectConstraints } from 'src/constraints/utils'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType } from 'src/constraints/editorState'
+import { ConstraintAddButton } from './ConstraintAddButton'
 
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
@@ -318,9 +319,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     </>
                   )}
                   {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
-                    <Button onClick={() => dispatch(addConstraint())}>
-                      {editorState.type === ConstraintType.Regions ? 'Set' : 'Add'}
-                    </Button>
+                    <ConstraintAddButton />
                   )}
                 </div>
               </div>
