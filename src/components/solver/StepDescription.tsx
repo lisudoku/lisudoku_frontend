@@ -10,6 +10,7 @@ export const StepDescription = (
     <b>
       {/* TODO: Need to find a way to make this an <ExternalLink /> without */}
       {/* user accidentally clicking on it */}
+      {/* have a tooltip with a link in it? */}
       <span className="text-primary font-bold">{StepRuleDisplay[step.rule]}</span>
     </b>
     {hintLevel !== HintLevel.Small && (
