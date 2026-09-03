@@ -118,6 +118,7 @@ export const builderSlice = createSlice({
       state.bruteSolution = null
       state.logicalSolution = null
       state.manualChange = false
+      clearEditorState(state)
     },
     receivedPuzzle(state, action) {
       const constraints: Partial<SudokuConstraints> = camelCaseKeys(action.payload)
