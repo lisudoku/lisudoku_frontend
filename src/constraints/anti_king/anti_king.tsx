@@ -15,6 +15,7 @@ export const antiKingConstraint: ConstraintDefinition = {
   label: 'Anti King',
   description: () => 'Cells a king move away must not contain the same digit.',
   isGlobal: true,
+  dataKey: 'antiKing',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.antiKing),
   variant: () => SudokuVariant.AntiKing,
   graphics: () => null,

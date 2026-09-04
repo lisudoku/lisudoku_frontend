@@ -13,6 +13,7 @@ export const oddConstraint: ConstraintDefinition = {
   label: 'Odd',
   description: () => 'Cells with shaded circles contain odd digits.',
   isGlobal: false,
+  dataKey: 'oddCells',
   isActiveInConstraints: ({ constraints }) => (constraintsToCells(constraints) ?? []).length > 0,
   variant: () => SudokuVariant.OddEven,
   graphics: oddGraphics,

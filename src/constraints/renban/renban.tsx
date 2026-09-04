@@ -11,6 +11,7 @@ export const renbanConstraint: ConstraintDefinition = {
   label: 'Renban',
   description: () => 'Each gray line must contain a set of distinct, consecutive digits in any order.',
   isGlobal: false,
+  dataKey: 'renbans',
   isActiveInConstraints: ({ constraints }) => (constraints.renbans ?? []).length > 0,
   variant: () => SudokuVariant.Renban,
   graphics: renbanGraphics,

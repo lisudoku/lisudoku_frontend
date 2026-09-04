@@ -6,7 +6,7 @@ import {
   pull, pullAllWith, uniqWith, xorWith,
 } from 'lodash-es'
 import {
-  CellMarks, BooleanConstraintKeyType, ConstraintType,
+  CellMarks, BooleanConstraintDataKey, ConstraintType,
   SudokuDifficulty, SudokuVariant,
 } from 'src/types/sudoku'
 import { SolverType } from 'src/types/wasm'
@@ -339,7 +339,7 @@ export const builderSlice = createSlice({
         }
       }
     },
-    changeConstraintValue(state, { payload: { key, value } }: { payload: { key: BooleanConstraintKeyType, value: boolean } }) {
+    changeConstraintValue(state, { payload: { key, value } }: { payload: { key: BooleanConstraintDataKey, value: boolean } }) {
       if (state.constraints && state.committedConstraints) {
         // Note: we are making the change in both draft and committed constraints
         // because we want to commit the boolean change, but not the other

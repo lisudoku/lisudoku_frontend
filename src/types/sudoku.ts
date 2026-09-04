@@ -34,9 +34,9 @@ export enum SudokuDifficulty {
   Hard9x9 = 'hard9x9',
 }
 
-type BooleanConstraints = |
-  'primaryDiagonal' | 'secondaryDiagonal' | 'antiKnight' | 'antiKing' | 'kropkiNegative' | 'topBottom'
-export type BooleanConstraintKeyType = keyof Pick<SudokuConstraints, BooleanConstraints>
+export type BooleanConstraintDataKey = {
+  [K in keyof SudokuConstraints]-?: NonNullable<SudokuConstraints[K]> extends boolean ? K : never
+}[keyof SudokuConstraints]
 
 export enum ConstraintType {
   FixedNumber = 'fixed_number',

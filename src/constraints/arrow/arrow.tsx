@@ -18,6 +18,7 @@ export const arrowConstraint: ConstraintDefinition = {
       : ''
     ),
   isGlobal: false,
+  dataKey: 'arrows',
   isActiveInConstraints: ({ constraints }) => (constraints.arrows ?? []).length > 0,
   variant: () => SudokuVariant.Arrow,
   graphics: arrowGraphics,

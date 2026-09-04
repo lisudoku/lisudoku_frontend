@@ -11,6 +11,7 @@ export const thermoConstraint: ConstraintDefinition = {
   label: 'Thermometer',
   description: () => 'Each thermometer contains digits in increasing order from the bulb to the end.',
   isGlobal: false,
+  dataKey: 'thermos',
   isActiveInConstraints: ({ constraints }) => (constraints.thermos ?? []).length > 0,
   variant: () => SudokuVariant.Thermo,
   graphics: thermoGraphics,

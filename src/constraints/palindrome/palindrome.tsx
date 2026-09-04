@@ -11,6 +11,7 @@ export const palindromeConstraint: ConstraintDefinition = {
   label: 'Palindrome',
   description: () => 'Digits along any gray line form a palindrome (they read the same in both directions).',
   isGlobal: false,
+  dataKey: 'palindromes',
   isActiveInConstraints: ({ constraints }) => (constraints.palindromes ?? []).length > 0,
   variant: () => SudokuVariant.Palindrome,
   graphics: palindromeGraphics,

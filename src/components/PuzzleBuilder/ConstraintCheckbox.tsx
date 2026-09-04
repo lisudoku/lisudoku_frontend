@@ -3,27 +3,35 @@ import { useDispatch, useSelector } from 'src/hooks'
 import { changeConstraintValue } from 'src/reducers/builder'
 import Checkbox from 'src/design_system/Checkbox'
 import Tooltip from 'src/design_system/Tooltip'
-import { BooleanConstraintKeyType, ConstraintType } from 'src/types/sudoku'
+import type { BooleanConstraintDataKey, ConstraintType } from 'src/types/sudoku'
 import { constraintDefinitions } from 'src/constraints/definitions'
+import type { ConstraintDataKey } from 'src/constraints/types'
+import type { SudokuConstraints } from 'lisudoku-solver'
 
 interface ConstraintCheckboxProps {
   id: ConstraintType
-  keyField: BooleanConstraintKeyType
 }
 
-const ConstraintCheckbox = ({ id, keyField, ...props }: ConstraintCheckboxProps) => {
+function keyIsBooleanConstraintDataKey(key: ConstraintDataKey, constraints: SudokuConstraints | null): key is BooleanConstraintDataKey {
+  return constraints !== null && typeof constraints[key] === 'boolean'
+}
+
+const ConstraintCheckbox = ({ id, ...props }: ConstraintCheckboxProps) => {
   const dispatch = useDispatch()
   const constraints = useSelector(state => state.builder.constraints)
+  const { label, description, icon, dataKey } = constraintDefinitions[id]
 
-  const handleConstraintChange = useCallback((e: ChangeEvent<HTMLInputElement>) => (
-    dispatch(changeConstraintValue({ key: keyField, value: e.target.checked }))
-  ), [dispatch, keyField])
+  const handleConstraintChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    if (keyIsBooleanConstraintDataKey(dataKey, constraints)) {
+      dispatch(changeConstraintValue({ key: dataKey, value: e.target.checked }))
+    } else {
+      throw new Error('Expected boolean constraint type.')
+    }
+  }, [dispatch, dataKey, constraints])
 
   if (!constraints) {
     return null
   }
-
-  const { label, description, icon } = constraintDefinitions[id]
 
   return (
     <Checkbox
@@ -42,7 +50,7 @@ const ConstraintCheckbox = ({ id, keyField, ...props }: ConstraintCheckboxProps)
           </>
         )}
       </>}
-      checked={constraints[keyField]}
+      checked={constraints[dataKey]}
       onChange={handleConstraintChange}
       {...props}
     />

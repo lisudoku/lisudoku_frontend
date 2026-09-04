@@ -17,6 +17,7 @@ export const killerCageConstraint: ConstraintDefinition = {
     'The sum of all numbers in a cage must match the small number in the corner of the cage. ' +
     'No number appears more than once in a cage.',
   isGlobal: false,
+  dataKey: 'killerCages',
   isActiveInConstraints: ({ constraints }) => (constraints.killerCages ?? []).length > 0,
   variant: () => SudokuVariant.Killer,
   graphics: killerGraphics,

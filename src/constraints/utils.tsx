@@ -300,3 +300,9 @@ export const getAdjacentPeers = (cell: CellPosition, gridSize: number, checkBoun
   })
   return peers
 }
+
+export const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]) => {
+  if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
+    throw new Error('Constraint order is not exhaustive.')
+  }
+}

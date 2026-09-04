@@ -20,6 +20,7 @@ export const kropkiConsecutiveConstraint: ConstraintDefinition = {
   description: () =>
     'Adjacent cells containing digits whose difference is 1 are marked with a white circle.',
   isGlobal: false,
+  dataKey: 'kropkiDots',
   isActiveInConstraints: ({ constraints }) =>
     constraints.kropkiDots?.some(kropkiDot => kropkiDot.dotType === 'Consecutive') ?? false,
   variant: () => SudokuVariant.Kropki,

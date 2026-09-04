@@ -1,5 +1,5 @@
 import { useWindowSize } from '@react-hook/window-size'
-import { getMonth, intervalToDuration, parseISO } from 'date-fns/esm'
+import { intervalToDuration, parseISO } from 'date-fns/esm'
 import { DEFAULT_CELL_SIZE } from './constants'
 import { MAIN_PADDING } from 'src/components/Layout'
 import { alert } from 'src/design_system/ConfirmationDialog'

@@ -15,6 +15,7 @@ export const antiKnightConstraint: ConstraintDefinition = {
   label: 'Anti Knight',
   description: () => 'Cells a knight move away must not contain the same digit.',
   isGlobal: true,
+  dataKey: 'antiKnight',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.antiKnight),
   variant: () => SudokuVariant.AntiKnight,
   graphics: () => null,

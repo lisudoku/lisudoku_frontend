@@ -31,7 +31,7 @@ import ConstraintRadio from './ConstraintRadio'
 import ConstraintCheckbox from './ConstraintCheckbox'
 import { alert } from 'src/design_system/ConfirmationDialog'
 import { useSolutionCustomGraphics } from './hooks/useSolutionCustomGraphics'
-import { detectConstraints } from 'src/constraints/utils'
+import { assertExhaustiveConstraintOrder, detectConstraints } from 'src/constraints/utils'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType } from 'src/constraints/editorState'
 import { ConstraintAddButton } from './ConstraintAddButton'
@@ -42,6 +42,32 @@ const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {
   a.download = createFileName(extension, name)
   a.click()
 }
+
+export const localConstraintsOrder = [
+  ConstraintType.FixedNumber,
+  ConstraintType.Regions,
+  ConstraintType.Thermo,
+  ConstraintType.Arrow,
+  ConstraintType.ExtraRegions,
+  ConstraintType.KillerCage,
+  ConstraintType.KropkiConsecutive,
+  ConstraintType.KropkiDouble,
+  ConstraintType.Odd,
+  ConstraintType.Even,
+  ConstraintType.Renban,
+  ConstraintType.Palindrome,
+] as const satisfies readonly ConstraintType[]
+
+export const globalConstraintsOrder = [
+  ConstraintType.PrimaryDiagonal,
+  ConstraintType.SecondaryDiagonal,
+  ConstraintType.AntiKnight,
+  ConstraintType.AntiKing,
+  ConstraintType.KropkiNegative,
+  ConstraintType.TopBottom,
+] as const satisfies readonly ConstraintType[]
+
+assertExhaustiveConstraintOrder([...localConstraintsOrder, ...globalConstraintsOrder])
 
 const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const [exportOpen, setExportOpen] = useState(false)
@@ -272,18 +298,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                     <GridSizeSelect />
                   </div>
                 </div>
-                <ConstraintRadio id={ConstraintType.FixedNumber} />
-                <ConstraintRadio id={ConstraintType.Regions} />
-                <ConstraintRadio id={ConstraintType.Thermo} />
-                <ConstraintRadio id={ConstraintType.Arrow} />
-                <ConstraintRadio id={ConstraintType.ExtraRegions} />
-                <ConstraintRadio id={ConstraintType.KillerCage} />
-                <ConstraintRadio id={ConstraintType.KropkiConsecutive} />
-                <ConstraintRadio id={ConstraintType.KropkiDouble} />
-                <ConstraintRadio id={ConstraintType.Odd} />
-                <ConstraintRadio id={ConstraintType.Even} />
-                <ConstraintRadio id={ConstraintType.Renban} />
-                <ConstraintRadio id={ConstraintType.Palindrome} />
+                {localConstraintsOrder.map(constraintId => (
+                  <ConstraintRadio key={constraintId} id={constraintId} />
+                ))}
+                {/* Extra input data needed for any constraint */}
                 <div className="flex flex-col w-full mt-2 gap-y-1">
                   {editorState.type === ConstraintType.KillerCage && (
                     <Input
@@ -326,30 +344,9 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             </div>
             <hr className="border-primary" />
             <div className="flex flex-wrap gap-x-3">
-              <ConstraintCheckbox
-                id={ConstraintType.PrimaryDiagonal}
-                keyField="primaryDiagonal"
-              />
-              <ConstraintCheckbox
-                id={ConstraintType.SecondaryDiagonal}
-                keyField="secondaryDiagonal"
-              />
-              <ConstraintCheckbox
-                id={ConstraintType.AntiKnight}
-                keyField="antiKnight"
-              />
-              <ConstraintCheckbox
-                id={ConstraintType.AntiKing}
-                keyField="antiKing"
-              />
-              <ConstraintCheckbox
-                id={ConstraintType.KropkiNegative}
-                keyField="kropkiNegative"
-              />
-              <ConstraintCheckbox
-                id={ConstraintType.TopBottom}
-                keyField="topBottom"
-              />
+              {globalConstraintsOrder.map((constraintId) => (
+                <ConstraintCheckbox key={constraintId} id={constraintId} />
+              ))}
             </div>
           </fieldset>
           <hr />

@@ -18,6 +18,7 @@ export const kropkiNegativeConstraint: ConstraintDefinition = {
   description: () =>
     'Adjacent cells with no marking must not contain digits either whose difference is 1 or whose ratio is 2.',
   isGlobal: true,
+  dataKey: 'kropkiNegative',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.kropkiNegative),
   variant: () => SudokuVariant.Kropki,
   graphics: () => null,

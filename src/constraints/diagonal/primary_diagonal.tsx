@@ -14,6 +14,7 @@ export const primaryDiagonalConstraint: ConstraintDefinition = {
   label: 'Primary Diagonal',
   description: ({ constraints }) => `The purple primary diagonal must contain distinct digits from 1 to ${constraints.gridSize}.`,
   isGlobal: true,
+  dataKey: 'primaryDiagonal',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.primaryDiagonal),
   variant: () => SudokuVariant.Diagonal,
   graphics: ({ constraints: { gridSize, primaryDiagonal }, cellSize }) => (

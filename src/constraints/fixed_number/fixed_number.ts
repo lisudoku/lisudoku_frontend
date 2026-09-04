@@ -9,6 +9,7 @@ export const fixedNumberConstraint: ConstraintDefinition = {
   label: 'Given digit',
   description: null,
   isGlobal: false,
+  dataKey: 'fixedNumbers',
   isActiveInConstraints: ({ constraints }) => (constraints.fixedNumbers ?? []).length > 0,
   variant: () => SudokuVariant.Classic,
   graphics: fixedNumberGraphics,

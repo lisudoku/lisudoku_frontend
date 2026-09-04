@@ -26,6 +26,7 @@ export const regionsConstraint: ConstraintDefinition = {
     `Place a digit from 1 to ${gridSize} in each of the empty cells so ` +
     'that each digit appears exactly once in each row, column and outlined region.',
   isGlobal: false,
+  dataKey: 'regions',
   isActiveInConstraints: () => true,
   variant: ({ constraints }) => (
     isEqual(constraints.regions, ensureDefaultRegions(constraints.gridSize))

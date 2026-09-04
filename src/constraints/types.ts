@@ -61,6 +61,8 @@ export interface ConstraintPreparationResult {
   newConstraints?: SudokuConstraints
 }
 
+export type ConstraintDataKey = NonNullable<keyof SudokuConstraints>
+
 export interface ConstraintDefinition {
   // Icon used in rules list, puzzle card, variant
   icon: ReactNode | null
@@ -70,6 +72,8 @@ export interface ConstraintDefinition {
   description: ((ctx: ConstraintContext) => string) | null
   // True if constraint is just a flag
   isGlobal: boolean
+  // Key in SudokuConstraints for the current constraint
+  dataKey: ConstraintDataKey
   // True if constraint is truthy in passed constraints
   isActiveInConstraints: (ctx: ConstraintContext) => boolean
   // The variant that this constraint belongs to

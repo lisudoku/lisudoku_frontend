@@ -13,6 +13,7 @@ export const topBottomConstraint: ConstraintDefinition = {
     'A sequence has to have consecutive numbers touching by side or corner.'
   ),
   isGlobal: true,
+  dataKey: 'topBottom',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.topBottom),
   variant: () => SudokuVariant.TopBottom,
   graphics: () => null,

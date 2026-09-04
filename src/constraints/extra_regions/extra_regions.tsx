@@ -12,6 +12,7 @@ export const extraRegionsConstraint: ConstraintDefinition = {
   description: ({ constraints: { gridSize }}) =>
     `Each blue region contains each digit from 1 to ${gridSize}.`,
   isGlobal: false,
+  dataKey: 'extraRegions',
   isActiveInConstraints: ({ constraints }) => (constraints.extraRegions ?? []).length > 0,
   variant: () => SudokuVariant.ExtraRegions,
   graphics: extraRegionsGraphics,

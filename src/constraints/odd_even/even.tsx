@@ -13,6 +13,7 @@ export const evenConstraint: ConstraintDefinition = {
   label: 'Even',
   description: () => 'Cells with shaded squares contain even digits.',
   isGlobal: false,
+  dataKey: 'evenCells',
   isActiveInConstraints: ({ constraints }) => (constraintsToCells(constraints) ?? []).length > 0,
   variant: () => SudokuVariant.OddEven,
   graphics: evenGraphics,

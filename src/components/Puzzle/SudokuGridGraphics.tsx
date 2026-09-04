@@ -13,6 +13,7 @@ import { Theme, useTheme } from '../ThemeProvider'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import type { ConstraintDefinition } from 'src/constraints/types'
 import { CenterMarksGraphics } from './SudokuGridGraphics/CenterMarksGraphics'
+import { assertExhaustiveConstraintOrder } from 'src/constraints/utils'
 
 interface GridlinesGraphicsProps {
   gridSize: number
@@ -94,12 +95,6 @@ export const graphicsConstraintsOrder = [
   ConstraintType.KropkiNegative,
   ConstraintType.TopBottom,
 ] as const satisfies readonly ConstraintType[]
-
-const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]) => {
-  if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
-    throw new Error('Constraint order is not exhaustive.')
-  }
-}
 
 assertExhaustiveConstraintOrder(graphicsConstraintsOrder)
 

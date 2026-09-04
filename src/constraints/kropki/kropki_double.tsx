@@ -20,6 +20,7 @@ export const kropkiDoubleConstraint: ConstraintDefinition = {
   description: () =>
     'Adjacent cells containing digits whose ratio is 2 are marked with a black circle.',
   isGlobal: false,
+  dataKey: 'kropkiDots',
   isActiveInConstraints: ({ constraints }) =>
     constraints.kropkiDots?.some(kropkiDot => kropkiDot.dotType === 'Double') ?? false,
   variant: () => SudokuVariant.Kropki,
