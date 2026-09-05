@@ -1,28 +1,29 @@
-import { SudokuBruteSolveResult } from 'lisudoku-solver'
 import SolutionPanel from './SolutionPanel'
+import type { BruteSolverState } from 'src/reducers/builder'
 
 interface BruteSolutionPanelProps {
-  running: boolean
-  solution: SudokuBruteSolveResult | null
+  solverState: BruteSolverState
   onClear: () => void
 }
 
-export const BruteSolutionPanel = ({ running, solution, onClear }: BruteSolutionPanelProps) => (
+export const BruteSolutionPanel = ({ solverState, onClear }: BruteSolutionPanelProps) => (
   <SolutionPanel>
     <SolutionPanel.Body>
-      {running ? (
+      {solverState.status === 'running' ? (
         'Running...'
-      ) : solution === null ? (
+      ) : solverState.status === 'error' ? (
+        solverState.error
+      ) : solverState.solution === undefined ? (
         ''
-      ) : solution.solutionCount === 0 ? (
+      ) : solverState.solution.solutionCount === 0 ? (
         'No solutions 🙁'
-      ) : solution.solutionCount === 2 ? (
+      ) : solverState.solution.solutionCount === 2 ? (
         'Multiple solutions 😢'
       ) : (
         'Unique solution 🎉'
       )}
     </SolutionPanel.Body>
-    {solution !== null && (
+    {solverState.solution !== undefined && (
       <SolutionPanel.Footer className="h-[30px]">
         <SolutionPanel.ClearButton onClick={onClear} />
       </SolutionPanel.Footer>

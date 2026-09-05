@@ -21,6 +21,27 @@ import { detectConstraints } from 'src/constraints/utils'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType, ConstraintEditorState } from 'src/constraints/editorState'
 
+type SolverStatus = 'running' | 'error' | 'ok'
+
+export type WorkerSolutionResponse =
+  | { solverType: SolverType.Brute, solution: SudokuBruteSolveResult, error?: never }
+  | { solverType: SolverType.Brute, solution?: never, error: string }
+  | { solverType: SolverType.Logical, solution: SudokuLogicalSolveResult, error?: never }
+  | { solverType: SolverType.Logical, solution?: never, error: string }
+
+export interface BruteSolverState {
+  status: SolverStatus
+  solution?: SudokuBruteSolveResult
+  error?: string
+}
+
+export interface LogicalSolverState {
+  status: SolverStatus
+  solution?: SudokuLogicalSolveResult
+  error?: string
+  solutionStepIndex?: number
+}
+
 // TODO: split into separate reducers
 type BuilderState = {
   inputActive: boolean
@@ -35,12 +56,9 @@ type BuilderState = {
   difficulty: SudokuDifficulty
   inputMode: InputMode
   cellMarks: CellMarks[][] | null
-  bruteSolution: SudokuBruteSolveResult | null
-  logicalSolution: SudokuLogicalSolveResult | null
-  logicalSolutionStepIndex: number | null
+  bruteSolverState: BruteSolverState
+  logicalSolverState: LogicalSolverState
   setterMode: boolean
-  bruteSolverRunning: boolean
-  logicalSolverRunning: boolean
   puzzlePublicId: string | null
   puzzleAdding: boolean
   manualChange: boolean
@@ -56,8 +74,8 @@ const defaultDifficulty = (gridSize: number) => {
 
 const handleConstraintChange = (state: BuilderState) => {
   state.variant = detectConstraints(state.committedConstraints).variant
-  state.bruteSolution = null
-  state.logicalSolution = null
+  state.bruteSolverState = { status: 'ok' }
+  state.logicalSolverState = { status: 'ok' }
   state.manualChange = true
 }
 
@@ -86,11 +104,8 @@ export const builderSlice = createSlice({
     difficulty: SudokuDifficulty.Easy9x9,
     inputMode: InputMode.Numbers,
     cellMarks: null,
-    bruteSolution: null,
-    bruteSolverRunning: false,
-    logicalSolution: null,
-    logicalSolverRunning: false,
-    logicalSolutionStepIndex: null,
+    bruteSolverState: { status: 'ok' },
+    logicalSolverState: { status: 'ok' },
     setterMode: false,
     sourceName: '',
     sourceUrl: '',
@@ -115,8 +130,8 @@ export const builderSlice = createSlice({
       }
       state.difficulty = defaultDifficulty(gridSize)
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
-      state.bruteSolution = null
-      state.logicalSolution = null
+      state.bruteSolverState = { status: 'ok' }
+      state.logicalSolverState = { status: 'ok' }
       state.manualChange = false
       clearEditorState(state)
     },
@@ -131,8 +146,8 @@ export const builderSlice = createSlice({
       state.difficulty = defaultDifficulty(gridSize)
       state.variant = detectConstraints(state.constraints).variant
       state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
-      state.bruteSolution = null
-      state.logicalSolution = null
+      state.bruteSolverState = { status: 'ok' }
+      state.logicalSolverState = { status: 'ok' }
       state.manualChange = false
     },
     changeSelectedCell(state, action) {
@@ -257,32 +272,35 @@ export const builderSlice = createSlice({
     },
     requestSolution(state, action) {
       if (action.payload === SolverType.Brute) {
-        state.bruteSolverRunning = true
+        state.bruteSolverState = {
+          status: 'running',
+        }
       } else {
-        state.logicalSolverRunning = true
+        state.logicalSolverState = {
+          status: 'running'
+        }
       }
       state.puzzlePublicId = null
     },
-    responseSolution(state, action) {
-      if (action.payload.type === SolverType.Brute) {
-        state.bruteSolution = action.payload.solution
-        state.bruteSolverRunning = false
+    responseSolution(state, { payload }: { payload: WorkerSolutionResponse }) {
+      if (payload.solverType === SolverType.Brute) {
+        state.bruteSolverState = {
+          status: payload.error ? 'error' : 'ok',
+          error: payload.error,
+          solution: payload.solution,
+        }
       } else {
-        state.logicalSolution = action.payload.solution
-        state.logicalSolverRunning = false
-        // Setting index to the extra step after the last real step
-        state.logicalSolutionStepIndex = action.payload.solution.steps.length
+        state.logicalSolverState = {
+          status: payload.error ? 'error' : 'ok',
+          error: payload.error,
+          solution: payload.solution,
+          // Setting index to the extra step after the last real step
+          solutionStepIndex: payload.solution?.steps.length,
+        }
       }
     },
     changeLogicalSolutionStepIndex(state, action) {
-      state.logicalSolutionStepIndex = action.payload
-    },
-    errorSolution(state, action) {
-      if (action.payload === SolverType.Brute) {
-        state.bruteSolverRunning = false
-      } else {
-        state.logicalSolverRunning = false
-      }
+      state.logicalSolverState.solutionStepIndex = action.payload
     },
     changeDifficulty(state, action) {
       state.difficulty = action.payload
@@ -360,10 +378,10 @@ export const builderSlice = createSlice({
       state.inputActive = action.payload
     },
     clearBruteSolution(state) {
-      state.bruteSolution = null
+      state.bruteSolverState = { status: 'ok' }
     },
     clearLogicalSolution(state) {
-      state.logicalSolution = null
+      state.logicalSolverState = { status: 'ok' }
     },
     changeAuthor(state, action) {
       state.author = action.payload
@@ -373,8 +391,7 @@ export const builderSlice = createSlice({
 
 export const {
   initPuzzle, receivedPuzzle, changeSelectedCell, changeConstraintType, changeSelectedCellValue, changeArrowConstraintType,
-  addConstraint, deleteConstraint, requestSolution, responseSolution,
-  errorSolution, changeDifficulty,
+  addConstraint, deleteConstraint, requestSolution, responseSolution, changeDifficulty,
   requestAddPuzzle, responseAddPuzzle, errorAddPuzzle,
   toggleCornerMarksActive, changeSelectedCellCornerMarks,
   changeConstraintValue, changeKillerSum,

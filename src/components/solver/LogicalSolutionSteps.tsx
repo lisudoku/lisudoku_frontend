@@ -3,12 +3,11 @@ import type { SolutionStep, SolutionType, SudokuConstraints } from 'lisudoku-sol
 import { HintLevel } from 'src/reducers/puzzle'
 import { StepDescription } from './StepDescription'
 import { LogicalSolutionStep } from './LogicalSolutionStep'
+import type { LogicalSolverState } from 'src/reducers/builder'
 
 interface LogicalSolutionsStepsProps {
   constraints: SudokuConstraints
-  steps: SolutionStep[]
-  solutionType: SolutionType
-  selectedStepIndex: number | null
+  solverState: LogicalSolverState
   onStepClick: (index: number) => void
   isDirty: boolean
 }
@@ -20,34 +19,38 @@ const finalStepLabel: Record<SolutionType, string> = {
 }
 
 export const LogicalSolutionSteps = (
-  { constraints, steps, solutionType, selectedStepIndex, onStepClick, isDirty }: LogicalSolutionsStepsProps
+  { constraints, solverState, onStepClick, isDirty }: LogicalSolutionsStepsProps
 ) => {
   const stepRefs = useRef<Record<number, HTMLLIElement | null>>({})
 
   useEffect(() => {
-    if (selectedStepIndex === null || !isDirty) {
+    if (solverState.solutionStepIndex === undefined || !isDirty) {
       return
     }
-    stepRefs.current[selectedStepIndex]?.scrollIntoView({
+    stepRefs.current[solverState.solutionStepIndex]?.scrollIntoView({
       block: 'nearest',
     })
-  }, [isDirty, selectedStepIndex])
+  }, [isDirty, solverState])
+
+  if (solverState.solution === undefined) {
+    return null
+  }
 
   return (
     <ol>
       <LogicalSolutionStep
         stepIndex={-1}
-        selected={selectedStepIndex === -1}
+        selected={solverState.solutionStepIndex === -1}
         onClick={onStepClick}
         ref={el => stepRefs.current[-1] = el}
       >
         Initial grid
       </LogicalSolutionStep>
-      {steps.map((step: SolutionStep, index: number) => (
+      {solverState.solution.steps.map((step: SolutionStep, index: number) => (
         <LogicalSolutionStep
           key={index}
           stepIndex={index}
-          selected={selectedStepIndex === index}
+          selected={solverState.solutionStepIndex === index}
           onClick={onStepClick}
           ref={el => stepRefs.current[index] = el}
         >
@@ -59,12 +62,16 @@ export const LogicalSolutionSteps = (
         </LogicalSolutionStep>
       ))}
       <LogicalSolutionStep
-        stepIndex={steps.length}
-        selected={selectedStepIndex === steps.length}
+        stepIndex={solverState.solution.steps.length}
+        selected={solverState.solutionStepIndex === solverState.solution.steps.length}
         onClick={onStepClick}
-        ref={el => stepRefs.current[steps.length] = el}
+        ref={el => {
+          if (solverState.solution !== undefined) {
+            stepRefs.current[solverState.solution.steps.length] = el
+          }
+        }}
       >
-        {finalStepLabel[solutionType]}
+        {finalStepLabel[solverState.solution.solutionType]}
       </LogicalSolutionStep>
     </ol>
   )

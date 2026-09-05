@@ -7,11 +7,13 @@ import { ConstraintType } from 'src/types/sudoku'
 import {
   changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellCornerMarks,
   changeSelectedCellValue, deleteConstraint,
-  errorSolution, requestSolution, responseSolution, toggleCornerMarksActive,
+  requestSolution, responseSolution, toggleCornerMarksActive,
+  type WorkerSolutionResponse,
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
 import SolverWorker from 'src/workers/solver.worker?worker'
 import { InputMode } from 'src/reducers/puzzle'
+import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -197,7 +199,7 @@ export const useSolver = (solverType: SolverType) => {
     await onWorkerInitialized
 
     // Send constraints and wait for the solution
-    return new Promise(resolve => {
+    return new Promise<WorkerSolutionResponse>(resolve => {
       worker.onerror = (e) => {
         console.error(e)
       }
@@ -227,12 +229,18 @@ export const useSolver = (solverType: SolverType) => {
     }
     dispatch(requestSolution(solverType))
     try {
-      callSolverWorker(constraints, solverType).then(solution => {
-        dispatch(responseSolution({ type: solverType, solution }))
+      callSolverWorker(constraints, solverType).then(response => {
+        dispatch(responseSolution(response))
       })
-    } catch (e: any) {
-      dispatch(errorSolution(solverType))
-      throw e
+    } catch (error) {
+      dispatch(responseSolution({
+        solverType,
+        error: 'Error while running solver',
+      } satisfies WorkerSolutionResponse))
+      throw new Error(
+        `Error in ${solverType} solver with constraints ${encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku }).url}`,
+        { cause: error },
+      )
     }
   }, [dispatch, solverType, callSolverWorker])
 

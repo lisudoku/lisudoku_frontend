@@ -153,9 +153,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   const cellMarks = useSelector(state => state.builder.cellMarks)
   const committedConstraints = useSelector(state => state.builder.committedConstraints)
   const killerSum = useSelector(state => state.builder.constraintEditorState.killerSum ?? '')
-  const bruteSolution = useSelector(state => state.builder.bruteSolution)
-  const logicalSolution = useSelector(state => state.builder.logicalSolution)
-  const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
+  const bruteSolverState = useSelector(state => state.builder.bruteSolverState)
+  const logicalSolverState = useSelector(state => state.builder.logicalSolverState)
   const gridSize = constraints?.gridSize
 
   useEffect(() => {
@@ -210,37 +209,37 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
   let usedMarks: CellMarks[][] | undefined
 
   // Always prioritize logical solution (or specify why otherwise)
-  if (logicalSolution !== null && logicalSolutionStepIndex !== null) {
+  if (logicalSolverState.solution !== undefined && logicalSolverState.solutionStepIndex !== undefined) {
     let selectedStep: SolutionStep | undefined
-    if (logicalSolutionStepIndex === logicalSolution.steps.length) {
-      selectedStep = logicalSolution.steps[logicalSolution.steps.length - 1]
-    } else if (logicalSolutionStepIndex !== -1) {
-      selectedStep = logicalSolution.steps[logicalSolutionStepIndex]
+    if (logicalSolverState.solutionStepIndex === logicalSolverState.solution.steps.length) {
+      selectedStep = logicalSolverState.solution.steps[logicalSolverState.solution.steps.length - 1]
+    } else if (logicalSolverState.solutionStepIndex !== -1) {
+      selectedStep = logicalSolverState.solution.steps[logicalSolverState.solutionStepIndex]
     }
     if (selectedStep !== undefined) {
       grid = selectedStep.grid
       usedMarks = selectedStep.candidates?.map(row => row.map(cellCandidates => ({ cornerMarks: cellCandidates })))
     }
-  } else if (bruteSolution?.solution) {
-    grid = bruteSolution?.solution
+  } else if (bruteSolverState.solution?.solution !== undefined) {
+    grid = bruteSolverState.solution.solution
   } else if (cellMarks !== null) {
     usedMarks = cloneDeep(cellMarks)
   }
 
   const customGraphics = useSolutionCustomGraphics({
-    logicalSolution,
+    logicalSolverState,
     constraints,
     showSolutionDifficultyHeatmap,
-    logicalSolutionStepIndex,
   })
 
   if (!constraints || !committedConstraints) {
     return null
   }
 
-  const hideSelectedCells = logicalSolution &&
-    logicalSolutionStepIndex !== -1 &&
-    logicalSolutionStepIndex !== logicalSolution.steps.length
+  const hideSelectedCells = logicalSolverState.solution !== undefined &&
+    logicalSolverState.solutionStepIndex !== undefined
+    logicalSolverState.solutionStepIndex !== -1 &&
+    logicalSolverState.solutionStepIndex !== logicalSolverState.solution?.steps.length
   const displayedSelectedCells = hideSelectedCells ? [] : editorState.selectedCells
 
   let constraintPreview = constraints

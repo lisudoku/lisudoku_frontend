@@ -1,17 +1,39 @@
 /* eslint-disable no-restricted-globals */
-import { type SudokuBruteSolveResult, SudokuConstraints, type SudokuLogicalSolveResult, wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
-import { SolverType } from 'src/types/wasm';
+import { SudokuConstraints, wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
+import type { WorkerSolutionResponse } from 'src/reducers/builder'
+import { SolverType } from 'src/types/wasm'
+import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats';
 
 self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
   console.info('Running solver', solverType, constraints)
-  let solution: SudokuBruteSolveResult | SudokuLogicalSolveResult
-  if (solverType === SolverType.Brute) {
-    solution = wasm_brute_solve(constraints)
-  } else {
-    solution = wasm_logical_solve(constraints)
+  try {
+    let response: WorkerSolutionResponse
+    if (solverType === SolverType.Brute) {
+      const solution = wasm_brute_solve(constraints)
+      response = {
+        solverType,
+        solution,
+      }
+    } else {
+      const solution = wasm_logical_solve(constraints)
+      response = {
+        solverType,
+        solution,
+      }
+    }
+    self.postMessage(response)
+  } catch (error) {
+    self.postMessage({
+      solverType,
+      error: 'Error while running solver',
+    } satisfies WorkerSolutionResponse)
+
+    throw new Error(
+      `Error in ${solverType} solver with constraints ${encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku }).url}`,
+      { cause: error },
+    )
   }
-  self.postMessage(solution)
 }
 
 // Send initial message to let parent know the initialization is done.

@@ -34,10 +34,8 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const userToken = useSelector(state => state.userData.token)
   const setterMode = useSelector(state => state.builder.setterMode)
   const constraints = useSelector(state => state.builder.constraints)
-  const bruteSolverRunning = useSelector(state => state.builder.bruteSolverRunning)
-  const bruteSolution = useSelector(state => state.builder.bruteSolution)
-  const logicalSolverRunning = useSelector(state => state.builder.logicalSolverRunning)
-  const logicalSolution = useSelector(state => state.builder.logicalSolution)
+  const bruteSolverState = useSelector(state => state.builder.bruteSolverState)
+  const logicalSolverState = useSelector(state => state.builder.logicalSolverState)
   const variant = useSelector(state => state.builder.variant)
   const difficulty = useSelector(state => state.builder.difficulty)
   const puzzlePublicId = useSelector(state => state.builder.puzzlePublicId)
@@ -48,8 +46,8 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
   const userIsAdmin = useSelector(state => state.userData.admin)
 
   const addPuzzleEnabled = (
-    logicalSolution?.solutionType === 'Full' &&
-    bruteSolution?.solutionCount === 1
+    logicalSolverState.solution?.solutionType === 'Full' &&
+    bruteSolverState.solution?.solutionCount === 1
   )
 
   const handleBruteSolveClick = useCallback(() => {
@@ -104,7 +102,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
       constraints: constraints!,
       variant,
       difficulty,
-      solution: bruteSolution!.solution,
+      solution: bruteSolverState.solution!.solution,
     }
     if (sourceCollectionId !== '') {
       puzzle.sourceCollectionId = parseInt(sourceCollectionId)
@@ -118,15 +116,17 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
       console.error(e)
       dispatch(errorAddPuzzle())
     })
-  }, [dispatch, userToken, constraints, bruteSolution, variant, difficulty, sourceCollectionId, author])
+  }, [dispatch, userToken, constraints, bruteSolverState, variant, difficulty, sourceCollectionId, author])
 
   useEffect(() => {
-    if (bruteSolution?.solutionCount === 1 &&
-        logicalSolution &&
-        logicalSolution.solutionType !== 'Full' &&
-        !setterMode &&
-        constraints &&
-        !userIsAdmin) {
+    if (
+      bruteSolverState.solution?.solutionCount === 1 &&
+      logicalSolverState.solution !== undefined &&
+      logicalSolverState.solution.solutionType !== 'Full' &&
+      !setterMode &&
+      constraints &&
+      !userIsAdmin
+    ) {
       sendHbAlert({
         name: 'Unsolved puzzle',
         message: `Couldn't solve ${variant} puzzle`,
@@ -136,7 +136,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         },
       })
     }
-  }, [bruteSolution, logicalSolution, variant, constraints, setterMode, userIsAdmin])
+  }, [bruteSolverState, logicalSolverState, variant, constraints, setterMode, userIsAdmin])
 
   const [showSolverSettings, setShowSolverSettings] = useState(false)
 
@@ -158,27 +158,25 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
       </span>
       <Button
         onClick={handleBruteSolveClick}
-        disabled={bruteSolverRunning  || bruteSolution !== null}
+        disabled={bruteSolverState.status === 'running' || bruteSolverState.solution !== undefined}
         aria-label="Run the brute-force Sudoku solver and show whether the solution is unique"
       >
         Brute Force Solve
       </Button>
       <BruteSolutionPanel
-        running={bruteSolverRunning}
-        solution={bruteSolution}
+        solverState={bruteSolverState}
         onClear={handleBruteSolutionClear}
       />
       <Button
         onClick={handleLogicalSolveClick}
-        disabled={logicalSolverRunning || logicalSolution !== null}
+        disabled={logicalSolverState.status === 'running' || logicalSolverState.solution !== undefined}
         aria-label="Run the logical Sudoku solver and show the step-by-step solving steps"
       >
         Logical Solve
       </Button>
       <LogicalSolutionPanel
-        solution={logicalSolution}
+        solverState={logicalSolverState}
         constraints={constraints!}
-        running={logicalSolverRunning}
         setterMode={setterMode}
         onClear={handleLogicalSolutionClear}
       />

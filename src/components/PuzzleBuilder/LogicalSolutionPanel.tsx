@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
-import { useDispatch, useSelector } from 'src/hooks'
-import { changeLogicalSolutionStepIndex } from 'src/reducers/builder'
+import type { SudokuConstraints } from 'lisudoku-solver'
+import { useDispatch } from 'src/hooks'
+import { changeLogicalSolutionStepIndex, LogicalSolverState } from 'src/reducers/builder'
 import { Slider } from 'src/design_system/Slider'
 import { NavButton } from '../NavButton'
 import { faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
@@ -9,16 +9,14 @@ import { LogicalSolutionPanelContent } from './LogicalSolutionPanelContent'
 import SolutionPanel from './SolutionPanel'
 
 interface LogicalSolutionPanelProps {
-  solution: SudokuLogicalSolveResult | null
+  solverState: LogicalSolverState
   constraints: SudokuConstraints
-  running: boolean
   setterMode: boolean
   onClear: () => void
 }
 
-export const LogicalSolutionPanel = ({ solution, constraints, running, setterMode, onClear }: LogicalSolutionPanelProps) => {
+export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onClear }: LogicalSolutionPanelProps) => {
   const dispatch = useDispatch()
-  const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
   const [isStepsDirty, setIsStepsDirty] = useState(false)
 
   const handleStepChange = useCallback((stepIndex: number) => {
@@ -27,29 +25,28 @@ export const LogicalSolutionPanel = ({ solution, constraints, running, setterMod
   }, [dispatch])
 
   useEffect(() => {
-    if (solution === null) {
+    if (solverState.solution === undefined) {
       setIsStepsDirty(false)
     }
-  }, [solution])
+  }, [solverState])
 
   return (
     <SolutionPanel className="max-h-96">
       <SolutionPanel.Body>
         <LogicalSolutionPanelContent
-          solution={solution}
+          solverState={solverState}
           constraints={constraints}
-          running={running}
           setterMode={setterMode}
           onStepChange={handleStepChange}
           isDirty={isStepsDirty}
         />
       </SolutionPanel.Body>
-      {solution !== null && (
+      {solverState.solution !== undefined && (
         <>
           <SolutionPanel.Footer className="px-2">
             <Slider
-              value={(logicalSolutionStepIndex ?? -1) + 1}
-              max={solution.steps.length + 1}
+              value={(solverState.solutionStepIndex ?? -1) + 1}
+              max={solverState.solution.steps.length + 1}
               onChange={value => {
                 handleStepChange(value - 1)
               }}
@@ -63,17 +60,17 @@ export const LogicalSolutionPanel = ({ solution, constraints, running, setterMod
               icon={faBackwardStep}
               size="2x"
               onClick={() => {
-                handleStepChange((logicalSolutionStepIndex ?? 0) - 1)
+                handleStepChange((solverState.solutionStepIndex ?? 0) - 1)
               }}
-              disabled={(logicalSolutionStepIndex ?? -1) === -1}
+              disabled={(solverState.solutionStepIndex ?? -1) === -1}
             />
             <NavButton
               icon={faForwardStep}
               size="2x"
               onClick={() => {
-                handleStepChange((logicalSolutionStepIndex ?? 0) + 1)
+                handleStepChange((solverState.solutionStepIndex ?? 0) + 1)
               }}
-              disabled={logicalSolutionStepIndex === solution.steps.length}
+              disabled={solverState.solutionStepIndex === solverState.solution.steps.length}
             />
             <SolutionPanel.ClearButton
               onClick={onClear}

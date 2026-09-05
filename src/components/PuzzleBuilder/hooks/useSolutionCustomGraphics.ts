@@ -1,8 +1,9 @@
-import { SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import type { SolutionStep, SudokuConstraints } from 'lisudoku-solver'
 import { inRange } from 'lodash-es'
 import { useMemo } from 'react'
 import { CustomGraphicsAreaHighlight, CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { cellToCustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/utils'
+import type { LogicalSolverState } from 'src/reducers/builder'
 import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants'
 import { isGridStep } from 'src/utils/solver'
 import { useStepCustomGraphics } from 'src/utils/stepsLogic/hooks'
@@ -15,23 +16,21 @@ const StepRuleDifficultyColor: { [key in EStepRuleDifficulty]: string } = {
 }
 
 export const useSolutionCustomGraphics = ({
-  logicalSolution,
+  logicalSolverState,
   constraints,
   showSolutionDifficultyHeatmap,
-  logicalSolutionStepIndex,
 }: {
-  logicalSolution: SudokuLogicalSolveResult | null,
+  logicalSolverState: LogicalSolverState,
   constraints: SudokuConstraints | null,
   showSolutionDifficultyHeatmap: boolean,
-  logicalSolutionStepIndex: number | null,
 }): CustomGraphicsItem[] => {
   let step: SolutionStep | undefined
   if (
-    logicalSolutionStepIndex !== null &&
-    logicalSolution !== null &&
-    inRange(logicalSolutionStepIndex, 0, logicalSolution.steps.length)
+    logicalSolverState.solutionStepIndex !== undefined &&
+    logicalSolverState.solution !== undefined &&
+    inRange(logicalSolverState.solutionStepIndex, 0, logicalSolverState.solution.steps.length)
   ) {
-    step = logicalSolution.steps[logicalSolutionStepIndex]
+    step = logicalSolverState.solution.steps[logicalSolverState.solutionStepIndex]
   }
   const stepHighlights = useStepCustomGraphics({
     step,
@@ -41,14 +40,14 @@ export const useSolutionCustomGraphics = ({
   // Example: 063000890007000100400000007100804005000070200700903008300000001006102300081000560
   let invalidStateHighlights: CustomGraphicsAreaHighlight[] = []
   if (
-    logicalSolution !== null &&
-    logicalSolution.solutionType === 'None' &&
-    logicalSolution.invalidStateReason &&
+    logicalSolverState.solution !== undefined &&
+    logicalSolverState.solution.solutionType === 'None' &&
+    logicalSolverState.solution.invalidStateReason !== undefined &&
     constraints !== null &&
-    logicalSolutionStepIndex === logicalSolution.steps.length
+    logicalSolverState.solutionStepIndex === logicalSolverState.solution.steps.length
   ) {
     invalidStateHighlights = getAreaCells(
-      logicalSolution.invalidStateReason.area,
+      logicalSolverState.solution.invalidStateReason.area,
       constraints,
     ).map(areaCell => cellToCustomGraphicsItem(areaCell, 'red'))
   }
@@ -57,13 +56,13 @@ export const useSolutionCustomGraphics = ({
   let cellDifficultyGraphics: CustomGraphicsAreaHighlight[] = []
   if (
     showSolutionDifficultyHeatmap &&
-    logicalSolution !== null &&
-    logicalSolution.solutionType !== 'None' &&
+    logicalSolverState.solution !== undefined &&
+    logicalSolverState.solution.solutionType !== 'None' &&
     constraints !== null &&
-    logicalSolutionStepIndex === logicalSolution.steps.length
+    logicalSolverState.solutionStepIndex === logicalSolverState.solution.steps.length
   ) {
     const cellDifficulties: (EStepRuleDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
-    for (const step of logicalSolution.steps) {
+    for (const step of logicalSolverState.solution.steps) {
       const difficulty = StepRuleDifficulty[step.rule]
       const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affectedCells
       for (const cell of relevantCells) {

@@ -1,14 +1,13 @@
-import type { Rule, SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
+import type { Rule, SolutionStep, SudokuConstraints } from 'lisudoku-solver'
 import { max, orderBy, toPairs } from 'lodash-es'
 import Typography from 'src/design_system/Typography'
-import { useSelector } from 'src/hooks'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
+import type { LogicalSolverState } from 'src/reducers/builder'
 
 interface LogicalSolutionPanelContentProps {
-  solution: SudokuLogicalSolveResult | null
+  solverState: LogicalSolverState
   constraints: SudokuConstraints
-  running: boolean
   setterMode: boolean
   onStepChange: (index: number) => void
   isDirty: boolean
@@ -42,24 +41,25 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
   return StepRuleDifficultyDisplay[maxDifficulty!]
 }
 
-export const LogicalSolutionPanelContent = ({ solution, constraints, running, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => {
-  const logicalSolutionStepIndex = useSelector(state => state.builder.logicalSolutionStepIndex)
-
-  if (running) {
+export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => {
+  if (solverState.status === 'running') {
     return <Typography variant="paragraph">Running...</Typography>
   }
-  if (solution === null) {
+  if (solverState.status === 'error') {
+    return <Typography variant="paragraph">{solverState.error}</Typography>
+  }
+  if (solverState.solution === undefined) {
     return <>&nbsp;</>
   }
 
   return (
     <>
-      {solution.solutionType === 'None' ? (
+      {solverState.solution.solutionType === 'None' ? (
         <Typography variant="paragraph">
           This puzzle has no solutions 🙁
-          {solution.steps.length > 0 && ' here is why'}
+          {solverState.solution.steps.length > 0 && ' here is why'}
         </Typography>
-      ) : solution.solutionType === 'Full' ? (
+      ) : solverState.solution.solutionType === 'Full' ? (
         <Typography variant="paragraph">Found a solution 🎉</Typography>
       ) : (
         <Typography variant="paragraph">Didn't find a full solution, but made some progress</Typography>
@@ -67,23 +67,21 @@ export const LogicalSolutionPanelContent = ({ solution, constraints, running, se
       {setterMode ? (
         <>
           <Typography variant="paragraph">
-            Step count = {solution.steps.length}
+            Step count = {solverState.solution.steps.length}
           </Typography>
           <ul className="list-disc list-inside">
-            {groupStepsByType(solution.steps).map(([ rule, count ]) => (
+            {groupStepsByType(solverState.solution.steps).map(([ rule, count ]) => (
               <li key={rule} className="font-light">{`${rule} x ${count}`}</li>
             ))}
           </ul>
           <Typography variant="paragraph">
-            Difficutly by rule rank - {estimateDifficultyByRules(solution.steps)}
+            Difficutly by rule rank - {estimateDifficultyByRules(solverState.solution.steps)}
           </Typography>
         </>
       ) : (
         <LogicalSolutionSteps
           constraints={constraints}
-          steps={solution.steps}
-          solutionType={solution.solutionType}
-          selectedStepIndex={logicalSolutionStepIndex}
+          solverState={solverState}
           onStepClick={onStepChange}
           isDirty={isDirty}
         />
