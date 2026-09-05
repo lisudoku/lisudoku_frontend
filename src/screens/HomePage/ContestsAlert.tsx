@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { format, isFuture, isPast, parseISO, subHours } from 'date-fns'
+import { format, isFuture, isPast, parseISO, subHours } from 'date-fns/esm'
 import { useDispatch, useSelector } from 'src/hooks'
 import { receiveActiveCompetitions } from 'src/reducers/userData'
 import { Competition } from 'src/types'

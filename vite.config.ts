@@ -9,7 +9,7 @@ import browserslist from 'browserslist'
 import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
 import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import manifest from './src/manifest.json'
-import { format } from 'date-fns'
+import { format } from 'date-fns/esm'
 import pkg from './package.json';
 
 // https://vitejs.dev/config/

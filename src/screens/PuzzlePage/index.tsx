@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { parseISO, differenceInSeconds } from 'date-fns'
+import { parseISO, differenceInSeconds } from 'date-fns/esm'
 import { PageMeta } from 'src/components/PageMeta'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'
 import Puzzle from 'src/components/Puzzle'

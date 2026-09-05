@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import { parseISO, differenceInSeconds } from 'date-fns'
+import { parseISO, differenceInSeconds } from 'date-fns/esm'
 import { PageMeta } from 'src/components/PageMeta'
 import ErrorPage from 'src/components/ErrorPage'
 import LoadingSpinner from 'src/design_system/LoadingSpinner'

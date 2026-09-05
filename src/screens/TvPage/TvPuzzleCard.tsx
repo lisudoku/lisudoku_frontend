@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import { SudokuDifficultyDisplay, SudokuVariantDisplay } from 'src/utils/constants'
 import { getDurationShort, useCellSize } from 'src/utils/misc'
-import { differenceInSeconds, parseISO } from 'date-fns'
+import { differenceInSeconds, parseISO } from 'date-fns/esm'
 import { TvPuzzle } from 'src/reducers/tv'
 import { PuzzleCardIcons } from 'src/components/PuzzleCardIcons'
 

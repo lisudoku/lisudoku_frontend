@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import axios from 'axios'
 import './index.css'
 import App from './App'
-import { parseISO, differenceInDays } from 'date-fns'
+import { parseISO, differenceInDays } from 'date-fns/esm'
 import reportWebVitals from './reportWebVitals'
 import { registerSW } from 'virtual:pwa-register'
 

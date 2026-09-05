@@ -12,7 +12,7 @@ import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNa
 import { precache, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
-import { differenceInDays, parseISO } from 'date-fns'
+import { differenceInDays, parseISO } from 'date-fns/esm'
 
 declare const self: ServiceWorkerGlobalScope
 

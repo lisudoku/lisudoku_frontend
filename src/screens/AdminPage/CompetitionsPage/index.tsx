@@ -1,5 +1,5 @@
 import { orderBy } from 'lodash-es'
-import { formatISO9075, parseISO } from 'date-fns'
+import { formatISO9075, parseISO } from 'date-fns/esm'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Button from 'src/design_system/Button'
