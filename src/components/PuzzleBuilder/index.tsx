@@ -310,6 +310,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
                       onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
                       onFocus={handleInputFocus}
                       onBlur={handleInputBlur}
+                      min="1"
                     />
                   )}
                   {editorState.type === ConstraintType.Arrow && (

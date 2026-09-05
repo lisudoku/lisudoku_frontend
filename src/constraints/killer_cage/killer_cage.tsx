@@ -76,6 +76,13 @@ export const killerCageConstraint: ConstraintDefinition = {
       }
     }
 
+    if (editorState.killerSum !== undefined && editorState.killerSum !== null && editorState.killerSum <= 0) {
+      return {
+        type: 'error',
+        message: 'Killer cage sum has to be positive',
+      }
+    }
+
     return {
       type: 'success',
       message: 'Killer cage is valid',
