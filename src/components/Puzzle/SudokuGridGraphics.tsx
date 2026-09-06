@@ -74,6 +74,7 @@ type SelectedCellGraphicsProps = {
   selectedCells?: CellPosition[]
 }
 
+// Last items are on top. FixedNumbers are separate.
 export const graphicsConstraintsOrder = [
   ConstraintType.ExtraRegions,
   ConstraintType.Odd,
@@ -86,7 +87,6 @@ export const graphicsConstraintsOrder = [
   ConstraintType.PrimaryDiagonal,
   ConstraintType.SecondaryDiagonal,
   ConstraintType.Regions,
-  ConstraintType.FixedNumber,
   ConstraintType.KropkiConsecutive,
   ConstraintType.KropkiDouble,
 
@@ -96,7 +96,7 @@ export const graphicsConstraintsOrder = [
   ConstraintType.TopBottom,
 ] as const satisfies readonly ConstraintType[]
 
-assertExhaustiveConstraintOrder(graphicsConstraintsOrder)
+assertExhaustiveConstraintOrder(graphicsConstraintsOrder, [ConstraintType.FixedNumber])
 
 const [graphicsConstraintsUnderGridlines, graphicsConstraintsAboveGridlines] = partition(
   graphicsConstraintsOrder,
@@ -182,6 +182,9 @@ export const SudokuConstraintsGraphics = ({
         defaultAreaColor={defaultAreaColor}
         defaultCellColor={defaultCellColor}
       />
+
+      {/* Digits on top of other constraints and custom graphics */}
+      {renderConstraint(ConstraintType.FixedNumber)}
 
       <GridlinesGraphics
         gridSize={gridSize}

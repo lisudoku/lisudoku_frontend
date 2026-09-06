@@ -1,6 +1,6 @@
 import { Area, CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
 import { CellMarks, ConstraintType, Grid, SudokuVariant } from 'src/types/sudoku'
-import { chain, compact, findIndex, isEqual, times, uniq, uniqWith } from 'lodash-es'
+import { chain, compact, difference, findIndex, isEqual, times, uniq, uniqWith } from 'lodash-es'
 import { constraintDefinitions } from './definitions'
 import { CellErrorSet, ConstraintDefinition, ConstraintValidationResult } from './types'
 import { ConstraintEditorState } from './editorState'
@@ -302,8 +302,8 @@ export const getAdjacentPeers = (cell: CellPosition, gridSize: number, checkBoun
   return peers
 }
 
-export const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]) => {
-  if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
+export const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[], exceptions: ConstraintType[] = []) => {
+  if ([...order].sort().toString() !== difference(Object.keys(constraintDefinitions), exceptions).sort().toString()) {
     throw new Error('Constraint order is not exhaustive.')
   }
 }
