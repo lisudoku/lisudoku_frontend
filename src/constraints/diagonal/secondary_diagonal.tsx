@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSlash } from '@fortawesome/free-solid-svg-icons'
-import type { ConstraintDefinition } from '../types'
+import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, UNKNOWN_VALIDATION_RESULT } from '../utils'
-import type { Region, SudokuConstraints } from 'lisudoku-solver'
+import type { Area, Region, SudokuConstraints } from 'lisudoku-solver'
 import { times } from 'lodash-es'
 
 const getRegion = (constraints: SudokuConstraints): Region =>
@@ -28,6 +28,16 @@ export const secondaryDiagonalConstraint: ConstraintDefinition = {
     [getRegion(constraints)],
     cell,
   ),
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'SecondaryDiagonal') {
+      return []
+    }
+    return times(ctx.constraints.gridSize, idx => ({
+      row: idx,
+      col: ctx.constraints.gridSize - 1 - idx,
+    }))
+  },
+  areaDisplay: () => 'the secondary diagonal',
   errors: ({ constraints, valuesGrid, cellMarksGrid }) => {
     const region = getRegion(constraints)
     const errorSets = getErrorsSetsInRegions([region], valuesGrid, cellMarksGrid)

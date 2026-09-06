@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpLong } from '@fortawesome/free-solid-svg-icons'
-import type { CellErrorSet, ConstraintDefinition } from '../types'
+import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { arrowGraphics } from './graphics'
 import { ensureTargetItem, expandsArea4, expandsArea8, expandsPath } from '../utils'
 import { cloneDeep, find, findIndex, sortBy, sumBy } from 'lodash-es'
 import { ArrowConstraintType } from '../editorState'
+import type { Area } from 'lisudoku-solver'
 
 export const arrowConstraint: ConstraintDefinition = {
   icon: <FontAwesomeIcon icon={faUpLong} size="sm" title="Arrow" />,
@@ -23,6 +24,17 @@ export const arrowConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Arrow,
   graphics: arrowGraphics,
   cellPeers: () => [],
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'Arrow') {
+      return []
+    }
+    if (ctx.constraints.arrows === undefined) {
+      throw Error('no arrows in constraints')
+    }
+    const arrow = ctx.constraints.arrows[area.value]
+    return [...arrow.arrowCells, ...arrow.circleCells]
+  },
+  areaDisplay: () => 'an arrow',
   errors: ({ constraints, valuesGrid }) => {
     const errorSets: CellErrorSet[] = []
 

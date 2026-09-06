@@ -6,7 +6,7 @@ import { CellValueComparator, getErrorSetsBetween, UNKNOWN_VALIDATION_RESULT } f
 import { isCellCompletelyEmpty } from 'src/utils/sudoku'
 import { kropkiConsecutiveComparator } from './kropki_consecutive'
 import { kropkiDoubleComparator } from './kropki_double'
-import { getKropkiNegativeDots } from './utils'
+import { getKropkiNegativeDots, kropkiAreaCells } from './utils'
 
 const kropkiNegativeComparator: CellValueComparator = (a: number, b: number) => (
   !kropkiConsecutiveComparator(a, b) || !kropkiDoubleComparator(a, b)
@@ -23,6 +23,8 @@ export const kropkiNegativeConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Kropki,
   graphics: () => null,
   cellPeers: () => [],
+  areaCells: kropkiAreaCells('Negative'),
+  areaDisplay: () => 'a negative kropki dot pair',
   errors: ({ valuesGrid, constraints, cellMarksGrid }) => {
     if (!constraints.kropkiNegative) {
       return []

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'
 import { CellValueComparator } from '../utils'
-import { kropkiErrors, kropkiPrepareCurrentConstraint, kropkiRemoveConstraintsAtCell, kropkiValidateCurrentConstraint } from './utils'
+import { kropkiAreaCells, kropkiErrors, kropkiPrepareCurrentConstraint, kropkiRemoveConstraintsAtCell, kropkiValidateCurrentConstraint } from './utils'
 
 export const kropkiDoubleComparator: CellValueComparator = (a: number, b: number) => Math.min(a, b) * 2 !== Math.max(a, b)
 
@@ -26,6 +26,8 @@ export const kropkiDoubleConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Kropki,
   graphics: kropkiDoubleGraphics,
   cellPeers: () => [],
+  areaCells: kropkiAreaCells('Double'),
+  areaDisplay: () => 'a kropki dot pair',
   errors: kropkiErrors('Double', kropkiDoubleComparator),
   removeConstraintsAtCell: kropkiRemoveConstraintsAtCell('Double'),
   expandCurrentConstraintAtCell: () => false,

@@ -1,5 +1,5 @@
-import type { CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
-import type { ConstraintDefinition } from '../types'
+import type { Area, CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
+import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { regionsGraphics } from './graphics'
 import { isEqual, times } from 'lodash-es'
 import { ensureDefaultRegions, regionGridToRegions } from 'src/utils/sudoku'
@@ -37,6 +37,43 @@ export const regionsConstraint: ConstraintDefinition = {
   cellPeers: ({ constraints, cell }) => {
     const regions = getRegions(constraints)
     return regionsCellPeers(regions, cell)
+  },
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type === 'Row') {
+      return times(ctx.constraints.gridSize, col => ({
+        row: area.value,
+        col,
+      }))
+    } else if (area.type === 'Column') {
+      return times(ctx.constraints.gridSize, row => ({
+        row,
+        col: area.value,
+      }))
+    } else if (area.type === 'Region') {
+      if (ctx.constraints.regions === undefined) {
+        throw Error('no regions in constraints')
+      }
+      if (area.value >= ctx.constraints.regions.length) {
+        return []
+      }
+      return ctx.constraints.regions[area.value]
+    }
+
+    throw new Error('unhandled area type in region constraint')
+  },
+  areaDisplay: (area: Area, ctx: ConstraintContext) => {
+    if (area.type === 'Row') {
+      return `row ${area.value + 1}`
+    } else if (area.type === 'Column') {
+      return `column ${area.value + 1}`
+    } else if (area.type === 'Region') {
+      if (area.value >= ctx.constraints.gridSize) {
+        throw new Error(`region constraint cannot handle extra region area ${JSON.stringify(area)}`)
+      }
+      return `box ${area.value + 1}`
+    }
+
+    throw new Error('unhandled area type in region constraint')
   },
   errors: ({ valuesGrid, constraints, cellMarksGrid }) => {
     const regions = getRegions(constraints)

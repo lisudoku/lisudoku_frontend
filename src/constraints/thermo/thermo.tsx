@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThermometer4 } from '@fortawesome/free-solid-svg-icons'
-import type { CellErrorSet, ConstraintDefinition } from '../types'
+import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { thermoGraphics } from './graphics'
 import { ensureTargetArray, expandsPath, regionsCellPeers, removeConstraintFromArray } from '../utils'
-import type { CellPosition } from 'lisudoku-solver'
+import type { Area, CellPosition } from 'lisudoku-solver'
 
 export const thermoConstraint: ConstraintDefinition = {
   icon: <FontAwesomeIcon icon={faThermometer4} size="sm" title="Thermometer" />,
@@ -16,6 +16,13 @@ export const thermoConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Thermo,
   graphics: thermoGraphics,
   cellPeers: ({ constraints, cell }) => regionsCellPeers(constraints.thermos ?? [], cell),
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'Thermo') {
+      return []
+    }
+    return ctx.constraints.thermos?.[area.value] ?? []
+  },
+  areaDisplay: () => 'a thermometer',
   errors: ({ constraints, valuesGrid }) => {
     const errorSets: CellErrorSet[] = []
     for (const thermo of constraints.thermos ?? []) {

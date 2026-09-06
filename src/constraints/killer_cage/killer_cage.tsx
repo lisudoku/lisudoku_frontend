@@ -1,8 +1,9 @@
-import type { ConstraintDefinition } from '../types'
+import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { sortBy, sumBy } from 'lodash-es'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, removeConstraintFromArray } from '../utils'
 import { killerGraphics } from './graphics'
+import type { Area } from 'lisudoku-solver'
 
 export const killerCageConstraint: ConstraintDefinition = {
   icon: (
@@ -25,6 +26,13 @@ export const killerCageConstraint: ConstraintDefinition = {
     (constraints.killerCages ?? []).map(killerCage => killerCage.region),
     cell,
   ),
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'KillerCage') {
+      return []
+    }
+    return ctx.constraints.killerCages?.[area.value].region ?? []
+  },
+  areaDisplay: () => 'a killer cage',
   errors: ({ valuesGrid, constraints, cellMarksGrid }) => {
     const errorSets = getErrorsSetsInRegions(
       (constraints.killerCages ?? []).map(killerCage => killerCage.region),

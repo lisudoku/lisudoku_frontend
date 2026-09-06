@@ -2,7 +2,8 @@ import type { Area, CellPosition } from 'lisudoku-solver'
 import { CustomGraphicsAreaHighlight, CustomGraphicsCornerMarks } from './CustomGraphics'
 
 export const cellToArea = (cell: CellPosition): Area => ({
-  Cell: [cell.row, cell.col],
+  type: 'Cell',
+  value: [cell.row, cell.col],
 })
 
 export const cellToCustomGraphicsItem = (cell: CellPosition, color?: CustomGraphicsAreaHighlight['color']): CustomGraphicsAreaHighlight => ({

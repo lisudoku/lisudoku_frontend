@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
 import { Area, CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { HighlightedCell } from '../HighlightedCell'
-import { getAreaCells, isCellArea } from 'src/utils/sudoku'
+import { getAreaCells } from 'src/utils/sudoku'
 
 export interface CustomGraphicsAreaHighlight {
   type: 'area-highlight'
@@ -41,7 +41,7 @@ const getCustomGraphicsItemColor = (
   if (item.color !== undefined) {
     return item.color
   }
-  if (isCellArea(item.area)) {
+  if (item.area.type === 'Cell') {
     return defaultCellColor
   }
   return defaultAreaColor

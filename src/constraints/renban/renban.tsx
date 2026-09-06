@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLinesLeaning } from '@fortawesome/free-solid-svg-icons'
-import type { ConstraintDefinition } from '../types'
+import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { renbanGraphics } from './graphics'
 import { ensureTargetArray, expandsArea8, getErrorsSetsInRegions, regionsCellPeers, removeConstraintFromArray } from '../utils'
 import { find, max, min } from 'lodash-es'
+import type { Area } from 'lisudoku-solver'
 
 export const renbanConstraint: ConstraintDefinition = {
   icon: <FontAwesomeIcon icon={faLinesLeaning} size="sm" title="Renban" />,
@@ -16,6 +17,13 @@ export const renbanConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Renban,
   graphics: renbanGraphics,
   cellPeers: ({ constraints, cell }) => regionsCellPeers(constraints.renbans ?? [], cell),
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'Renban') {
+      return []
+    }
+    return ctx.constraints.renbans?.[area.value] ?? []
+  },
+  areaDisplay: () => 'a renban line',
   errors: ({ constraints, valuesGrid, cellMarksGrid }) => {
     const errorSets = getErrorsSetsInRegions(constraints.renbans ?? [], valuesGrid, cellMarksGrid)
 

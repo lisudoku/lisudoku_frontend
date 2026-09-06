@@ -1,10 +1,11 @@
-import { CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
+import { Area, CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
 import { CellMarks, ConstraintType, Grid, SudokuVariant } from 'src/types/sudoku'
 import { chain, compact, findIndex, isEqual, times, uniq, uniqWith } from 'lodash-es'
 import { constraintDefinitions } from './definitions'
 import { CellErrorSet, ConstraintDefinition, ConstraintValidationResult } from './types'
 import { ConstraintEditorState } from './editorState'
 import { diagonalsConstraint } from './diagonal/diagonals'
+import { exhaustiveGuard } from 'src/utils/misc'
 
 export const UNKNOWN_VALIDATION_RESULT: ConstraintValidationResult = ({
   type: 'unknown',
@@ -305,4 +306,49 @@ export const assertExhaustiveConstraintOrder = (order: readonly ConstraintType[]
   if ([...order].sort().toString() !== Object.keys(constraintDefinitions).sort().toString()) {
     throw new Error('Constraint order is not exhaustive.')
   }
+}
+
+export const getAreaConstraintType = (area: Area, constraints: SudokuConstraints): ConstraintType | null => {
+  switch (area.type) {
+  case 'Grid':
+  case 'Adhoc':
+  case 'Cell': return null
+  case 'PrimaryDiagonal': return ConstraintType.PrimaryDiagonal
+  case 'SecondaryDiagonal': return ConstraintType.SecondaryDiagonal
+  case 'Row':
+  case 'Column': return ConstraintType.Regions
+  case 'Region':
+    if (constraints.regions === undefined) {
+      throw Error('no regions in constraints')
+    }
+    if (area.value < constraints.regions.length) {
+      return ConstraintType.Regions
+    } else {
+      return ConstraintType.ExtraRegions
+    }
+  case 'Palindrome': return ConstraintType.Palindrome
+  case 'Thermo': return ConstraintType.Thermo
+  case 'Arrow': return ConstraintType.Arrow
+  case 'Renban': return ConstraintType.Renban
+  case 'KillerCage': return ConstraintType.KillerCage
+  case 'KropkiDot':
+    if (constraints.kropkiDots === undefined) {
+      throw Error('no kropki dots in constraints')
+    }
+    const kropkiDot = constraints.kropkiDots[area.value]
+    if (kropkiDot === undefined) {
+      if (!constraints.kropkiNegative) {
+        throw new Error('expected kropki negative flag set')
+      }
+      return ConstraintType.KropkiNegative
+    } else if (kropkiDot.dotType === 'Consecutive') {
+      return ConstraintType.KropkiConsecutive
+    } else if (kropkiDot.dotType === 'Double') {
+      return ConstraintType.KropkiDouble
+    } else {
+      throw new Error('unhandled kropki dot type')
+    }
+  }
+
+  return exhaustiveGuard(area)
 }

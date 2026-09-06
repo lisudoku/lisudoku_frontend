@@ -2,9 +2,9 @@ import type { Area, CellPosition, Rule, SolutionStep, SudokuConstraints } from '
 import { isEqual, uniqWith } from 'lodash-es'
 import { CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { HintLevel } from 'src/reducers/puzzle'
-import { getAreaCells } from '../sudoku'
+import { areaDisplay, cellDisplay, getAreaCells } from '../sudoku'
 import { areaToCustomGraphicsItem, buildCornerMarkGraphicsItem, cellToCustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/utils'
-import { areaDisplay, cellDisplay, computeInvalidStateReason } from './helpers'
+import { computeInvalidStateReason } from './helpers'
 import { pluralize } from '../misc'
 
 interface StepLogicBaseContext {

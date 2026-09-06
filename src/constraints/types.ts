@@ -1,9 +1,9 @@
-import type { CellPosition, SudokuConstraints } from 'lisudoku-solver'
+import type { Area, CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import type { ReactNode } from 'react'
 import { CellMarks, Grid, SudokuVariant } from 'src/types/sudoku'
 import { ConstraintEditorState } from './editorState'
 
-interface ConstraintContext {
+export interface ConstraintContext {
   constraints: SudokuConstraints
 }
 
@@ -82,6 +82,11 @@ export interface ConstraintDefinition {
   graphics: (ctx: GraphicsContext) => ReactNode
   // Returns list of cells that are the passed cell's peers using constraint
   cellPeers: (ctx: ConstraintWithCellContext) => CellPosition[]
+  // Returns list of cells in the passed `area`. Each constraint
+  // handles areas related to it.
+  areaCells: (area: Area, ctx: ConstraintContext) => CellPosition[]
+  // Returns user-friendly description of `area`
+  areaDisplay: (area: Area, ctx: ConstraintContext) => string
   // Returns list of errors in the grid caused by constraint
   // Assumes that the constraint is active
   errors: (ctx: ErrorsContext) => CellErrorSet[]

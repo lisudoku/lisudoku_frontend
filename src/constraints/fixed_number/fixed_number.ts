@@ -14,6 +14,8 @@ export const fixedNumberConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Classic,
   graphics: fixedNumberGraphics,
   cellPeers: () => [],
+  areaCells: () => [],
+  areaDisplay: () => '',
   errors: () => [],
   removeConstraintsAtCell: ({ constraints, isSelectedCell }) => {
     remove(constraints.fixedNumbers ?? [], ({ position }) => isSelectedCell(position))

@@ -1,6 +1,6 @@
-import type { CellPosition, KropkiDot, KropkiDotType, SudokuConstraints } from 'lisudoku-solver'
+import type { Area, CellPosition, KropkiDot, KropkiDotType, SudokuConstraints } from 'lisudoku-solver'
 import { differenceWith, isEqual, sortBy } from 'lodash-es'
-import type { CellErrorSet, ConstraintDefinition } from '../types'
+import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../types'
 import { CellValueComparator, getAdjacentPeers, getErrorSetsBetween, removeConstraintFromArray } from '../utils'
 import { getAllCells } from 'src/utils/sudoku'
 
@@ -114,3 +114,36 @@ export const getKropkiNegativeDots = (constraints: SudokuConstraints): KropkiDot
   }
   return negativeDots
 }
+
+export const kropkiAreaCells: (dotType: KropkiDotType) => ConstraintDefinition['areaCells'] = dotType => (
+  (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'KropkiDot') {
+      return []
+    }
+
+    if (ctx.constraints.kropkiDots === undefined) {
+      throw Error('no kropki dots in constraints')
+    }
+
+    let kropkiDot: KropkiDot
+
+    if (area.value < ctx.constraints.kropkiDots.length) {
+      kropkiDot = ctx.constraints.kropkiDots[area.value]
+    } else {
+      if (dotType !== 'Negative') {
+        return []
+      }
+      if (!ctx.constraints.kropkiNegative) {
+        throw Error('Invalid kropki dot index')
+      }
+      const negativeDots = getKropkiNegativeDots(ctx.constraints)
+      kropkiDot = negativeDots[area.value - ctx.constraints.kropkiDots.length]
+    }
+
+    if (kropkiDot.dotType !== dotType) {
+      return []
+    }
+
+    return [kropkiDot.cell1, kropkiDot.cell2]
+  }
+)

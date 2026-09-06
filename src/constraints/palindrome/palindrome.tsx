@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
-import type { CellErrorSet, ConstraintDefinition } from '../types'
+import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { palindromeGraphics } from './graphics'
 import { CellValueComparatorNotEqual, ensureTargetArray, expandsArea8, getErrorSetsBetween, removeConstraintFromArray } from '../utils'
 import { find, isEqual } from 'lodash-es'
+import type { Area } from 'lisudoku-solver'
 
 export const palindromeConstraint: ConstraintDefinition = {
   icon: <FontAwesomeIcon icon={faArrowsLeftRight} size="sm" title="Palindrome" />,
@@ -25,6 +26,13 @@ export const palindromeConstraint: ConstraintDefinition = {
     }
     return palindromePeers
   },
+  areaCells: (area: Area, ctx: ConstraintContext) => {
+    if (area.type !== 'Palindrome') {
+      return []
+    }
+    return ctx.constraints.palindromes?.[area.value] ?? []
+  },
+  areaDisplay: () => 'a palindrome',
   errors: ({ constraints, valuesGrid, cellMarksGrid }) => {
     const errorSets: CellErrorSet[] = []
 

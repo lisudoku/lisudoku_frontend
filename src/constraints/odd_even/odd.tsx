@@ -18,6 +18,8 @@ export const oddConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.OddEven,
   graphics: oddGraphics,
   cellPeers: () => [],
+  areaCells: () => [],
+  areaDisplay: () => '',
   errors: singleCellConstraintErrorChecker({
     getCells: constraintsToCells,
     validateCell: ({ value }) => value % 2 === 1,

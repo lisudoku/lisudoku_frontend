@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import { faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons'
 import { CellValueComparator } from '../utils'
-import { kropkiErrors, kropkiPrepareCurrentConstraint, kropkiRemoveConstraintsAtCell, kropkiValidateCurrentConstraint } from './utils'
+import { kropkiAreaCells, kropkiErrors, kropkiPrepareCurrentConstraint, kropkiRemoveConstraintsAtCell, kropkiValidateCurrentConstraint } from './utils'
 
 export const kropkiConsecutiveComparator: CellValueComparator = (a: number, b: number) => Math.abs(a - b) !== 1
 
@@ -26,6 +26,8 @@ export const kropkiConsecutiveConstraint: ConstraintDefinition = {
   variant: () => SudokuVariant.Kropki,
   graphics: kropkiConsecutiveGraphics,
   cellPeers: () => [],
+  areaCells: kropkiAreaCells('Consecutive'),
+  areaDisplay: () => 'a kropki dot pair',
   errors: kropkiErrors('Consecutive', kropkiConsecutiveComparator),
   removeConstraintsAtCell: kropkiRemoveConstraintsAtCell('Consecutive'),
   expandCurrentConstraintAtCell: () => false,

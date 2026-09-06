@@ -1,12 +1,11 @@
 import { flatten, flattenDeep, isEmpty, isEqual, times, uniqWith } from 'lodash-es'
-import { CellMarks, Grid } from 'src/types/sudoku'
+import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import { GRID_SIZES } from './constants'
 import { Area, CellPosition, FixedNumber, Region, SudokuConstraints } from 'lisudoku-solver'
 import { exhaustiveGuard } from './misc'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { CellErrors } from 'src/constraints/types'
-import { getKropkiNegativeDots } from 'src/constraints/kropki/utils'
-import { deduplicateErrorSets } from 'src/constraints/utils'
+import { deduplicateErrorSets, getAreaConstraintType } from 'src/constraints/utils'
 
 export type CellMarkSets = {
   cornerMarks?: Set<number>
@@ -237,92 +236,43 @@ export const getAllCells = (gridSize: number) => {
   return cells
 }
 
-export const isCellArea = (area: Area) => {
-  if (typeof area !== 'object') return false
-  return 'Cell' in area
+export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPosition[] => {
+  switch (area.type) {
+  // Edge cases
+  case 'Grid': return getAllCells(constraints.gridSize)
+  case 'Adhoc': return area.value
+  case 'Cell': return [{ row: area.value[0], col: area.value[1] }]
+  // Constraint-specific areas
+  default: {
+    const constraintType = getAreaConstraintType(area, constraints)
+    if (constraintType === null) {
+      throw new Error('invalid constraint type handling')
+    }
+    const constraint = constraintDefinitions[constraintType]
+    return constraint.areaCells(area, { constraints })
+  }}
 }
 
-// TODO: this is also a duplicate between wasm and js
-// TODO: either use wasm version or refactor to use lookup functions
-export const getAreaCells = (area: Area, constraints: SudokuConstraints): CellPosition[] => {
-  if (area === 'Grid') {
-    return getAllCells(constraints.gridSize)
-  } else if (area === 'PrimaryDiagonal') {
-    return times(constraints.gridSize, idx => ({
-      row: idx,
-      col: idx,
-    }))
-  } else if (area === 'SecondaryDiagonal') {
-    return times(constraints.gridSize, idx => ({
-      row: idx,
-      col: constraints.gridSize - 1 - idx,
-    }))
-  }
+export const cellDisplay = (cell: CellPosition) => (
+  `R${cell.row + 1}C${cell.col + 1}`
+)
 
-  if (typeof area !== 'object') {
-    return exhaustiveGuard(area)
-  }
-
-  if ('Row' in area) {
-    return times(constraints.gridSize, col => ({
-      row: area.Row,
-      col,
-    }))
-  } else if ('Column' in area) {
-    return times(constraints.gridSize, row => ({
-      row,
-      col: area.Column,
-    }))
-  } else if ('Region' in area) {
-    if (constraints.regions !== undefined) {
-      // Assume all extra regions contain grid_size cells
-      if (area.Region < constraints.regions.length) {
-        return constraints.regions[area.Region]
-      } else {
-        return constraints.extraRegions![area.Region - constraints.regions.length]
-      }
-    } else {
-      throw Error('no regions in constraints')
+// Returns how to refer to given area in hints and solver steps.
+export const areaDisplay = (area: Area, constraints: SudokuConstraints): string => {
+  switch (area.type) {
+  // Edge cases
+  case 'Grid': return 'the grid'
+  case 'Adhoc': return `adhoc set of cells ${area.value.map((cell: CellPosition) => cellDisplay(cell)).join(', ')}`
+  case 'Cell': return `cell ${cellDisplay({ row: area.value[0], col: area.value[1] })}`
+  // Constraint-specific areas
+  default: {
+    const constraintType = getAreaConstraintType(area, constraints)
+    if (constraintType === null) {
+      throw new Error('invalid constraint type handling')
     }
-  } else if ('Cell' in area) {
-    return [{
-      row: area.Cell[0],
-      col: area.Cell[1],
-    }]
-  } else if ('Palindrome' in area) {
-    return constraints.palindromes?.[area.Palindrome] ?? []
-  } else if ('Thermo' in area) {
-    return constraints.thermos?.[area.Thermo] ?? []
-  } else if ('Arrow' in area) {
-    if (constraints.arrows === undefined) {
-      throw Error('no arrows in constraints')
-    }
-    const arrow = constraints.arrows[area.Arrow]
-    return [...arrow.arrowCells, ...arrow.circleCells]
-  } else if ('Renban' in area) {
-    return constraints.renbans?.[area.Renban] ?? []
-  } else if ('KropkiDot' in area) {
-    if (constraints.kropkiDots === undefined) {
-      throw Error('no kropki dots in constraints')
-    }
-    const kropkiDot = constraints.kropkiDots[area.KropkiDot]
-    if (area.KropkiDot >= constraints.kropkiDots.length) {
-      if (!constraints.kropkiNegative) {
-        throw Error('Invalid kropki dot index')
-      }
-      let index = area.KropkiDot - constraints.kropkiDots.length
-      const negativeDots = getKropkiNegativeDots(constraints)
-      const kropkiDot = negativeDots[index]
-      return [kropkiDot.cell1, kropkiDot.cell2]
-    }
-    return [kropkiDot.cell1, kropkiDot.cell2]
-  } else if ('KillerCage' in area) {
-    return constraints.killerCages?.[area.KillerCage].region ?? []
-  } else if ('Adhoc' in area) {
-    return area.Adhoc
-  }
-
-  return exhaustiveGuard(area)
+    const constraint = constraintDefinitions[constraintType]
+    return constraint.areaDisplay(area, { constraints })
+  }}
 }
 
 export const getCellPeers = (constraints: SudokuConstraints, cell: CellPosition): CellPosition[] => (

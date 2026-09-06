@@ -35,6 +35,8 @@ export const antiKingConstraint: ConstraintDefinition = {
 
     return peers
   },
+  areaCells: () => [],
+  areaDisplay: () => '',
   errors: ({ constraints, valuesGrid, cellMarksGrid }) => {
     const errorSets: CellErrorSet[] = []
 
