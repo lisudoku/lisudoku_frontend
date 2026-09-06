@@ -13,7 +13,7 @@ const HomePage = () => {
         title="lisudoku.xyz • Free Online Sudoku Variants"
         includeTitleBranding={false}
         url="https://lisudoku.xyz"
-        description="Play free Classic, Thermo, Arrow, Kropki, Renban, Killer, and more Sudoku variants online."
+        description="Play free Classic, Thermo, Arrow, Kropki (Consecutive), Renban, Killer, and more Sudoku variants online."
       />
       <ContestsAlert />
       <div className="p-2">

@@ -16,7 +16,7 @@ const LearnPage = () => {
         title="Learn Sudoku Techniques & Variants"
         url="https://lisudoku.xyz/learn"
         description="Learn logical Sudoku techniques and how
-          to solve Classic, Thermo, Arrow, Kropki, Renban, Killer, and more."
+          to solve Classic, Thermo, Arrow, Kropki (Consecutive), Renban, Killer, and more."
       />
       <Typography variant="h3">
         <a href="/learn#">Solving Techniques</a>
