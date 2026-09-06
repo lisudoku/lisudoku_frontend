@@ -6,10 +6,15 @@ export const cellToArea = (cell: CellPosition): Area => ({
   value: [cell.row, cell.col],
 })
 
-export const cellToCustomGraphicsItem = (cell: CellPosition, color?: CustomGraphicsAreaHighlight['color']): CustomGraphicsAreaHighlight => ({
+export const cellToCustomGraphicsItem = (
+  cell: CellPosition,
+  color?: CustomGraphicsAreaHighlight['color'],
+  opacity?: CustomGraphicsAreaHighlight['opacity'],
+): CustomGraphicsAreaHighlight => ({
   type: 'area-highlight',
   area: cellToArea(cell),
   color,
+  opacity,
 })
 
 export const areaToCustomGraphicsItem = (area: Area, color?: CustomGraphicsAreaHighlight['color']): CustomGraphicsAreaHighlight => ({

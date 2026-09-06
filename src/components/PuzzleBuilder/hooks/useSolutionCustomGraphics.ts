@@ -77,7 +77,8 @@ export const useSolutionCustomGraphics = ({
         continue
       }
       const color = StepRuleDifficultyColor[difficulty]
-      cellDifficultyGraphics.push(cellToCustomGraphicsItem(cell, color))
+      // Set 90% opacity because this highlight needs to be on top of constraints without mixing
+      cellDifficultyGraphics.push(cellToCustomGraphicsItem(cell, color, 0.9))
     }
   }
 

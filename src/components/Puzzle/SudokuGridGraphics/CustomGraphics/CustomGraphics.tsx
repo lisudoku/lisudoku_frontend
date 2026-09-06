@@ -7,6 +7,7 @@ export interface CustomGraphicsAreaHighlight {
   type: 'area-highlight'
   area: Area
   color?: CSSProperties['color'] | 'area'
+  opacity?: CSSProperties['opacity']
 }
 
 export interface CustomGraphicsCornerMarks {
@@ -59,10 +60,10 @@ export const CustomGraphics = ({
               key={cellIndex}
               cell={cell}
               cellSize={cellSize}
-              className="opacity-40"
               style={{
                 fill: getCustomGraphicsItemColor(item, defaultAreaColor, defaultCellColor),
                 stroke: getCustomGraphicsItemColor(item, defaultAreaColor, defaultCellColor),
+                opacity: item.opacity ?? 0.4,
               }}
             />
           ))
