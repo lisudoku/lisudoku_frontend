@@ -173,6 +173,8 @@ export const SudokuConstraintsGraphics = ({
     >
       {/* The order of rendering the graphics is important! */}
       {/* This renders elements from the bottom to the top, so the last items are on top */}
+      {graphicsConstraintsUnderGridlines.map(renderConstraint)}
+
       <CustomGraphics
         items={cellHighlightCustomGraphics}
         cellSize={cellSize}
@@ -180,8 +182,6 @@ export const SudokuConstraintsGraphics = ({
         defaultAreaColor={defaultAreaColor}
         defaultCellColor={defaultCellColor}
       />
-
-      {graphicsConstraintsUnderGridlines.map(renderConstraint)}
 
       <GridlinesGraphics
         gridSize={gridSize}
