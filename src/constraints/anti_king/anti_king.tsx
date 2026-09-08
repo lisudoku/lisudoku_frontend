@@ -18,7 +18,7 @@ export const antiKingConstraint: ConstraintDefinition = {
   dataKey: 'antiKing',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.antiKing),
   variant: () => SudokuVariant.AntiKing,
-  graphics: () => null,
+  graphics: null,
   cellPeers: ({ constraints, cell }) => {
     const peers: CellPosition[] = []
 

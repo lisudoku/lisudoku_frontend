@@ -89,14 +89,16 @@ export const graphicsConstraintsOrder = [
   ConstraintType.Regions,
   ConstraintType.KropkiConsecutive,
   ConstraintType.KropkiDouble,
-
-  ConstraintType.AntiKnight,
-  ConstraintType.AntiKing,
-  ConstraintType.KropkiNegative,
-  ConstraintType.TopBottom,
 ] as const satisfies readonly ConstraintType[]
 
-assertExhaustiveConstraintOrder(graphicsConstraintsOrder, [ConstraintType.FixedNumber])
+const constraintTypesWithNoGraphics: ConstraintType[] = (Object.keys(constraintDefinitions) as ConstraintType[])
+  .filter(constraintType => constraintDefinitions[constraintType].graphics === null)
+const graphicsConstraintsExceptions = [
+  ConstraintType.FixedNumber,
+  ...constraintTypesWithNoGraphics,
+]
+
+assertExhaustiveConstraintOrder(graphicsConstraintsOrder, graphicsConstraintsExceptions)
 
 const [graphicsConstraintsUnderGridlines, graphicsConstraintsAboveGridlines] = partition(
   graphicsConstraintsOrder,
@@ -143,12 +145,12 @@ export const SudokuConstraintsGraphics = ({
   const cellHighlightCustomGraphics = customGraphicsByType['area-highlight'] ?? []
   const cornerMarksCustomGraphics = customGraphicsByType['corner-marks'] as CustomGraphicsCornerMarks[] ?? []
 
-  const graphicsCtx: Parameters<ConstraintDefinition['graphics']>[0] = {
+  const graphicsCtx: Parameters<NonNullable<ConstraintDefinition['graphics']>>[0] = {
     constraints, gridSize, cellSize, errorGrid, fixedNumbersGrid, grid,
   }
   const renderConstraint = (constraintType: ConstraintType) => (
     <Fragment key={constraintType}>
-      {constraintDefinitions[constraintType].graphics(graphicsCtx)}
+      {constraintDefinitions[constraintType].graphics!(graphicsCtx)}
     </Fragment>
   )
 

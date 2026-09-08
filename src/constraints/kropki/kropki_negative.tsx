@@ -21,7 +21,7 @@ export const kropkiNegativeConstraint: ConstraintDefinition = {
   dataKey: 'kropkiNegative',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.kropkiNegative),
   variant: () => SudokuVariant.Kropki,
-  graphics: () => null,
+  graphics: null,
   cellPeers: () => [],
   areaCells: kropkiAreaCells('Negative'),
   areaDisplay: () => 'a negative kropki dot pair',

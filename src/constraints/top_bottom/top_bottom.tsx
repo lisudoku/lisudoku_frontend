@@ -16,7 +16,7 @@ export const topBottomConstraint: ConstraintDefinition = {
   dataKey: 'topBottom',
   isActiveInConstraints: ({ constraints }) => Boolean(constraints.topBottom),
   variant: () => SudokuVariant.TopBottom,
-  graphics: () => null,
+  graphics: null,
   cellPeers: () => [],
   areaCells: () => [],
   areaDisplay: () => '',

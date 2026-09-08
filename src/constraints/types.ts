@@ -79,7 +79,7 @@ export interface ConstraintDefinition {
   // The variant that this constraint belongs to
   variant: (ctx: ConstraintContext) => SudokuVariant
   // Component that draws constraint on grid
-  graphics: (ctx: GraphicsContext) => ReactNode
+  graphics: ((ctx: GraphicsContext) => ReactNode) | null
   // Returns list of cells that are the passed cell's peers using constraint
   cellPeers: (ctx: ConstraintWithCellContext) => CellPosition[]
   // Returns list of cells in the passed `area`. Each constraint
