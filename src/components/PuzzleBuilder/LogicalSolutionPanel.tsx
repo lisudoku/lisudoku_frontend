@@ -7,15 +7,18 @@ import { NavButton } from '../NavButton'
 import { faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import { LogicalSolutionPanelContent } from './LogicalSolutionPanelContent'
 import SolutionPanel from './SolutionPanel'
+import { SolutionPanelActionPanel } from './SolutionPanelActionPanel'
 
 interface LogicalSolutionPanelProps {
   solverState: LogicalSolverState
   constraints: SudokuConstraints
   setterMode: boolean
+  onRun: () => void
+  onStop: () => void
   onClear: () => void
 }
 
-export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onClear }: LogicalSolutionPanelProps) => {
+export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onRun, onStop, onClear }: LogicalSolutionPanelProps) => {
   const dispatch = useDispatch()
   const [isStepsDirty, setIsStepsDirty] = useState(false)
 
@@ -32,6 +35,17 @@ export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onC
 
   return (
     <SolutionPanel className="max-h-96">
+      <SolutionPanel.Header>
+        <div>
+          Logical Solver
+        </div>
+        <SolutionPanelActionPanel
+          solverState={solverState}
+          onRun={onRun}
+          onClear={onClear}
+          onStop={onStop}
+        />
+      </SolutionPanel.Header>
       <SolutionPanel.Body>
         <LogicalSolutionPanelContent
           solverState={solverState}
@@ -71,10 +85,6 @@ export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onC
                 handleStepChange((solverState.solutionStepIndex ?? 0) + 1)
               }}
               disabled={solverState.solutionStepIndex === solverState.solution.steps.length}
-            />
-            <SolutionPanel.ClearButton
-              onClick={onClear}
-              className="!absolute right-5"
             />
           </SolutionPanel.Footer>
         </>

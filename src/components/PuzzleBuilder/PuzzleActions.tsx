@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
@@ -24,12 +24,20 @@ import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'
 import { detectConstraints } from 'src/constraints/utils'
+import { useElapsedTime, type SolverHandle } from './hooks'
 
 // TODO: consider a more general approach if it's an issue in other places too
 // Alert about running solver every 5 mins
 const sendHbAlertThrottled = throttle(sendHbAlert, 300_000)
 
-const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
+interface PuzzleActionsProps {
+  bruteSolver: SolverHandle
+  logicalSolver: SolverHandle
+  onInputFocus: () => void
+  onInputBlur: () => void
+}
+
+export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInputBlur }: PuzzleActionsProps) => {
   const dispatch = useDispatch()
   const userToken = useSelector(state => state.userData.token)
   const setterMode = useSelector(state => state.builder.setterMode)
@@ -50,7 +58,7 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
     bruteSolverState.solution?.solutionCount === 1
   )
 
-  const handleBruteSolveClick = useCallback(() => {
+  const handleBruteSolverRun = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
       sendHbAlertThrottled({
         name: 'Running brute solver',
@@ -60,10 +68,10 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         },
       })
     }
-    runBruteSolver(constraints)
-  }, [constraints, runBruteSolver, setterMode, manualChange, userIsAdmin])
+    bruteSolver.run(constraints)
+  }, [constraints, bruteSolver, setterMode, manualChange, userIsAdmin])
 
-  const handleLogicalSolveClick = useCallback(() => {
+  const handleLogicalSolverRun = useCallback(() => {
     if (!setterMode && constraints && manualChange && !userIsAdmin) {
       sendHbAlertThrottled({
         name: 'Running logical solver',
@@ -73,8 +81,18 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
         },
       })
     }
-    runLogicalSolver(constraints)
-  }, [constraints, runLogicalSolver, setterMode, manualChange, userIsAdmin])
+    logicalSolver.run(constraints)
+  }, [constraints, logicalSolver, setterMode, manualChange, userIsAdmin])
+
+  const handleBruteSolverStop = useCallback(() => {
+    bruteSolver.stop()
+    dispatch(clearBruteSolution())
+  }, [bruteSolver])
+
+  const handleLogicalSolverStop = useCallback(() => {
+    logicalSolver.stop()
+    dispatch(clearLogicalSolution())
+  }, [logicalSolver])
 
   const handleBruteSolutionClear = useCallback(() => {
     dispatch(clearBruteSolution())
@@ -138,6 +156,23 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
     }
   }, [bruteSolverState, logicalSolverState, variant, constraints, setterMode, userIsAdmin])
 
+  const elapsedTime = useElapsedTime(logicalSolverState.runStartedAt)
+  const timeoutAlertRef = useRef(false)
+  useEffect(() => {
+    timeoutAlertRef.current = false
+  }, [logicalSolverState.runStartedAt])
+  useEffect(() => {
+    if (constraints && elapsedTime > 5_000 && !timeoutAlertRef.current) {
+      timeoutAlertRef.current = true
+      sendHbAlertThrottled({
+        name: 'Slow logical solver run',
+        context: {
+          url: exportToLisudokuSolver(constraints),
+        },
+      })
+    }
+  }, [elapsedTime, constraints])
+
   const [showSolverSettings, setShowSolverSettings] = useState(false)
 
   return (
@@ -156,28 +191,18 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
           onClick={() => setShowSolverSettings(true)}
         />
       </span>
-      <Button
-        onClick={handleBruteSolveClick}
-        disabled={bruteSolverState.status === 'running' || bruteSolverState.solution !== undefined}
-        aria-label="Run the brute-force Sudoku solver and show whether the solution is unique"
-      >
-        Brute Force Solve
-      </Button>
       <BruteSolutionPanel
         solverState={bruteSolverState}
+        onRun={handleBruteSolverRun}
+        onStop={handleBruteSolverStop}
         onClear={handleBruteSolutionClear}
       />
-      <Button
-        onClick={handleLogicalSolveClick}
-        disabled={logicalSolverState.status === 'running' || logicalSolverState.solution !== undefined}
-        aria-label="Run the logical Sudoku solver and show the step-by-step solving steps"
-      >
-        Logical Solve
-      </Button>
       <LogicalSolutionPanel
         solverState={logicalSolverState}
         constraints={constraints!}
         setterMode={setterMode}
+        onRun={handleLogicalSolverRun}
+        onStop={handleLogicalSolverStop}
         onClear={handleLogicalSolutionClear}
       />
 
@@ -202,8 +227,9 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
             onBlur={onInputBlur}
           />
 
-          <Button onClick={handleAddPuzzleClick}
-                  disabled={!addPuzzleEnabled || puzzleAdding}
+          <Button
+            onClick={handleAddPuzzleClick}
+            disabled={!addPuzzleEnabled || puzzleAdding}
           >
             Add puzzle
           </Button>
@@ -217,12 +243,3 @@ const PuzzleActions = ({ runBruteSolver, runLogicalSolver, onInputFocus, onInput
     </div>
   )
 }
-
-type PuzzleActionsProps = {
-  runBruteSolver: Function
-  runLogicalSolver: Function
-  onInputFocus: Function
-  onInputBlur: Function
-}
-
-export default PuzzleActions

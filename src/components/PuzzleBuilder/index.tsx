@@ -13,7 +13,7 @@ import {
 import Radio from 'src/design_system/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/design_system/Button'
-import PuzzleActions from './PuzzleActions'
+import { PuzzleActions } from './PuzzleActions'
 import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import Input from 'src/design_system/Input'
 import Typography from 'src/design_system/Typography'
@@ -78,8 +78,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const importData = useImportParam()
 
-  const runBruteSolver = useSolver(SolverType.Brute)
-  const runLogicalSolver = useSolver(SolverType.Logical)
+  const bruteSolver = useSolver(SolverType.Brute)
+  const logicalSolver = useSolver(SolverType.Logical)
 
   const runImport = useCallback(async (url: string): Promise<SudokuConstraints | void> => {
     const result = await importPuzzle(url)
@@ -136,14 +136,14 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     if (importData) {
       runImport(importData).then((constraints) => {
         if (constraints !== undefined) {
-          runLogicalSolver(constraints)
+          logicalSolver.run(constraints)
         }
       })
     } else {
       const gridSize = Number.parseInt(paramGridSize ?? '9')
       dispatch(initPuzzle({ gridSize, setterMode: admin }))
     }
-  }, [dispatch, paramGridSize, admin, importData, runImport, runLogicalSolver])
+  }, [dispatch, paramGridSize, admin, importData, runImport, logicalSolver])
 
   const showSolutionDifficultyHeatmap = useSelector(state => state.userData.settings?.solutionDifficultyHeatmap ?? false)
   const setterMode = useSelector(state => state.builder.setterMode)
@@ -393,8 +393,8 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         </div>
         <div className="grow">
           <PuzzleActions
-            runBruteSolver={runBruteSolver}
-            runLogicalSolver={runLogicalSolver}
+            bruteSolver={bruteSolver}
+            logicalSolver={logicalSolver}
             onInputFocus={handleInputFocus}
             onInputBlur={handleInputBlur}
           />

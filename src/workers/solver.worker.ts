@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-globals */
 import { SudokuConstraints, wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
-import type { WorkerSolutionResponse } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
 import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats';
+import type { WorkerSolutionResponse } from './types';
 
 self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
@@ -38,7 +38,8 @@ self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverTyp
 
 // Send initial message to let parent know the initialization is done.
 // Documentation says the incoming messages are queued, but it only worked by waiting
-self.postMessage('init')
+// Apparently it's due to wasm async instantiation
+self.postMessage({ type: 'ready' })
 
 export {}
 /* eslint-enable no-restricted-globals */

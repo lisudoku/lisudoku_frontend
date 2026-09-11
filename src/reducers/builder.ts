@@ -20,25 +20,23 @@ import type {
 import { detectConstraints } from 'src/constraints/utils'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType, ConstraintEditorState } from 'src/constraints/editorState'
+import type { WorkerSolutionResponse } from 'src/workers/types'
+import { formatISO } from 'date-fns/esm'
 
 type SolverStatus = 'running' | 'error' | 'ok'
 
-export type WorkerSolutionResponse =
-  | { solverType: SolverType.Brute, solution: SudokuBruteSolveResult, error?: never }
-  | { solverType: SolverType.Brute, solution?: never, error: string }
-  | { solverType: SolverType.Logical, solution: SudokuLogicalSolveResult, error?: never }
-  | { solverType: SolverType.Logical, solution?: never, error: string }
-
-export interface BruteSolverState {
+interface BaseSolverState {
   status: SolverStatus
-  solution?: SudokuBruteSolveResult
+  runStartedAt?: string
   error?: string
 }
 
-export interface LogicalSolverState {
-  status: SolverStatus
+export interface BruteSolverState extends BaseSolverState {
+  solution?: SudokuBruteSolveResult
+}
+
+export interface LogicalSolverState extends BaseSolverState {
   solution?: SudokuLogicalSolveResult
-  error?: string
   solutionStepIndex?: number
 }
 
@@ -271,18 +269,19 @@ export const builderSlice = createSlice({
       handleConstraintChange(state)
     },
     requestSolution(state, action) {
+      const newSolverState = {
+        status: 'running' as const,
+        runStartedAt: formatISO(new Date()),
+      }
       if (action.payload === SolverType.Brute) {
-        state.bruteSolverState = {
-          status: 'running',
-        }
+        state.bruteSolverState = newSolverState
       } else {
-        state.logicalSolverState = {
-          status: 'running'
-        }
+        state.logicalSolverState = newSolverState
       }
       state.puzzlePublicId = null
     },
     responseSolution(state, { payload }: { payload: WorkerSolutionResponse }) {
+      // Note: runStartedAt is cleared
       if (payload.solverType === SolverType.Brute) {
         state.bruteSolverState = {
           status: payload.error ? 'error' : 'ok',

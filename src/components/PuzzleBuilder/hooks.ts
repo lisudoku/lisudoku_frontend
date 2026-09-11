@@ -1,19 +1,21 @@
 // TODO: move to ./hooks
-import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
+import type { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { inRange, isEmpty, last } from 'lodash-es'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { ConstraintType } from 'src/types/sudoku'
 import {
   changeSelectedCell, changeSelectedCellConstraint, changeSelectedCellCornerMarks,
   changeSelectedCellValue, deleteConstraint,
   requestSolution, responseSolution, toggleCornerMarksActive,
-  type WorkerSolutionResponse,
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
-import SolverWorker from 'src/workers/solver.worker?worker'
 import { InputMode } from 'src/reducers/puzzle'
 import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats'
+import { SolverWorkerClient } from 'src/workers/SolverWorkerClient'
+import type { WorkerSolutionResponse } from 'src/workers/types'
+import useInterval from 'react-useinterval'
+import { differenceInMilliseconds, parseISO } from 'date-fns/esm'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -173,66 +175,57 @@ export const useKeyboardHandler = (digitsActive = true) => {
   ])
 }
 
-export const useSolver = (solverType: SolverType) => {
-  const onWorkerInitializedResolve = useRef<Function>()
+export interface SolverHandle {
+  run: (constraints: SudokuConstraints | null) => void
+  stop: () => void
+}
 
-  const [ worker, onWorkerInitialized ] = useMemo(
-    () => {
-      const _onWorkerInitialized = new Promise((resolve) => {
-        onWorkerInitializedResolve.current = resolve
-      })
+export const useSolver = (solverType: SolverType): SolverHandle => {
+  const clientRef = useRef<SolverWorkerClient | null>(null)
+  if (clientRef.current === null || clientRef.current.terminated()) {
+    clientRef.current = new SolverWorkerClient(solverType)
+  }
 
-      const _worker = new SolverWorker()
-
-      // Wait for 'init' message and then mark worker as initialized
-      _worker.addEventListener('message', (e) => {
-        onWorkerInitializedResolve.current!()
-      }, { once: true })
-
-      return [ _worker, _onWorkerInitialized ]
+  useEffect(
+    () => () => {
+      clientRef.current?.terminate()
     },
-    []
+    [],
   )
 
-  const callSolverWorker = useCallback(async (constraints: SudokuConstraints, solverType: SolverType) => {
-    // Wait for worker to initialize
-    await onWorkerInitialized
-
-    // Send constraints and wait for the solution
-    return new Promise<WorkerSolutionResponse>(resolve => {
-      worker.onerror = (e) => {
-        console.error(e)
-      }
-      worker.onmessage = ({ data }) => {
-        // Hack to make hot reload work with query param import, probably a code smell
-        if (data === 'init') {
-          worker.postMessage({
-            solverType,
-            constraints,
-          })
-          return
-        }
-        resolve(data)
-      }
-      worker.postMessage({
-        solverType,
-        constraints,
-      })
-    })
-  }, [worker, onWorkerInitialized])
+  const runStartedAt = useSelector(state => {
+    const solverState = solverType === SolverType.Brute
+      ? state.builder.bruteSolverState
+      : state.builder.logicalSolverState
+    return solverState.runStartedAt
+  })
+  useEffect(() => {
+    if (
+      runStartedAt === undefined &&
+      clientRef.current !== null &&
+      !clientRef.current.terminated() &&
+      clientRef.current.pending()
+    ) {
+      // Forcefully stop current run because something external (changing constraints)
+      // cleared the current run
+      clientRef.current.restart()
+    }
+  }, [runStartedAt])
 
   const dispatch = useDispatch()
 
-  const runSolver = useCallback((constraints: SudokuConstraints | null) => {
+  const run = useCallback((constraints: SudokuConstraints | null) => {
     if (constraints === null) {
       return
     }
+
     dispatch(requestSolution(solverType))
-    try {
-      callSolverWorker(constraints, solverType).then(response => {
-        dispatch(responseSolution(response))
-      })
-    } catch (error) {
+
+    const handleError = (error: unknown) => {
+      const aborted = error !== null && typeof error === 'object' && 'name' in error && error?.name === 'AbortError'
+      if (aborted) {
+        return
+      }
       dispatch(responseSolution({
         solverType,
         error: 'Error while running solver',
@@ -242,7 +235,54 @@ export const useSolver = (solverType: SolverType) => {
         { cause: error },
       )
     }
-  }, [dispatch, solverType, callSolverWorker])
 
-  return runSolver
+    try {
+      clientRef.current
+        ?.run(constraints)
+        .then(response => {
+          dispatch(responseSolution(response))
+        })
+        .catch(error => {
+          handleError(error)
+        })
+    } catch (error) {
+      handleError(error)
+    }
+  }, [dispatch, solverType])
+
+  const stop = useCallback(() => {
+    clientRef.current?.restart()
+  }, [])
+
+  return useMemo(() => ({ run, stop }), [run, stop])
+}
+
+export const useElapsedTime = (startedAt?: string) => {
+  const [elapsed, setElapsed] = useState(0)
+
+  useEffect(() => {
+    if (startedAt === undefined) {
+      setElapsed(0)
+    }
+  }, [startedAt])
+
+  useInterval(() => {
+    if (startedAt !== undefined) {
+      setElapsed(differenceInMilliseconds(new Date(), parseISO(startedAt)))
+    }
+  }, startedAt !== undefined ? 100 : null)
+
+  return elapsed
+}
+
+const formatElapsedTime = (ms: number) => (
+  (ms / 1000).toFixed(1) + 's'
+)
+
+export const useFormattedElapsedTime = (startedAt?: string) => {
+  const elapsedTime = useElapsedTime(startedAt)
+  if (elapsedTime < 1_500) {
+    return ''
+  }
+  return formatElapsedTime(elapsedTime)
 }

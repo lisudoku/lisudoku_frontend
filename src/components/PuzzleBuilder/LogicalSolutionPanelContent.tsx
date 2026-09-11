@@ -4,6 +4,7 @@ import Typography from 'src/design_system/Typography'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
 import type { LogicalSolverState } from 'src/reducers/builder'
+import { useFormattedElapsedTime } from './hooks'
 
 interface LogicalSolutionPanelContentProps {
   solverState: LogicalSolverState
@@ -42,14 +43,20 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
 }
 
 export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => {
+  const elapsedTimeMs = useFormattedElapsedTime(solverState.runStartedAt)
+
   if (solverState.status === 'running') {
-    return <Typography variant="paragraph">Running...</Typography>
+    return (
+      <Typography variant="paragraph">
+        Running... {elapsedTimeMs}
+      </Typography>
+    )
   }
   if (solverState.status === 'error') {
     return <Typography variant="paragraph">{solverState.error}</Typography>
   }
   if (solverState.solution === undefined) {
-    return <>&nbsp;</>
+    return null
   }
 
   return (
