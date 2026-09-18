@@ -3,6 +3,7 @@ import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { ReactNode } from 'react'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { diagonalsConstraint } from 'src/constraints/diagonal/diagonals'
+import { oddEvenIcon } from 'src/constraints/odd_even/odd_even'
 import { TrainerTechnique } from 'src/types'
 import { ConstraintType, SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 
@@ -58,10 +59,7 @@ export const SudokuVariantIcon: Record<SudokuVariant, ReactNode> = {
   [SudokuVariant.AntiKnight]: constraintDefinitions[ConstraintType.AntiKnight].icon,
   [SudokuVariant.AntiKing]: constraintDefinitions[ConstraintType.AntiKing].icon,
   [SudokuVariant.ExtraRegions]: constraintDefinitions[ConstraintType.ExtraRegions].icon,
-  [SudokuVariant.OddEven]: [
-    constraintDefinitions[ConstraintType.Odd].icon,
-    constraintDefinitions[ConstraintType.Even].icon,
-  ],
+  [SudokuVariant.OddEven]: oddEvenIcon,
   [SudokuVariant.Renban]: constraintDefinitions[ConstraintType.Renban].icon,
   [SudokuVariant.Palindrome]: constraintDefinitions[ConstraintType.Palindrome].icon,
   [SudokuVariant.Mixed]: '❓',
