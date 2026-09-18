@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createConsumer, Subscription } from '@rails/actioncable'
 import { useSelector } from 'src/hooks'
+import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 
 const CABLE_URL = `${import.meta.env.VITE_API_BASE_URL}/cable`
 const consumer = createConsumer(CABLE_URL)
@@ -24,49 +25,62 @@ export const useWebsocket = (channelName: string, onMessage: Function | null, ex
       return
     }
 
-    const _channel = consumer.subscriptions.create({ ...extraOptionsRef.current, channel: channelName }, {
-      received(message: WebsocketMessage) {
-        console.info('[ws] Received', message)
-        switch (message.type) {
-          case '__init__':
-            setWsUserId(message.data!)
-            break
-          default:
-            onMessage?.(message)
-            break
-        }
-      },
+    try {
+      const _channel = consumer.subscriptions.create({ ...extraOptionsRef.current, channel: channelName }, {
+        received(message: WebsocketMessage) {
+          console.info('[ws] Received', message)
+          switch (message.type) {
+            case '__init__':
+              setWsUserId(message.data!)
+              break
+            default:
+              onMessage?.(message)
+              break
+          }
+        },
 
-      initialized() {
-        console.info('[ws] Channel initialized')
-      },
+        initialized() {
+          console.info('[ws] Channel initialized')
+        },
 
-      // Called when the subscription is ready for use on the server.
-      connected() {
-        console.info('[ws] Websocket connected')
-        setConnected(true)
-      },
+        // Called when the subscription is ready for use on the server.
+        connected() {
+          console.info('[ws] Websocket connected')
+          setConnected(true)
+        },
 
-      // Called when the Websocket connection is closed.
-      disconnected() {
-        console.info('[ws] Websocket disconnected')
-        setConnected(false)
-      },
+        // Called when the Websocket connection is closed.
+        disconnected() {
+          console.info('[ws] Websocket disconnected')
+          setConnected(false)
+        },
 
-      // Called when the subscription is rejected by the server.
-      rejected() {
-        console.error('[ws] Connection rejected')
-        setError(true)
-      },
-    })
+        // Called when the subscription is rejected by the server.
+        rejected() {
+          console.error('[ws] Connection rejected')
+          setError(true)
+        },
+      })
 
-    setChannel(_channel)
-    console.info('[ws] Created subscription')
+      setChannel(_channel)
+      console.info('[ws] Created subscription')
 
-    return () => {
-      (consumer.subscriptions as any).remove(_channel)
-      setChannel(undefined)
-      console.info('[ws] Unsubscribing')
+      return () => {
+        (consumer.subscriptions as any).remove(_channel)
+        setChannel(undefined)
+        console.info('[ws] Unsubscribing')
+      }
+    } catch (error) {
+      if (typeof error === 'object') {
+        sendHbAlert({
+          name: 'Error in websocket',
+          context: {
+            ...error,
+            message: error,
+          },
+        })
+      }
+      return
     }
   }, [channelName, onMessage, isExternal])
 
