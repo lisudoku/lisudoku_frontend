@@ -134,6 +134,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   useEffect(() => {
     if (importData) {
+      dispatch(initPuzzle({ setterMode: admin }))
       runImport(importData).then((constraints) => {
         if (constraints !== undefined) {
           logicalSolver.run(constraints)

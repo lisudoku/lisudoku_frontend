@@ -120,18 +120,20 @@ export const builderSlice = createSlice({
   } as BuilderState,
   reducers: {
     initPuzzle(state, action) {
-      const gridSize = Number.parseInt(action.payload.gridSize)
-      state.committedConstraints = defaultConstraints(gridSize)
-      state.constraints = cloneDeep(state.committedConstraints)
+      if (action.payload.gridSize) {
+        const gridSize = Number.parseInt(action.payload.gridSize)
+        state.committedConstraints = defaultConstraints(gridSize)
+        state.constraints = cloneDeep(state.committedConstraints)
+        state.difficulty = defaultDifficulty(gridSize)
+        state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
+        state.bruteSolverState = { status: 'ok' }
+        state.logicalSolverState = { status: 'ok' }
+        state.manualChange = false
+        clearEditorState(state)
+      }
       if (action.payload.setterMode !== undefined) {
         state.setterMode = action.payload.setterMode
       }
-      state.difficulty = defaultDifficulty(gridSize)
-      state.cellMarks = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null).map(() => ({})))
-      state.bruteSolverState = { status: 'ok' }
-      state.logicalSolverState = { status: 'ok' }
-      state.manualChange = false
-      clearEditorState(state)
     },
     receivedPuzzle(state, action) {
       const constraints: Partial<SudokuConstraints> = camelCaseKeys(action.payload)
