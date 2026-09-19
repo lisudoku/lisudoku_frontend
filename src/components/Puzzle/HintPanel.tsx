@@ -44,7 +44,7 @@ const useComputeHintElement = () => {
     solution_type: solution?.solutionType,
   }), [isExternal, publicId, grid, constraints, solution])
 
-  const isAtPuzzleBeginning = actions.length <= 1
+  const isAtPuzzleBeginning = actions.length === 0
   useEffect(() => {
     if (!hintError || (!isAtPuzzleBeginning && context.solution_type !== 'Partial')) {
       return
