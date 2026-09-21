@@ -150,8 +150,15 @@ export const builderSlice = createSlice({
       state.logicalSolverState = { status: 'ok' }
       state.manualChange = false
     },
-    changeSelectedCell(state, action) {
+    changeSelectedCell(state, action: { payload: { cell: CellPosition | null; ctrl?: boolean; isClick?: boolean } }) {
       const { cell, ctrl, isClick } = action.payload
+
+      if (cell === null) {
+        // Passing a null cell will clear the selection
+        state.constraintEditorState.selectedCells = []
+        return
+      }
+
       if (ctrl) {
         if (isClick) {
           state.constraintEditorState.selectedCells = xorWith(state.constraintEditorState.selectedCells, [ cell ], isEqual)
@@ -159,8 +166,7 @@ export const builderSlice = createSlice({
           state.constraintEditorState.selectedCells = uniqWith([ ...state.constraintEditorState.selectedCells, cell ], isEqual)
         }
       } else {
-        // Passing a null cell will clear the selection
-        state.constraintEditorState.selectedCells = compact([ cell ])
+        state.constraintEditorState.selectedCells = [ cell ]
       }
 
       if (state.constraints) {
