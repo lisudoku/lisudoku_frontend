@@ -154,7 +154,7 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
         },
       })
     }
-  }, [bruteSolverState, logicalSolverState, variant, constraints, setterMode, userIsAdmin])
+  }, [bruteSolverState.solution, logicalSolverState.solution, variant, constraints, setterMode, userIsAdmin])
 
   const elapsedTime = useElapsedTime(logicalSolverState.runStartedAt)
   const timeoutAlertRef = useRef(false)
