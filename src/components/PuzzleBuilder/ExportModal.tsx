@@ -37,9 +37,10 @@ interface ExportModalProps {
   open: boolean
   onClose: () => void
   constraints: SudokuConstraints
+  isAdminPage: boolean
 }
 
-const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
+const ExportModal = ({ open, onClose, constraints, isAdminPage }: ExportModalProps) => {
   const [selectedFormat, setSelectedFormat] = useState(SudokuDataFormat.Lisudoku)
 
   const transformResult = useMemo(() => (
@@ -58,6 +59,9 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
   }
 
   const onCopy = useCallback((url: string) => {
+    if (isAdminPage) {
+      return
+    }
     sendHbAlert({
       name: 'Puzzle export copy',
       context: {
@@ -66,7 +70,7 @@ const ExportModal = ({ open, onClose, constraints }: ExportModalProps) => {
         result: transformResult,
       },
     })
-  }, [transformResult, constraints])
+  }, [transformResult, constraints, isAdminPage])
   
   return (
     <Dialog

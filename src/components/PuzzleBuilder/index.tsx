@@ -264,6 +264,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         open={exportOpen}
         onClose={() => setExportOpen(false)}
         constraints={committedConstraints}
+        isAdminPage={admin}
       />
       <ImportImageModal
         open={importImageOpen}
