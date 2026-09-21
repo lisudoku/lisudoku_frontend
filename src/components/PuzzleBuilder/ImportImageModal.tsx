@@ -15,7 +15,7 @@ interface ImportImageModalProps {
   isAdmin: boolean
 }
 
-const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModalProps) => {
+const ImportImageModal = ({ open, onClose, onSuccess }: ImportImageModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string>()
 
@@ -56,18 +56,18 @@ const ImportImageModal = ({ open, onClose, onSuccess, isAdmin }: ImportImageModa
     setIsSubmitting(false)
     const body = await response.json()
 
-    if (!isAdmin) {
-      const requestParams = new URLSearchParams(
-        formData as unknown as Record<string, string>,
-      ).toString();
-      sendHbAlert({
-        name: 'Attempted import puzzle from image',
-        context: {
-          request: requestParams,
-          response: body,
-        },
-      })
-    }
+    // if (!isAdmin) {
+    //   const requestParams = new URLSearchParams(
+    //     formData as unknown as Record<string, string>,
+    //   ).toString();
+    //   sendHbAlert({
+    //     name: 'Attempted import puzzle from image',
+    //     context: {
+    //       request: requestParams,
+    //       response: body,
+    //     },
+    //   })
+    // }
 
     if (response.status !== 200) {
       const errorMessage = body.error ?? 'Something went wrong while processing the image'
