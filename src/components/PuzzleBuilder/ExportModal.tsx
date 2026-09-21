@@ -103,10 +103,19 @@ const ExportModal = ({ open, onClose, constraints, isAdminPage }: ExportModalPro
           </label>
           {selectedFormat === SudokuDataFormat.Lisudoku ? (
             <>
-              <CopiableInput url={buildLisudokuPuzzleUrl(dataString!)} onCopy={onCopy} />
-              <CopiableInput url={buildLisudokuSolverUrl(dataString!)} onCopy={onCopy} />
+              <div>
+                <p>Play</p>
+                <CopiableInput url={buildLisudokuPuzzleUrl(dataString!)} onCopy={onCopy} />
+              </div>
+              <div>
+                <p>Solver</p>
+                <CopiableInput url={buildLisudokuSolverUrl(dataString!)} onCopy={onCopy} />
+              </div>
               {isGridString(dataString!) && (
-                <CopiableInput url={dataString} onCopy={onCopy} />
+                <div>
+                  <p>Grid string</p>
+                  <CopiableInput url={dataString} onCopy={onCopy} />
+                </div>
               )}
             </>
           ) : (
