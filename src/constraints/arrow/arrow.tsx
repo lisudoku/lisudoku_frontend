@@ -84,11 +84,11 @@ export const arrowConstraint: ConstraintDefinition = {
     )
 
     if (editorState.arrowConstraintType === ArrowConstraintType.Circle) {
-      if (!expandsArea4(currentArrow.circleCells, cell) && !find(currentArrow.arrowCells, cell)) {
-        return false
+      if (expandsArea4(currentArrow.circleCells, cell) && !find(currentArrow.arrowCells, cell)) {
+        currentArrow.circleCells.push(cell)
+        return true
       }
-      currentArrow.circleCells.push(cell)
-      return true
+      return false
     }
 
     if (
