@@ -6,6 +6,7 @@ const honeybadger = Honeybadger.configure({
   apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
   environment: import.meta.env.PROD ? 'production' : 'development',
   revision: __APP_VERSION__,
+  ignoreBrowserExtensionErrors: true,
 })
 
 const IGNORE_HEADLESS_ALERTS = [

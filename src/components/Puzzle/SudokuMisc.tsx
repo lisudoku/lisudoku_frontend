@@ -39,7 +39,7 @@ const SudokuMisc = () => {
   }
 
   return (
-    <div className="relative flex flex-col md:max-w-xs mt-3 md:mt-0">
+    <div className="relative flex flex-col md:max-w-xs mt-3 md:mt-0" data-hb-name="sudoku-misc">
       <HintPanel />
       <div className="mb-3">
         <SudokuRules constraints={constraints} />

@@ -19,7 +19,7 @@ const SudokuGrid = ({
   const handleUnpause = useCallback(() => { onUnpause?.() }, [onUnpause])
 
   return (
-    <div className="cursor-default select-none touch-none">
+    <div className="cursor-default select-none touch-none" data-hb-name="sudoku-grid">
       <div className="relative">
         <SudokuConstraintsGraphics
           constraints={constraints}

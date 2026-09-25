@@ -26,6 +26,7 @@ export const ConstraintAddButton = () => {
         'bg-red-600': validationResult.type === 'error',
         'bg-green-600': validationResult.type === 'success',
       })}
+      data-hb-name="constraint-add"
     >
       {editorState.type === ConstraintType.Regions ? 'Set' : 'Add'}
     </Button>

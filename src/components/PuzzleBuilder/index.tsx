@@ -272,7 +272,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         onSuccess={handleImportImageSuccess}
         isAdmin={admin}
       />
-      <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full">
+      <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full" data-hb-name="puzzle-builder">
         {/* wrap the grid so we can screenshot it using the ref */}
         <div ref={gridWrapperRef} className="bg-primary">
           {constraintPreview && (

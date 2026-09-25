@@ -51,7 +51,7 @@ export const SudokuControls = ({ isSolvedLoading }: SudokuControlsProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-2 md:gap-4 mt-3 md:mt-0">
+    <div className="flex flex-col gap-2 md:gap-4 mt-3 md:mt-0" data-hb-name="sudoku-controls">
       <div className="relative flex flex-col gap-2 md:gap-4">
         <SolveStatsPanel />
         <VoicePanel />
