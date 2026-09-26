@@ -15,6 +15,9 @@ const IGNORE_HEADLESS_ALERTS = [
 ]
 
 honeybadger.beforeNotify((notice) => {
+  if (notice?.message?.includes('ResizeObserver loop')) {
+    return false
+  }
   if (notice !== undefined && IGNORE_HEADLESS_ALERTS.includes(notice.name)) {
     return !isHeadlessBrowser()
   }
