@@ -2,7 +2,7 @@ import { sample } from 'lodash-es'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
-import VariantSelect from 'src/components/Puzzle/VariantSelect'
+import { VariantSelect } from 'src/components/VariantSelect'
 import Typography from 'src/design_system/Typography'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 

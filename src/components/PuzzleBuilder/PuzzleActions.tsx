@@ -11,7 +11,7 @@ import {
 } from 'src/reducers/builder'
 import { Puzzle, SudokuDifficulty } from 'src/types/sudoku'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'
-import VariantSelect from 'src/components/Puzzle/VariantSelect'
+import { VariantSelect } from 'src/components/VariantSelect'
 import PuzzleCollectionsSelect from 'src/components/Puzzle/PuzzleCollectionsSelect'
 import { LogicalSolutionPanel } from './LogicalSolutionPanel'
 import { BruteSolutionPanel } from './BruteSolutionPanel'

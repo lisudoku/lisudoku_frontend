@@ -7,7 +7,7 @@ import CompetitionsPage from './CompetitionsPage'
 import GroupCounts from './GroupCounts'
 import Overview from './Overview'
 import PuzzleEditPage from './PuzzleEditPage'
-import PuzzlesPage from './PuzzlesPage'
+import { PuzzlesPage } from './PuzzlesPage'
 import AdminSolvesPage from './AdminSolvesPage'
 import AdminSolvePage from './AdminSolvePage'
 

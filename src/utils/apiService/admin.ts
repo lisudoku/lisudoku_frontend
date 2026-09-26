@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { PuzzleFormData } from 'src/screens/AdminPage/PuzzleEditPage'
-import { Puzzle } from 'src/types/sudoku'
+import { Puzzle, SudokuVariant } from 'src/types/sudoku'
 import { snakeCaseKeys } from '../json'
 
 export const fetchGroupCounts = async (userToken: string) => {
@@ -35,8 +35,9 @@ export const apiUpdatePuzzle = async (id: string, formData: PuzzleFormData, user
     .catch(error => error.response.data)
 }
 
-export const fetchAllPuzzles = async (userToken: string) => {
+export const fetchAllPuzzles = async (variant: SudokuVariant, userToken: string) => {
   return axios.get('/puzzles', {
+    params: { variant },
     headers: { 'Authorization': `Bearer ${userToken}` },
   }).then(response => response.data)
 }
