@@ -53,7 +53,7 @@ export interface ConstraintValidationResult {
     | 'error'
     // Invalid state, not applicable, constraint not found
     | 'unknown'
-  message: string
+  message?: string
 }
 
 export interface ConstraintPreparationResult {

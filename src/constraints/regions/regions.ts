@@ -82,7 +82,10 @@ export const regionsConstraint: ConstraintDefinition = {
   },
   removeConstraintsAtCell: () => {},
   expandCurrentConstraintAtCell: () => false,
-  validateCurrentConstraint: () => UNKNOWN_VALIDATION_RESULT,
+  validateCurrentConstraint: () => ({
+    type: 'success',
+    message: "Give each cell a number that identifies its region.",
+  }),
   prepareCurrentConstraint: ({ constraints, editorState }) => {
     if (!editorState.regionsGrid) {
       return null

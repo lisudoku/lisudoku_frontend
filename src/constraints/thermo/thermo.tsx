@@ -94,7 +94,6 @@ export const thermoConstraint: ConstraintDefinition = {
 
     return {
       type: 'success',
-      message: 'Current thermo is valid',
     }
   },
   prepareCurrentConstraint: () => null,

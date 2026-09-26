@@ -47,20 +47,19 @@ export const extraRegionsConstraint: ConstraintDefinition = {
     if (editorState.selectedCells.length === 0) {
       return {
         type: 'info',
-        message: 'Select at least one cell. You can select multiple cells with Shift + Click.',
+        message: 'Select at least one cell. You can select multiple cells with Shift+Click or by dragging.',
       }
     }
 
     if (editorState.selectedCells.length !== constraints.gridSize) {
       return {
         type: 'error',
-        message: `Extra region must be of size ${constraints.gridSize}. Select multiple cells with Shift + Click.`,
+        message: `Extra region must be of size ${constraints.gridSize}. Select multiple cells with Shift+Click or by dragging.`,
       }
     }
 
     return {
       type: 'success',
-      message: 'Extra region is valid',
     }
   },
   prepareCurrentConstraint: ({ constraints, editorState }) => {

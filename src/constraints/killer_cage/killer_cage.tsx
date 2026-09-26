@@ -73,7 +73,7 @@ export const killerCageConstraint: ConstraintDefinition = {
     if (editorState.selectedCells.length === 0) {
       return {
         type: 'info',
-        message: 'Select at least one cell. You can select multiple cells with Shift + Click.',
+        message: 'Select at least one cell. You can select multiple cells with Shift+Click or by dragging.',
       }
     }
 
@@ -87,13 +87,12 @@ export const killerCageConstraint: ConstraintDefinition = {
     if (editorState.killerSum !== undefined && editorState.killerSum !== null && editorState.killerSum <= 0) {
       return {
         type: 'error',
-        message: 'Killer cage sum has to be positive',
+        message: 'Killer cage sum has to be positive.',
       }
     }
 
     return {
       type: 'success',
-      message: 'Killer cage is valid',
     }
   },
   prepareCurrentConstraint: ({ constraints, editorState }) => {

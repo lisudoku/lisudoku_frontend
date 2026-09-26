@@ -101,7 +101,6 @@ export const palindromeConstraint: ConstraintDefinition = {
 
     return {
       type: 'success',
-      message: 'Current palindrome is valid',
     }
   },
   prepareCurrentConstraint: () => null,

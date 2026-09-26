@@ -130,7 +130,6 @@ export const arrowConstraint: ConstraintDefinition = {
 
     return {
       type: 'success',
-      message: 'Current arrow is valid',
     }
   },
   prepareCurrentConstraint: ({ constraints, editorState }) => {

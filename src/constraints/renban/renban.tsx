@@ -103,7 +103,6 @@ export const renbanConstraint: ConstraintDefinition = {
 
     return {
       type: 'success',
-      message: 'Current renban is valid',
     }
   },
   prepareCurrentConstraint: () => null,

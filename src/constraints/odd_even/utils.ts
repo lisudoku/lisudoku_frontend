@@ -70,13 +70,13 @@ export const singleCellValidateCurrentConstraint: (constraintsToCells: Constrain
       if (editorState.targetIndex === undefined || constraintsToCells(constraints) === undefined) {
         return {
           type: 'info',
-          message: 'Click on a cell to place the constraint',
+          message: 'Click on a cell to place the constraint.',
         }
       }
 
+      // Cells are validated when adding to draft constraints
       return {
         type: 'success',
-        message: 'Cells are validated when adding to draft constraints',
       }
     }
   )

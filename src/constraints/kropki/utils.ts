@@ -34,7 +34,7 @@ export const kropkiValidateCurrentConstraint: ConstraintDefinition['validateCurr
   if (editorState.selectedCells.length !== 2) {
     return {
       type: editorState.selectedCells.length === 0 ? 'info' : 'error',
-      message: 'Select exactly 2 cells with Shift + Click.',
+      message: 'Select exactly 2 cells with Shift+Click or by dragging.',
     }
   }
 
@@ -58,7 +58,6 @@ export const kropkiValidateCurrentConstraint: ConstraintDefinition['validateCurr
 
   return {
     type: 'success',
-    message: 'Kropki dot is valid.',
   }
 }
 

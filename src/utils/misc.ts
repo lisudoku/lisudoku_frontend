@@ -63,8 +63,8 @@ export const pluralize = (count: number, word: string) => {
   return word
 }
 
-export const assert = (condition: boolean, message: string) => {
-  if (!condition) {
+export const assert = (condition: boolean, message?: string) => {
+  if (!condition && message) {
     setTimeout(() => alert(message), 0)
     throw Error(message)
   }
