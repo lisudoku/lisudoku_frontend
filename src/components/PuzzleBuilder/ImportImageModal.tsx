@@ -70,7 +70,7 @@ const ImportImageModal = ({ open, onClose, onSuccess }: ImportImageModalProps) =
     // }
 
     if (response.status !== 200) {
-      const errorMessage = body.error ?? 'Something went wrong while processing the image'
+      const errorMessage = body.error ?? 'Something went wrong while processing the image. Please try again.'
       setError(errorMessage)
       return
     }
