@@ -13,7 +13,7 @@ import { VoiceProvider } from './components/voice/VoiceProvider'
 const App = () =>(
   <HoneybadgerProvider>
     <HelmetProvider>
-      <div className="min-h-screen md:min-w-fit flex flex-col text-primary bg-primary">
+      <div className="min-h-screen md:min-w-fit flex flex-col text-primary bg-primary" data-hb-name="app">
         <Provider store={store}>
           <ThemeProvider>
             <PersistGate loading={null} persistor={persistor}>

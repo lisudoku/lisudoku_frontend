@@ -20,7 +20,7 @@ const SudokuGrid = ({
 
   return (
     <div className="cursor-default select-none touch-none" data-hb-name="sudoku-grid">
-      <div className="relative">
+      <div className="relative" data-hb-name="sudoku-grid-inner">
         <SudokuConstraintsGraphics
           constraints={constraints}
           grid={grid}

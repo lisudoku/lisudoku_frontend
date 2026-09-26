@@ -172,6 +172,8 @@ export const SudokuConstraintsGraphics = ({
       // simultaneously select disjoint sets of cells
       // (while also making single click work)
       onTouchStart={onGridCellUiEvent}
+
+      data-hb-name="sudoku-grid-graphics"
     >
       {/* The order of rendering the graphics is important! */}
       {/* This renders elements from the bottom to the top, so the last items are on top */}

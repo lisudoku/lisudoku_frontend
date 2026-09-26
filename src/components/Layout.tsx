@@ -13,9 +13,13 @@ const MAIN_PADDING_CLASS = 'p-[8px]'
 const Layout = ({ admin, padding }: { admin: boolean, padding: boolean }) => (
   <>
     <AppNavbar admin={admin} />
-    <main id="main" className={classNames('flex-1 flex flex-col min-h-screen bg-primary', {
-      [MAIN_PADDING_CLASS]: padding,
-    })}>
+    <main
+      id="main"
+      className={classNames('flex-1 flex flex-col min-h-screen bg-primary', {
+        [MAIN_PADDING_CLASS]: padding,
+      })}
+      data-hb-name="main"
+    >
       <Outlet />
     </main>
     {!admin && (

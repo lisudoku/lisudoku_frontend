@@ -274,7 +274,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
       />
       <div className="flex flex-wrap xl:flex-nowrap gap-10 w-full" data-hb-name="puzzle-builder">
         {/* wrap the grid so we can screenshot it using the ref */}
-        <div ref={gridWrapperRef} className="bg-primary">
+        <div ref={gridWrapperRef} className="bg-primary" data-hb-name="grid-wrapper">
           {constraintPreview && (
             <SudokuGrid
               constraints={constraintPreview}
