@@ -1433,10 +1433,10 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@rails/actioncable@^7.0.4":
-  version "7.0.4"
-  resolved "https://registry.npmjs.org/@rails/actioncable/-/actioncable-7.0.4.tgz"
-  integrity sha512-tz4oM+Zn9CYsvtyicsa/AwzKZKL+ITHWkhiu7x+xF77clh2b4Rm+s6xnOgY/sGDWoFWZmtKsE95hxBPkgQQNnQ==
+"@rails/actioncable@^7.2.3":
+  version "7.2.400"
+  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.2.400.tgz#90a795664cf5a7efcd93d791dc90951bef13bd7d"
+  integrity sha512-rxVBAeaekdA0G8HOl+rQZVKU5XVMM7Wnat+0PLz+qDy1HCe+YCjvrAYaqU9gP5XtXbhz0SLGm/iub3EwCcP5pw==
 
 "@react-hook/debounce@^3.0.0":
   version "3.0.0"
