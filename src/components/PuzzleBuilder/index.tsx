@@ -287,65 +287,63 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full xl:max-w-[330px]">
-          <fieldset className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full xl:max-w-[330px]" data-hb-name="constraints-container">
+          <fieldset className="flex flex-col gap-2" data-hb-name="constraints-fieldset">
             <Typography variant="h6" as="legend">
               Constraints
             </Typography>
-            <div className="flex flex-col">
-              <div className="flex flex-wrap gap-x-3 pt-3">
-                <div className="w-full ml-1">
-                  <div className="w-1/3">
-                    <GridSizeSelect />
-                  </div>
+            <div className="flex flex-wrap gap-x-3 pt-3" data-hb-name="non-global-constraints-container">
+              <div className="w-full ml-1">
+                <div className="w-1/3">
+                  <GridSizeSelect />
                 </div>
-                {localConstraintsOrder.map(constraintId => (
-                  <ConstraintRadio key={constraintId} id={constraintId} />
-                ))}
-                {/* Extra input data needed for any constraint */}
-                <div className="flex flex-col w-full mt-2 gap-y-1">
-                  {editorState.type === ConstraintType.KillerCage && (
-                    <Input
-                      label="Sum"
-                      type="number"
-                      value={killerSum}
-                      onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
-                      onFocus={handleInputFocus}
-                      onBlur={handleInputBlur}
-                      min="1"
-                    />
-                  )}
-                  {editorState.type === ConstraintType.Arrow && (
-                    <>
-                      <Typography variant="h6">
-                        Arrow constraint
-                      </Typography>
-                      <div className="flex gap-2">
-                        <Radio
-                          name="arrow-build-item"
-                          id={ArrowConstraintType.Circle}
-                          label="Circle"
-                          checked={editorState.arrowConstraintType === ArrowConstraintType.Circle}
-                          onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
-                        />
-                        <Radio
-                          name="arrow-build-item"
-                          id={ArrowConstraintType.Arrow}
-                          label="Arrow"
-                          checked={editorState.arrowConstraintType === ArrowConstraintType.Arrow}
-                          onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
-                        />
-                      </div>
-                    </>
-                  )}
-                  {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
-                    <ConstraintAddButton />
-                  )}
-                </div>
+              </div>
+              {localConstraintsOrder.map(constraintId => (
+                <ConstraintRadio key={constraintId} id={constraintId} />
+              ))}
+              {/* Extra input data needed for any constraint */}
+              <div className="flex flex-col w-full mt-2 gap-y-1" data-hb-name="constraint-extra-input">
+                {editorState.type === ConstraintType.KillerCage && (
+                  <Input
+                    label="Sum"
+                    type="number"
+                    value={killerSum}
+                    onChange={(sum: number | null) => dispatch(changeKillerSum(sum))}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    min="1"
+                  />
+                )}
+                {editorState.type === ConstraintType.Arrow && (
+                  <>
+                    <Typography variant="h6">
+                      Arrow constraint
+                    </Typography>
+                    <div className="flex gap-2">
+                      <Radio
+                        name="arrow-build-item"
+                        id={ArrowConstraintType.Circle}
+                        label="Circle"
+                        checked={editorState.arrowConstraintType === ArrowConstraintType.Circle}
+                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
+                      />
+                      <Radio
+                        name="arrow-build-item"
+                        id={ArrowConstraintType.Arrow}
+                        label="Arrow"
+                        checked={editorState.arrowConstraintType === ArrowConstraintType.Arrow}
+                        onChange={(id: string) => dispatch(changeArrowConstraintType(id))}
+                      />
+                    </div>
+                  </>
+                )}
+                {editorState.type !== ConstraintType.FixedNumber && !constraintDefinitions[editorState.type].isGlobal && (
+                  <ConstraintAddButton />
+                )}
               </div>
             </div>
             <hr className="border-primary" />
-            <div className="flex flex-wrap gap-x-3">
+            <div className="flex flex-wrap gap-x-3" data-hb-name="global-constraints-container">
               {globalConstraintsOrder.map((constraintId) => (
                 <ConstraintCheckbox key={constraintId} id={constraintId} />
               ))}

@@ -21,7 +21,7 @@ export const ConstraintAddButton = () => {
   })
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-hb-name="constraint-add-container">
       <Button
         onClick={() => dispatch(addConstraint())}
         className={classNames({
