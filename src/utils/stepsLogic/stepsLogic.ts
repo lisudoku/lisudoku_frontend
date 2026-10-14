@@ -216,7 +216,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
   CommonPeerElimination: {
     description: ({ step: { areas }, constraints, valuesDisplay, affectedCellsDisplay, cellsDisplay }) => (
     ` to remove value ${valuesDisplay} from ${affectedCellsDisplay} because it ` +
-      `would eliminate it as candidate from ${areaDisplay(areas[0], constraints)} (cells ${cellsDisplay})`
+      `would eliminate it as a candidate from ${areaDisplay(areas[0], constraints)} (cells ${cellsDisplay})`
     ),
     highlights: ({ step: { areas, cells, affectedCells } }) => [
       areaToCustomGraphicsItem(areas[0]),
