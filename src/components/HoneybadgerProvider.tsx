@@ -7,6 +7,7 @@ const honeybadger = Honeybadger.configure({
   environment: import.meta.env.PROD ? 'production' : 'development',
   revision: __APP_VERSION__,
   ignoreBrowserExtensionErrors: true,
+  breadcrumbsSelectorAttributes: [ 'data-hb-name', 'id', 'aria-label' ],
 })
 
 const IGNORE_HEADLESS_ALERTS = [
@@ -15,7 +16,7 @@ const IGNORE_HEADLESS_ALERTS = [
 ]
 
 honeybadger.beforeNotify((notice) => {
-  if (notice?.message?.includes('ResizeObserver loop')) {
+  if (notice?.message?.includes('ResizeObserver loop') || notice?.message?.includes('ethereum')) {
     return false
   }
   if (notice !== undefined && IGNORE_HEADLESS_ALERTS.includes(notice.name)) {
