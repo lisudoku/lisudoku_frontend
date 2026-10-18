@@ -48,7 +48,7 @@ export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMo
   if (solverState.status === 'running') {
     return (
       <Typography variant="paragraph">
-        Running... {elapsedTimeMs}
+        <span>Running... {elapsedTimeMs}</span>
       </Typography>
     )
   }
