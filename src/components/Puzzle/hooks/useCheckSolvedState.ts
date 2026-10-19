@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { omit, throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { gridIsFull } from 'src/utils/sudoku'
@@ -14,6 +14,8 @@ import { combineConstraintsWithGrid } from 'src/utils/solver'
 // TODO: consider a more general approach if it's an issue in other places too
 const sendHbAlertThrottled = throttle(sendHbAlert, 10_000)
 
+const FULL_GRID_UNSOLVED_ALERT_DELAY_MS = 2_000
+
 export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => void) => {
   const dispatch = useDispatch()
   const actions = useSelector(state => state.puzzle.controls.actions)
@@ -26,6 +28,16 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
   const solved = useSelector(state => state.puzzle.solved)
 
   const gridFull = useMemo(() => grid && gridIsFull(grid), [grid])
+
+  const alertTimerRef = useRef<ReturnType<typeof setTimeout>>()
+
+  // Cancel a pending "unsolved grid" alert if the grid changes (e.g. the last digit was a typo)
+  useEffect(() => () => {
+    if (alertTimerRef.current) {
+      clearTimeout(alertTimerRef.current)
+      alertTimerRef.current = undefined
+    }
+  }, [grid])
 
   useEffect(() => {
     if (constraints === undefined || solved !== null || !grid || !gridFull) {
@@ -42,7 +54,7 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
     // Check locally if it's correct first
     const { solved: localSolved } = checkSolved(constraints, grid)
     if (!localSolved) {
-      sendHbAlertThrottled({
+      const alert = {
         name: 'Full grid unsolved',
         context: {
           id,
@@ -51,7 +63,14 @@ export const useCheckSolvedState = (setIsSolvedLoading: (solved: boolean) => voi
             combineConstraintsWithGrid(constraints, grid)
           ),
         },
-      })
+      }
+      if (alertTimerRef.current) {
+        clearTimeout(alertTimerRef.current)
+      }
+      alertTimerRef.current = setTimeout(() => {
+        alertTimerRef.current = undefined
+        sendHbAlertThrottled(alert)
+      }, FULL_GRID_UNSOLVED_ALERT_DELAY_MS)
       dispatch(responseSolved({
         solved: false,
       }))
