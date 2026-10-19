@@ -9,6 +9,7 @@ const LoadingSpinner = ({ color, size, fullPage }: LoadingSpinnerProps) => {
       className={classNames({
         'h-12 w-12': size === 'lg',
         'h-6 w-6': size === 'sm',
+        'h-4 w-4': size === 'xs',
       })}
     />
   )
@@ -32,7 +33,7 @@ LoadingSpinner.defaultProps = {
 
 type LoadingSpinnerProps = {
   color: colors
-  size: 'sm' | 'lg'
+  size: 'lg' | 'sm' | 'xs'
   fullPage: boolean
 }
 

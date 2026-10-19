@@ -4,7 +4,7 @@ import Typography from 'src/design_system/Typography'
 import { StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
 import type { LogicalSolverState } from 'src/reducers/builder'
-import { useFormattedElapsedTime } from './hooks'
+import { SolutionPanelSpinner } from './SolutionPanelSpinner'
 
 interface LogicalSolutionPanelContentProps {
   solverState: LogicalSolverState
@@ -42,26 +42,15 @@ const estimateDifficultyByRules = (steps: SolutionStep[]) => {
   return StepRuleDifficultyDisplay[maxDifficulty!]
 }
 
-export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => {
-  const elapsedTimeMs = useFormattedElapsedTime(solverState.runStartedAt)
-
-  if (solverState.status === 'running') {
-    return (
-      <Typography variant="paragraph">
-        <span>Running... {elapsedTimeMs}</span>
-      </Typography>
-    )
-  }
-  if (solverState.status === 'error') {
-    return <Typography variant="paragraph">{solverState.error}</Typography>
-  }
-  if (solverState.solution === undefined) {
-    return null
-  }
-
-  return (
-    <>
-      {solverState.solution.solutionType === 'None' ? (
+export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => (
+  <>
+    {solverState.status === 'running' ? (
+      <SolutionPanelSpinner runStartedAt={solverState.runStartedAt} />
+    ) : solverState.status === 'error' ? (
+      <Typography variant="paragraph">{solverState.error}</Typography>
+    ) : solverState.solution !== undefined && (
+      <>
+        {solverState.solution.solutionType === 'None' ? (
         <Typography variant="paragraph">
           This puzzle has no solutions 🙁
           {solverState.solution.steps.length > 0 && ' here is why'}
@@ -93,6 +82,7 @@ export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMo
           isDirty={isDirty}
         />
       )}
-    </>
-  )
-}
+      </>
+    )}
+  </>
+)

@@ -275,14 +275,6 @@ export const useElapsedTime = (startedAt?: string) => {
   return elapsed
 }
 
-const formatElapsedTime = (ms: number) => (
+export const formatElapsedTime = (ms: number) => (
   (ms / 1000).toFixed(1) + 's'
 )
-
-export const useFormattedElapsedTime = (startedAt?: string) => {
-  const elapsedTime = useElapsedTime(startedAt)
-  if (elapsedTime < 1_500) {
-    return ''
-  }
-  return formatElapsedTime(elapsedTime)
-}
