@@ -40,6 +40,7 @@ export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onR
           Logical Solver
         </div>
         <SolutionPanelActionPanel
+          solverType="logical"
           solverState={solverState}
           onRun={onRun}
           onClear={onClear}

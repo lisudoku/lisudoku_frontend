@@ -20,6 +20,7 @@ export const BruteSolutionPanel = ({ solverState, onRun, onStop, onClear }: Brut
           Brute-Force Solver
         </div>
         <SolutionPanelActionPanel
+          solverType="brute"
           solverState={solverState}
           onRun={onRun}
           onClear={onClear}
