@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import type { PropsWithChildren, ReactNode } from 'react'
 import Button from 'src/design_system/Button'
+import { formatElapsedTime } from './hooks'
 
 const SolutionPanel = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
   <div className={classNames('rounded text-primary bg-tertiary justify-between flex flex-col', className)}>
@@ -11,6 +12,22 @@ const SolutionPanel = ({ children, className }: PropsWithChildren<{ className?: 
 SolutionPanel.Header = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
   <div className={classNames('flex items-center justify-between bg-secondary/50 shrink-0 px-3 py-1', className)}>
     {children}
+  </div>
+)
+
+interface PanelTitleProps {
+  children: ReactNode
+  durationMs?: number
+}
+
+SolutionPanel.Title = ({ children, durationMs }: PanelTitleProps) => (
+  <div className="flex gap-2">
+    {children}
+    {durationMs !== undefined && (
+      <div className="content-center text-xs text-secondary font-extralight">
+        {formatElapsedTime(durationMs)}
+      </div>
+    )}
   </div>
 )
 

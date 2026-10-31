@@ -13,9 +13,9 @@ interface BruteSolutionPanelProps {
 export const BruteSolutionPanel = ({ solverState, onRun, onStop, onClear }: BruteSolutionPanelProps) => (
   <SolutionPanel>
     <SolutionPanel.Header>
-      <div>
+      <SolutionPanel.Title durationMs={solverState.durationMs}>
         Brute-Force Solver
-      </div>
+      </SolutionPanel.Title>
       <SolutionPanelActionPanel
         solverType="brute"
         solverState={solverState}

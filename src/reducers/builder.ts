@@ -21,13 +21,14 @@ import { detectConstraints } from 'src/constraints/utils'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType, ConstraintEditorState } from 'src/constraints/editorState'
 import type { WorkerSolutionResponse } from 'src/workers/types'
-import { formatISO } from 'date-fns/esm'
+import { differenceInMilliseconds, formatISO, parseISO } from 'date-fns/esm'
 
 type SolverStatus = 'running' | 'error' | 'ok'
 
 interface BaseSolverState {
   status: SolverStatus
   runStartedAt?: string
+  durationMs?: number
   error?: string
 }
 
@@ -290,15 +291,24 @@ export const builderSlice = createSlice({
     },
     responseSolution(state, { payload }: { payload: WorkerSolutionResponse }) {
       // Note: runStartedAt is cleared
+      const runStartedAt = payload.solverType === SolverType.Brute
+        ? state.bruteSolverState.runStartedAt
+        : state.logicalSolverState.runStartedAt
+      const durationMs = runStartedAt !== undefined
+        ? differenceInMilliseconds(new Date(), parseISO(runStartedAt))
+        : undefined
+
       if (payload.solverType === SolverType.Brute) {
         state.bruteSolverState = {
           status: payload.error ? 'error' : 'ok',
+          durationMs,
           error: payload.error,
           solution: payload.solution,
         }
       } else {
         state.logicalSolverState = {
           status: payload.error ? 'error' : 'ok',
+          durationMs,
           error: payload.error,
           solution: payload.solution,
           // Setting index to the extra step after the last real step

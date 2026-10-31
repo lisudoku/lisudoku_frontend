@@ -36,9 +36,9 @@ export const LogicalSolutionPanel = ({ solverState, constraints, setterMode, onR
   return (
     <SolutionPanel className="max-h-96">
       <SolutionPanel.Header>
-        <div>
+        <SolutionPanel.Title durationMs={solverState.durationMs}>
           Logical Solver
-        </div>
+        </SolutionPanel.Title>
         <SolutionPanelActionPanel
           solverType="logical"
           solverState={solverState}
