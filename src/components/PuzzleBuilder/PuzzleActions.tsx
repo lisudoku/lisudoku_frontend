@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
@@ -24,7 +24,7 @@ import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'
 import { detectConstraints } from 'src/constraints/utils'
-import { useElapsedTime, type SolverHandle } from './hooks'
+import { useSlowSolverAlert, type SolverHandle } from './hooks'
 
 // TODO: consider a more general approach if it's an issue in other places too
 // Alert about running solver every 5 mins
@@ -145,6 +145,7 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
       constraints &&
       !userIsAdmin
     ) {
+      // ???
       sendHbAlert({
         name: 'Unsolved puzzle',
         message: `Couldn't solve ${variant} puzzle`,
@@ -156,22 +157,8 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
     }
   }, [bruteSolverState.solution, logicalSolverState.solution, variant, constraints, setterMode, userIsAdmin])
 
-  const elapsedTime = useElapsedTime(logicalSolverState.runStartedAt)
-  const timeoutAlertRef = useRef(false)
-  useEffect(() => {
-    timeoutAlertRef.current = false
-  }, [logicalSolverState.runStartedAt])
-  useEffect(() => {
-    if (constraints && elapsedTime > 5_000 && !timeoutAlertRef.current) {
-      timeoutAlertRef.current = true
-      sendHbAlertThrottled({
-        name: 'Slow logical solver run',
-        context: {
-          url: exportToLisudokuSolver(constraints),
-        },
-      })
-    }
-  }, [elapsedTime, constraints])
+  useSlowSolverAlert('logical', logicalSolverState.runStartedAt, 5_000, constraints)
+  useSlowSolverAlert('brute', bruteSolverState.runStartedAt, 10_000, constraints)
 
   const [showSolverSettings, setShowSolverSettings] = useState(false)
 

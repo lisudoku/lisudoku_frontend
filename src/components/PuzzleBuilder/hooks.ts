@@ -16,6 +16,8 @@ import { SolverWorkerClient } from 'src/workers/SolverWorkerClient'
 import type { WorkerSolutionResponse } from 'src/workers/types'
 import useInterval from 'react-useinterval'
 import { differenceInMilliseconds, parseISO } from 'date-fns/esm'
+import { exportToLisudokuSolver } from 'src/utils/import'
+import { sendHbAlert } from '../HoneybadgerProvider'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]
 const dirRow = [ -1, 1, 0, 0 ]
@@ -278,3 +280,24 @@ export const useElapsedTime = (startedAt?: string) => {
 export const formatElapsedTime = (ms: number) => (
   (ms / 1000).toFixed(1) + 's'
 )
+
+export const useSlowSolverAlert = (
+  solverType: 'logical' | 'brute', runStartedAt: string | undefined, timeoutMs: number, constraints: SudokuConstraints | null,
+) => {
+  const elapsedTime = useElapsedTime(runStartedAt)
+  const timeoutAlertRef = useRef(false)
+  useEffect(() => {
+    timeoutAlertRef.current = false
+  }, [runStartedAt])
+  useEffect(() => {
+    if (constraints && elapsedTime > timeoutMs && !timeoutAlertRef.current) {
+      timeoutAlertRef.current = true
+      sendHbAlert({
+        name: `Slow ${solverType} solver run`,
+        context: {
+          url: exportToLisudokuSolver(constraints),
+        },
+      })
+    }
+  }, [elapsedTime, constraints])
+}
