@@ -247,19 +247,21 @@ const stepsLogic: Record<Rule, StepLogic> = {
   // 123000000000000000000000000000000000
   LockedCandidatesTriples: {
     description: defaultExplainer,
-    highlights: ({ step: { areas, cells, affectedCells }, constraints }) => [
+    highlights: ({ step: { areas, cells, affectedCells, values }, constraints }) => [
       ...getUniqueAreasCells(areas, constraints).map(cell => cellToCustomGraphicsItem(cell, 'area')),
       ...cells.map(otherCell => cellToCustomGraphicsItem(otherCell, 'red')),
       ...affectedCells.map((cell) => cellToCustomGraphicsItem(cell)),
+      ...cells.map(otherCell => buildCornerMarkGraphicsItem(otherCell, values, 'red')),
     ],
   },
   // 000000000000569000009870000003000000004100000005400000006000000007020000008040000
   NakedTriples: {
     description: defaultExplainer,
-    highlights: ({ step: { areas, cells, affectedCells } }) => [
+    highlights: ({ step: { areas, cells, affectedCells, values } }) => [
       areaToCustomGraphicsItem(areas[0]),
       ...cells.map(otherCell => cellToCustomGraphicsItem(otherCell, 'red')),
       ...affectedCells.map(cell => cellToCustomGraphicsItem(cell)),
+      ...cells.map(otherCell => buildCornerMarkGraphicsItem(otherCell, values, 'red')),
     ],
   },
   // 000100000000000000000000000010000000020000000030000000001000000002000000003000000
