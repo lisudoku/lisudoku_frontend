@@ -144,19 +144,22 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
     ) {
       const bruteSolution = bruteSolverState.solution
       const logicalSolution = logicalSolverState.solution
+      if (bruteSolution === undefined || logicalSolution === undefined) {
+        return
+      }
 
       let message: string | undefined
-      if (bruteSolution?.solutionCount === 1 && logicalSolution?.solutionType !== 'Full') {
+      if (bruteSolution.solutionCount === 1 && logicalSolution.solutionType !== 'Full') {
         message = `Couldn't solve ${variant} puzzle with unique solution`
       } else if (
-        bruteSolution?.solutionCount === 1 &&
-        logicalSolution?.solutionType === 'Full' &&
+        bruteSolution.solutionCount === 1 &&
+        logicalSolution.solutionType === 'Full' &&
         !isEqual(logicalSolution.solution, bruteSolution.solution)
       ) {
         message = 'Solvers found different grids';
-      } else if (bruteSolution?.solutionCount === 0 && logicalSolution?.solutionType !== 'None') {
+      } else if (bruteSolution.solutionCount === 0 && logicalSolution.solutionType !== 'None') {
         message = 'Brute solver found no solution'
-      } else if ((bruteSolution?.solutionCount ?? 0) > 1 && logicalSolution?.solutionType !== 'Partial') {
+      } else if (bruteSolution.solutionCount > 1 && logicalSolution.solutionType !== 'Partial') {
         message = 'Brute solver found multiple solutions'
       }
 
