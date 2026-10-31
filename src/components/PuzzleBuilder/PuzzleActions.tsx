@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { throttle } from 'lodash-es'
+import { isEqual, throttle } from 'lodash-es'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/design_system/Button'
@@ -138,22 +138,38 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
 
   useEffect(() => {
     if (
-      bruteSolverState.solution?.solutionCount === 1 &&
-      logicalSolverState.solution !== undefined &&
-      logicalSolverState.solution.solutionType !== 'Full' &&
       !setterMode &&
       constraints &&
       !userIsAdmin
     ) {
-      // ???
-      sendHbAlert({
-        name: 'Unsolved puzzle',
-        message: `Couldn't solve ${variant} puzzle`,
-        context: {
-          url: exportToLisudokuSolver(constraints),
-          variant: detectConstraints(constraints).variant,
-        },
-      })
+      const bruteSolution = bruteSolverState.solution
+      const logicalSolution = logicalSolverState.solution
+
+      let message: string | undefined
+      if (bruteSolution?.solutionCount === 1 && logicalSolution?.solutionType !== 'Full') {
+        message = `Couldn't solve ${variant} puzzle with unique solution`
+      } else if (
+        bruteSolution?.solutionCount === 1 &&
+        logicalSolution?.solutionType === 'Full' &&
+        !isEqual(logicalSolution.solution, bruteSolution.solution)
+      ) {
+        message = 'Solvers found different grids';
+      } else if (bruteSolution?.solutionCount === 0 && logicalSolution?.solutionType !== 'None') {
+        message = 'Brute solver found no solution'
+      } else if ((bruteSolution?.solutionCount ?? 0) > 1 && logicalSolution?.solutionType !== 'Partial') {
+        message = 'Brute solver found multiple solutions'
+      }
+
+      if (message !== undefined) {
+        sendHbAlert({
+          name: 'Solvers mismatch',
+          message,
+          context: {
+            url: exportToLisudokuSolver(constraints),
+            variant: detectConstraints(constraints).variant,
+          },
+        })
+      }
     }
   }, [bruteSolverState.solution, logicalSolverState.solution, variant, constraints, setterMode, userIsAdmin])
 
