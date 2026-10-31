@@ -1,7 +1,7 @@
-import { SolvedState, SudokuConstraints, wasm_check_solved, wasm_logical_hint } from 'lisudoku-solver'
+import { GridCheckResult, SudokuConstraints, wasm_check_solved, wasm_logical_hint } from 'lisudoku-solver'
 import { Grid } from 'src/types/sudoku'
 
-export const checkSolved = (constraints: SudokuConstraints, grid: Grid): SolvedState => {
+export const checkSolved = (constraints: SudokuConstraints, grid: Grid): GridCheckResult => {
   return wasm_check_solved(constraints, grid.map(row => row.map(cell => cell ?? 0)))
 }
 
