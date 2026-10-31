@@ -3,10 +3,8 @@ import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwi
 import Button from 'src/design_system/Button';
 import Input from 'src/design_system/Input';
 import Typography from 'src/design_system/Typography';
+import { requestParseSudokuImage } from 'src/utils/apiService/vision';
 import { sendHbAlert } from '../HoneybadgerProvider';
-
-const SUDOKU_VISION_API_ENDPOINT = 'https://vision.lisudoku.xyz/parse_sudoku_image'
-// const SUDOKU_VISION_API_ENDPOINT = 'http://localhost:8080/parse_sudoku_image'
 
 interface ImportImageModalProps {
   open: boolean
@@ -48,35 +46,37 @@ const ImportImageModal = ({ open, onClose, onSuccess }: ImportImageModalProps) =
     setIsSubmitting(true)
     setError(undefined)
 
-    const response = await fetch(SUDOKU_VISION_API_ENDPOINT, {
-      method: 'post',
-      body: formData,
-    })
+    try {
+      const response = await requestParseSudokuImage(formData)
+      const body = response.data
 
-    setIsSubmitting(false)
-    const body = await response.json()
+      // if (!isAdmin) {
+      //   const requestParams = new URLSearchParams(
+      //     formData as unknown as Record<string, string>,
+      //   ).toString();
+      //   sendHbAlert({
+      //     name: 'Attempted import puzzle from image',
+      //     context: {
+      //       request: requestParams,
+      //       response: body,
+      //     },
+      //   })
+      // }
 
-    // if (!isAdmin) {
-    //   const requestParams = new URLSearchParams(
-    //     formData as unknown as Record<string, string>,
-    //   ).toString();
-    //   sendHbAlert({
-    //     name: 'Attempted import puzzle from image',
-    //     context: {
-    //       request: requestParams,
-    //       response: body,
-    //     },
-    //   })
-    // }
+      if (response.status !== 200) {
+        const errorMessage = body.error ?? 'Something went wrong while processing the image. Please try again.'
+        setError(errorMessage)
+        return
+      }
 
-    if (response.status !== 200) {
-      const errorMessage = body.error ?? 'Something went wrong while processing the image. Please try again.'
-      setError(errorMessage)
-      return
+      const gridString = body.grid
+      onSuccess(gridString)
+    } catch (error) {
+      setError('Something went wrong while processing the image. Please try again.')
+      sendHbAlert(error instanceof Error ? error : String(error))
+    } finally {
+      setIsSubmitting(false)
     }
-
-    const gridString = body.grid
-    onSuccess(gridString)
   }
 
   return (

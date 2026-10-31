@@ -1,6 +1,18 @@
 import { ReactElement } from 'react'
+import axios from 'axios'
 import { Honeybadger, HoneybadgerErrorBoundary } from '@honeybadger-io/react'
 import { isHeadlessBrowser } from 'src/utils/misc'
+
+const getRequestContext = ({ originalError: error }: { originalError?: Error }) => {
+  if (!axios.isAxiosError(error)) {
+    return undefined
+  }
+
+  return {
+    endpoint: error.config?.url,
+    status: error.response?.status ?? 'no response',
+  }
+}
 
 const honeybadger = Honeybadger.configure({
   apiKey: import.meta.env.VITE_HONEYBADGER_API_KEY,
@@ -22,6 +34,12 @@ honeybadger.beforeNotify((notice) => {
   if (notice !== undefined && IGNORE_HEADLESS_ALERTS.includes(notice.name)) {
     return !isHeadlessBrowser()
   }
+
+  const request = notice ? getRequestContext(notice) : undefined
+  if (notice && request) {
+    notice.context = { ...(notice.context ?? {}), request }
+  }
+
   return true
 })
 
