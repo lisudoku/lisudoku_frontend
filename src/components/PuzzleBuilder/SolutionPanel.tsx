@@ -24,7 +24,7 @@ SolutionPanel.Title = ({ children, durationMs }: PanelTitleProps) => (
   <div className="flex gap-2">
     {children}
     {durationMs !== undefined && (
-      <div className="content-center text-xs text-secondary font-extralight">
+      <div className="relative top-[1px] content-center text-xs text-secondary font-extralight">
         {formatElapsedTime(durationMs)}
       </div>
     )}
