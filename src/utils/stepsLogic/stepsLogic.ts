@@ -351,7 +351,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
   // TODO: can be improved
   NishioForcingChains: {
     description: ({ step, constraints, valuesDisplay, affectedCellsDisplay }) => (
-      ` Remove ${valuesDisplay} from cell ${affectedCellsDisplay} because then ${computeInvalidStateReason(step, constraints)}`
+      ` Remove ${valuesDisplay} from cell ${affectedCellsDisplay} because then ${computeInvalidStateReason(step.invalidStateReason!, constraints)}`
     ),
     highlights: ({ step: { invalidStateReason, affectedCells } }) => [
       ...(invalidStateReason ? [areaToCustomGraphicsItem(invalidStateReason.area, 'red')] : []),

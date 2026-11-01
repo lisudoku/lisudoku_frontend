@@ -1,9 +1,8 @@
-import type { SolutionStep, SudokuConstraints } from 'lisudoku-solver'
-import { exhaustiveGuard } from '../misc'
+import type { InvalidStateReason, SudokuConstraints } from 'lisudoku-solver'
+import { exhaustiveGuard, pluralize } from '../misc'
 import { areaDisplay } from '../sudoku'
 
-export const computeInvalidStateReason = (step: SolutionStep, constraints: SudokuConstraints) => {
-  const reason = step.invalidStateReason!
+export const computeInvalidStateReason = (reason: InvalidStateReason, constraints: SudokuConstraints) => {
   switch (reason.stateType) {
     case 'CellEmpty':
       return `${areaDisplay(reason.area, constraints)} is empty`
@@ -16,7 +15,7 @@ export const computeInvalidStateReason = (step: SolutionStep, constraints: Sudok
     case 'AreaConstraint':
       return `${areaDisplay(reason.area, constraints)} constraints are not satisfied`
     case 'AreaCandidates':
-      return `digits ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, constraints)}`
+      return `${pluralize(reason.values.length, 'digit')} ${[...reason.values].sort().join(', ')} can't be placed in ${areaDisplay(reason.area, constraints)}`
     default:
       return exhaustiveGuard(reason.stateType)
   }

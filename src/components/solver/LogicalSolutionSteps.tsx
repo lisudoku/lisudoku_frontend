@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
-import type { SolutionStep, SolutionType, SudokuConstraints } from 'lisudoku-solver'
+import type { SolutionStep, SudokuConstraints, SudokuLogicalSolveResult } from 'lisudoku-solver'
 import { HintLevel } from 'src/reducers/puzzle'
 import { StepDescription } from './StepDescription'
 import { LogicalSolutionStep } from './LogicalSolutionStep'
 import type { LogicalSolverState } from 'src/reducers/builder'
+import { exhaustiveGuard } from 'src/utils/misc'
+import { computeInvalidStateReason } from 'src/utils/stepsLogic/helpers'
 
 interface LogicalSolutionsStepsProps {
   constraints: SudokuConstraints
@@ -12,10 +14,23 @@ interface LogicalSolutionsStepsProps {
   isDirty: boolean
 }
 
-const finalStepLabel: Record<SolutionType, string> = {
-  Full: 'Puzzle solved',
-  Partial: 'Got stuck here',
-  None: 'Reached an invalid state',
+const getFinalStepLabel = (solution: SudokuLogicalSolveResult, constraints: SudokuConstraints): string => {
+  switch (solution.solutionType) {
+    case 'Full':
+      return 'Puzzle solved'
+    case 'Partial':
+      return 'Got stuck here'
+    case 'None': {
+      const reason = solution.invalidStateReason
+      if (reason === undefined) {
+        // This shouldn't happen
+        return 'Reached an invalid state'
+      }
+      return `Reached an invalid state because ${computeInvalidStateReason(reason, constraints)}`
+    }
+    default:
+      return exhaustiveGuard(solution.solutionType)
+  }
 }
 
 export const LogicalSolutionSteps = (
@@ -71,7 +86,7 @@ export const LogicalSolutionSteps = (
           }
         }}
       >
-        {finalStepLabel[solverState.solution.solutionType]}
+        {getFinalStepLabel(solverState.solution, constraints)}
       </LogicalSolutionStep>
     </ol>
   )
