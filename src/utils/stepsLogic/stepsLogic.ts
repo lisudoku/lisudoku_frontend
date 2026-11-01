@@ -14,6 +14,7 @@ interface StepLogicBaseContext {
   cellsDisplay: string
   affectedCellsDisplay: string
   valuesDisplay: string
+  pairwiseEliminationsDisplay: string
 }
 
 interface StepLogicHighlightsContext extends StepLogicBaseContext {}
@@ -226,8 +227,8 @@ const stepsLogic: Record<Rule, StepLogic> = {
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wCYAaETUgd3wAWAL7cAbgEMWSGPgDsokuSo16eJqw7deAvAFZRISdNn7FIMhWp0GIZmzyDt%2FfAfFSZHc5ZU31dzX1nXTcjD1MAZm9lazUNBwA2YKFDY088dmEAXW4Ac0wIOABlCAAvUwBObgBrXmJqiAARUkpcQiYYFhYARlt7fAAGZLwo7kZOlnY%2BwO7h0ZA4FoAVAE9iUxAAYTpsGEYkajFZc3Gu3v9%2BvCGeFxHDU8nph2udFO5FylX1%2FC2dvYOIEcQNlhEA%3D%3D%3D
   CommonPeerEliminationKropki: {
-    description: ({ step: { areas }, constraints, valuesDisplay, affectedCellsDisplay }) => (
-      ` to remove ${valuesDisplay} from ${affectedCellsDisplay} because all chain combinations in ${areaDisplay(areas[0], constraints)} would eliminate them`
+    description: ({ step: { values }, pairwiseEliminationsDisplay }) => (
+      ` to remove ${pluralize(values.length, 'value')} ${pairwiseEliminationsDisplay} because all chain combinations in a kropki dot chain would eliminate them`
     ),
     highlights: ({ step: { areas, affectedCells }, constraints }) => [
       ...getUniqueAreasCells(areas, constraints).map(cell => cellToCustomGraphicsItem(cell, 'area')),
@@ -236,8 +237,8 @@ const stepsLogic: Record<Rule, StepLogic> = {
   },
   // N4IghgThD2DuDOIBcBtUkawMIFMA2eiqoAxtHsgBwA0ImyATAL7WnnIDst9SzrIZCkgBs3OIyYBdWiQCWEEnhy4CRNAPZIudcUgCMUqbQBmsgB44AJgDkArgFsARjghrQAB2jxZAF1nQAO2Q2IQBWMVhkAAYWEAA3MDxbHGQDfk9vP0DgjTCI1NiEpJSkAE4WDy9ffyCkENT8pFDCxOSC9Kqs2vqkKMbhFuKC6RAAcwhZSwBlWQAvEvKgA%3D%3D
   CommonPeerEliminationArrow: {
-    description: ({ step: { areas }, constraints, valuesDisplay, affectedCellsDisplay }) => (
-      ` to remove ${valuesDisplay} from ${affectedCellsDisplay} because all arrow combinations in ${areaDisplay(areas[0], constraints)} would eliminate them`
+    description: ({ step: { areas, values }, constraints, pairwiseEliminationsDisplay }) => (
+      ` to remove ${pluralize(values.length, 'value')} ${pairwiseEliminationsDisplay} because all arrow combinations in ${areaDisplay(areas[0], constraints)} would eliminate them`
     ),
     highlights: ({ step: { areas, affectedCells } }) => [
       areaToCustomGraphicsItem(areas[0]),
@@ -373,6 +374,12 @@ const expandContext = (step: SolutionStep, constraints: SudokuConstraints): Step
   },
   get valuesDisplay() {
     return [...step.values].sort().join(', ')
+  },
+  get pairwiseEliminationsDisplay() {
+    if (step.values.every(value => value === step.values[0])) {
+      return `${step.values[0]} from ${this.affectedCellsDisplay}`
+    }
+    return step.affectedCells.map((cell, index) => `${cellDisplay(cell)}→${step.values[index]}`).join(', ')
   },
 })
 
