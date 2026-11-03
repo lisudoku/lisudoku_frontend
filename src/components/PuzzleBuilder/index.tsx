@@ -287,7 +287,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full xl:max-w-[330px]" data-hb-name="constraints-container">
+        <div className="flex flex-col gap-2 w-full xl:basis-[330px] xl:grow xl:shrink-0" data-hb-name="constraints-container">
           <fieldset className="flex flex-col gap-2" data-hb-name="constraints-fieldset">
             <Typography variant="h6" as="legend">
               Constraints
@@ -391,7 +391,7 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
             </Button>
           </div>
         </div>
-        <div className="grow">
+        <div className="basis-[375px] grow shrink">
           <PuzzleActions
             bruteSolver={bruteSolver}
             logicalSolver={logicalSolver}
