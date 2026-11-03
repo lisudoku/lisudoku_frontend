@@ -278,7 +278,7 @@ export const useElapsedTime = (startedAt?: string) => {
 }
 
 export const formatElapsedTime = (ms: number) => (
-  (ms / 1000).toFixed(1) + 's'
+  (ms / 1000).toFixed(ms < 20_000 ? 1 : 0) + 's'
 )
 
 export const useSlowSolverAlert = (
