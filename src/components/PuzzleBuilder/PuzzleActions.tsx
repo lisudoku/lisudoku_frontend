@@ -25,6 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SolverSettings } from './SolverSettings'
 import { detectConstraints } from 'src/constraints/utils'
 import { useSlowSolverAlert, type SolverHandle } from './hooks'
+import { alert } from 'src/design_system/ConfirmationDialog'
 
 // TODO: consider a more general approach if it's an issue in other places too
 // Alert about running solver every 5 mins
@@ -42,6 +43,7 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
   const userToken = useSelector(state => state.userData.token)
   const setterMode = useSelector(state => state.builder.setterMode)
   const constraints = useSelector(state => state.builder.constraints)
+  const committedConstraints = useSelector(state => state.builder.committedConstraints)
   const bruteSolverState = useSelector(state => state.builder.bruteSolverState)
   const logicalSolverState = useSelector(state => state.builder.logicalSolverState)
   const variant = useSelector(state => state.builder.variant)
@@ -53,36 +55,43 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
   const manualChange = useSelector(state => state.builder.manualChange)
   const userIsAdmin = useSelector(state => state.userData.admin)
 
+
   const addPuzzleEnabled = (
     logicalSolverState.solution?.solutionType === 'Full' &&
     bruteSolverState.solution?.solutionCount === 1
   )
 
   const handleBruteSolverRun = useCallback(() => {
-    if (!setterMode && constraints && manualChange && !userIsAdmin) {
+    if (!setterMode && committedConstraints && manualChange && !userIsAdmin) {
       sendHbAlertThrottled({
         name: 'Running brute solver',
         context: {
-          url: exportToLisudokuSolver(constraints),
+          url: exportToLisudokuSolver(committedConstraints),
           variant,
         },
       })
     }
-    bruteSolver.run(constraints)
-  }, [constraints, bruteSolver, setterMode, manualChange, userIsAdmin])
+    if (!isEqual(constraints, committedConstraints)) {
+      alert("There is a pending constraint that wasn't added yet. The solver does not take it into account.")
+    }
+    bruteSolver.run(committedConstraints)
+  }, [constraints, committedConstraints, bruteSolver, setterMode, manualChange, userIsAdmin])
 
   const handleLogicalSolverRun = useCallback(() => {
-    if (!setterMode && constraints && manualChange && !userIsAdmin) {
+    if (!setterMode && committedConstraints && manualChange && !userIsAdmin) {
       sendHbAlertThrottled({
         name: 'Running logical solver',
         context: {
-          url: exportToLisudokuSolver(constraints),
+          url: exportToLisudokuSolver(committedConstraints),
           variant,
         },
       })
     }
-    logicalSolver.run(constraints)
-  }, [constraints, logicalSolver, setterMode, manualChange, userIsAdmin])
+    if (!isEqual(constraints, committedConstraints)) {
+      alert("There is a pending constraint that wasn't added yet. The solver does not take it into account.")
+    }
+    logicalSolver.run(committedConstraints)
+  }, [constraints, committedConstraints, logicalSolver, setterMode, manualChange, userIsAdmin])
 
   const handleBruteSolverStop = useCallback(() => {
     bruteSolver.stop()
