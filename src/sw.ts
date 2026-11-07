@@ -214,6 +214,18 @@ const isResource = (url: URL) => (
   url.pathname.match(fileExtensionRegexp)
 )
 
+const isViteDevRequest = (url: URL) =>
+  import.meta.env.DEV && (
+    url.pathname.startsWith('/node_modules/') ||
+    url.pathname.startsWith('/@vite/') ||
+    url.pathname.startsWith('/@fs/') ||
+    url.pathname.startsWith('/@id/') ||
+    url.pathname.startsWith('/src/') ||
+    url.searchParams.has('v') ||
+    url.searchParams.has('import') ||
+    url.searchParams.has('t')
+  )
+
 // Redirect everything else to /
 if (import.meta.env.PROD) {
   registerRoute(
@@ -228,7 +240,7 @@ if (import.meta.env.PROD) {
 // Make sure to keep serving old assets while updating everything
 // This helps avoid situations like having old index.html but only new asset files
 registerRoute(
-  ({ url }) => isResource(url),
+  ({ url }) => !isViteDevRequest(url) && isResource(url),
   new StaleWhileRevalidate(),
 )
 
@@ -238,7 +250,7 @@ registerRoute(
     if (DEBUG) {
       console.log('GET', url.pathname)
     }
-    return true
+    return !isViteDevRequest(url)
   },
   new NetworkFirst(),
 )

@@ -10,7 +10,7 @@ import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
 import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import manifest from './src/manifest.json'
 import { format } from 'date-fns/esm'
-import pkg from './package.json';
+import pkg from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -62,7 +62,10 @@ export default defineConfig(({ mode }) => {
           // Note: removing this step for now as they don't work properly
           // honeybadgerRollupPlugin(hbPluginOptions)
         ] : [],
-      }
+      },
+    },
+    optimizeDeps: {
+      exclude: ['lisudoku-solver'], // helps with symlinking
     },
     server: {
       open: true,
