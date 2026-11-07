@@ -22,7 +22,7 @@ export const SolutionPanelSpinner = ({ runStartedAt }: SolutionPanelSpinnerProps
         <>&nbsp;</>
       </div>
       {elapsedTimeMs >= 15_000 && (
-        <div className="text-sm mt-2">Looks like the solver is too slow, I should look into it 🤔</div>
+        <div className="text-sm mt-2">Looks like the solver is too slow, I will look into it 🤔</div>
       )}
     </>
   )
