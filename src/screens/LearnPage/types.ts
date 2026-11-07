@@ -1,5 +1,5 @@
-import { Rule } from 'lisudoku-solver'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import type { TechniqueKind } from 'lisudoku-solver'
 
 export type ExternalResource = {
   name: string
@@ -7,7 +7,7 @@ export type ExternalResource = {
 }
 
 export type Technique = {
-  id: Rule
+  id: TechniqueKind
   akas?: string[]
   summary: ReactNode
   externalResources?: ExternalResource[]

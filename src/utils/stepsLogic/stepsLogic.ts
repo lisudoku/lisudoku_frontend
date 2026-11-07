@@ -1,4 +1,4 @@
-import type { Area, CellPosition, Rule, SolutionStep, SudokuConstraints } from 'lisudoku-solver'
+import type { Area, CellPosition, SolutionStep, SudokuConstraints, TechniqueKind } from 'lisudoku-solver'
 import { isEqual, uniqWith } from 'lodash-es'
 import { CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { HintLevel } from 'src/reducers/puzzle'
@@ -66,7 +66,7 @@ const defaultExplainer: StepExplainer = ({ step: { areas, cells }, constraints, 
   return `${areaMessage}${cellsMessage} to remove ${valuesDisplay} from ${affectedCellsDisplay}`
 }
 
-const stepsLogic: Record<Rule, StepLogic> = {
+const stepsLogic: Record<TechniqueKind, StepLogic> = {
   // 0100000000100000
   HiddenSingle: {
     description: ({ step: { areas, cells }, constraints, hintLevel, valuesDisplay }) => (
@@ -86,51 +86,51 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgdw4BfbgDcAhiyQx8AZkEBdbgHNMEOAGUIAL2l4ALN0oALLCnL4CREMzZ4uPfkM5NW%2BAIzdeAuwvmCgA%3D
-  Thermo: {
+  ThermoNakedSingle: {
     description: gridStepExplainer,
     highlights: hiddenSingleHighlighter,
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wEYAaETUgd3wAGAL7cAbgEMWSGB2EBdbgHNMEOAGUIAL1l4ALN2JSItOLxQxchIiGZs8XHvyGimrfACZuvAQ4XzhIA%3D%3D%3D
-  PalindromeValues: {
+  PalindromeValue: {
     description: gridStepExplainer,
     highlights: hiddenSingleHighlighter,
   },
-  Candidates: {
+  CandidateInitialization: {
     description: () => ' for all cells',
     highlights: () => [],
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgdw4BfbgDcAhiyQx8ARkEBdbgHNMEOAGUIAL2l4ALNwDWvYoYgARUpVyEmMFixkMQzNngBM3XgI%2FCX9lndnV3xPHn58AGY%2FOCsAFQBPYl0QAGE6bBhGJGoRaQUjEzMEGCUxXN1KTClBIA
-  Kropki: {
+  KropkiPairCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgd3wBGAL7cAbgEMWSGPgBMwgLrcA5pghwAyhABesvABZulABZYU5fASIhmbPFx78hopqyHdeAh0sXCgA%3D
-  ThermoCandidates: {
+  ThermoCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4Ig5gTglgJgylAXgUxALgCwBoQGsoA2ByEAwgIZjIDO6A2qBMmFAPYB29oAxqwegAYcEVgHdBAXyw8%2B6AIzCxk6SF780AJkXi0AiQF0c1AK4BbdADYDEoA%3D
-  KillerCandidates: {
+  KillerCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4IghgThD2DuDOIBcBtUkawMIFMA2eiqoAxtHsgEwA0ImyAjAL7WnmO31IAMTAurRIBLCCTw5cBImhBkKSBpzhV%2B%2FWgHMIQgCYBlIQC8cyACxMgA
-  ArrowCandidates: {
+  ArrowCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgdw4BfbgDcAhiyQx8ARkEBdbgHNMEOAGUIAL2l4ALN0wxaaMbVyEiIZmzxce%2FIZyatZhx3YXzBQA%3D
-  RenbanCandidates: {
+  RenbanCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wEYAaETUgd3wAmAL7cAbgEMWSGB2EBdbgHNMEOAGUIAL1l4ALN2JSItOLxQxchIiGZs8XHv3wAGUU1ZDuvAQ4XzhIA%3D%3D%3D
-  PalindromeCandidates: {
+  PalindromeCandidateUpdate: {
     description: defaultExplainer,
     highlights: defaultHighlighter,
   },
   // N4IghgThD2DuDOIBcBtUkawMIFMA2eiqoAxtHsgBwA0ImVAvtaecgOy31KVMsVIA2TnEYBdWiQCWEEnhy4CRNCDL8OdEUjYNRO2gDNJADxwATAHIBXALYAjHBCWgADtHiSALpOgA7ZH2QABmFYIKYQADcwPEscZABGXhBXdy9ffxVWJGCNUKRE2iiYuKQAFiSUz28%2FJADskOQAJnCi2OQAVgq3KvTazP4crgBmFui2wS7U6ozVIIay0eL2SZ6ausHNTsKxkp5mZO60tf653OQBRfGAThWjmaz1LgvtpaQtl0PpvtnueefInbnPQgADmEEkpgAypIAF4lG5AA
-  ArrowAdvancedCandidates: {
+  ArrowAdvancedCandidateUpdate: {
     // TODO: "because it would eliminate all candidates from ${cells}"
     description: defaultExplainer,
     highlights: defaultHighlighter,
@@ -149,7 +149,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // N4Ig5gTglgJgylAXgUxALgCwBoQGsID2ADrlACIEAuAzugNqgDGyANiwIzpMEvoAMOQgHd%2BAXxzM2AJi4hGPdO0EERaPuJAwqAFQCeRVGhAUArgCMWqcU1YdZ83miUhhYibZlpujqctXqcLUo9A3RjAnNLEFEAXVEgA%3D
-  KropkiChainCandidates: {
+  KropkiChainCandidateUpdate: {
     description: defaultExplainer,
     highlights: ({ step: { areas, affectedCells }, constraints }) => [
       // TODO: somehow highlight the container region areas[0]?
@@ -159,7 +159,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wFYAaETUgd3wBGAL7cAbgEMWSGPgDMokuSo16eJq3wA2brwF4R4qTPwAWRSDIVqdBiGZs8Adl38hokJOmy87C1ZVbdXtNPAAOV31DT2MfLX9lGzUNRwAGSI4PLxM8AE4E61U7B3x0njc8eKNvfDCCwOSQtIznLNj8J3qk4tCucv066pzDJUKglO0WwZia3y6i4JLnKbbZ%2BIBdbgBzTAg4AGUIAC8fXO4Aa15ic4gAEVJKXEImGBYWQR7m%2FvduRleWABMn1KLQBHjgDwAKgBPYg%2BEAAYTo2BgjCQ1DEsgsfzeH0WoTKenwYN%2B%2FyB%2BK%2BRLwCm4EMoMLh%2BERyNR6IgmJAwnWwiAA
   // TODO: show which cell will become invalid when we have that data
-  KropkiAdvancedCandidates: {
+  KropkiAdvancedCandidateUpdate: {
     description: ({ step: { areas }, constraints, valuesDisplay, affectedCellsDisplay }) => (
       ` in ${areas.length === 1 ? areaDisplay(areas[0], constraints) : 'a chain of kropki pairs'} to ` +
         `remove ${valuesDisplay} from ${affectedCellsDisplay} because ` +
@@ -172,7 +172,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgd3wAWAL7cAbgEMWSGPgCMwgLrcA5pghwAyhABesvADZulUsQBCpSiZT5KmGcKA%3D%3D
   // TODO: can be improved to show the other row's digits
-  TopBottomCandidates: {
+  TopBottomCandidateUpdate: {
     description: ({ step: { areas, values, affectedCells }, constraints, valuesDisplay, affectedCellsDisplay }) => {
       const ascending = (areas[0] as any).Row + 1 === values[0]
       const otherValue = (ascending === ((areas[0] as any).Row < (areas[1] as any).Row)) ? values[0] + 1 : values[0] - 1
@@ -186,7 +186,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 400000123000000000000000000000000000
-  LockedCandidatesPairs: {
+  LockedCandidatePair: {
     description: defaultExplainer,
     highlights: ({ step: { areas, cells, affectedCells, values }, constraints }) => [
       ...getUniqueAreasCells(areas, constraints).map(cell => cellToCustomGraphicsItem(cell, 'area')),
@@ -196,7 +196,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // N4IghgdgLglg0hGBzAFlEAuKAnArgUwBoQAzGAD3wBMA5XAWwCN9sBnTAbVAAcB7VmLF4RMoAMa8ANpgAMxbLwDusgL7EAbmEkFMAVjU9%2BgmMNEgJ0jAEZ5S1Rq06MANgMg%2BAoSIzipmAEy2yhgyaiCa2viYAOxuHsamPuZ%2BIUGYVmERTgAccUZeZhayaRj%2BmY5RGACceZ4m3r6WAMwlTeWRmG2EhnWJjcUgCsEALO1Oo93u%2BfWFKcMloQ4dGKMAusRI2DBUAMowAF6VNUA%3D
-  NakedPairs: {
+  NakedPair: {
     description: defaultExplainer,
     highlights: ({ step: { areas, cells, affectedCells, values } }) => [
       areaToCustomGraphicsItem(areas[0]),
@@ -206,7 +206,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 000120000000001000002000000000000000
-  HiddenPairs: {
+  HiddenPair: {
     description: hiddenSetsExplainer,
     highlights: ({ step: { areas, cells } }) => [
       areaToCustomGraphicsItem(areas[0]),
@@ -226,7 +226,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wCYAaETUgd3wAWAL7cAbgEMWSGPgDsokuSo16eJqw7deAvAFZRISdNn7FIMhWp0GIZmzyDt%2FfAfFSZHc5ZU31dzX1nXTcjD1MAZm9lazUNBwA2YKFDY088dmEAXW4Ac0wIOABlCAAvUwBObgBrXmJqiAARUkpcQiYYFhYARlt7fAAGZLwo7kZOlnY%2BwO7h0ZA4FoAVAE9iUxAAYTpsGEYkajFZc3Gu3v9%2BvCGeFxHDU8nph2udFO5FylX1%2FC2dvYOIEcQNlhEA%3D%3D%3D
-  CommonPeerEliminationKropki: {
+  KropkiCommonPeerElimination: {
     description: ({ step: { values }, pairwiseEliminationsDisplay }) => (
       ` to remove ${pluralize(values.length, 'value')} ${pairwiseEliminationsDisplay} because all chain combinations in a kropki dot chain would eliminate them`
     ),
@@ -236,7 +236,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // N4IghgThD2DuDOIBcBtUkawMIFMA2eiqoAxtHsgBwA0ImyATAL7WnnIDst9SzrIZCkgBs3OIyYBdWiQCWEEnhy4CRNAPZIudcUgCMUqbQBmsgB44AJgDkArgFsARjghrQAB2jxZAF1nQAO2Q2IQBWMVhkAAYWEAA3MDxbHGQDfk9vP0DgjTCI1NiEpJSkAE4WDy9ffyCkENT8pFDCxOSC9Kqs2vqkKMbhFuKC6RAAcwhZSwBlWQAvEvKgA%3D%3D
-  CommonPeerEliminationArrow: {
+  ArrowCommonPeerElimination: {
     description: ({ step: { areas, values }, constraints, pairwiseEliminationsDisplay }) => (
       ` to remove ${pluralize(values.length, 'value')} ${pairwiseEliminationsDisplay} because all arrow combinations in ${areaDisplay(areas[0], constraints)} would eliminate them`
     ),
@@ -246,7 +246,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 123000000000000000000000000000000000
-  LockedCandidatesTriples: {
+  LockedCandidateTriple: {
     description: defaultExplainer,
     highlights: ({ step: { areas, cells, affectedCells, values }, constraints }) => [
       ...getUniqueAreasCells(areas, constraints).map(cell => cellToCustomGraphicsItem(cell, 'area')),
@@ -256,7 +256,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 000000000000569000009870000003000000004100000005400000006000000007020000008040000
-  NakedTriples: {
+  NakedTriple: {
     description: defaultExplainer,
     highlights: ({ step: { areas, cells, affectedCells, values } }) => [
       areaToCustomGraphicsItem(areas[0]),
@@ -266,7 +266,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 000100000000000000000000000010000000020000000030000000001000000002000000003000000
-  HiddenTriples: {
+  HiddenTriple: {
     description: hiddenSetsExplainer,
     highlights: ({ step: { areas, cells } }) => [
       areaToCustomGraphicsItem(areas[0]),
@@ -299,11 +299,6 @@ const stepsLogic: Record<Rule, StepLogic> = {
       ...cells.slice(1).map(cell => buildCornerMarkGraphicsItem(cell, [values[2]], 'red')),
     ],
   },
-  // TODO: implement after adding technique
-  Swordfish: {
-    description: defaultExplainer,
-    highlights: () => [],
-  },
   // 120734056345000000076000000200000000400000000500000000000000009600000000000008000
   TurbotFish: {
     description: ({ cellDisplays, valuesDisplay, affectedCellsDisplay }) => (
@@ -320,7 +315,7 @@ const stepsLogic: Record<Rule, StepLogic> = {
     ],
   },
   // 000000008020000700000100000001000300000000400000000500000000000000000800000000900
-  EmptyRectangles: {
+  EmptyRectangle: {
     description: ({ step: { areas }, constraints, cellDisplays, valuesDisplay, affectedCellsDisplay }) => (
       ` in ${areaDisplay(areas[0], constraints)} that sees strong link ` +
         `${cellDisplays[0]}-${cellDisplays[1]} to remove ${valuesDisplay} from ${affectedCellsDisplay}`
@@ -342,14 +337,9 @@ const stepsLogic: Record<Rule, StepLogic> = {
       ...cells.map(otherCell => buildCornerMarkGraphicsItem(otherCell, values, 'red')),
     ],
   },
-  // TODO: implement after adding technique
-  PhistomefelRing: {
-    description: defaultExplainer,
-    highlights: () => [],
-  },
   // N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wAYAaETUgd3wBGAL7cAbgEMWSGPgDMokuSo16eJq3wAWbrwF4R4qTPwAmRSDIVqdBiGZs8AVl38hokJOmyDwgLrcAOaYEHAAyhAAXj4AbNyUABZYKOT4BET2mnhyrvrmnBqOprnuBZmOOTxueOz%2BfsJAA
   // TODO: can be improved
-  NishioForcingChains: {
+  NishioForcingChain: {
     description: ({ step, constraints, valuesDisplay, affectedCellsDisplay }) => (
       ` Remove ${valuesDisplay} from cell ${affectedCellsDisplay} because then ${computeInvalidStateReason(step.invalidStateReason!, constraints)}`
     ),
@@ -384,12 +374,12 @@ const expandContext = (step: SolutionStep, constraints: SudokuConstraints): Step
 })
 
 export const computeStepDescription = (step: SolutionStep, constraints: SudokuConstraints, hintLevel: HintLevel) => (
-  stepsLogic[step.rule].description({
+  stepsLogic[step.techniqueKind].description({
     hintLevel,
     ...expandContext(step, constraints),
   })
 )
 
 export const computeStepHighlights = (step: SolutionStep, constraints: SudokuConstraints) => (
-  stepsLogic[step.rule].highlights(expandContext(step, constraints))
+  stepsLogic[step.techniqueKind].highlights(expandContext(step, constraints))
 )

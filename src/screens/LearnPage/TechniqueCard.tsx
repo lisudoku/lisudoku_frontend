@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { isEmpty } from 'lodash-es'
 import ExternalLink from 'src/components/ExternalLink'
-import { StepRuleDisplay } from 'src/utils/constants'
+import { TechniqueDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl, pluralize } from 'src/utils/misc'
 import { Technique } from './types'
 import { Card, CardBody } from 'src/design_system/Card'
@@ -22,7 +22,7 @@ const TechniqueCard = ({ technique, selected }: TechniqueCardProps) => {
       <Card className="bg-tertiary flex-grow">
         <CardBody>
           <Typography variant="h5">
-            <a href={`#${id}`}>{StepRuleDisplay[id]}</a>
+            <a href={`#${id}`}>{TechniqueDisplay[id]}</a>
           </Typography>
           {akas && !isEmpty(akas) && (
             <Typography variant="paragraph">

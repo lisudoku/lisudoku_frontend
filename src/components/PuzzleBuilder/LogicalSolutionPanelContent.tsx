@@ -1,7 +1,7 @@
-import type { Rule, SolutionStep, SudokuConstraints } from 'lisudoku-solver'
+import type { SolutionStep, SudokuConstraints, TechniqueKind } from 'lisudoku-solver'
 import { max, orderBy, toPairs } from 'lodash-es'
 import Typography from 'src/design_system/Typography'
-import { StepRuleDifficulty, StepRuleDifficultyDisplay } from 'src/utils/constants'
+import { TechniqueDifficulty, TechniqueDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'
 import type { LogicalSolverState } from 'src/reducers/builder'
 import { SolutionPanelSpinner } from './SolutionPanelSpinner'
@@ -14,32 +14,32 @@ interface LogicalSolutionPanelContentProps {
   isDirty: boolean
 }
 
-const groupStepsByType = (steps: SolutionStep[]) => {
-  const groups: { [key in Rule]?: number } = {}
+const groupStepsByTechniqueKind = (steps: SolutionStep[]) => {
+  const groups: Partial<Record<TechniqueKind, number>> = {}
   for (const step of steps) {
-    groups[step.rule] ||= 0
-    groups[step.rule]! += 1
+    groups[step.techniqueKind] ||= 0
+    groups[step.techniqueKind]! += 1
   }
 
   return orderBy(
     toPairs(groups),
     [
-      group => StepRuleDifficulty[group[0] as Rule],
+      group => TechniqueDifficulty[group[0] as TechniqueKind],
       1
     ],
     ['desc', 'desc']
   )
 }
 
-const estimateDifficultyByRules = (steps: SolutionStep[]) => {
+const estimateDifficultyBySteps = (steps: SolutionStep[]) => {
   const maxDifficulty = max(steps.map(step => {
-    const difficulty = StepRuleDifficulty[step.rule]
+    const difficulty = TechniqueDifficulty[step.techniqueKind]
     if (difficulty === undefined) {
-      throw Error(`No difficulty found for rule ${step.rule}`)
+      throw Error(`No difficulty found for technique ${step.techniqueKind}`)
     }
     return difficulty
   }))
-  return StepRuleDifficultyDisplay[maxDifficulty!]
+  return TechniqueDifficultyDisplay[maxDifficulty!]
 }
 
 export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMode, onStepChange, isDirty }: LogicalSolutionPanelContentProps) => (
@@ -66,12 +66,12 @@ export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMo
             Step count = {solverState.solution.steps.length}
           </Typography>
           <ul className="list-disc list-inside">
-            {groupStepsByType(solverState.solution.steps).map(([ rule, count ]) => (
-              <li key={rule} className="font-light">{`${rule} x ${count}`}</li>
+            {groupStepsByTechniqueKind(solverState.solution.steps).map(([ techniqueKind, count ]) => (
+              <li key={techniqueKind} className="font-light">{`${techniqueKind} x ${count}`}</li>
             ))}
           </ul>
           <Typography variant="paragraph">
-            Difficutly by rule rank - {estimateDifficultyByRules(solverState.solution.steps)}
+            Difficutly by technique rank - {estimateDifficultyBySteps(solverState.solution.steps)}
           </Typography>
         </>
       ) : (

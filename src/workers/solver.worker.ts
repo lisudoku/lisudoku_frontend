@@ -1,8 +1,9 @@
 /* eslint-disable no-restricted-globals */
-import { SudokuConstraints, wasm_brute_solve, wasm_logical_solve } from 'lisudoku-solver'
+import type { SudokuConstraints } from 'lisudoku-solver'
 import { SolverType } from 'src/types/wasm'
-import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats';
-import type { WorkerSolutionResponse } from './types';
+import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats'
+import type { WorkerSolutionResponse } from './types'
+import { logicalSolve, bruteSolve } from 'src/utils/wasm'
 
 self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
@@ -10,13 +11,13 @@ self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverTyp
   try {
     let response: WorkerSolutionResponse
     if (solverType === SolverType.Brute) {
-      const solution = wasm_brute_solve(constraints)
+      const solution = bruteSolve(constraints)
       response = {
         solverType,
         solution,
       }
     } else {
-      const solution = wasm_logical_solve(constraints)
+      const solution = logicalSolve(constraints)
       response = {
         solverType,
         solution,

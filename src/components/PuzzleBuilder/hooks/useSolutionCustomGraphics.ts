@@ -4,15 +4,15 @@ import { useMemo } from 'react'
 import { CustomGraphicsAreaHighlight, CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { cellToCustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/utils'
 import type { LogicalSolverState } from 'src/reducers/builder'
-import { EStepRuleDifficulty, StepRuleDifficulty } from 'src/utils/constants'
+import { ETechniqueDifficulty, TechniqueDifficulty } from 'src/utils/constants'
 import { isGridStep } from 'src/utils/solver'
 import { useStepCustomGraphics } from 'src/utils/stepsLogic/hooks'
 import { getAllCells, getAreaCells } from 'src/utils/sudoku'
 
-const StepRuleDifficultyColor: { [key in EStepRuleDifficulty]: string } = {
-  [EStepRuleDifficulty.Easy]: 'green',
-  [EStepRuleDifficulty.Medium]: 'yellow',
-  [EStepRuleDifficulty.Hard]: 'red',
+const TechniqueDifficultyColor: Record<ETechniqueDifficulty, string> = {
+  [ETechniqueDifficulty.Easy]: 'green',
+  [ETechniqueDifficulty.Medium]: 'yellow',
+  [ETechniqueDifficulty.Hard]: 'red',
 }
 
 export const useSolutionCustomGraphics = ({
@@ -61,9 +61,9 @@ export const useSolutionCustomGraphics = ({
     constraints !== null &&
     logicalSolverState.solutionStepIndex === logicalSolverState.solution.steps.length
   ) {
-    const cellDifficulties: (EStepRuleDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
+    const cellDifficulties: (ETechniqueDifficulty | -1)[][] = Array(constraints.gridSize).fill(null).map(() => Array(constraints.gridSize).fill(-1))
     for (const step of logicalSolverState.solution.steps) {
-      const difficulty = StepRuleDifficulty[step.rule]
+      const difficulty = TechniqueDifficulty[step.techniqueKind]
       const relevantCells = isGridStep(step) ? [step.cells[0]] : step.affectedCells
       for (const cell of relevantCells) {
         cellDifficulties[cell.row][cell.col] = Math.max(cellDifficulties[cell.row][cell.col], difficulty)
@@ -76,7 +76,7 @@ export const useSolutionCustomGraphics = ({
       if (difficulty === -1) {
         continue
       }
-      const color = StepRuleDifficultyColor[difficulty]
+      const color = TechniqueDifficultyColor[difficulty]
       // Set 90% opacity because this highlight needs to be on top of constraints without mixing
       cellDifficultyGraphics.push(cellToCustomGraphicsItem(cell, color, 0.9))
     }

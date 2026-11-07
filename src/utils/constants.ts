@@ -1,4 +1,4 @@
-import { Rule } from 'lisudoku-solver'
+import type { TechniqueKind } from 'lisudoku-solver'
 import { invert, mapValues, toInteger, values } from 'lodash-es'
 import { ReactNode } from 'react'
 import { constraintDefinitions } from 'src/constraints/definitions'
@@ -29,7 +29,7 @@ export const ACTIVE_VARIANTS: SudokuVariant[] = [
 
 export const DEFAULT_CELL_SIZE = 56
 
-export const SudokuVariantDisplay: { [key in SudokuVariant]: string } = {
+export const SudokuVariantDisplay: Record<SudokuVariant, string> = {
   [SudokuVariant.Classic]: 'Classic',
   [SudokuVariant.Killer]: 'Killer',
   [SudokuVariant.Thermo]: 'Thermo',
@@ -67,7 +67,7 @@ export const SudokuVariantIcon: Record<SudokuVariant, ReactNode> = {
 
 export const SudokuVariantRank = mapValues(invert(values(SudokuVariant)), toInteger)
 
-export const SudokuDifficultyDisplay: { [key in SudokuDifficulty]: string } = {
+export const SudokuDifficultyDisplay: Record<SudokuDifficulty, string> = {
   [SudokuDifficulty.Easy4x4]: 'Easy 4x4',
   [SudokuDifficulty.Easy6x6]: 'Easy 6x6',
   [SudokuDifficulty.Hard6x6]: 'Hard 6x6',
@@ -78,96 +78,92 @@ export const SudokuDifficultyDisplay: { [key in SudokuDifficulty]: string } = {
 
 export const SudokuDifficultyRank = mapValues(invert(values(SudokuDifficulty)), toInteger)
 
-export const StepRuleDisplay: { [key in Rule]: string } = {
+export const TechniqueDisplay: Record<TechniqueKind, string> = {
   HiddenSingle: 'Hidden Single',
   NakedSingle: 'Naked Single',
-  Thermo: 'Thermo Single',
-  PalindromeValues: 'Palindrome Values',
-  Candidates: 'Candidates',
-  ThermoCandidates: 'Thermo Candidates',
-  KillerCandidates: 'Killer Cage Candidates',
-  ArrowCandidates: 'Arrow Candidates',
-  RenbanCandidates: 'Renban Candidates',
-  PalindromeCandidates: 'Palindrome Candidates',
-  ArrowAdvancedCandidates: 'Arrow Advanced Candidates',
-  KropkiAdvancedCandidates: 'Kropki Dot Chain Advanced Logic',
+  ThermoNakedSingle: 'Thermo Single',
+  PalindromeValue: 'Palindrome Value',
+  CandidateInitialization: 'Candidates',
+  ThermoCandidateUpdate: 'Thermo Candidates',
+  KillerCandidateUpdate: 'Killer Cage Candidates',
+  ArrowCandidateUpdate: 'Arrow Candidates',
+  RenbanCandidateUpdate: 'Renban Candidates',
+  PalindromeCandidateUpdate: 'Palindrome Candidates',
+  ArrowAdvancedCandidateUpdate: 'Arrow Advanced Candidates',
+  KropkiAdvancedCandidateUpdate: 'Kropki Dot Chain Advanced Logic',
   Killer45: 'Killer Sum Rule',
-  Kropki: 'Kropki Dot Pair Logic',
-  KropkiChainCandidates: 'Kropki Dot Chain Logic',
-  TopBottomCandidates: 'Top-Bottom Candidates',
-  LockedCandidatesPairs: 'Locked Candidate Pairs',
-  NakedPairs: 'Naked Pairs',
-  HiddenPairs: 'Hidden Pairs',
-  CommonPeerEliminationKropki: 'Common Peer Elimination (Kropki)',
-  CommonPeerEliminationArrow: 'Common Peer Elimination (Arrow)',
-  LockedCandidatesTriples: 'Locked Candidate Triples',
-  NakedTriples: 'Naked Triples',
-  HiddenTriples: 'Hidden Triples',
+  KropkiPairCandidateUpdate: 'Kropki Dot Pair Logic',
+  KropkiChainCandidateUpdate: 'Kropki Dot Chain Logic',
+  TopBottomCandidateUpdate: 'Top-Bottom Candidates',
+  LockedCandidatePair: 'Locked Candidate Pair',
+  NakedPair: 'Naked Pair',
+  HiddenPair: 'Hidden Pair',
+  KropkiCommonPeerElimination: 'Common Peer Elimination (Kropki)',
+  ArrowCommonPeerElimination: 'Common Peer Elimination (Arrow)',
+  LockedCandidateTriple: 'Locked Candidate Triple',
+  NakedTriple: 'Naked Triple',
+  HiddenTriple: 'Hidden Triple',
   XWing: 'X-Wing',
   XYWing: 'Y-Wing',
-  Swordfish: 'Swordfish',
   CommonPeerElimination: 'Common Peer Elimination',
   TurbotFish: 'Turbot Fish',
-  EmptyRectangles: 'Empty Rectangle',
+  EmptyRectangle: 'Empty Rectangle',
   AdhocNakedSet: 'Adhoc Naked Set',
-  NishioForcingChains: 'Nishio Forcing Chains',
-  PhistomefelRing: 'Phistomefel Ring',
+  NishioForcingChain: 'Nishio Forcing Chain',
 }
 
-export const enum EStepRuleDifficulty {
+export const enum ETechniqueDifficulty {
   Easy,
   Medium,
   Hard,
 }
 
-export const StepRuleDifficultyDisplay: { [key in EStepRuleDifficulty]: string } = {
-  [EStepRuleDifficulty.Easy]: 'Easy',
-  [EStepRuleDifficulty.Medium]: 'Medium',
-  [EStepRuleDifficulty.Hard]: 'Hard',
+export const TechniqueDifficultyDisplay: Record<ETechniqueDifficulty, string> = {
+  [ETechniqueDifficulty.Easy]: 'Easy',
+  [ETechniqueDifficulty.Medium]: 'Medium',
+  [ETechniqueDifficulty.Hard]: 'Hard',
 }
 
-export const StepRuleDifficulty: { [key in Rule]: EStepRuleDifficulty } = {
-  HiddenSingle: EStepRuleDifficulty.Easy,
-  NakedSingle: EStepRuleDifficulty.Easy,
-  Thermo: EStepRuleDifficulty.Easy,
-  PalindromeValues: EStepRuleDifficulty.Easy,
+export const TechniqueDifficulty: Record<TechniqueKind, ETechniqueDifficulty> = {
+  HiddenSingle: ETechniqueDifficulty.Easy,
+  NakedSingle: ETechniqueDifficulty.Easy,
+  ThermoNakedSingle: ETechniqueDifficulty.Easy,
+  PalindromeValue: ETechniqueDifficulty.Easy,
 
-  Candidates: EStepRuleDifficulty.Medium,
-  ThermoCandidates: EStepRuleDifficulty.Medium,
-  KillerCandidates: EStepRuleDifficulty.Medium,
-  ArrowCandidates: EStepRuleDifficulty.Medium,
-  RenbanCandidates: EStepRuleDifficulty.Medium,
-  PalindromeCandidates: EStepRuleDifficulty.Medium,
-  ArrowAdvancedCandidates: EStepRuleDifficulty.Medium,
-  Killer45: EStepRuleDifficulty.Medium,
-  Kropki: EStepRuleDifficulty.Medium,
-  KropkiChainCandidates: EStepRuleDifficulty.Medium,
-  KropkiAdvancedCandidates: EStepRuleDifficulty.Medium,
-  TopBottomCandidates: EStepRuleDifficulty.Medium,
-  LockedCandidatesPairs: EStepRuleDifficulty.Medium,
-  NakedPairs: EStepRuleDifficulty.Medium,
-  HiddenPairs: EStepRuleDifficulty.Medium,
+  CandidateInitialization: ETechniqueDifficulty.Medium,
+  ThermoCandidateUpdate: ETechniqueDifficulty.Medium,
+  KillerCandidateUpdate: ETechniqueDifficulty.Medium,
+  ArrowCandidateUpdate: ETechniqueDifficulty.Medium,
+  RenbanCandidateUpdate: ETechniqueDifficulty.Medium,
+  PalindromeCandidateUpdate: ETechniqueDifficulty.Medium,
+  ArrowAdvancedCandidateUpdate: ETechniqueDifficulty.Medium,
+  Killer45: ETechniqueDifficulty.Medium,
+  KropkiPairCandidateUpdate: ETechniqueDifficulty.Medium,
+  KropkiChainCandidateUpdate: ETechniqueDifficulty.Medium,
+  KropkiAdvancedCandidateUpdate: ETechniqueDifficulty.Medium,
+  TopBottomCandidateUpdate: ETechniqueDifficulty.Medium,
+  LockedCandidatePair: ETechniqueDifficulty.Medium,
+  NakedPair: ETechniqueDifficulty.Medium,
+  HiddenPair: ETechniqueDifficulty.Medium,
 
-  CommonPeerEliminationKropki: EStepRuleDifficulty.Hard,
-  CommonPeerEliminationArrow: EStepRuleDifficulty.Hard,
-  LockedCandidatesTriples: EStepRuleDifficulty.Hard,
-  NakedTriples: EStepRuleDifficulty.Hard,
-  HiddenTriples: EStepRuleDifficulty.Hard,
-  XWing: EStepRuleDifficulty.Hard,
-  XYWing: EStepRuleDifficulty.Hard,
-  Swordfish: EStepRuleDifficulty.Hard,
-  CommonPeerElimination: EStepRuleDifficulty.Hard,
-  TurbotFish: EStepRuleDifficulty.Hard,
-  EmptyRectangles: EStepRuleDifficulty.Hard,
-  AdhocNakedSet: EStepRuleDifficulty.Hard,
-  NishioForcingChains: EStepRuleDifficulty.Hard,
-  PhistomefelRing: EStepRuleDifficulty.Hard,
+  KropkiCommonPeerElimination: ETechniqueDifficulty.Hard,
+  ArrowCommonPeerElimination: ETechniqueDifficulty.Hard,
+  LockedCandidateTriple: ETechniqueDifficulty.Hard,
+  NakedTriple: ETechniqueDifficulty.Hard,
+  HiddenTriple: ETechniqueDifficulty.Hard,
+  XWing: ETechniqueDifficulty.Hard,
+  XYWing: ETechniqueDifficulty.Hard,
+  CommonPeerElimination: ETechniqueDifficulty.Hard,
+  TurbotFish: ETechniqueDifficulty.Hard,
+  EmptyRectangle: ETechniqueDifficulty.Hard,
+  AdhocNakedSet: ETechniqueDifficulty.Hard,
+  NishioForcingChain: ETechniqueDifficulty.Hard,
 }
 
-export const TrainerTechniqueDisplay: { [key in TrainerTechnique]: string } = {
+export const TrainerTechniqueDisplay: Record<TrainerTechnique, string> = {
   [TrainerTechnique.HiddenSingle]: 'Hidden Single',
   [TrainerTechnique.NakedSingle]: 'Naked Single',
   [TrainerTechnique.Singles]: 'Hidden Single or Naked Single',
 }
 
-export const GRID_STEPS: Rule[] = ['HiddenSingle', 'NakedSingle', 'Thermo', 'PalindromeValues']
+export const GRID_STEPS: TechniqueKind[] = ['HiddenSingle', 'NakedSingle', 'ThermoNakedSingle', 'PalindromeValue']

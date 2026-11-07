@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 import { updateTheme } from 'src/reducers/userData'
 import { ThemeOption, useTheme } from './ThemeProvider'
 
-const ThemeOptionDisplay: { [key in ThemeOption]: string } = {
+const ThemeOptionDisplay: Record<ThemeOption, string> = {
   [ThemeOption.Light]: 'Light',
   [ThemeOption.Dark]: 'Dark',
   [ThemeOption.System]: 'Auto',

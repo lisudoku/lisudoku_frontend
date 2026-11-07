@@ -42,29 +42,29 @@ const cellsDoNotContainSet = (cells: CellPosition[], values: number[], cellMarks
 )
 
 const isRedundantStep = (step: SolutionStep, cellMarks: CellMarks[][]) => {
-  switch (step.rule) {
-    case 'Candidates':
+  switch (step.techniqueKind) {
+    case 'CandidateInitialization':
       return true
     case 'HiddenSingle':
     case 'NakedSingle':
-    case 'Thermo':
-    case 'PalindromeValues':
+    case 'ThermoNakedSingle':
+    case 'PalindromeValue':
       return false
-    case 'HiddenPairs':
-    case 'HiddenTriples':
+    case 'HiddenPair':
+    case 'HiddenTriple':
       return cellsOnlyContainCandidates(step.cells, step.values, cellMarks)
     case 'XYWing':
       const zValue = step.values[2]
       return cellsDoNotContainCandidates(step.affectedCells, [ zValue ], cellMarks)
-    case 'CommonPeerEliminationKropki':
-    case 'CommonPeerEliminationArrow':
+    case 'KropkiCommonPeerElimination':
+    case 'ArrowCommonPeerElimination':
       return cellsDoNotContainSet(step.affectedCells, step.values, cellMarks)
     default:
       return cellsDoNotContainCandidates(step.affectedCells, step.values, cellMarks)
   }
 }
 
-export const isGridStep = (step: SolutionStep) => GRID_STEPS.includes(step.rule)
+export const isGridStep = (step: SolutionStep) => GRID_STEPS.includes(step.techniqueKind)
 
 const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, constraints: SudokuConstraints, isExternal: boolean) => {
   const singleIndex = steps.findIndex(isGridStep)
@@ -103,7 +103,7 @@ const computeHintText = (steps: SolutionStep[], hintLevel: HintLevel, constraint
   let relevantSteps = steps.slice(0, singleIndex + 1)
   let candidateSteps = relevantSteps.slice(0, relevantSteps.length - 1)
   if (hintLevel === HintLevel.Small) {
-    candidateSteps = uniqBy(candidateSteps, 'rule')
+    candidateSteps = uniqBy(candidateSteps, 'techniqueKind')
   }
   const lastStep = last(relevantSteps)!
 

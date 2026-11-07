@@ -1,14 +1,14 @@
-import { Rule } from 'lisudoku-solver'
 import { groupBy } from 'lodash-es'
 import { Link } from 'react-router-dom'
+import type { TechniqueKind } from 'lisudoku-solver'
 import ExternalLink from 'src/components/ExternalLink'
-import { StepRuleDifficulty, StepRuleDisplay } from 'src/utils/constants'
+import { TechniqueDifficulty, TechniqueDisplay } from 'src/utils/constants'
 import { Technique } from './types'
 
 const HOUSE = <ExternalLink url="https://www.sudopedia.org/wiki/House">house</ExternalLink>
 
-const LinkToTechnique = ({ id }: { id: Rule }) => (
-  <Link to={`/learn#${id}`}>{StepRuleDisplay[id]}</Link>
+const LinkToTechnique = ({ id }: { id: TechniqueKind }) => (
+  <Link to={`/learn#${id}`}>{TechniqueDisplay[id]}</Link>
 )
 
 const TECHNIQUES: Technique[] = [
@@ -63,7 +63,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'nF4pF8Orna9Oi-0uPE-0', 'DwbYLJrG7EHbCA0jEzFj' ],
   },
   {
-    id: 'Candidates',
+    id: 'CandidateInitialization',
     akas: [ 'Pencil marks', 'Notes' ],
     summary: 'Write all the possible values in each cell.',
     externalResources: [
@@ -74,7 +74,7 @@ const TECHNIQUES: Technique[] = [
     ],
   },
   {
-    id: 'HiddenPairs',
+    id: 'HiddenPair',
     akas: [ 'Last 2 Remaining Cells' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) you can only put digits X and Y in two of the cells,
@@ -101,7 +101,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'GxTywFE7fBXPGskVg7D5', 'bHjg-8DIkr4IqljiFeQ5' ],
   },
   {
-    id: 'NakedPairs',
+    id: 'NakedPair',
     akas: [ 'Obvious Pairs' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) two cells can only contain digits X and Y, so you can remove them
@@ -128,7 +128,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '4_zKMu9oIek4v4BYDaYK', '0ia3B_nKWJnnFXm-6Tfg' ],
   },
   {
-    id: 'LockedCandidatesPairs',
+    id: 'LockedCandidatePair',
     akas: [ 'Intersection Removal', 'Line-Box Interaction', 'Pointing Pairs', 'Claiming/Box-Line Reduction' ],
     summary: <>
       In a row/column/box A, there are two candidate cells for digit X. If there is another
@@ -157,7 +157,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '9glG1HW6b_anCo2nNKS7', '0km-feHHbCzUtT7cgJI4', '0kncvSKSbAFIUWCWfDF5', 'QwA-W4OAZBU3NF6VnKzX' ],
   },
   {
-    id: 'HiddenTriples',
+    id: 'HiddenTriple',
     akas: [ 'Last 3 Remaining Cells' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) you can only put digits X, Y and Z in three of the cells,
@@ -184,7 +184,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'r1fjs-dBjm8ZPXbE7fPg' ],
   },
   {
-    id: 'NakedTriples',
+    id: 'NakedTriple',
     akas: [ 'Obvious Triples' ],
     summary: <>
       In a row/column/box (or any {HOUSE}) three cells can only contain digits X, Y and Z, so you can
@@ -211,7 +211,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'tduyFLYnpdgGN1JD-9hE', 'V_uw0INLBbl8erdXXoaz' ],
   },
   {
-    id: 'LockedCandidatesTriples',
+    id: 'LockedCandidateTriple',
     akas: [ 'Intersection Removal', 'Line-Box Interaction', 'Pointing Pairs', 'Claiming/Box-Line Reduction' ],
     summary: <>
       In a row/column/box A, there are three candidate cells for digit X. If there is another
@@ -246,7 +246,7 @@ const TECHNIQUES: Technique[] = [
       Putting digit X in a cell eliminates X as a candidate from another {HOUSE},
       so it's not a valid candidate for that cell.
       <br />
-      This technique is the general version of <LinkToTechnique id="LockedCandidatesPairs" />.
+      This technique is the general version of <LinkToTechnique id="LockedCandidatePair" />.
 
       It is more common in variants like Anti Knight and Diagonal
       because Classic has more specialized techniques.
@@ -312,7 +312,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'DuujC8eA4PiPKDYTn5hX' ]
   },
   {
-    id: 'Thermo',
+    id: 'ThermoNakedSingle',
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
@@ -326,11 +326,11 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'QpWV8gGnJ3bDSfVboe6n' ],
   },
   {
-    id: 'ThermoCandidates',
+    id: 'ThermoCandidateUpdate',
     summary: <>
       Only applies to Thermo puzzles.
       <br/>
-      Same as <LinkToTechnique id="Thermo" />, but we use it to remove candidates. You can
+      Same as <LinkToTechnique id="ThermoNakedSingle" />, but we use it to remove candidates. You can
       remove any candidates from a cell that are not between the lowest and the highest valid candidate.
       <br />
       Example: The bulb cell has candidates 2,3. The next cell has candidates 2,3,5 and you can remove 2.
@@ -338,7 +338,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'ZiKD2zQKk97LamntZ32w' ],
   },
   {
-    id: 'PalindromeValues',
+    id: 'PalindromeValue',
     summary: <>
       Only applies to Palindrome puzzles.
       <br/>
@@ -348,7 +348,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [],
   },
   {
-    id: 'PalindromeCandidates',
+    id: 'PalindromeCandidateUpdate',
     summary: <>
       Only applies to Palindrome puzzles.
       <br/>
@@ -358,7 +358,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [],
   },
   {
-    id: 'Kropki',
+    id: 'KropkiPairCandidateUpdate',
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
@@ -368,20 +368,20 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'LlBlSN4rx4NZ1mfruv4n' ],
   },
   {
-    id: 'KropkiChainCandidates',
+    id: 'KropkiChainCandidateUpdate',
     summary: <>
       Only applies to Kropki puzzles.
       <br/>
-      Same as <LinkToTechnique id="Kropki" />, but apply for a chain of cells
+      Same as <LinkToTechnique id="KropkiPairCandidateUpdate" />, but apply for a chain of cells
       linked by dots in the same {HOUSE}.
     </>,
     practicePuzzleIds: [ 'rGhrOQVXJS7LiV4VpRm2' ],
   },
   {
-    id: 'KropkiAdvancedCandidates',
+    id: 'KropkiAdvancedCandidateUpdate',
     summary: <>
       Only applies to Kropki puzzles.
-      It is a variation of <LinkToTechnique id="KropkiChainCandidates" /> where we look deeper
+      It is a variation of <LinkToTechnique id="KropkiChainCandidateUpdate" /> where we look deeper
       into the consequences.
       <br/>
       If one chain combination eliminates all candidates from a cell, remove the combination as a candidate.
@@ -389,17 +389,17 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'F2mvNvtEFlNrEkGK-5fG', '4rWU4qvNQNH02XsKFrPY' ],
   },
   {
-    id: 'CommonPeerEliminationKropki',
+    id: 'KropkiCommonPeerElimination',
     summary: <>
       Only applies to Kropki puzzles.
       It is a combination of <LinkToTechnique id="CommonPeerElimination" /> and
-      {' '}<LinkToTechnique id="KropkiChainCandidates" />.
+      {' '}<LinkToTechnique id="KropkiChainCandidateUpdate" />.
       <br/>
       If all chain combinations eliminate X from cell Y then eliminate it.
     </>,
   },
   {
-    id: 'KillerCandidates',
+    id: 'KillerCandidateUpdate',
     akas: [ 'Sum Elimination' ],
     summary: <>
       Only applies to Killer puzzles.
@@ -437,7 +437,7 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ 'rkwWa3AEg_lMValqbdDp' ],
   },
   {
-    id: 'ArrowCandidates',
+    id: 'ArrowCandidateUpdate',
     summary: <>
       Only applies to Arrow puzzles.
       <br/>
@@ -446,27 +446,27 @@ const TECHNIQUES: Technique[] = [
     </>,
   },
   {
-    id: 'ArrowAdvancedCandidates',
+    id: 'ArrowAdvancedCandidateUpdate',
     summary: <>
       Only applies to Arrow puzzles.
-      It is a variation of <LinkToTechnique id="ArrowCandidates" /> where we look deeper
+      It is a variation of <LinkToTechnique id="ArrowCandidateUpdate" /> where we look deeper
       into the consequences.
       <br/>
       If one arrow combination eliminates all candidates from a cell, remove the combination as a candidate.
     </>,
   },
   {
-    id: 'CommonPeerEliminationArrow',
+    id: 'ArrowCommonPeerElimination',
     summary: <>
       Only applies to Arrow puzzles.
       It is a combination of <LinkToTechnique id="CommonPeerElimination" /> and
-      {' '}<LinkToTechnique id="ArrowCandidates" />.
+      {' '}<LinkToTechnique id="ArrowCandidateUpdate" />.
       <br/>
       If all arrow combinations eliminate X from cell Y then eliminate it.
     </>,
   },
   {
-    id: 'RenbanCandidates',
+    id: 'RenbanCandidateUpdate',
     summary: <>
       Only applies to Renban puzzles.
       <br/>
@@ -498,14 +498,14 @@ const TECHNIQUES: Technique[] = [
     practicePuzzleIds: [ '_Zm0aj0rpHD8tCYTCdZU' ],
   },
   {
-    id: 'TopBottomCandidates',
+    id: 'TopBottomCandidateUpdate',
     summary: <>
       For each row X we track the cells with candidate X where the sequence 1 to X can arrive on.
       For the decreasing sequence on row X we track digit 10-X.
     </>,
   },
   {
-    id: 'EmptyRectangles',
+    id: 'EmptyRectangle',
     summary: <>
       In a box, each of digit X's candidate cells are either on row R or column C.
       <br/>
@@ -535,12 +535,12 @@ const TECHNIQUES: Technique[] = [
       sets of cells where all cells within a set are peers.
 
       This means that we can apply the Naked Sets
-      (e.g. <LinkToTechnique id="NakedPairs" />) technique within each set.
+      (e.g. <LinkToTechnique id="NakedPair" />) technique within each set.
     </>,
     practicePuzzleIds: [ 'X2vLSy6lGcGaNTVlQ9iY' ],
   },
   {
-    id: 'NishioForcingChains',
+    id: 'NishioForcingChain',
     summary: <>
       Remove candidate X from a cell because putting digit X in it leads to an invalid grid state.
     </>,
@@ -555,5 +555,5 @@ const TECHNIQUES: Technique[] = [
 ]
 
 export const TECHNIQUES_BY_DIFFICULTY = groupBy(
-  TECHNIQUES, technique => StepRuleDifficulty[technique.id]
+  TECHNIQUES, technique => TechniqueDifficulty[technique.id]
 )
