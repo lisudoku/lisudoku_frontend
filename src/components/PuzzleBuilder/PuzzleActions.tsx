@@ -166,7 +166,7 @@ export const PuzzleActions = ({ bruteSolver, logicalSolver, onInputFocus, onInpu
         !isEqual(logicalSolution.solution, bruteSolution.solution)
       ) {
         message = 'Solvers found different grids';
-      } else if (bruteSolution.solutionCount === 0 && logicalSolution.solutionType !== 'None') {
+      } else if (bruteSolution.solutionCount === 0 && logicalSolution.solutionType === 'Full') {
         message = 'Brute solver found no solution'
       } else if (bruteSolution.solutionCount > 1 && logicalSolution.solutionType !== 'Partial') {
         message = 'Brute solver found multiple solutions'
