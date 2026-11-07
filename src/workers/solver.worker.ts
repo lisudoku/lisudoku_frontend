@@ -27,7 +27,7 @@ self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverTyp
   } catch (error) {
     self.postMessage({
       solverType,
-      error: 'Error while running solver',
+      error: 'Error while running solver 🫠 Not sure why, but I will fix it soon!',
     } satisfies WorkerSolutionResponse)
 
     throw new Error(
