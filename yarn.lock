@@ -3522,10 +3522,10 @@ lisudoku-solver@0.1.29:
   resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.29.tgz#a845cca69e093214d5814009d0e23da881e1f32a"
   integrity sha512-0VVRhJezC/20Xl6kIASnDzcs+I51RMj05BAVcwZHZypNyOURR4/HVL4MY+ixZ+MeCVi0ugpVRN+QeWHIB1HU1w==
 
-lisudoku-solver@0.1.37:
-  version "0.1.37"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.37.tgz#da6aabf5bd0ae39b3d8ae21d54f2fe98d9e41901"
-  integrity sha512-w1wFXp+Jt1UDKTxuEDKRY+Dnu+jTcf6sBFIzM6HXd06oePzHMQF92suyIwpL/daxXf0uYonuUwDNmca4bcSvQQ==
+lisudoku-solver@0.1.38:
+  version "0.1.38"
+  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.38.tgz#5f59df894484840c5333cadd14906d56c330ae93"
+  integrity sha512-bPzlvlJA7N5bg61h29diCf4CsFG1Lt8muQ50i4jzrrxNYeMOOTVuMebV6EtM47M8ex1xZmItHW8LAuMeVUkjhw==
 
 lodash-es@^4.17.21:
   version "4.17.21"
