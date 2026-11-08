@@ -56,7 +56,7 @@ export const LogicalSolutionPanelContent = ({ solverState, constraints, setterMo
           {solverState.solution.steps.length > 0 && ' here is why'}
         </Typography>
       ) : solverState.solution.solutionType === 'Full' ? (
-        <Typography variant="paragraph">Found a solution 🎉</Typography>
+        <Typography variant="paragraph">Solved the puzzle 🎉</Typography>
       ) : (
         <Typography variant="paragraph">Didn't find a full solution, but made some progress</Typography>
       )}
