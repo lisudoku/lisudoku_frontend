@@ -1,4 +1,4 @@
-// import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
+import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
@@ -17,12 +17,15 @@ import pkg from './package.json'
 export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
   const env = loadEnv(mode, process.cwd());
+  const appVersion = format(new Date(), 'yyyy-MM-dd HHmm')
 
   const hbPluginOptions = {
     apiKey: env.VITE_HONEYBADGER_API_KEY,
     assetsUrl: 'https://lisudoku.xyz',
-    environment: mode,
-    deploy: true,
+    deploy: {
+      environment: mode,
+    },
+    revision: appVersion,
   }
 
   return {
@@ -62,8 +65,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         // Upload sourcemaps on deployment
         plugins: isProd ? [
-          // Note: removing this step for now as they don't work properly
-          // honeybadgerRollupPlugin(hbPluginOptions)
+          honeybadgerRollupPlugin(hbPluginOptions)
         ] : [],
       },
     },
@@ -80,7 +82,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: {},
-      __APP_VERSION__: JSON.stringify(format(new Date(), 'yyyy-MM-dd HHmm')),
+      __APP_VERSION__: JSON.stringify(appVersion),
       __SOLVER_VERSION__: JSON.stringify(pkg.dependencies['lisudoku-solver']),
       __SUDOKU_FORMATS_VERSION__: JSON.stringify(pkg.dependencies['sudoku-formats']),
     },
