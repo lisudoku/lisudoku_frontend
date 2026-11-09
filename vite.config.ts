@@ -45,6 +45,9 @@ export default defineConfig(({ mode }) => {
         strategies: 'injectManifest',
         srcDir: 'src',
         filename: 'sw.ts',
+        injectManifest: {
+          globPatterns: ['**/*.{js,css,html,wasm}'],
+        },
         devOptions: {
           enabled: true,
           type: 'module',
