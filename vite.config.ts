@@ -1,3 +1,4 @@
+/// <reference path="./src/types_custom.d.ts" />
 import honeybadgerRollupPlugin from '@honeybadger-io/rollup-plugin'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -10,7 +11,7 @@ import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
 import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import { fixWasmUrlAssignment } from './scripts/fix-wasm-url-assignment.mjs'
 import manifest from './src/manifest.json'
-import { format } from 'date-fns/esm'
+import { format } from 'date-fns'
 import pkg from './package.json'
 
 // https://vitejs.dev/config/
@@ -19,7 +20,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   const appVersion = format(new Date(), 'yyyy-MM-dd HHmm')
 
-  const hbPluginOptions = {
+  const hbPluginOptions: Parameters<typeof honeybadgerRollupPlugin>[0] = {
     apiKey: env.VITE_HONEYBADGER_API_KEY,
     assetsUrl: 'https://lisudoku.xyz',
     deploy: {
