@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { cloneDeep } from 'lodash-es'
-import { useScreenshot, createFileName } from 'use-react-screenshot';
-import { SudokuConstraints, SolutionStep } from 'lisudoku-solver';
+import type { SudokuConstraints, SolutionStep } from 'lisudoku-solver'
 import { useDispatch, useSelector } from 'src/hooks'
 import { useControlCallbacks, useKeyboardHandler, useSolver } from './hooks'
 import {
@@ -14,7 +13,7 @@ import { Radio } from 'src/design_system/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/design_system/Button'
 import { PuzzleActions } from './PuzzleActions'
-import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
+import { type CellMarks, ConstraintType, type Grid } from 'src/types/sudoku'
 import Input from 'src/design_system/Input'
 import Typography from 'src/design_system/Typography'
 import { importPuzzle, useImportParam } from 'src/utils/import'
@@ -39,7 +38,7 @@ import { ConstraintAddButton } from './ConstraintAddButton'
 const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
   const a = document.createElement('a')
   a.href = image
-  a.download = createFileName(extension, name)
+  a.download = `${name}.${extension}`
   a.click()
 }
 
@@ -184,27 +183,26 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
 
   const gridWrapperRef = useRef<HTMLDivElement>(null)
 
-  const [_image, takeScreenShot] = useScreenshot({
-    type: 'image/png',
-    quality: 1.0,
-  })
-
   const handleImportImageSuccess = useCallback(async (gridString: string) => {
     // TODO: Maybe don't send a HB alert? Leave in for now...
     await runImport(gridString)
     setImportImageOpen(false)
   }, [])
 
-  const handleExportImageClick = useCallback(() => {
+  const handleExportImageClick = useCallback(async () => {
+    const html2canvas = (await import('html2canvas')).default
+
     // Clear selected cell and generate the png
     dispatch(changeSelectedCell({ cell: null }))
     // Use the timeout to wait for the dispatch
-    setTimeout(() => {
+    setTimeout(async () => {
       if (gridWrapperRef.current) {
-        takeScreenShot(gridWrapperRef.current).then(downloadImage)
+        const canvas = await html2canvas(gridWrapperRef.current)
+        const imageData = canvas.toDataURL('image/png', 1.0)
+        downloadImage(imageData)
       }
     }, 1)
-  }, [dispatch, takeScreenShot, gridWrapperRef])
+  }, [dispatch, gridWrapperRef])
 
   let grid: Grid | undefined = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   let usedMarks: CellMarks[][] | undefined

@@ -13,7 +13,6 @@ import AboutPage from './screens/AboutPage'
 import CollectionPage from './screens/CollectionPage'
 import TrainerPage from './screens/TrainerPage'
 import LearnPage from './screens/LearnPage'
-import SolverPage from './screens/SolverPage'
 import OfflinePage from './screens/OfflinePage'
 import FeedbackPage from './screens/FeedbackPage'
 import PageNotFound from './screens/PageNotFound'
@@ -22,6 +21,7 @@ import EnsureAdmin from './components/EnsureAdmin'
 
 const AdminPage = lazy(() => import('./screens/AdminPage'))
 const MySolvesPage = lazy(() => import('./screens/MySolvesPage'))
+const SolverPage = lazy(() => import('./screens/SolverPage'))
 
 const AppRoutes = () => (
   <Routes>
