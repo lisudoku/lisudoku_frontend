@@ -8,7 +8,6 @@ import wasm from 'vite-plugin-wasm'
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa'
 import browserslist from 'browserslist'
 import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
-import topLevelAwait from 'vite-plugin-top-level-await' // Need it because of vite-plugin-pwa
 import { fixWasmUrlAssignment } from './scripts/fix-wasm-url-assignment.mjs'
 import manifest from './src/manifest.json'
 import { format } from 'date-fns'
@@ -39,7 +38,6 @@ export default defineConfig(({ mode }) => {
       }),
       wasm(),
       fixWasmUrlAssignment(),
-      topLevelAwait(),
       VitePWA({
         registerType: 'autoUpdate',
         strategies: 'injectManifest',
@@ -56,10 +54,10 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     worker: {
+      format: 'es',
       plugins: () => [
         wasm(),
         fixWasmUrlAssignment(),
-        topLevelAwait(),
       ],
     },
     build: {
