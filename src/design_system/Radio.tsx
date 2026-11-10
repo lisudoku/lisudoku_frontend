@@ -1,6 +1,7 @@
 import { forwardRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { Radio as MuiRadio } from '@material-tailwind/react/components/Radio'
+export type { RadioProps } from '@material-tailwind/react/components/Radio'
 
 const EXTRA_CLASSNAME = 'text-highlight checked:border-highlight'
 
@@ -10,7 +11,7 @@ const CONTAINER_PROPS = {
   className: 'px-1 py-2'
 }
 
-const Radio = forwardRef((props: any, ref) => {
+export const Radio = forwardRef((props: any, ref) => {
   const onChange = props.onChange
   const handleChange = useCallback((e: React.ChangeEvent<Record<string, unknown>>) => {
     const elementId = e.target.id
@@ -33,5 +34,3 @@ const Radio = forwardRef((props: any, ref) => {
     </MuiRadio>
   )
 })
-
-export default Radio

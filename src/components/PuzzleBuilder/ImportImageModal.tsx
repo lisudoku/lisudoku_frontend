@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
-import Button from 'src/design_system/Button';
-import Input from 'src/design_system/Input';
-import Typography from 'src/design_system/Typography';
-import { requestParseSudokuImage } from 'src/utils/apiService/vision';
-import { sendHbAlert } from '../HoneybadgerProvider';
+import { useState } from 'react'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from 'src/design_system/Dialog'
+import Button from 'src/design_system/Button'
+import Input from 'src/design_system/Input'
+import Typography from 'src/design_system/Typography'
+import { requestParseSudokuImage } from 'src/utils/apiService/vision'
+import { sendHbAlert } from '../HoneybadgerProvider'
 
 interface ImportImageModalProps {
   open: boolean

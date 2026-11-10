@@ -10,7 +10,7 @@ import {
   changeSelectedCell,
   initPuzzle, receivedPuzzle,
 } from 'src/reducers/builder'
-import Radio from 'src/design_system/Radio'
+import { Radio } from 'src/design_system/Radio'
 import SudokuGrid from 'src/components/Puzzle/SudokuGrid'
 import Button from 'src/design_system/Button'
 import { PuzzleActions } from './PuzzleActions'

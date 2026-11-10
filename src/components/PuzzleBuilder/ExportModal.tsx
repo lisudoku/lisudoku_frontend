@@ -1,15 +1,15 @@
-import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
-import { useCallback, useMemo, useState } from 'react';
-import Button from 'src/design_system/Button';
-import Input from 'src/design_system/Input';
-import Radio from 'src/design_system/Radio';
-import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats';
-import CopyToClipboard from '../CopyToClipboard';
-import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import';
-import { sendHbAlert } from '../HoneybadgerProvider';
-import { isGridString } from 'src/utils/sudoku';
-import { SudokuConstraints } from 'lisudoku-solver';
-import { detectConstraints } from 'src/constraints/utils';
+import { useCallback, useMemo, useState } from 'react'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from 'src/design_system/Dialog'
+import Button from 'src/design_system/Button'
+import Input from 'src/design_system/Input'
+import { Radio } from 'src/design_system/Radio'
+import { FORMATS, SudokuDataFormat, transformSudoku } from 'sudoku-formats'
+import CopyToClipboard from '../CopyToClipboard'
+import { buildLisudokuPuzzleUrl, buildLisudokuSolverUrl } from 'src/utils/import'
+import { sendHbAlert } from '../HoneybadgerProvider'
+import { isGridString } from 'src/utils/sudoku'
+import { SudokuConstraints } from 'lisudoku-solver'
+import { detectConstraints } from 'src/constraints/utils'
 
 interface CopiableInputProps {
   url?: string
