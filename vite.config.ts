@@ -64,7 +64,7 @@ export default defineConfig(({ mode }) => {
     build: {
       target: resolveToEsbuildTarget(browserslist(null, { env: mode, throwOnMissing: true })),
       outDir: 'build',
-      sourcemap: true,
+      sourcemap: isDeploy ? 'hidden' : true,
       rollupOptions: {
         // Upload sourcemaps on deployment
         plugins: isProd && isDeploy ? [
