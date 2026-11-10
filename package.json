@@ -49,8 +49,8 @@
     "gen:sitemap": "node scripts/generate-sitemap.mjs",
     "lint": "eslint src",
     "build:prod": "yarn gen:sitemap && yarn build:dev --mode production",
-    "deploy": "yarn build:prod && netlify deploy --no-build --dir build --prod",
-    "deploy:preview": "yarn build:prod && netlify deploy --no-build --dir build",
+    "deploy": "DEPLOY=true yarn build:prod && netlify deploy --no-build --dir build --prod",
+    "deploy:preview": "DEPLOY=true yarn build:prod && netlify deploy --no-build --dir build",
     "analyze:vbv": "vite-bundle-visualizer -t sunburst",
     "analyze:sme": "node scripts/analyze-bundle.mjs",
     "analyze:sme:html": "source-map-explorer $(ls -S build/assets/index*.js | head -n 1) --no-border-checks"

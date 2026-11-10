@@ -15,8 +15,9 @@ import pkg from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const isProd = mode === 'production';
-  const env = loadEnv(mode, process.cwd());
+  const isProd = mode === 'production'
+  const isDeploy = process.env.DEPLOY === 'true'
+  const env = loadEnv(mode, process.cwd())
   const appVersion = format(new Date(), 'yyyy-MM-dd HHmm')
 
   const hbPluginOptions: Parameters<typeof honeybadgerRollupPlugin>[0] = {
@@ -66,7 +67,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       rollupOptions: {
         // Upload sourcemaps on deployment
-        plugins: isProd ? [
+        plugins: isProd && isDeploy ? [
           honeybadgerRollupPlugin(hbPluginOptions)
         ] : [],
       },
