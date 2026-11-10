@@ -3,6 +3,17 @@ import { SolverType } from 'src/types/wasm'
 import SolverWorker from 'src/workers/solver.worker?worker'
 import type { WorkerSolutionResponse } from './types'
 
+const INIT_TIMEOUT = 4_000
+
+// Delete after adding es-toolkit
+async function withTimeout(promise: Promise<void>, ms: number): Promise<unknown> {
+  let timer: NodeJS.Timeout
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
 export class SolverWorkerClient {
   private solverType: SolverType
   private worker: Worker | null = null
@@ -49,7 +60,14 @@ export class SolverWorkerClient {
       throw new Error(`Solver ${this.solverType} already running`)
     }
 
-    await this.readyPromise
+    try {
+      await withTimeout(this.readyPromise, INIT_TIMEOUT)
+    } catch (error) {
+      throw new Error(
+        'Solver could not start. Try refreshing the page. Will investigate why this happened.',
+        { cause: 'handshake' }
+      )
+    }
 
     // Send constraints and wait for the solution
     return new Promise<WorkerSolutionResponse>((resolve, reject) => {

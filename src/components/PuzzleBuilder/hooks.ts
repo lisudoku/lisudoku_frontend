@@ -228,9 +228,22 @@ export const useSolver = (solverType: SolverType): SolverHandle => {
       if (aborted) {
         return
       }
+
+      let errorMessage = 'Error while running solver'
+      if (
+        error !== null &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof error.message === 'string' &&
+        'cause' in error &&
+        error.cause === 'handshake'
+      ) {
+        errorMessage = error.message
+      }
+
       dispatch(responseSolution({
         solverType,
-        error: 'Error while running solver',
+        error: errorMessage,
       } satisfies WorkerSolutionResponse))
       throw new Error(
         `Error in ${solverType} solver with constraints ${encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku }).url}`,
