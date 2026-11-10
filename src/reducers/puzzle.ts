@@ -1,4 +1,4 @@
-import { cloneDeep, differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'lodash-es'
+import { cloneDeep, differenceWith, inRange, isEmpty, isEqual, map, uniqWith, xor, xorWith } from 'es-toolkit/compat'
 import { createSlice } from '@reduxjs/toolkit'
 import formatISO from 'date-fns/formatISO'
 import type { CellPosition, SudokuLogicalSolveResult } from 'lisudoku-solver'

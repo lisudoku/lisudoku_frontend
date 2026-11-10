@@ -1,4 +1,4 @@
-import { compact } from 'lodash-es'
+import { compact } from 'es-toolkit/compat'
 import { CellErrorSet, ConstraintDefinition } from '../types'
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
 import { removeConstraintFromArray } from '../utils'

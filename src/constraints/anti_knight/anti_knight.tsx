@@ -4,7 +4,7 @@ import type { CellErrorSet, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { CellValueComparatorEqual, getErrorSetsBetween, UNKNOWN_VALIDATION_RESULT } from '../utils'
 import type { CellPosition } from 'lisudoku-solver'
-import { times } from 'lodash-es'
+import { times } from 'es-toolkit/compat'
 import { getAllCells, isCellCompletelyEmpty } from 'src/utils/sudoku'
 
 const KNIGHT_ROW_DELTA = [ 1, 2, -1, -2, 1, 2, -1, -2 ]

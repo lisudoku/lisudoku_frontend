@@ -1,4 +1,4 @@
-import { values } from 'lodash-es'
+import { values } from 'es-toolkit/compat'
 import { Option, Select } from '../design_system/Select'
 import { useDispatch } from 'src/hooks'
 import { useCallback } from 'react'

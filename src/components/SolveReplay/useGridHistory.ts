@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep } from 'es-toolkit/compat'
 import { UserSolutionStep } from 'src/types'
 import { SudokuGridProps } from '../Puzzle/SudokuGrid'
 import { performAction } from 'src/reducers/puzzle'

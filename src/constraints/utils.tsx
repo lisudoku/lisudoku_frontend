@@ -1,6 +1,6 @@
 import { Area, CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
 import { CellMarks, ConstraintType, Grid, SudokuVariant } from 'src/types/sudoku'
-import { chain, compact, difference, findIndex, isEqual, times, uniq, uniqWith } from 'lodash-es'
+import { compact, difference, findIndex, groupBy, isEqual, times, toPairs, uniq, uniqWith } from 'es-toolkit/compat'
 import { constraintDefinitions } from './definitions'
 import { CellErrorSet, ConstraintDefinition, ConstraintValidationResult } from './types'
 import { ConstraintEditorState } from './editorState'
@@ -147,14 +147,12 @@ export const expandsArea8 = (area: CellPosition[], cell: CellPosition) => expand
 export const cellToString = (cell: CellPosition) => `R${cell.row}C${cell.col}`
 
 export const deduplicateErrorSets = (errorSets: CellErrorSet[]): CellErrorSet[] => (
-  chain(errorSets)
-    .groupBy(errorSet => cellToString(errorSet.cell))
-    .toPairs()
-    .map(([_, errorSetsGroup]) => ({
-      cell: errorSetsGroup[0].cell,
-      errorSet: uniq(errorSetsGroup.flatMap(errorSet => errorSet.errorSet)),
-    } as CellErrorSet))
-    .value()
+  toPairs(
+    groupBy(errorSets, errorSet => cellToString(errorSet.cell))
+  ).map(([_, errorSetsGroup]) => ({
+    cell: errorSetsGroup[0].cell,
+    errorSet: uniq(errorSetsGroup.flatMap(errorSet => errorSet.errorSet)),
+  } as CellErrorSet))
 )
 
 export const getErrorsSetsInRegions = (regions: Region[], valuesGrid: Grid, cellMarksGrid: CellMarks[][]) => {

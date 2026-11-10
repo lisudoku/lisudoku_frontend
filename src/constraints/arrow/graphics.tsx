@@ -1,6 +1,6 @@
 import type { Arrow, CellPosition } from 'lisudoku-solver'
 import { ConstraintDefinition } from '../types'
-import { maxBy, minBy } from 'lodash-es'
+import { maxBy, minBy } from 'es-toolkit/compat'
 import type { SVGProps } from 'react'
 
 const ArrowGraphic = ({ arrow, cellSize }: { arrow: Arrow, cellSize: number }) => {

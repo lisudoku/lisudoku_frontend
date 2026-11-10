@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { orderBy } from 'lodash-es'
+import { orderBy } from 'es-toolkit/compat'
 import { useWebsocket } from 'src/utils/websocket'
 import { useDispatch, useSelector } from 'src/hooks'
 import { TvPuzzle, initPuzzles, removePuzzles, updatePuzzle, updateViewerCount } from 'src/reducers/tv'

@@ -1,4 +1,4 @@
-import { values } from 'lodash-es'
+import { values } from 'es-toolkit/compat'
 import { Select, Option } from '../../design_system/Select'
 import { TrainerTechniqueDisplay } from 'src/utils/constants'
 import { TrainerTechnique } from 'src/types'

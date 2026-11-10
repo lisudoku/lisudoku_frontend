@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
-import { isEqual } from 'lodash-es'
+import { isEqual } from 'es-toolkit/compat'
 import { TrainerPuzzle, TrainerTechnique } from 'src/types'
 import { Grid } from 'src/types/sudoku'
 import {

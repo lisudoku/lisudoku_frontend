@@ -4,7 +4,7 @@ import {
   compact,
   differenceWith, isEmpty, isEqual,
   pull, pullAllWith, uniqWith, xorWith,
-} from 'lodash-es'
+} from 'es-toolkit/compat'
 import {
   CellMarks, BooleanConstraintDataKey, ConstraintType,
   SudokuDifficulty, SudokuVariant,

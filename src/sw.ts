@@ -7,7 +7,7 @@ if (!DEBUG) {
   self.__WB_DISABLE_DEV_LOGS = true;
 }
 
-import { sample } from 'lodash-es'
+import { sample } from 'es-toolkit/compat'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
 import { precache, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'

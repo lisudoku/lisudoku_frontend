@@ -1,4 +1,4 @@
-import { difference, flatten, intersection, last, uniqBy, values as _values, uniqWith, isEqual } from 'lodash-es'
+import { difference, flatten, intersection, last, uniqBy, values as _values, uniqWith, isEqual } from 'es-toolkit/compat'
 import ExternalLink from 'src/components/ExternalLink'
 import { HintLevel } from 'src/reducers/puzzle'
 import { CellMarks, Grid } from 'src/types/sudoku'

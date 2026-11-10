@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { isEmpty, sortBy } from 'lodash-es'
+import { isEmpty, sortBy } from 'es-toolkit/compat'
 import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { SudokuConstraints } from 'lisudoku-solver'

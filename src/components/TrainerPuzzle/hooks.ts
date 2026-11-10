@@ -1,5 +1,5 @@
 import { CellPosition, FixedNumber } from 'lisudoku-solver';
-import { isEqual, uniqWith } from 'lodash-es';
+import { isEqual, uniqWith } from 'es-toolkit/compat';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'src/hooks';
 import { changeSelectedCell, changeSelectedCellValue, fetchNewPuzzle, showSolutions } from 'src/reducers/trainer';

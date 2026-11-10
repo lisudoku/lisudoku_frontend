@@ -1,4 +1,4 @@
-import { groupBy } from 'lodash-es'
+import { groupBy } from 'es-toolkit/compat'
 import { Link } from 'react-router-dom'
 import type { TechniqueKind } from 'lisudoku-solver'
 import ExternalLink from 'src/components/ExternalLink'

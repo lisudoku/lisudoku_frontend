@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type { ConstraintContext, ConstraintDefinition } from '../types'
-import { sortBy } from 'lodash-es'
+import { sortBy } from 'es-toolkit/compat'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, removeConstraintFromArray } from '../utils'
 import { faSquare } from '@fortawesome/free-solid-svg-icons'

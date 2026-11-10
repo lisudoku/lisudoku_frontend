@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { inRange, isEmpty, last } from 'lodash-es'
+import { inRange, isEmpty, last } from 'es-toolkit/compat'
 import { useSelector } from 'src/hooks'
 import { useControlCallbacks } from './useControlCallbacks'
 

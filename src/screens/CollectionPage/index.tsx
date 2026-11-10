@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fromPairs, sortBy } from 'lodash-es'
+import { fromPairs, sortBy } from 'es-toolkit/compat'
 import { useSelector } from 'src/hooks'
 import { PageMeta } from 'src/components/PageMeta'
 import { Link, useParams } from 'react-router-dom'

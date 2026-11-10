@@ -4,7 +4,7 @@ import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../t
 import { SudokuVariant } from 'src/types/sudoku'
 import { arrowGraphics } from './graphics'
 import { ensureTargetItem, expandsArea4, expandsArea8, expandsPath } from '../utils'
-import { cloneDeep, find, findIndex, sortBy, sumBy } from 'lodash-es'
+import { cloneDeep, find, findIndex, sortBy, sumBy } from 'es-toolkit/compat'
 import { ArrowConstraintType } from '../editorState'
 import type { Area } from 'lisudoku-solver'
 

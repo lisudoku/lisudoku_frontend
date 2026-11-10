@@ -1,6 +1,6 @@
 // TODO: move to ./hooks
 import type { CellPosition, SudokuConstraints } from 'lisudoku-solver'
-import { inRange, isEmpty, last } from 'lodash-es'
+import { inRange, isEmpty, last } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'src/hooks'
 import { ConstraintType } from 'src/types/sudoku'

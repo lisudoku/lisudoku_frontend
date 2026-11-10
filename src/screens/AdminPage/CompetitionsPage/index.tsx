@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash-es'
+import { orderBy } from 'es-toolkit/compat'
 import { formatISO9075, parseISO } from 'date-fns/esm'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'

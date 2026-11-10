@@ -1,5 +1,5 @@
 import type { ConstraintContext, ConstraintDefinition } from '../types'
-import { sortBy, sumBy } from 'lodash-es'
+import { sortBy, sumBy } from 'es-toolkit/compat'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, removeConstraintFromArray } from '../utils'
 import { killerGraphics } from './graphics'

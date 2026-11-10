@@ -1,4 +1,4 @@
-import { values } from 'lodash-es'
+import { values } from 'es-toolkit/compat'
 import { Select, Option } from '../../design_system/Select'
 import { SudokuDifficulty } from 'src/types/sudoku'
 import { SudokuDifficultyDisplay } from 'src/utils/constants'

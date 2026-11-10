@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { compact, uniq } from 'lodash-es'
+import { compact, uniq } from 'es-toolkit/compat'
 import { useSelector } from 'src/hooks'
 import { UserSolution } from 'src/types'
 import { Puzzle, SudokuVariant } from 'src/types/sudoku'

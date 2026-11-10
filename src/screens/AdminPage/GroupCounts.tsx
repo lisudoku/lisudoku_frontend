@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash-es'
+import { sumBy } from 'es-toolkit/compat'
 import { fetchGroupCounts } from 'src/utils/apiService'
 import { SudokuDifficulty, SudokuVariant } from 'src/types/sudoku'
 import { useSelector } from 'src/hooks'

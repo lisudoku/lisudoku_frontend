@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import classNames from 'classnames'
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
-import { groupBy, isEmpty, partition, times } from 'lodash-es'
+import { groupBy, isEmpty, partition, times } from 'es-toolkit/compat'
 import { CellMarks, ConstraintType, Grid } from 'src/types/sudoku'
 import { CornerMarksGraphics } from './SudokuGridGraphics/CornerMarksGraphics'
 import { useGridCellUiEventHandler } from './SudokuGridGraphics/utils'

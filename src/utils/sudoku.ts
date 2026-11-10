@@ -1,4 +1,4 @@
-import { flatten, flattenDeep, isEmpty, isEqual, times, uniqWith } from 'lodash-es'
+import { flatten, flattenDeep, isEmpty, isEqual, times, uniqWith } from 'es-toolkit/compat'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { GRID_SIZES } from './constants'
 import { Area, CellPosition, FixedNumber, Region, SudokuConstraints } from 'lisudoku-solver'

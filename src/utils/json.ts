@@ -1,4 +1,4 @@
-import { camelCase, snakeCase } from 'lodash-es';
+import { camelCase, snakeCase } from 'es-toolkit/compat';
 
 const changeKeys = (obj: any, keyChangeFn: (string?: string) => string): any => {
   if (Array.isArray(obj)) {

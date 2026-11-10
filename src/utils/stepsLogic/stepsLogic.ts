@@ -1,5 +1,5 @@
 import type { Area, CellPosition, SolutionStep, SudokuConstraints, TechniqueKind } from 'lisudoku-solver'
-import { isEqual, uniqWith } from 'lodash-es'
+import { isEqual, uniqWith } from 'es-toolkit/compat'
 import { CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { HintLevel } from 'src/reducers/puzzle'
 import { areaDisplay, cellDisplay, getAreaCells } from '../sudoku'

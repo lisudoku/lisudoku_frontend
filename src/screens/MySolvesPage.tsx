@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash-es'
+import { orderBy } from 'es-toolkit/compat'
 import { PageMeta } from 'src/components/PageMeta'
 import SolvesTable from 'src/components/SolvesTable'
 import { useSelector } from 'src/hooks'

@@ -1,4 +1,4 @@
-import { isEqual, pullAllWith, uniqBy } from 'lodash-es'
+import { isEqual, pullAllWith, uniqBy } from 'es-toolkit/compat'
 import { useMemo } from 'react'
 import { useSelector } from 'src/hooks'
 import { HintLevel } from 'src/reducers/puzzle'

@@ -1,5 +1,5 @@
 import type { TechniqueKind } from 'lisudoku-solver'
-import { invert, mapValues, toInteger, values } from 'lodash-es'
+import { invert, mapValues, toInteger, values } from 'es-toolkit/compat'
 import { ReactNode } from 'react'
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { diagonalsConstraint } from 'src/constraints/diagonal/diagonals'

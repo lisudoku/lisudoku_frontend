@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { isEqual, throttle } from 'lodash-es'
+import { isEqual, throttle } from 'es-toolkit/compat'
 import { useDispatch, useSelector } from 'src/hooks'
 import { Link } from 'react-router-dom'
 import Button from 'src/design_system/Button'

@@ -4,7 +4,7 @@ import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { renbanGraphics } from './graphics'
 import { ensureTargetArray, expandsArea8, getErrorsSetsInRegions, regionsCellPeers, removeConstraintFromArray } from '../utils'
-import { find, max, min } from 'lodash-es'
+import { find, max, min } from 'es-toolkit/compat'
 import type { Area } from 'lisudoku-solver'
 
 export const renbanConstraint: ConstraintDefinition = {

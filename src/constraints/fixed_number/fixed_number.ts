@@ -1,4 +1,4 @@
-import { remove } from 'lodash-es'
+import { remove } from 'es-toolkit/compat'
 import type { ConstraintDefinition } from '../types'
 import { fixedNumberGraphics } from './graphics'
 import { SudokuVariant } from 'src/types/sudoku'

@@ -1,5 +1,5 @@
 import { CellPosition, SudokuConstraints } from 'lisudoku-solver'
-import { inRange, isEmpty, last } from 'lodash-es'
+import { inRange, isEmpty, last } from 'es-toolkit/compat'
 import { useEffect } from 'react'
 
 const ARROWS = [ 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ]

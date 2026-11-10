@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { omit, throttle } from 'lodash-es'
+import { omit, throttle } from 'es-toolkit/compat'
 import { useDispatch, useSelector } from 'src/hooks'
 import { gridIsFull } from 'src/utils/sudoku'
 import { sendHbAlert } from 'src/components/HoneybadgerProvider'

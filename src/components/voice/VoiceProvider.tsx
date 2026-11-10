@@ -1,4 +1,4 @@
-import { get } from 'lodash-es'
+import { get } from 'es-toolkit/compat'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import type { Voice, VoiceHandlers } from './voice'

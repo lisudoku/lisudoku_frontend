@@ -1,4 +1,4 @@
-import { sample } from 'lodash-es'
+import { sample } from 'es-toolkit/compat'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DifficultySelect from 'src/components/Puzzle/DifficultySelect'

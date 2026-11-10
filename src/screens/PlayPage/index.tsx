@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { compact } from 'lodash-es'
+import { compact } from 'es-toolkit/compat'
 import { useSelector, useDispatch } from 'src/hooks'
 import { parseISO, differenceInHours, differenceInSeconds } from 'date-fns/esm'
 import { AxiosError } from 'axios'

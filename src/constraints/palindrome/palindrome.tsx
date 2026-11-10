@@ -4,7 +4,7 @@ import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../t
 import { SudokuVariant } from 'src/types/sudoku'
 import { palindromeGraphics } from './graphics'
 import { CellValueComparatorNotEqual, ensureTargetArray, expandsArea8, getErrorSetsBetween, removeConstraintFromArray } from '../utils'
-import { find, isEqual } from 'lodash-es'
+import { find, isEqual } from 'es-toolkit/compat'
 import type { Area } from 'lisudoku-solver'
 
 export const palindromeConstraint: ConstraintDefinition = {

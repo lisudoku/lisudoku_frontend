@@ -1,5 +1,5 @@
 import type { SolutionStep, SudokuConstraints, TechniqueKind } from 'lisudoku-solver'
-import { max, orderBy, toPairs } from 'lodash-es'
+import { max, orderBy, toPairs } from 'es-toolkit/compat'
 import Typography from 'src/design_system/Typography'
 import { TechniqueDifficulty, TechniqueDifficultyDisplay } from 'src/utils/constants'
 import { LogicalSolutionSteps } from '../solver/LogicalSolutionSteps'

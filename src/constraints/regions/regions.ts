@@ -1,7 +1,7 @@
 import type { Area, CellPosition, Region, SudokuConstraints } from 'lisudoku-solver'
 import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { regionsGraphics } from './graphics'
-import { isEqual, times } from 'lodash-es'
+import { isEqual, times } from 'es-toolkit/compat'
 import { ensureDefaultRegions, regionGridToRegions } from 'src/utils/sudoku'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, UNKNOWN_VALIDATION_RESULT } from '../utils'

@@ -1,7 +1,7 @@
 import { CellPosition, KillerCage } from 'lisudoku-solver'
 import type { ConstraintDefinition } from '../types'
 import { SVGProps } from 'react'
-import { times } from 'lodash-es'
+import { times } from 'es-toolkit/compat'
 import { cellToString, getAdjacentPeers } from '../utils'
 
 const DIAGONAL_ROW_DELTA = [ 1, 1, -1, -1 ]

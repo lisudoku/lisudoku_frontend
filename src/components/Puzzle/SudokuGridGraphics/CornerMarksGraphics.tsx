@@ -1,5 +1,5 @@
 import { Fragment, ReactElement } from 'react'
-import { isEmpty, sortBy, uniq } from 'lodash-es'
+import { isEmpty, sortBy, uniq } from 'es-toolkit/compat'
 import classNames from 'classnames'
 import { CellMarks, Grid } from 'src/types/sudoku'
 import { CellMarkSets, getAllCells } from 'src/utils/sudoku'

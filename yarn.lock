@@ -1797,18 +1797,6 @@
   resolved "https://registry.yarnpkg.com/@types/is-base64/-/is-base64-1.1.1.tgz#a17d2b0075f637f80f9ab5f76f0071a65f6965d4"
   integrity sha512-JgnGhP+MeSHEQmvxcobcwPEP4Ew56voiq9/0hmP/41lyQ/3gBw/ZCIRy2v+QkEOdeCl58lRcrf6+Y6WMlJGETA==
 
-"@types/lodash-es@^4.17.12":
-  version "4.17.12"
-  resolved "https://registry.yarnpkg.com/@types/lodash-es/-/lodash-es-4.17.12.tgz#65f6d1e5f80539aa7cfbfc962de5def0cf4f341b"
-  integrity sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash@*":
-  version "4.14.202"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.202.tgz#f09dbd2fb082d507178b2f2a5c7e74bd72ff98f8"
-  integrity sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==
-
 "@types/lz-string@^1.3.34":
   version "1.3.34"
   resolved "https://registry.yarnpkg.com/@types/lz-string/-/lz-string-1.3.34.tgz#69bfadde419314b4a374bf2c8e58659c035ed0a5"
@@ -2658,6 +2646,11 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
+es-toolkit@^1.53.2:
+  version "1.53.2"
+  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.53.2.tgz#334b8210b2e63eb19d18aea9830b71b079e11265"
+  integrity sha512-iUqZ+NlwH4jUgRmXZUxFBsV/9762TQEa1O4IXLFBmDEjVHScBytKuseX23I0+v9ShZ5MYxEx6WKNzm6IPnex8g==
+
 esbuild-plugin-browserslist@^0.15.0:
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/esbuild-plugin-browserslist/-/esbuild-plugin-browserslist-0.15.0.tgz#013fb01d7633d06fd896d6729a4b1cd275f466f3"
@@ -3485,11 +3478,6 @@ lisudoku-solver@0.1.38:
   version "0.1.38"
   resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.38.tgz#5f59df894484840c5333cadd14906d56c330ae93"
   integrity sha512-bPzlvlJA7N5bg61h29diCf4CsFG1Lt8muQ50i4jzrrxNYeMOOTVuMebV6EtM47M8ex1xZmItHW8LAuMeVUkjhw==
-
-lodash-es@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
-  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
@@ -4567,13 +4555,13 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-sudoku-formats@1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.9.tgz#d704ad84db388f0d6eca56fe619f547c72b49dcd"
-  integrity sha512-F37OGwReqm0iGaK9jqzbtMAXm8/w5sYzT6DMw0QSmnszsvQZk0Uu/ae7h2DJPtrGME5BJTapD5Kyk5lu9vqGVw==
+sudoku-formats@1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.10.tgz#6d5e25d643da2d28dda38df3e26d6a03e220e444"
+  integrity sha512-sEbz+9qkZqV3NWyV8uN/5ckHUyTWLZHRlGp4PX9WcQIFqWQ/7AO//IxtzRtlH39umGZ9/K1csFW5P5uhWk5wLA==
   dependencies:
+    es-toolkit "^1.53.2"
     lisudoku-solver "0.1.29"
-    lodash-es "^4.17.21"
     lz-string "^1.5.0"
     pako "^2.1.0"
 

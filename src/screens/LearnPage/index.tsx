@@ -1,4 +1,4 @@
-import { map } from 'lodash-es'
+import { map } from 'es-toolkit/compat'
 import { useLocation } from 'react-router-dom'
 import TechniqueCard from './TechniqueCard'
 import Typography from 'src/design_system/Typography'

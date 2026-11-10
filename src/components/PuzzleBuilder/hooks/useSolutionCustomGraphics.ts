@@ -1,5 +1,5 @@
 import type { SolutionStep, SudokuConstraints } from 'lisudoku-solver'
-import { inRange } from 'lodash-es'
+import { inRange } from 'es-toolkit/compat'
 import { useMemo } from 'react'
 import { CustomGraphicsAreaHighlight, CustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/CustomGraphics'
 import { cellToCustomGraphicsItem } from 'src/components/Puzzle/SudokuGridGraphics/CustomGraphics/utils'

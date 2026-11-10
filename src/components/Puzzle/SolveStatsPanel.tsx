@@ -1,4 +1,4 @@
-import { isNil } from 'lodash-es'
+import { isNil } from 'es-toolkit/compat'
 import { useSelector } from 'src/hooks'
 import Alert from '../../design_system/Alert'
 import Typography from 'src/design_system/Typography';

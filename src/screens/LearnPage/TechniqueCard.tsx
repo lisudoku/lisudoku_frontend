@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { isEmpty } from 'lodash-es'
+import { isEmpty } from 'es-toolkit/compat'
 import ExternalLink from 'src/components/ExternalLink'
 import { TechniqueDisplay } from 'src/utils/constants'
 import { getPuzzleRelativeUrl, pluralize } from 'src/utils/misc'

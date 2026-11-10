@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { ReactElement } from 'react'
 import { useCallback, useRef, useState } from 'react'
-import { isFunction } from 'lodash-es'
+import { isFunction } from 'es-toolkit/compat'
 import { Popover, PopoverContent, PopoverHandler } from 'src/design_system/Popover'
 
 const CopyToClipboard = ({ children, text, className, onCopy }: CopyToClipboardProps) => {

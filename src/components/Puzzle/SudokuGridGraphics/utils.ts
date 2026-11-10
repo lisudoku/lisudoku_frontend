@@ -1,5 +1,5 @@
 import { type MouseEvent, type TouchEvent, useCallback } from 'react'
-import { inRange } from 'lodash-es'
+import { inRange } from 'es-toolkit/compat'
 import { CellPosition } from 'lisudoku-solver'
 
 const DRAG_CELL_RATIO = 1.0 / 7.0

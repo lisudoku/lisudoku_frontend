@@ -1,4 +1,4 @@
-import { times } from 'lodash-es'
+import { times } from 'es-toolkit/compat'
 import classNames from 'classnames'
 import Button from '../../design_system/Button'
 

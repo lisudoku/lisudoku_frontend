@@ -1,5 +1,5 @@
 import type { Area, CellPosition, KropkiDot, KropkiDotType, SudokuConstraints } from 'lisudoku-solver'
-import { differenceWith, isEqual, sortBy } from 'lodash-es'
+import { differenceWith, isEqual, sortBy } from 'es-toolkit/compat'
 import type { CellErrorSet, ConstraintContext, ConstraintDefinition } from '../types'
 import { CellValueComparator, getAdjacentPeers, getErrorSetsBetween, removeConstraintFromArray } from '../utils'
 import { getAllCells } from 'src/utils/sudoku'

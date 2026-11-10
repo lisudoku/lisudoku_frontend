@@ -4,7 +4,7 @@ import type { ConstraintContext, ConstraintDefinition } from '../types'
 import { SudokuVariant } from 'src/types/sudoku'
 import { getErrorsSetsInRegions, regionsCellPeers, UNKNOWN_VALIDATION_RESULT } from '../utils'
 import type { Area, Region, SudokuConstraints } from 'lisudoku-solver'
-import { times } from 'lodash-es'
+import { times } from 'es-toolkit/compat'
 
 const getRegion = (constraints: SudokuConstraints): Region =>
   times(constraints.gridSize, index => ({ row: index, col: index }))

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'src/hooks'
-import { groupBy, mapValues, sortBy, toPairs } from 'lodash-es'
+import { groupBy, mapValues, sortBy, toPairs } from 'es-toolkit/compat'
 import PuzzleCard from './PuzzleCard'
 import Typography from 'src/design_system/Typography'
 import { responsePuzzles } from 'src/reducers/admin'

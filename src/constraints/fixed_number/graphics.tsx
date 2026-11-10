@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { isNil } from 'lodash-es'
+import { isNil } from 'es-toolkit/compat'
 import { getAllCells } from 'src/utils/sudoku'
 import type { ConstraintDefinition } from '../types'
 
