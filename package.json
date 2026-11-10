@@ -52,7 +52,8 @@
     "deploy": "yarn build:prod && netlify deploy --no-build --dir build --prod",
     "deploy:preview": "yarn build:prod && netlify deploy --no-build --dir build",
     "analyze:vbv": "vite-bundle-visualizer -t sunburst",
-    "analyze:sme": "node scripts/analyze-bundle.mjs"
+    "analyze:sme": "node scripts/analyze-bundle.mjs",
+    "analyze:sme:html": "source-map-explorer $(ls -S build/assets/index*.js | head -n 1) --no-border-checks"
   },
   "eslintConfig": {
     "extends": [
