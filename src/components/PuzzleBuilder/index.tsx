@@ -34,13 +34,7 @@ import { assertExhaustiveConstraintOrder, detectConstraints } from 'src/constrai
 import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType } from 'src/constraints/editorState'
 import { ConstraintAddButton } from './ConstraintAddButton'
-
-const downloadImage = (image: string, { name = 'puzzle', extension = 'png' } = {}) => {
-  const a = document.createElement('a')
-  a.href = image
-  a.download = `${name}.${extension}`
-  a.click()
-}
+import { ExportImageButton } from './ExportImageButton'
 
 export const localConstraintsOrder = [
   ConstraintType.FixedNumber,
@@ -188,21 +182,6 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
     await runImport(gridString)
     setImportImageOpen(false)
   }, [])
-
-  const handleExportImageClick = useCallback(async () => {
-    const html2canvas = (await import('html2canvas')).default
-
-    // Clear selected cell and generate the png
-    dispatch(changeSelectedCell({ cell: null }))
-    // Use the timeout to wait for the dispatch
-    setTimeout(async () => {
-      if (gridWrapperRef.current) {
-        const canvas = await html2canvas(gridWrapperRef.current)
-        const imageData = canvas.toDataURL('image/png', 1.0)
-        downloadImage(imageData)
-      }
-    }, 1)
-  }, [dispatch, gridWrapperRef])
 
   let grid: Grid | undefined = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
   let usedMarks: CellMarks[][] | undefined
@@ -378,15 +357,10 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               <FontAwesomeIcon icon={faDownload} />{' '}
               Import image
             </Button>
-            <Button
-              className="w-1/2"
-              variant="outlined"
-              onClick={handleExportImageClick}
-              aria-label="Export the current Sudoku puzzle to an image"
-            >
-              <FontAwesomeIcon icon={faUpload} />{' '}
-              Export image
-            </Button>
+            <ExportImageButton
+              gridWrapperRef={gridWrapperRef}
+              onClick={() => dispatch(changeSelectedCell({ cell: null }))}
+            />
           </div>
         </div>
         <div className="basis-[375px] grow shrink">
