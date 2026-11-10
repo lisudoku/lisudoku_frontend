@@ -42,7 +42,7 @@ export const ExportImageButton = ({ onClick, gridWrapperRef }: ExportImageButton
       className="w-1/2"
       variant="outlined"
       onClick={handleClick}
-      loading={isLoading}
+      disabled={isLoading}
       aria-label="Export the current Sudoku puzzle to an image"
     >
       <FontAwesomeIcon icon={faUpload} />{' '}

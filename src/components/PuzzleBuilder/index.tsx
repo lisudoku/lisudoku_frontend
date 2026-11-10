@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { cloneDeep } from 'lodash-es'
 import type { SudokuConstraints, SolutionStep } from 'lisudoku-solver'
@@ -23,7 +23,6 @@ import { faUpload, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { SolverType } from 'src/types/wasm'
 import { sendHbAlert } from 'src/components/HoneybadgerProvider'
 import { defaultConstraints, ensureDefaultRegions } from 'src/utils/sudoku'
-import ExportModal from './ExportModal'
 import ImportModal from './ImportModal'
 import ImportImageModal from './ImportImageModal'
 import ConstraintRadio from './ConstraintRadio'
@@ -35,6 +34,8 @@ import { constraintDefinitions } from 'src/constraints/definitions'
 import { ArrowConstraintType } from 'src/constraints/editorState'
 import { ConstraintAddButton } from './ConstraintAddButton'
 import { ExportImageButton } from './ExportImageButton'
+
+const ExportModal = lazy(() => import('./ExportModal'))
 
 export const localConstraintsOrder = [
   ConstraintType.FixedNumber,
@@ -237,12 +238,16 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
         onClose={() => setImportOpen(false)}
         onConfirm={handleImportConfirm}
       />
-      <ExportModal
-        open={exportOpen}
-        onClose={() => setExportOpen(false)}
-        constraints={committedConstraints}
-        isAdminPage={admin}
-      />
+      <Suspense fallback={null}>
+        {exportOpen && (
+          <ExportModal
+            open
+            onClose={() => setExportOpen(false)}
+            constraints={committedConstraints}
+            isAdminPage={admin}
+          />
+        )}
+      </Suspense>
       <ImportImageModal
         open={importImageOpen}
         onClose={() => setImportImageOpen(false)}
@@ -341,10 +346,11 @@ const PuzzleBuilder = ({ admin }: { admin: boolean }) => {
               className="w-1/2"
               variant="outlined"
               onClick={() => setExportOpen(true)}
+              disabled={exportOpen}
               aria-label="Export the current Sudoku puzzle to a supported format"
             >
               <FontAwesomeIcon icon={faUpload} />{' '}
-              Export
+              {exportOpen ? 'Exporting...' : 'Export'}
             </Button>
           </div>
           <div className="flex w-full gap-x-1">

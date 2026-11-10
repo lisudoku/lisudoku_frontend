@@ -11,7 +11,6 @@ import {
 } from 'src/reducers/builder'
 import { SolverType } from 'src/types/wasm'
 import { InputMode } from 'src/reducers/puzzle'
-import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats'
 import { SolverWorkerClient } from 'src/workers/SolverWorkerClient'
 import type { WorkerSolutionResponse } from 'src/workers/types'
 import useInterval from 'react-useinterval'
@@ -246,7 +245,7 @@ export const useSolver = (solverType: SolverType): SolverHandle => {
         error: errorMessage,
       } satisfies WorkerSolutionResponse))
       throw new Error(
-        `Error in ${solverType} solver with constraints ${encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku }).url}`,
+        `Error in ${solverType} solver with constraints ${exportToLisudokuSolver(constraints)}`,
         { cause: error },
       )
     }

@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-globals */
 import type { SudokuConstraints } from 'lisudoku-solver'
 import { SolverType } from 'src/types/wasm'
-import { encodeSudoku, SudokuDataFormat } from 'sudoku-formats'
 import type { WorkerSolutionResponse } from './types'
 import { logicalSolve, bruteSolve } from 'src/utils/wasm'
+import { exportToLisudokuSolver } from 'src/utils/import'
 
 self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
@@ -31,7 +31,7 @@ self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverTyp
     } satisfies WorkerSolutionResponse)
 
     throw new Error(
-      `Error in ${solverType} solver with constraints ${encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku }).url}`,
+      `Error in ${solverType} solver with constraints ${exportToLisudokuSolver(constraints)}`,
       { cause: error },
     )
   }

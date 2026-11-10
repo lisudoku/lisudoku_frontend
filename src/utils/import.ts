@@ -1,11 +1,14 @@
-import { SudokuConstraints } from 'lisudoku-solver'
 import { useLocation } from 'react-router-dom'
-import { DecodeOutput, decodeSudoku, encodeSudoku, SudokuDataFormat, TransformOutput, transformSudoku } from 'sudoku-formats'
-import { LisudokuConstraints } from 'sudoku-formats/dist/formats/lisudoku'
+import type { SudokuConstraints } from 'lisudoku-solver'
+import type { DecodeOutput, TransformOutput } from 'sudoku-formats'
+// TODO: the library itself could expose these
+import type { LisudokuConstraints } from 'sudoku-formats/dist/formats/lisudoku'
+import { encoder as encodeToLisudoku } from 'sudoku-formats/dist/formats/lisudoku/encoder'
 
 export type ImportResult = TransformOutput<LisudokuConstraints> & { fromFormat: DecodeOutput['format'] }
 
 export const importPuzzle = async (url: string): Promise<ImportResult> => {
+  const { SudokuDataFormat, decodeSudoku, transformSudoku } = await import('sudoku-formats')
   const decode = await decodeSudoku(url)
   if (decode.error !== undefined) {
     return {
@@ -27,7 +30,7 @@ export const importPuzzle = async (url: string): Promise<ImportResult> => {
 }
 
 const encodeConstraints = (constraints: SudokuConstraints) => {
-  const { dataString } = encodeSudoku({ constraints, format: SudokuDataFormat.Lisudoku })
+  const { dataString } = encodeToLisudoku(constraints)
   return dataString
 }
 
