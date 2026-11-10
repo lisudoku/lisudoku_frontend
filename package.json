@@ -39,8 +39,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "sudoku-formats": "1.0.9",
-    "vosk-browser": "^0.0.8",
-    "web-vitals": "^2.1.4"
+    "vosk-browser": "^0.0.8"
   },
   "scripts": {
     "start": "vite dev",

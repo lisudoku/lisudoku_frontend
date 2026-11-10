@@ -4,7 +4,6 @@ import axios from 'axios'
 import './index.css'
 import App from './App'
 import { parseISO, differenceInDays } from 'date-fns/esm'
-import reportWebVitals from './reportWebVitals'
 import { registerSW } from 'virtual:pwa-register'
 
 if (import.meta.env.PROD) {
@@ -36,8 +35,3 @@ if (!lastDownloadStr || differenceInDays(new Date(), parseISO(lastDownloadStr)) 
   axios.post('/puzzles/download')
   localStorage.setItem(LS_KEY, new Date().toISOString())
 }
-
-// // If you want to start measuring performance in your app, pass a function
-// // to log results (for example: reportWebVitals(console.log))
-// // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
