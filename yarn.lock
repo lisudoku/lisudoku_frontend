@@ -3474,10 +3474,10 @@ lisudoku-solver@0.1.29:
   resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.29.tgz#a845cca69e093214d5814009d0e23da881e1f32a"
   integrity sha512-0VVRhJezC/20Xl6kIASnDzcs+I51RMj05BAVcwZHZypNyOURR4/HVL4MY+ixZ+MeCVi0ugpVRN+QeWHIB1HU1w==
 
-lisudoku-solver@0.1.38:
-  version "0.1.38"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.38.tgz#5f59df894484840c5333cadd14906d56c330ae93"
-  integrity sha512-bPzlvlJA7N5bg61h29diCf4CsFG1Lt8muQ50i4jzrrxNYeMOOTVuMebV6EtM47M8ex1xZmItHW8LAuMeVUkjhw==
+lisudoku-solver@0.1.39:
+  version "0.1.39"
+  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.39.tgz#4c5d67baf13e8d8782d1767f42710e38c7734cb8"
+  integrity sha512-RpLmiNn0LwCqq8GQhl/JtktCRNVzGWdkLyFZpNxTqwDNQRqYhXm24s8OBgd8T0qzu8WalYuQwxtH2+NQ/h3p3Q==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
