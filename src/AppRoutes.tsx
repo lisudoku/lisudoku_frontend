@@ -20,7 +20,7 @@ import MySolveReplayPage from './screens/MySolveReplayPage'
 import EnsureAdmin from './components/EnsureAdmin'
 import SolverPage from './screens/SolverPage'
 
-const AdminPage = lazy(() => import('./screens/AdminPage'))
+const AdminPage = lazy(() => import('./screens/AdminPage/AdminPage'))
 const MySolvesPage = lazy(() => import('./screens/MySolvesPage'))
 
 const AppRoutes = () => (

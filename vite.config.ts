@@ -46,6 +46,7 @@ export default defineConfig(({ mode }) => {
         filename: 'sw.ts',
         injectManifest: {
           globPatterns: ['**/*.{js,css,html,wasm}'],
+          globIgnores: ['**/assets/AdminPage-*.js', '**/assets/AdminPage-*.css'],
         },
         devOptions: {
           enabled: true,

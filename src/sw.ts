@@ -11,7 +11,7 @@ import { sample } from 'es-toolkit/compat'
 import { setCacheNameDetails, clientsClaim, RouteHandlerCallbackOptions, cacheNames } from 'workbox-core'
 import { precache, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
-import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { NetworkFirst, NetworkOnly, StaleWhileRevalidate } from 'workbox-strategies'
 import { differenceInDays, parseISO } from 'date-fns/esm'
 
 declare const self: ServiceWorkerGlobalScope
@@ -226,12 +226,26 @@ const isViteDevRequest = (url: URL) =>
     url.searchParams.has('t')
   )
 
+const isAdminUrl = (url: URL) =>
+  url.pathname === '/admin' || url.pathname.startsWith('/admin/')
+
+const isAdminAsset = (url: URL) =>
+  url.pathname.startsWith('/assets/AdminPage-')
+
+registerRoute(
+  ({ url }) => isAdminUrl(url) || isAdminAsset(url),
+  new NetworkOnly(),
+)
+
 // Redirect everything else to /
 if (import.meta.env.PROD) {
   registerRoute(
     // Return false to exempt requests from being fulfilled by /
     ({ request, url }: { request: Request; url: URL }) => (
-      request.mode === 'navigate' && !url.pathname.startsWith('/_') && !isResource(url)
+      request.mode === 'navigate' &&
+      !url.pathname.startsWith('/_') &&
+      !isResource(url)&&
+      !isAdminUrl(url)
     ),
     createHandlerBoundToURL('index.html')
   )
