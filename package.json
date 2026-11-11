@@ -21,7 +21,7 @@
     "es-toolkit": "^1.53.2",
     "final-form": "^4.20.7",
     "html2canvas": "^1.4.1",
-    "lisudoku-solver": "0.1.39",
+    "lisudoku-solver": "0.1.40",
     "lz-string": "^1.4.4",
     "microphone-stream": "^6.0.1",
     "process": "^0.11.10",
@@ -38,7 +38,7 @@
     "readable-stream": "^4.5.2",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "sudoku-formats": "1.0.10",
+    "sudoku-formats": "1.0.11",
     "vosk-browser": "^0.0.8"
   },
   "scripts": {

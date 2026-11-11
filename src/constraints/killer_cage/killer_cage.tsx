@@ -108,7 +108,7 @@ export const killerCageConstraint: ConstraintDefinition = {
         killerCages: [
           ...(constraints.killerCages ?? []),
           {
-            sum: editorState.killerSum ?? null,
+            sum: editorState.killerSum,
             region,
           },
         ],

@@ -3469,15 +3469,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-lisudoku-solver@0.1.29:
-  version "0.1.29"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.29.tgz#a845cca69e093214d5814009d0e23da881e1f32a"
-  integrity sha512-0VVRhJezC/20Xl6kIASnDzcs+I51RMj05BAVcwZHZypNyOURR4/HVL4MY+ixZ+MeCVi0ugpVRN+QeWHIB1HU1w==
-
-lisudoku-solver@0.1.39:
-  version "0.1.39"
-  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.39.tgz#4c5d67baf13e8d8782d1767f42710e38c7734cb8"
-  integrity sha512-RpLmiNn0LwCqq8GQhl/JtktCRNVzGWdkLyFZpNxTqwDNQRqYhXm24s8OBgd8T0qzu8WalYuQwxtH2+NQ/h3p3Q==
+lisudoku-solver@0.1.40:
+  version "0.1.40"
+  resolved "https://registry.yarnpkg.com/lisudoku-solver/-/lisudoku-solver-0.1.40.tgz#15ae7ea7ea08bc6dd05fffa9e3e5d80c21095f38"
+  integrity sha512-iJafzlgEh9+WY6rFVMHlHPERyc34ZC76E0thZlt6F1ikFQr4mjSfArVsPgVQdL9B8NwkUs7anWU4/ko4OyikFg==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
@@ -4555,13 +4550,13 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-sudoku-formats@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.10.tgz#6d5e25d643da2d28dda38df3e26d6a03e220e444"
-  integrity sha512-sEbz+9qkZqV3NWyV8uN/5ckHUyTWLZHRlGp4PX9WcQIFqWQ/7AO//IxtzRtlH39umGZ9/K1csFW5P5uhWk5wLA==
+sudoku-formats@1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/sudoku-formats/-/sudoku-formats-1.0.11.tgz#41192e9505bede25336c6e0a1e0945fb247e5cc7"
+  integrity sha512-KwYJWk/f85Q27R0KphxNpMW9JLtL7VFq6lZ2fxRGmOXDp4Gt8Ilny9qlJOcy1vvZ5pJPor19BZKtlI57bn09FA==
   dependencies:
     es-toolkit "^1.53.2"
-    lisudoku-solver "0.1.29"
+    lisudoku-solver "0.1.40"
     lz-string "^1.5.0"
     pako "^2.1.0"
 

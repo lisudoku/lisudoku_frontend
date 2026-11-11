@@ -6,7 +6,7 @@ export interface ConstraintEditorState {
   targetIndex?: number
   selectedCells: CellPosition[]
   arrowConstraintType: ArrowConstraintType
-  killerSum?: number | null
+  killerSum?: number
   regionsGrid?: Grid
 }
 
