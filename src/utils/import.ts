@@ -1,8 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import type { SudokuConstraints } from 'lisudoku-solver'
-import type { DecodeOutput, TransformOutput } from 'sudoku-formats'
-// TODO: the library itself could expose these
-import type { LisudokuConstraints } from 'sudoku-formats/dist/formats/lisudoku'
+import type { DecodeOutput, LisudokuConstraints, TransformOutput } from 'sudoku-formats'
 import { encoder as encodeToLisudoku } from 'sudoku-formats/dist/formats/lisudoku/encoder'
 
 export type ImportResult = TransformOutput<LisudokuConstraints> & { fromFormat: DecodeOutput['format'] }

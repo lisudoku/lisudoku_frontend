@@ -3,7 +3,9 @@ import { Dialog, DialogBody, DialogFooter, DialogHeader } from 'src/design_syste
 import Button from 'src/design_system/Button'
 import Input from 'src/design_system/Input'
 import Typography from 'src/design_system/Typography'
-import { FORMATS } from 'sudoku-formats'
+
+// Keep in sync with FORMATS from 'sudoku-formats', but it will update very rarely
+const SOURCES = ['gridstring', 'lisudoku', 'fpuzzles', 'penpa'].join(', ')
 
 const LISUDOKU_EXAMPLE_1 = 'https://lisudoku.xyz/e?import=N4IgZglgHgpgJgOQK4FsBGMBOBnEAuAbVAAcB7bCAFwlIDt9QBjUgG3wDYAaETUgd3wAmAL7cAbgEMWSGPgDMokuSo16eJqyHdeAvO1EhJ02XgAswgLrcA5pghwAyhABeJgJzdKACywpy%2BAiIQZjY8QW1%2BIUVgzTw5CN0FTg1Q0wT8c2SY0IBWdLwc6JCOfP0LC2EgA%3D'
 const LISUDOKU_EXAMPLE_2 = 'https://lisudoku.xyz/p/4pyPjYdnlzJyUvFPVToy'
@@ -18,7 +20,6 @@ interface ImportModalProps {
 }
 
 const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
-  const sources = FORMATS.map(({ format }) => format).join(', ')
   const [input, setInput] = useState('')
   const [isImporting, setIsImporting] = useState(false)
 
@@ -51,7 +52,7 @@ const ImportModal = ({ open, onClose, onConfirm }: ImportModalProps) => {
           <Input color="primary" label="Enter puzzle data here" value={input} onChange={setInput} />
           <div>
             <Typography>
-              Valid formats: {sources}.
+              Valid formats: {SOURCES}.
             </Typography>
             <Typography>
               Works with URL shortener (tinyurl) links too.
