@@ -234,10 +234,13 @@ export const useSolver = (solverType: SolverType): SolverHandle => {
         typeof error === 'object' &&
         'message' in error &&
         typeof error.message === 'string' &&
-        'cause' in error &&
-        error.cause === 'handshake'
+        'cause' in error
       ) {
-        errorMessage = error.message
+        if (error.cause === 'handshake') {
+          errorMessage = error.message
+        } else if (typeof error.cause === 'string') {
+          errorMessage = error.cause
+        }
       }
 
       dispatch(responseSolution({

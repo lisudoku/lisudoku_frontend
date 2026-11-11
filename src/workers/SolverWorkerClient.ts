@@ -42,6 +42,8 @@ export class SolverWorkerClient {
     _worker.addEventListener('message', (e) => {
       if (typeof e.data === 'object' && e.data.type === 'ready') {
         resolveReady()
+      } else if (e.data.error !== undefined) {
+        this.pendingRunHandlers?.reject(new Error('received error from solver', { cause: e.data.error }))
       } else {
         this.pendingRunHandlers?.resolve(e.data)
       }

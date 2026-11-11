@@ -3,7 +3,6 @@ import type { SudokuConstraints } from 'lisudoku-solver'
 import { SolverType } from 'src/types/wasm'
 import type { WorkerSolutionResponse } from './types'
 import { logicalSolve, bruteSolve } from 'src/utils/wasm'
-import { exportToLisudokuSolver } from 'src/utils/import'
 
 self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverType: SolverType } }) {
   const { constraints, solverType } = e.data
@@ -29,11 +28,6 @@ self.onmessage = function(e: { data: { constraints: SudokuConstraints; solverTyp
       solverType,
       error: 'Error while running solver 🫠 Not sure why, but I will fix it soon!',
     } satisfies WorkerSolutionResponse)
-
-    throw new Error(
-      `Error in ${solverType} solver with constraints ${exportToLisudokuSolver(constraints)}`,
-      { cause: error },
-    )
   }
 }
 
