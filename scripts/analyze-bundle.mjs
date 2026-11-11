@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -13,7 +13,7 @@ const projectRoot = resolve(scriptDirectory, '..')
 const buildDirectory = resolve(projectRoot, 'build')
 const assetsDirectory = resolve(buildDirectory, 'assets')
 
-const DEFAULT_TOP = 30
+const TOP = 30
 const APP_SOURCE_LABEL = 'app src'
 
 const numberFormat = new Intl.NumberFormat('en-US')
@@ -34,63 +34,6 @@ const getGzipSize = (path) => {
   } catch {
     return gzipSync(readFileSync(filePath)).length
   }
-}
-
-const parseArgs = (argv) => {
-  const options = {
-    all: false,
-    json: false,
-    top: DEFAULT_TOP,
-    bundles: [],
-  }
-
-  for (let index = 0; index < argv.length; index++) {
-    const arg = argv[index]
-
-    if (arg === '--help' || arg === '-h') {
-      options.help = true
-    } else if (arg === '--all') {
-      options.all = true
-    } else if (arg === '--json') {
-      options.json = true
-    } else if (arg === '--verbose') {
-      options.verbose = true
-    } else if (arg === '--top') {
-      options.top = Number.parseInt(argv[++index], 10)
-    } else if (arg.startsWith('--top=')) {
-      options.top = Number.parseInt(arg.slice('--top='.length), 10)
-    } else if (arg.startsWith('-')) {
-      throw new Error(`Unknown option: ${arg}`)
-    } else {
-      options.bundles.push(arg)
-    }
-  }
-
-  if (!Number.isFinite(options.top) || options.top < 0) {
-    throw new Error('--top must be a non-negative integer')
-  }
-
-  return options
-}
-
-const printHelp = () => {
-  console.log(`Usage: yarn analyze [options] [bundle ...]
-
-Analyze generated chunks with source-map-explorer and print a package-size table.
-
-Options:
-  --all          Analyze every .js chunk in build/assets
-  --top <n>      Show the top n packages (default ${DEFAULT_TOP}, 0 = all)
-  --json         Print machine-readable JSON instead of a table
-  --verbose      Print source-map-explorer warnings
-  -h, --help     Show this help
-
-Examples:
-  yarn analyze
-  yarn analyze --top 10
-  yarn analyze 'build/assets/voice-*.js'
-  yarn analyze --all --top 15
-`)
 }
 
 const findEntryBundle = () => {
@@ -117,7 +60,7 @@ const findEntryBundle = () => {
   return readdirSync(assetsDirectory)
     .filter(file => /^index-.*\.js$/.test(file))
     .map(file => resolve(assetsDirectory, file))
-    .sort((left, right) => statSync(right).size - statSync(left).size)[0]
+    .sort()[0]
 }
 
 const findAllBundles = () => {
@@ -128,7 +71,6 @@ const findAllBundles = () => {
   return readdirSync(assetsDirectory)
     .filter(file => file.endsWith('.js'))
     .map(file => resolve(assetsDirectory, file))
-    .sort()
 }
 
 const groupSource = (source) => {
@@ -165,8 +107,7 @@ const groupFiles = (files) => {
 
 const printErrors = (errors) => {
   for (const error of errors) {
-    const level = error.isWarning ? 'Warning' : 'Error'
-    console.error(`${level}: ${error.bundleName}: ${error.message}`)
+    console.error(`${error.isWarning ? 'Warning' : 'Error'}: ${error.bundleName}: ${error.message}`)
   }
 }
 
@@ -183,11 +124,11 @@ const analyze = async (bundlePaths) => {
   }
 }
 
-const printBundleTable = (bundle, top, verbose) => {
+const printBundleTable = (bundle) => {
   const gzipBytes = getGzipSize(bundle.bundleName)
   const groups = groupFiles(bundle.files)
-  const visibleGroups = top === 0 ? groups : groups.slice(0, top)
-  const hiddenGroups = top === 0 ? [] : groups.slice(top)
+  const visibleGroups = groups.slice(0, TOP)
+  const hiddenGroups = groups.slice(TOP)
   const hiddenSize = hiddenGroups.reduce((total, group) => total + group.size, 0)
 
   console.log(`Bundle: ${formatPath(bundle.bundleName)}`)
@@ -228,30 +169,14 @@ const printBundleTable = (bundle, top, verbose) => {
 
   console.log(`${'-'.repeat(nameWidth)}  ${'-'.repeat(rawWidth)}  ${'-'.repeat(mappedWidth)}  ${'-'.repeat(totalWidth)}`)
   console.log(row('Mapped total', bundle.mappedBytes))
-
-  if (verbose && bundle.unmappedBytes !== undefined) {
-    console.log(`\nUnmapped: ${formatBytes(bundle.unmappedBytes)} B`)
-  }
 }
 
 const main = async () => {
-  const options = parseArgs(process.argv.slice(2))
-
-  if (options.help) {
-    printHelp()
-    return
-  }
-
-  let bundlePaths = options.bundles
+  const analyzeAll = process.argv.includes('--all')
+  const bundlePaths = analyzeAll ? findAllBundles() : [findEntryBundle()].filter(Boolean)
 
   if (bundlePaths.length === 0) {
-    bundlePaths = options.all ? findAllBundles() : [findEntryBundle()].filter(Boolean)
-  }
-
-  if (bundlePaths.length === 0) {
-    throw new Error(
-      'No build found. Run `yarn build:dev --mode production` first, then re-run `yarn analyze`.'
-    )
+    throw new Error('No build found. Run `yarn build:dev --mode production` first.')
   }
 
   const result = await analyze(bundlePaths.length === 1 ? bundlePaths[0] : bundlePaths)
@@ -261,41 +186,15 @@ const main = async () => {
     return
   }
 
-  if (options.verbose) {
-    printErrors(result.errors)
-  }
+  result.bundles
+    .sort((left, right) => right.totalBytes - left.totalBytes)
+    .forEach((bundle, index) => {
+      if (index > 0) {
+        console.log()
+      }
 
-  if (options.json) {
-    const output = {
-      bundles: result.bundles.map(bundle => ({
-        bundleName: formatPath(bundle.bundleName),
-        totalBytes: bundle.totalBytes,
-        gzipBytes: getGzipSize(bundle.bundleName),
-        mappedBytes: bundle.mappedBytes,
-        unmappedBytes: bundle.unmappedBytes ?? 0,
-        eolBytes: bundle.eolBytes,
-        sourceMapCommentBytes: bundle.sourceMapCommentBytes,
-        packages: groupFiles(bundle.files),
-      })),
-      errors: result.errors.map(error => ({
-        bundleName: formatPath(error.bundleName),
-        code: error.code,
-        message: error.message,
-        isWarning: error.isWarning ?? false,
-      })),
-    }
-
-    console.log(JSON.stringify(output, null, 2))
-    return
-  }
-
-  result.bundles.forEach((bundle, index) => {
-    if (index > 0) {
-      console.log()
-    }
-
-    printBundleTable(bundle, options.top, options.verbose)
-  })
+      printBundleTable(bundle)
+    })
 }
 
 main().catch((error) => {
